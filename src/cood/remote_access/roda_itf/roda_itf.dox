@@ -1,0 +1,323 @@
+/*
+    General Purpose Class Collection (GPCC)
+    Copyright (C) 2021 Daniel Jerolm
+
+    This file is part of the General Purpose Class Collection (GPCC).
+
+    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+                                      ---
+
+    A special exception to the GPL can be applied should you wish to distribute
+    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
+    to provide the source code for any proprietary components. See the file
+    license_exception.txt for full details of how and when the exception can be applied.
+*/
+
+/**
+ * @ingroup GPCC_COOD_REMOTEACCESS
+ * @defgroup GPCC_COOD_REMOTEACCESS_EXCEPTIONS Exceptions
+ *
+ * \brief Remote access related exceptions.
+ */
+
+/**
+ * @ingroup GPCC_COOD_REMOTEACCESS
+ * @defgroup GPCC_COOD_REMOTEACCESS_ITF Remote access interfaces
+ *
+ * \brief The RODA/RODAN interface pair required for remote access.
+ *
+ * # Introduction of the RODA/RODAN interface pair
+ * Remote access to an object dictionary always incorporates a pair of two interfaces:
+ * - [IRemoteObjectDictionaryAccess](@ref gpcc::cood::IRemoteObjectDictionaryAccess) (abbreviated "RODA")
+ * - [IRemoteObjectDictionaryAccessNotifiable](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable) (abbreviated "RODAN")
+ *
+ * The [RODA](@ref gpcc::cood::IRemoteObjectDictionaryAccess) interface is used by the client to issue requests to the
+ * server (or to a proxy) and the [RODAN](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable) interface is used
+ * by the server (or proxy) to send responses and status information to the client.
+ *
+ * The [RODA](@ref gpcc::cood::IRemoteObjectDictionaryAccess) interface may be offered to the client either directly by
+ * the server (e.g. [ThreadBasedRemoteAccessServer](@ref gpcc::cood::ThreadBasedRemoteAccessServer)) or by a proxy as
+ * shown in the figure below.
+ *
+ * \htmlonly <style>div.image img[src="cood/RODA_interface_everywhere.png"]{width:75%;}</style> \endhtmlonly
+ * \image html "cood/RODA_interface_everywhere.png" "Server, client, and proxy providing and requireing RODA"
+ *
+ * # Usage from client's point of view
+ * The client shall register it's [RODAN](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable) interface at the
+ * server's [RODA](@ref gpcc::cood::IRemoteObjectDictionaryAccess) interface. Alternatively the client can register
+ * it's [RODAN](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable) interface at a proxy which offers a connection
+ * to the server. There can be no more than one client registered at a
+ * [RODA](@ref gpcc::cood::IRemoteObjectDictionaryAccess) interface at any time.
+ *
+ * After registration, the client shall observe the [RODAN](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable)
+ * interface. Depending on the state of the [RODA](@ref gpcc::cood::IRemoteObjectDictionaryAccess) interface, the
+ * client may emit requests to the [RODA](@ref gpcc::cood::IRemoteObjectDictionaryAccess) interface. The
+ * [RODA](@ref gpcc::cood::IRemoteObjectDictionaryAccess) interface has two important states:
+ * - __ready__ to receive and process requests.\n
+ *   One also says, the RODA interface is connected to the server accessing the object dictionary.\n
+ *   It does not matter if the interface is directly provided by the server or by a proxy.
+ * - __not ready__ to receive and process requests.\n
+ *   One also says the RODA interface is disconnected from the server accessing the object dictionary.\n
+ *   The connection may be broken anywhere between the client and the object dictionary: At a serial link, at a
+ *   point where inter-process communication takes place, or at the remote access server itself.
+ *
+ * __In state "not-ready" any pending responses that are not yet delivered will be dropped!__\n
+ * __Outstanding requests may or may not be executed, but the associated repsonses will be dropped in any case.__\n
+ * __The responses will even not be delivered if the RODA interfaces switches back to the "ready" state immediately.__\n
+ * __The client can count on that behaviour. For details please refer to:__
+ * - [IRemoteObjectDictionaryAccessNotifiable::OnDisconnected()](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnDisconnected)
+ * - [IRemoteObjectDictionaryAccess::Unregister()](@ref gpcc::cood::IRemoteObjectDictionaryAccess::Unregister)
+ *
+ * Depending on the state of the [RODA](@ref gpcc::cood::IRemoteObjectDictionaryAccess) interface, the client may
+ * receive certain notifications and the client may invoke certain methods of the
+ * [RODA](@ref gpcc::cood::IRemoteObjectDictionaryAccess) interface. The following diagram depicts the calls that may
+ * occur in the two states of the [RODA](@ref gpcc::cood::IRemoteObjectDictionaryAccess) interface. Calls with no
+ * class-prefix refer to calls to the [RODAN](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable) interface.
+ *
+ * \htmlonly <style>div.image img[src="cood/RODA_Observed_Calls.png"]{width:75%;}</style> \endhtmlonly
+ * \image html "cood/RODA_Observed_Calls.png" "RODA states and potential calls"
+ *
+ * A typical interaction between the client implementing the
+ * [RODAN](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable) interface and a server implementing the
+ * [RODA](@ref gpcc::cood::IRemoteObjectDictionaryAccess) interface is depicted in the figure below:
+ *
+ * \htmlonly <style>div.image img[src="cood/RODA_Interaction_client_server.png"]{width:75%;}</style> \endhtmlonly
+ * \image html "cood/RODA_Interaction_client_server.png" "Typical interaction between client and server"
+ *
+ * # RODA/RODAN interface policies
+ * A pair of [RODA](@ref gpcc::cood::IRemoteObjectDictionaryAccess)/
+ * [RODAN](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable) interfaces imposes the following policies:
+ * - Requests are passed to the server via [IRemoteObjectDictionaryAccess::Send(...)](@ref gpcc::cood::IRemoteObjectDictionaryAccess::Send).
+ * - Requests are processed asynchronously.
+ * - The sum of the time required by a request to travel to the server, the duration of its execution, and the time
+ *   required by the response to travel back to the client is undefined.
+ * - Responses are received via [IRemoteObjectDictionaryAccessNotifiable::OnRequestProcessed(...)](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnRequestProcessed).
+ * - The client does not have to wait for reception of the response before sending the next request.
+ * - The client may use [RequestBase::Push(...)](@ref gpcc::cood::RequestBase::Push) and
+ *   [ResponseBase::PopReturnStack()](@ref gpcc::cood::ResponseBase::PopReturnStack) to attach and extract
+ *   [ReturnStackItem](@ref gpcc::cood::ReturnStackItem) objects to/from a request/response.\n
+ *   The client can use [ReturnStackItem](@ref gpcc::cood::ReturnStackItem) objects to
+ *   - ...associate a response with a request
+ *   - ...implement sessions
+ *   - ...decide where to route a response
+ * - The order requests are send by the client and the order in which the accesses to the object dictionary take place
+ *   are the same.\n
+ *   This guarantee is even valid if the connection breaks and is re-established.
+ * - The order responses containing a negative status are received by the client may differ from the order in which the
+ *   requests have been sent.\n
+ *   The reason for this is that components sitting between the client and the server (e.g. a _Filter_) may not forward
+ *   a request towards the server for some reason and instead send a negative response back to the client. The negative
+ *   response will then be received before responses corresponding to earlier sent requests are received.\n
+ *   However, the order responses with _positive_ status are received always matches the order in which the associated
+ *   requests have been sent.
+ * - A rejected request or one with a negative response indicating an error has no side-effects on other requests.
+ * - The order in which requests issued by different clients (e.g. using a @ref gpcc::cood::Multiplexer) are executed
+ *   is undefined.
+ * - For each request there shall be a response, at least one indicating an error.\n
+ *   Neither requests, nor responses shall be dropped silently. If a component (e.g. one tunneling RODA/RODAN via some
+ *   kind of network) cannot transport a request or response, then it shall switch the provided RODA interface into
+ *   not-ready state ([IRemoteObjectDictionaryAccessNotifiable::OnDisconnected()](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnDisconnected)).
+ *   Doing so indicates disconnection to the client(s) and __explicitly__ drops all outstanding requests and responses.\n
+ *   However, outstanding requests may be executed even though there will be no response delivered to the client, even
+ *   if the connection is re-established.
+ *
+ * Classes tunneling a RODA interface via a serial link, network, or IPC shall enforce these rules strictly. Clients
+ * rely on the rules.\n
+ * Depending on the type of connection, the tunnel shall be aware of all sort of connection-specific errors and
+ * phenomena. Examples:
+ * - missing response messages
+ * - response messages received more than once
+ * - unexpected order of response messages
+ * - reception of response messages addressed to a different client
+ *
+ * These errors are considered unexpected and shall be treated gracefully by classes implementing a RODA tunnel. One
+ * measure might be to switch the RODA interface provided by the tunnel from _ready_ to _not ready_ and then back to
+ * _ready_ to explicitly reset the connection to the clients.
+ *
+ * # Maximum request/response size
+ * Clients, servers and proxies impose limitations regarding the maximum size of request and response messages. For
+ * instance a proxy providing a RODA interface across a network or serial link may only handle messages up to a
+ * specific size.
+ *
+ * To minimize the probability of situations where a class cannot handle a request or response message due to
+ * its size, clients and servers are informed _in advance_ about the maximum permitted request and response sizes.
+ *
+ * __The terms "request size" and "response size" refer to the size of the serialized request/response message objects!__\n
+ * __These comprise:__
+ * - payload data
+ * - stack of [ReturnStackItem](@ref gpcc::cood::ReturnStackItem) objects
+ * - Additional information required by the request/response object
+ *
+ * ## Maximum request size
+ * ### Distribution of information
+ * Clients are informed about the maximum permitted request size via the
+ * [IRemoteObjectDictionaryAccessNotifiable::OnReady(...)](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnReady)
+ * notification. Starting at the server, the information propagates towards the client. Each class connected in between
+ * may reduce the value:
+ * - If the class adds a [ReturnStackItem](@ref gpcc::cood::ReturnStackItem) object to forwarded requests, then it will
+ *   subtract the size of one serialized [ReturnStackItem](@ref gpcc::cood::ReturnStackItem) object
+ *   ([ReturnStackItem::binarySize](@ref gpcc::cood::ReturnStackItem::binarySize) = 8 byte).
+ * - If the class imposes specific restrictions (e.g. maximum message size that could be transmitted across a network),
+ *   then it may reduce the value according to its own limits.
+ *
+ * The figure below provides an example. The server may process requests of up to 2048 bytes, any [ReturnStackItem]
+ * (@ref gpcc::cood::ReturnStackItem) objects inclusive. The client in the middle (gray box "Others") may send requests
+ * of up to 2040 bytes (incl. potential [ReturnStackItem](@ref gpcc::cood::ReturnStackItem) objects), and the clients
+ * on the left may send requests of up to 248 bytes (incl. potential [ReturnStackItem](@ref gpcc::cood::ReturnStackItem)
+ * objects). The reduction faced by the clients on the left is primarily caused by the proxy in the middle, which can
+ * only transfer messages of up to 256 bytes.
+ *
+ * \htmlonly <style>div.image img[src="cood/RODA_MaxRequestSize.png"]{width:85%;}</style> \endhtmlonly
+ * \image html "cood/RODA_MaxRequestSize.png" "Communication of the maximum permissible request size from server to client"
+ *
+ * ### Request size starvation
+ * The minimum useful request size (__inclusive__ any [ReturnStackItem](@ref gpcc::cood::ReturnStackItem) objects) that
+ * can be processed by [IRemoteObjectDictionaryAccess::Send(...)](@ref gpcc::cood::IRemoteObjectDictionaryAccess::Send)
+ * is defined by [RequestBase::minimumUsefulRequestSize](@ref gpcc::cood::RequestBase::minimumUsefulRequestSize).
+ * If the value is reduced by a class sitting between the client and the server, then the value may fall below the
+ * minimum useful size. In this case, the class shall set the value to zero and propagate zero to the client connected
+ * to the class' provided RODA interface.
+ *
+ * Clients shall be aware that the value reported by
+ * [IRemoteObjectDictionaryAccessNotifiable::OnReady(...)](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnReady)
+ * could be zero or in general could be less than the client's minimum requirements. Clients shall handle this condition
+ * gracefully.
+ *
+ * ### Behaviour in case of violation of the maximum request size
+ * If the size of a request passed to [IRemoteObjectDictionaryAccess::Send(...)](@ref gpcc::cood::IRemoteObjectDictionaryAccess::Send)
+ * exceeds the maximum size permitted by the RODA interface, then [IRemoteObjectDictionaryAccess::Send(...)]
+ * (@ref gpcc::cood::IRemoteObjectDictionaryAccess::Send) shall throw a [RequestTooLargeError]
+ * (@ref gpcc::cood::RequestTooLargeError) exception.
+ *
+ * This is considered as a software error, because the client is always informed about the maximum permitted request
+ * size in advance.
+ *
+ * However, the error could also be classified as runtime error, because requests may also be issued by a different
+ * device or a different process which should always be considered potentially buggy. Proxies forwarding remote
+ * access requests across process boundaries or across a network should be aware of this kind of error and handle it
+ * gracefully:
+ * - Log the error.
+ * - The request shall not be forwarded.
+ * - Flush the connection to the client using [IRemoteObjectDictionaryAccessNotifiable::OnDisconnected()]
+ *   (@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnDisconnected) and
+ *   [IRemoteObjectDictionaryAccessNotifiable::OnReady(...)](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnReady).
+ *
+ * Classes delegating a call to [IRemoteObjectDictionaryAccess::Send(...)](@ref gpcc::cood::IRemoteObjectDictionaryAccess::Send)
+ * from a provided RODA interface to a required RODA interface (like class [Multiplexer](@ref gpcc::cood::Multiplexer)
+ * does) shall simply propagate the [RequestTooLargeError](@ref gpcc::cood::RequestTooLargeError) exception back to the caller.
+ *
+ * ## Maximum response size
+ * ### Distribution of information
+ * The maximum size of a response message (__inclusive__ any [ReturnStackItem](@ref gpcc::cood::ReturnStackItem)
+ * objects) a server can transmit back to a client is client-specific: It depends on the maximum size the client
+ * itself can receive and it depends on the capabilities of the classes forming the path the request and response
+ * messages are routed.
+ *
+ * Each client knows the maximum response size it could receive from the server. Each client also knows its own
+ * capability. The client is informed about the maximum response size it could receive from the server via parameter
+ * `maxResponseSize` of [IRemoteObjectDictionaryAccessNotifiable::OnReady(...)]
+ * (@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnReady). The concept is exactly the same as for the
+ * maximum request size discussed above.
+ *
+ * The server is informed about the maximum response size (__inclusive__ any [ReturnStackItem]
+ * (@ref gpcc::cood::ReturnStackItem) objects) per request. The information is contained in an attribute of the request
+ * message object called `maxResponseSize`.
+ *
+ * The client initializes the `maxResponseSize` attribute of the request message with the minimum value of:
+ * - the maximum response size it can process itself
+ * - the maximum response size it could receive from the server (value from `OnReady(...)` notification)
+ *
+ * There is a lower limit for the maximum permitted response size, which guarantees, that at least a response
+ * message indicating an error condition can always be transmitted back to the client:
+ * [ResponseBase::minimumUsefulResponseSize](@ref gpcc::cood::ResponseBase::minimumUsefulResponseSize).
+ *
+ * Each class that forwards request messages to the server and that uses [ReturnStackItem](@ref gpcc::cood::ReturnStackItem)
+ * objects will add the size of one serialized [ReturnStackItem](@ref gpcc::cood::ReturnStackItem) object to the
+ * message's `maxResponseSize` attribute.
+ *
+ * The following two figures provide examples:
+ *
+ * \htmlonly <style>div.image img[src="cood/RODA_MaxResponseSize.png"]{width:85%;}</style> \endhtmlonly
+ * \image html "cood/RODA_MaxResponseSize.png" "Communication of the maximum permissible response size (with limitation by serial link)"
+ *
+ * \htmlonly <style>div.image img[src="cood/RODA_MaxResponseSize_Example2.png"]{width:85%;}</style> \endhtmlonly
+ * \image html "cood/RODA_MaxResponseSize_Example2.png" "Communication of the maximum permissible response size (without limitation by serial link)"
+ *
+ * ### Response size starvation
+ * The lower limit for the maximum response size (__inclusive__ any [ReturnStackItem](@ref gpcc::cood::ReturnStackItem)
+ * objects) that could be passed to [IRemoteObjectDictionaryAccessNotifiable::OnRequestProcessed(...)]
+ * (@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnRequestProcessed) is defined by
+ * [ResponseBase::minimumUsefulResponseSize](@ref gpcc::cood::ResponseBase::minimumUsefulResponseSize).
+ *
+ * If the value for the maximum response size propagated from the server to the client via parameter `maxResponseSize`
+ * of [IRemoteObjectDictionaryAccessNotifiable::OnReady(...)](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnReady)
+ * is reduced by a class sitting between the client and the server, then the value may fall below the minimum useful
+ * size. In this case, the class shall set the value to zero and propagate a maximum response size of zero to the client
+ * connected to the class' provided RODA interface. The mechanism is the same as for the maximum request size described
+ * in the chapters before.
+ *
+ * Clients shall be aware that the value reported by [IRemoteObjectDictionaryAccessNotifiable::OnReady(...)]
+ * (@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnReady) could be zero or in general could be less than
+ * the client's minimum requirements. Clients shall handle this condition gracefully.
+ *
+ * ### Behaviour in case of violation of the maximum response size
+ * #### Violation by request object
+ * If the `maxResponseSize` attribute of a request passed to [IRemoteObjectDictionaryAccess::Send(...)]
+ * (@ref gpcc::cood::IRemoteObjectDictionaryAccess::Send) exceeds the maximum response size permitted by the RODA
+ * interface, then [IRemoteObjectDictionaryAccess::Send(...)](@ref gpcc::cood::IRemoteObjectDictionaryAccess::Send)
+ * shall throw a [ResponseTooLargeError](@ref gpcc::cood::ResponseTooLargeError) exception.
+ *
+ * This is considered as a software error, because the client is always informed about the maximum permitted response
+ * size in advance.
+ *
+ * However, the error could also be classified as runtime error, because requests may also be issued by a different
+ * device or a different process which should always be considered potentially buggy. Proxies forwarding remote
+ * access requests across process boundaries or across a network should be aware of this kind of error and handle it
+ * gracefully:
+ * - Log the error.
+ * - The request shall not be forwarded.
+ * - Flush the connection to the client using [IRemoteObjectDictionaryAccessNotifiable::OnDisconnected()]
+ *   (@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnDisconnected) and
+ *   [IRemoteObjectDictionaryAccessNotifiable::OnReady(...)](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnReady).
+ *
+ * Classes delegating a call to [IRemoteObjectDictionaryAccess::Send(...)](@ref gpcc::cood::IRemoteObjectDictionaryAccess::Send)
+ * from a provided RODA interface to a required RODA interface (like class [Multiplexer](@ref gpcc::cood::Multiplexer)
+ * does) shall simply propagate the [ResponseTooLargeError](@ref gpcc::cood::ResponseTooLargeError) exception back to the caller.
+ *
+ * #### Violation by response object
+ * If the size of a response message passed to [IRemoteObjectDictionaryAccessNotifiable::OnRequestProcessed(...)]
+ * (@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnRequestProcessed) exceeds the maximum size for response
+ * messages that could be handled by that class' instance, then the error shall also be handled gracefully:
+ * - Log the error.
+ * - The response shall not be forwarded.
+ * - Flush the connection to the client using [IRemoteObjectDictionaryAccessNotifiable::OnDisconnected()]
+ *   (@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnDisconnected) and
+ *   [IRemoteObjectDictionaryAccessNotifiable::OnReady(...)](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnReady).
+ *
+ * Classes delegating a call to [IRemoteObjectDictionaryAccessNotifiable::OnRequestProcessed(...)]
+ * (@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnRequestProcessed) from a provided RODAN interface to a
+ * required RODAN interface (like class [Multiplexer](@ref gpcc::cood::Multiplexer) does) shall not check the message
+ * size.
+ *
+ * ### Behaviour in case a request object violates the minimum response size
+ * Classes providing a RODA interface shall check if the client can receive a response of at least
+ * [ResponseBase::minimumUsefulResponseSize](@ref gpcc::cood::ResponseBase::minimumUsefulResponseSize) bytes size. If
+ * not, then [IRemoteObjectDictionaryAccess::Send(...)](@ref gpcc::cood::IRemoteObjectDictionaryAccess::Send) shall
+ * reject the request object and throw a [MinimumResponseSizeNotMetError](@ref gpcc::cood::MinimumResponseSizeNotMetError)
+ * exception.
+ *
+ * The maximum response size the client can receive can be calculated by subtracting the size of the request's stack of
+ * [ReturnStackItem](@ref gpcc::cood::ReturnStackItem) objects from the request's `maxResponseSize`-attribute.
+ */

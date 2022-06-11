@@ -1,0 +1,71 @@
+/*
+    General Purpose Class Collection (GPCC)
+    Copyright (C) 2021 Daniel Jerolm
+
+    This file is part of the General Purpose Class Collection (GPCC).
+
+    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+                                      ---
+
+    A special exception to the GPL can be applied should you wish to distribute
+    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
+    to provide the source code for any proprietary components. See the file
+    license_exception.txt for full details of how and when the exception can be applied.
+*/
+
+/**
+ * @ingroup GPCC_COOD
+ * @defgroup GPCC_COOD_REMOTEACCESS Remote Access
+ *
+ * \brief Classes providing remote access to an object dictionary.
+ *
+ * # Purpose
+ * An object dictionary acts as a container for object dictionary objects. It provides the
+ * [IObjectAccess](@ref gpcc::cood::IObjectAccess) interface, which offer access to the objects contained in the object
+ * dictionary. All objects are derived from base class [cood::Object](@ref gpcc::cood::Object). Base class
+ * [cood::Object](@ref gpcc::cood::Object) provides an interface for objects and offers read- and write-access to the
+ * object's data and allows to query information from the objects.
+ *
+ * Within a single process or in a stand-alone embedded firmware, these classes and interfaces are sufficient to
+ * implement an object dictionary and to provide convenient access to the data represented by the objects.
+ *
+ * However, if multiple processes have to interact or multiple physically separate devices connected via some kind of
+ * network have to interact and access an object dictionary located in another process or another device, then
+ * _remote access_ is required to overcome boundaries.
+ *
+ * # Example Application
+ * The figure below provides an example for remote access to an object dictionary.
+ *
+ * On the right side, "Device A" (or "Process A") contains an [ObjectDictionary](@ref gpcc::cood::ObjectDictionary)
+ * and wants to offer remote access to the object dictionary to the other device/process.\n
+ * "Device A" contains a [remote access server](@ref gpcc::cood::RemoteAccessServer) providing a pair of
+ * [RODA/RODAN interfaces](@ref GPCC_COOD_REMOTEACCESS_ITF). This interface pair offers remote access to the object
+ * dictionary to exactly one client. A multiplexer is used to offer the [RODA/RODAN pair](@ref GPCC_COOD_REMOTEACCESS_ITF)
+ * to multiple clients. The upper client connected to the multiplexer is an adapter, which is connected to "Device B"
+ * (or "Process B") via a network, a serial link, or inter-process communication.
+ *
+ * "Device B" (or "Process B") contains a proxy who acts as the counterpart of the adapter in "Device A" ("Process A").
+ * The proxy offers a [RODA/RODAN pair](@ref GPCC_COOD_REMOTEACCESS_ITF) for remote access to the object dictionary
+ * located in the other device (or process). "Device B" (or "Process B") also uses a multiplexer instance to offer the
+ * [RODA/RODAN pair](@ref GPCC_COOD_REMOTEACCESS_ITF) to multiple clients.
+ *
+ * \htmlonly <style>div.image img[src="cood/RODA_large_setup_withMessages.png"]{width:85%;}</style> \endhtmlonly
+ * \image html "cood/RODA_large_setup_withMessages.png" "Remote object dictionary access"
+ *
+ * Clients can use a set of [classes implementing remote access request and response objects](@ref GPCC_COOD_REMOTEACCESS_REQRESP)
+ * to access the object dictionary. Request objects (yellow block) and response objects (green block) can be serialized
+ * and deserialized in order to transmit them across process boundaries or even across a serial link or network.
+ * Response objects are automatically routed back to the originator of the request object.
+ */

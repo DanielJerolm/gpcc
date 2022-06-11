@@ -1,0 +1,22 @@
+# -------------------------------------
+# gpcc/src
+# -------------------------------------
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/callback)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cli)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Compiler)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/container)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cood)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crc)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/dsp)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/execution)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/file_systems)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/hash)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/log)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/math)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/osal)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/raii)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/ResourceManagement)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/StdIf)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Stream)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/string)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/time)

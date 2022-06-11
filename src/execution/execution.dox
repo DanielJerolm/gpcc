@@ -1,0 +1,45 @@
+/*
+    General Purpose Class Collection (GPCC)
+    Copyright (C) 2019 Daniel Jerolm
+
+    This file is part of the General Purpose Class Collection (GPCC).
+
+    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+                                      ---
+
+    A special exception to the GPL can be applied should you wish to distribute
+    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
+    to provide the source code for any proprietary components. See the file
+    license_exception.txt for full details of how and when the exception can be applied.
+*/
+
+/**
+ * @ingroup GPCC
+ * @defgroup GPCC_EXECUTION Code Execution
+ *
+ * \brief Classes for executing code (e.g. work queues).
+ *
+ * Any code executed in an application is executed using a thread.\n
+ * There are various ways how code can be executed. For each approach, GPCC provides tools and support:
+ * - Some classes or functionalities may have their own dedicated thread for executing code.\n
+ *   In this case class [Thread](@ref gpcc::osal::Thread) can be instantiated to create and manage a dedicated
+ *   thread.
+ * - Often multiple classes or functionalities share one thread. GPCC provides work queues for comfortable
+ *   asynchronous execution of code from different classes, instances of an class, or functionalties by one
+ *   shared thread. Asynchronous execution can even be deferred in order to implement timeout handling.\n
+ *   Check out classes in module @ref GPCC_EXECUTION_ASYNC.
+ * - In control systems, some code must be executed cyclically. Cyclic execution must be gracefully started and
+ *   stopped and overruns must be detected. Check out module @ref GPCC_EXECUTION_CYCLIC.
+ */

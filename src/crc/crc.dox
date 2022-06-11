@@ -1,0 +1,188 @@
+/*
+    General Purpose Class Collection (GPCC)
+    Copyright (C) 2019, 2020 Daniel Jerolm
+
+    This file is part of the General Purpose Class Collection (GPCC).
+
+    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+                                      ---
+
+    A special exception to the GPL can be applied should you wish to distribute
+    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
+    to provide the source code for any proprietary components. See the file
+    license_exception.txt for full details of how and when the exception can be applied.
+*/
+
+/**
+ * @ingroup GPCC
+ * @defgroup GPCC_CRC CRC
+ *
+ * \brief Functions and tables for CRC calculation and check.
+ *
+ * # Scope
+ * This documentation and the implementation provided by GPCC focus on the practial use of CRCs. This documentation does
+ * explicitely not provide any mathematical background. If such background information is required, then please refer to
+ * the referenced websites below.
+ *
+ * # CRC - Field of application
+ * CRCs can be used to detect random errors in data stored in memory or transmitted through a network. CRCs are not
+ * suitable to check data integrity or to detect errors intentionally inserted into the data.
+ *
+ * # Essential minimum background
+ * ## Polynomials
+ * CRCs use different polynomials with different properties. One relevant property is the hamming distance. The hamming
+ * distance specifies the number of bit errors that can be safely recognized by the CRC within a data portion of
+ * specific size. Typically the number of bit errors that can be safely recognized decreases if the size of the data
+ * increases.
+ *
+ * Polynomials can be specified in four ways:
+ * - __Forward polynomial__ ("normal polynomial"): _MSB first_ and omisson of divisor polynomial's _MSB_
+ * - __Reverse polynomial__: _LSB first_ and omisson of divisor polynomial's _MSB_
+ * - Reciprocal and Reverse reciprocal: Omission of divisor polynomial _LSB_ (Koopman notation)
+ *
+ * GPCC uses forward and reverse polynomial representation. Koopman notation is not used.
+ *
+ * ## Shift direction ("form")
+ * CRC tables and CRC values can be calculated by shifting bits left (up) or shifting bits to the right (down).
+ *
+ * The two approaches are called the __normal form__ (shift left/up) and the __reflected form__ (shift right/down). If
+ * properly used, then both approaches provide equivalent results for the same CRC. GPCC offers normal and reflected
+ * versions of table generation functions and CRC calculation functions. However, the form of the table (or table
+ * generation function) and the form of the CRC calculation function must match.
+ *
+ * The normal form is always used in conjunction with forward polynomials.\n
+ * The reflected form is always used in conjunction with reverse polynomials.
+ *
+ * For CRC-8, the implementation of CRC calculation functions is the same for the normal and reflected form. However,
+ * the implementation of table generation functions for CRC-8 is different.
+ *
+ * The form can be switched for any CRC. See chapter "Switch between normal and reflected form" below.
+ *
+ * ## Start values
+ * Each CRC has a specific start value. The most common start values are all '0' or all '1', but there are some CRCs
+ * with different start values.
+ *
+ * Start values different from zero (especially all '1') enable detection of missing "1"s at the beginning of the data.
+ *
+ * ## Input bit reversal
+ * The reflected form _usually_ requires bit reversal of the data bytes that shall be included in the CRC and the
+ * normal form does _usually_ not require bit reversal of the data bytes.
+ *
+ * However, there are normal-form (reflected-form) CRCs that require (do not require) input bit reversal. These CRCs
+ * are rare, but they exist (e.g. CRC-32A and CRC-32B).
+ *
+ * ## Bit reversal of final CRC
+ * The reflected form _usually_ requires bit reversal of the final CRC and the normal form does _usually_ not require
+ * bit reversal of the final CRC.
+ *
+ * However, there are normal-form (reflected-form) CRCs that required (do not require) bit reversal of the final CRC.
+ * These CRCs are rare, but they exist (e.g. CRC-32A and CRC-32B).
+ *
+ * ## XOR of final CRC
+ * Some CRCs require that the final CRC is XOR'd with some value. Usually 0xFF...FF is used in order to negate the
+ * final CRC, but some CRCs also require other values (e.g. 0x55).
+ *
+ * Inversion of the final CRC is used to address scenarios, in which the data to be checked produces a CRC of zero by
+ * accident. In this case additional zeros at the end of the data block would not change the CRC.
+ *
+ * # Usage
+ * ## CRC LUT
+ * All methods for CRC calculation offered by GPCC require a LUT for CRC calculation.
+ *
+ * GPCC provides the following LUTs in ROM/code memory for some popular CRCs:
+ * - @ref gpcc::crc::crc32ab_table_normal
+ * - @ref gpcc::crc::crc32ab_table_reflected
+ * - @ref gpcc::crc::crc16_ccitt_table_normal
+ * - @ref gpcc::crc::crc8_ccitt_table_normal
+ *
+ * The documentation of each LUT comprises:
+ * - form
+ * - polynomial
+ * - data length for some hamming distance values (optional)
+ * - Some CRCs that can be calculated with the LUT. For each CRC:
+ *   + start value
+ *   + input bit reversal (yes/no)
+ *   + output bit reversal (yes/no)
+ *   + final CRC XOR value
+ *   + How to append to data block (High/low-byte first)
+ *   + Magic value in receiver (see chapter "CRC check in receiver" below).
+ *
+ * Alternatively, custom tables may be created for any polynomial using any of the following methods offered by GPCC:
+ * - @ref gpcc::crc::GenerateCRC8Table_normal
+ * - @ref gpcc::crc::GenerateCRC8Table_reflected
+ * - @ref gpcc::crc::GenerateCRC16Table_normal
+ * - @ref gpcc::crc::GenerateCRC16Table_reflected
+ * - @ref gpcc::crc::GenerateCRC32Table_normal
+ * - @ref gpcc::crc::GenerateCRC32Table_reflected
+ *
+ * ## CRC Calculation
+ * GPCC offers 20 methods for CRC calculation. The large number results from the different bit widths and CRC
+ * properties:
+ *
+ * There are 3 bit widths supported by GPCC:
+ * - 8 bit
+ * - 16 bit
+ * - 32 bit
+ *
+ * For 16 and 32 bit width there are two forms:
+ * - normal
+ * - reflected
+ *
+ * For each of them there are two variants:
+ * - with input bit reverse
+ * - without input bit reverse
+ *
+ * For each of them there are two further variants:
+ * - for a single data byte
+ * - for a chunk of data bytes
+ *
+ * ## Switch between normal and reflected form
+ * For any CRC, a reflected table can be used instead of a normal table (and the other way round), if application of
+ * input bit reversal and application of final CRC bit reversal are also negated. Note that the XOR-value for the final
+ * CRC needs to be bit-reversed, too.
+ *
+ * Switching the form may increase performance if input bit reversal can be eliminated.
+ *
+ * The unit test cases `gpcc_crc_SimpleCRC_Tests.CalcCRC16_normal_noInputReverse_block` and
+ * `gpcc_crc_SimpleCRC_Tests.CalcCRC16_reflected_withInputReverse_block` provide an example. Both use
+ * "CRC-16 CITT FALSE", but different forms.
+ *
+ * ## CRC check in receiver
+ * We assume that the transmitter appends the CRC to the data block. The receiver can use to following approaches to
+ * verify the CRC:
+ *
+ * __Calculate CRC and compare with appended CRC:__\n
+ * The receiver calculates the CRC the same way as the transmitter did and it compares the result with the CRC appended
+ * to the data. In case of a match the CRC is OK.\n
+ * In this approach, the CRC appended by the transmitter _is not_ included in the CRC calculated by the receiver.
+ *
+ * __Include appended CRC into calculated CRC:__\n
+ * The receiver calculates the CRC the same way as the transmitter did, but it includes the CRC appended by the
+ * transmitter into its own CRC as if it were just normal data. The receiver performs bit reversal of CRC and any XOR
+ * if required by the CRC in use.
+ *
+ * If the CRC is valid, then the final CRC calculated by the receiver is:
+ * - _Zero_, if the CRC requires no final XOR
+ * - _A magic value_, if the CRC requires final XOR with some value
+ *
+ * The documentation of LUTs provided by GPCC incorporate a _receiver magic value_.
+ *
+ * # Useful links
+ * Here we have some start points to gain further information about CRCs and some online calculators:
+ * - [http://www.sunshine2k.de/coding/javascript/crc/crc_js.html](http://www.sunshine2k.de/coding/javascript/crc/crc_js.html)
+ * - [https://crccalc.com](https://crccalc.com)
+ * - [https://github.com/Michaelangel007/crc32](https://github.com/Michaelangel007/crc32)
+ * - [https://en.wikipedia.org/wiki/Cyclic_redundancy_check](https://en.wikipedia.org/wiki/Cyclic_redundancy_check)
+ */

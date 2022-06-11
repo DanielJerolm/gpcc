@@ -1,0 +1,75 @@
+/*
+    General Purpose Class Collection (GPCC)
+    Copyright (C) 2021 Daniel Jerolm
+
+    This file is part of the General Purpose Class Collection (GPCC).
+
+    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+                                      ---
+
+    A special exception to the GPL can be applied should you wish to distribute
+    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
+    to provide the source code for any proprietary components. See the file
+    license_exception.txt for full details of how and when the exception can be applied.
+*/
+
+
+/**
+ * @ingroup GPCC_COOD_REMOTEACCESS
+ * @defgroup GPCC_COOD_REMOTEACCESS_REQRESP Requests and responses
+ *
+ * \brief Classes modeling remote access requests and responses.
+ *
+ * # Message Routing
+ * __Routing requests from the client to the server__ is straightforward: Any class connected in-between the client and
+ * the server (multiplexers, proxies, etc.) forward requests from their provided RODA/RODAN interface pair (server
+ * side) to their required RODA/RODAN interface pair (client side).\n
+ * The figure below shows a proxy providing access to a remote RODA/RODAN interface pair across a serial link or a
+ * network.
+ *
+ * \htmlonly <style>div.image img[src="cood/RODA_interface_everywhere.png"]{width:75%;}</style> \endhtmlonly
+ * \image html "cood/RODA_interface_everywhere.png" "Provided and required RODA/RODAN pairs"
+ *
+ * The same applies to multiplexers: They also just forward messages from their provided RODA/RODAN pairs (maybe
+ * more than one) to their required RODA/RODAN pair.
+ *
+ * \htmlonly <style>div.image img[src="cood/RODA_large_setup_withMessages.png"]{width:80%;}</style> \endhtmlonly
+ * \image html "cood/RODA_large_setup_withMessages.png" "Routing with multiplexers"
+ *
+ * __Routing responses from the server back to the client__ is more complicated: Multiplexers for instance have
+ * at least two provided RODA/RODAN pairs and have to route the response to the proper RODA/RODAN pair.
+ *
+ * To enable routing response messages back to the originator of the request, each request and response message
+ * comprises a stack of items containing return information. The stack is implemented in class
+ * [RequestBase](@ref gpcc::cood::RequestBase) and class [ResponseBase](@ref gpcc::cood::ResponseBase). The item
+ * containing the return information is implemented by class [ReturnStackItem](@ref gpcc::cood::ReturnStackItem).
+ *
+ * When a class forwards a request towards the server, then it may push a
+ * [ReturnStackItem](@ref gpcc::cood::ReturnStackItem) onto the stack of the request. When the server eventually
+ * processes the request and creates a response, then it will move the stack of
+ * [ReturnStackItem](@ref gpcc::cood::ReturnStackItem) objects from the request object into the response object. Each
+ * class that has pushed a [ReturnStackItem](@ref gpcc::cood::ReturnStackItem) object onto the request's stack can now
+ * pop the item from the response object's stack and use the encapsulated information for routing the response back to
+ * the client.
+ *
+ * \htmlonly <style>div.image img[src="cood/RODA_MessageReturnStack.png"]{width:80%;}</style> \endhtmlonly
+ * \image html "cood/RODA_MessageReturnStack.png" "Return stack for routing"
+ *
+ * The information contained in a [ReturnStackItem](@ref gpcc::cood::ReturnStackItem) object can be used to:
+ * - Route a response to the proper provided RODA/RODAN pair (typical use: multiplexer)
+ * - Assign requests and responses to sessions (typical use: proxies providing a connection across IPC, a network,
+ *   or a serial link; multiplexer)
+ * - Identify a response associated with a request (typical use: client)
+ */

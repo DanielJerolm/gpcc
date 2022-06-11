@@ -1,0 +1,163 @@
+/*
+    General Purpose Class Collection (GPCC)
+    Copyright (C) 2019, 2021 Daniel Jerolm
+
+    This file is part of the General Purpose Class Collection (GPCC).
+
+    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+                                      ---
+
+    A special exception to the GPL can be applied should you wish to distribute
+    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
+    to provide the source code for any proprietary components. See the file
+    license_exception.txt for full details of how and when the exception can be applied.
+*/
+
+/**
+ * @ingroup GPCC_EXECUTION
+ * @defgroup GPCC_EXECUTION_ASYNC Asynchronous Execution
+ *
+ * \brief Work packages, work queues, and deferred work queues.
+ *
+ * # Terminology
+ * _Work queues_ can be used to share _one_ thread of execution (e.g. @ref gpcc::osal::Thread) among
+ * multiple objects that want to execute functions and methods asynchronously by some thread.
+ *
+ * _Work package_ objects are used to reference to a function or method that shall be executed by a
+ * _work queue_. _Work packages_ can be enqueued into both _work queues_ and _deferred work queues_. Each
+ * _work package_ is tagged with a pointer to its creator (owner) and an ID assigned by its creator. Both
+ * attributes can be used to selectively remove _work packages_ from _work queues_. _Work packages_ are
+ * usually executed in FIFO order.
+ *
+ * _Deferred work packages_ are a special type of work package whose execution will not start before a
+ * configurable point in time has been reached on the system's monotonous clock (@ref gpcc::time::Clocks::monotonic).
+ * They can be used to implement timeouts or delays.
+ *
+ * _Deferred work queues_ extend _work queues_ by the capability to execute _deferred work packages_.
+ *
+ * # Classes
+ * GPCC provides two types of work packages and two types of work queues:
+ * - Class [WorkPackage](@ref gpcc::execution::async::WorkPackage) is a basic work package referencing
+ *   the function/method that shall be executed.
+ * - Class [DeferredWorkPackage](@ref gpcc::execution::async::DeferredWorkPackage) is a work package
+ *   whose execution will be deferred until a configurable point in time.
+ * - Class [WorkQueue](@ref gpcc::execution::async::WorkQueue) is a basic work queue that executes
+ *   enqueued [WorkPackage](@ref gpcc::execution::async::WorkPackage) instances only.
+ * - Class [DeferredWorkQueue](@ref gpcc::execution::async::DeferredWorkQueue) is a work queue that
+ *   can execute both enqueued [WorkPackage](@ref gpcc::execution::async::WorkPackage) instances and
+ *   enqueued [DeferredWorkPackage](@ref gpcc::execution::async::DeferredWorkPackage) instances.
+ *
+ * # Static and dynamic work packages
+ * There are two variants of instances of class [WorkPackage](@ref gpcc::execution::async::WorkPackage) and
+ * class [DeferredWorkPackage](@ref gpcc::execution::async::DeferredWorkPackage):
+ * - dynamic work packages
+ * - static work packages
+ *
+ * The difference is how the work packages are created and their life-cycle (see below).
+ *
+ * ## Creation and Life Cycle
+ * _Dynamic work packages_ are instantiated on the heap, passed to a work queue, and finally released by
+ * the work queue. Release occurs either after execution of the work package or due to an request to
+ * remove the work package from the queue before execution or if the work queue is destroyed and there are
+ * still any dynamic work packages enqueued. Ownership therefore moves from the creator of the work package
+ * to the work queue. Class [WorkPackage](@ref gpcc::execution::async::WorkPackage) and
+ * [DeferredWorkPackage](@ref gpcc::execution::async::DeferredWorkPackage) offer static `CreateDynamic(...)`
+ * methods to create dynamic work packages.
+ *
+ * _Static work packages_ are instantiated on the heap, on the stack, either stand-alone, or as part
+ * of some class. They are also passed to a work queue, but they are not released by the work queue.
+ * Ownership remains at the creator of the work package. The creator is therefore responsible to finally
+ * release the static work package. Static work packages can be reused and enqueued again into a work queue
+ * (see below). Static work packages are created using the constructors offered by class
+ * [WorkPackage](@ref gpcc::execution::async::WorkPackage) and
+ * [DeferredWorkPackage](@ref gpcc::execution::async::DeferredWorkPackage).\n
+ * Static work packages are removed from a work queue either upon execution of the work package, or due to an
+ * request to remove the work package from the queue before execution or if the work queue is destroyed and there
+ * are still any static work packages enqueued.
+ *
+ * ## Reuse of static work packages
+ * After execution of a static work package has finished, the static work package can be enqueued again
+ * into the same or a different work queue.
+ *
+ * If the static work package is currenty executed, then the static work package can be enqueued again too,
+ * but only into the same work queue which is currently executing the work package. This means, that a
+ * static work package can enqueue itself again, but only into the work queue which is executing the
+ * work package.
+ *
+ * A static work package thus cannot enqueue itself into a different work queue. However _after_ execution
+ * of the work package has finished, the static work package can be enqueued into any work queue.
+ *
+ * Any work package can be enqueued in no more than one work queue at any time, and it cannot be
+ * enqueued twice at the same time.
+ *
+ * \htmlonly <style>div.image img[src="execution/async/WorkPackage_LifeCycle.png"]{width:50%;}</style> \endhtmlonly
+ * \image html "execution/async/WorkPackage_LifeCycle.png" "Static WorkPackage life-cycle"
+ *
+ * ## Comparison
+ * ### Advantages and disadvantages of dynamic work packages
+ * Dynamic work packages are easy to use. They are allocated, used, and automatically released. In short
+ * they are "fire and forget".
+ *
+ * The major disadvantage of dynamic work packages results from their dynamic creation at runtime.\n
+ * There are two drawbacks:
+ * - Additional overhead, especially for frequently executed functions/methods.
+ * - Allocations may fail.\n
+ *    Providing a proper error reaction may be difficult, especially if tasks are splitted into multiple
+ *    work packages, each enqueing a new work package. An allocation failure may break the chain of work
+ *    packages.\n
+ *    Another example are callbacks. Callbacks usually do not care about if the client is ready to receive them
+ *    or if the client properly processed them or not. If a callback e.g. shall schedule execution of a work
+ *    package and allocation fails, then how to treat the callback if you do not want to drop it?
+ *
+ * ### Advantages and disadvantages of static work packages
+ * Static work packages are less comfortable than dynamic work packages because they are not "fire and forget".
+ * The creator of a static work package is responsible to finally release the work package.
+ *
+ * Static work packages offer the following advantages:
+ * - Very small overhead. No resource allocations at run-time.
+ * - No chance for failure at run-time due to low memory. Once allocated, static work packages can be added
+ *   to a work queue and executed again and again with no risc of `std::bad_alloc` or similar errors.
+ *
+ * Static work packages have the following disadvantage:\n
+ * - Larger memory footprint. If a functionality requires invocation of many different functions/methods in
+ *   work queue context, then a couple of preallocated static work packages (one for each function/method) must be
+ *   kept around.
+ * - Slightly higher complexity: The owner of the work package must ensure that the work package that shall be
+ *   released is not enqueued in a work queue.
+ *
+ * # FAQ
+ * __Why is there no method available to retrieve the state of a work package?__\n
+ * Work packages and work queues do not offer any methods to query if a work package is currently enqueued in
+ * a work queue or not. Work packages may be executed at any time and work packages may be executed asynchronous
+ * to a call to such a method. The result of the method thus would be immediately out of date. That's why
+ * such a method makes no sense. If you feel the need for such a method, then you should review your software
+ * design. Here are some hints:
+ * - Use state variables or flags to keep track which actions (work packages) need to be executed.\n
+ *   Using flags also allows to implement a start/stop-functionality in your software: You can remove all your
+ *   work packages at any time and add them later again using the flags.
+ * - Attempt to remove a work package from a work queue that is not enqueued in a work queue will not result
+ *   in an error. So if you want to shut down, just remove all your work packages and flush the work queue.
+ *
+ * __Why is it not allowed to enqueue the same work package twice?__\n
+ * This functionality is not offered by intention. The reasons are:
+ * 1. Work queues use intrusive lists to organize work packages. Work packages only have one set of prev/next
+ *    pointers and thus can only be enqueued in one intrusive list at any time.
+ * 2. A work package keeps track of its state (enqueued, running, not enqueued). If it could be added to
+ *    multiple work queues or multiple times into the same work queue, then it would have to track its state
+ *    on a per-work-queue basis. Not a good idea.
+ * 3. It is simple and keeps complexity low. Follow KISS: You should have one work package per task. Each task
+ *    is either scheduled for execution (once only) or it is not scheduled for execution. If a task shall be
+ *    executed multiple times, then the task can schedule the work package again (work packages can add themselves).
+ */

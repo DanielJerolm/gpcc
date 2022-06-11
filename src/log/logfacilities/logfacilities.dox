@@ -1,0 +1,51 @@
+/*
+    General Purpose Class Collection (GPCC)
+    Copyright (C) 2019 Daniel Jerolm
+
+    This file is part of the General Purpose Class Collection (GPCC).
+
+    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+                                      ---
+
+    A special exception to the GPL can be applied should you wish to distribute
+    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
+    to provide the source code for any proprietary components. See the file
+    license_exception.txt for full details of how and when the exception can be applied.
+*/
+
+/**
+ * \ingroup GPCC_LOG
+ * \defgroup GPCC_LOG_LOGFACILITIES Log facilities
+ *
+ * \brief Log facilities.
+ *
+ * Log facilities are the core of GPCC's log system. Instances of class [Logger](@ref gpcc::log::Logger)
+ * and instances of back-ends (instances of classes derived from class [Backend](@ref gpcc::log::Backend))
+ * can be registered at a log facility.
+ *
+ * A log facility receives log messages from the [Logger](@ref gpcc::log::Logger) instances registered at the log
+ * facility and enqueues the log messages in a FIFO. The enqueued log messages are then processed by the log facility
+ * using a dedicated thread or a work queue.\n
+ * Processing comprises two operations:
+ * - building the log message text from the log message's ingredients
+ * - passing the log message text to all back-ends registered at the log facility
+ *
+ * There are multiple log facility implementations available. Each log facility implements the
+ * [ILogFacility](@ref gpcc::log::ILogFacility) and [ILogFacilityCtrl](@ref gpcc::log::ILogFacilityCtrl)
+ * interfaces:
+ * - [ThreadedLogFacility](@ref gpcc::log::ThreadedLogFacility): Uses a dedicated thread for log message processing
+ *
+ * In the future, a work-queue based log facility will be added.
+ */

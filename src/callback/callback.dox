@@ -1,0 +1,137 @@
+/*
+    General Purpose Class Collection (GPCC)
+    Copyright (C) 2019 Daniel Jerolm
+
+    This file is part of the General Purpose Class Collection (GPCC).
+
+    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+                                      ---
+
+    A special exception to the GPL can be applied should you wish to distribute
+    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
+    to provide the source code for any proprietary components. See the file
+    license_exception.txt for full details of how and when the exception can be applied.
+*/
+
+/**
+ * @ingroup GPCC
+ * @defgroup GPCC_CALLBACK Callback
+ *
+ * \brief Tools for delivery of callbacks to clients.
+ *
+ * # Delivery of simple callback functions to multiple clients
+ * Group @ref GPCC_CALLBACK contains the classes [MultiCallback](@ref gpcc::callback::MultiCallback),
+ * [MultiCallbackSM](@ref gpcc::callback::MultiCallbackSM) and [ICallback](@ref gpcc::callback::ICallback)
+ * which offer a mechanism for delivery of callbacks from an object to one or more
+ * clients. Features:
+ * - The callback function's signature can be specified through template parameters. Any number
+ *   and (almost) any type of parameters can be passed to the client's callback implementation:
+ *   + Simple data types (e.g. uint8_t) are OK
+ *   + Pointers are OK
+ *   + Referenced are not allowed
+ *   + Objects could be passed by value, but this is not recommended
+ * - Clients can register themselves if they are interested in a callback.
+ * - Clients can unregister themselves if they are no longer interested in a callback.
+ * - Build-in thread safety for callback registration, unregistration and invocation.
+ *
+ * The difference between the two classes is that class [MultiCallback](@ref gpcc::callback::MultiCallback)
+ * contains its own mutex, while class [MultiCallbackSM](@ref gpcc::callback::MultiCallbackSM) needs an
+ * externally supplied mutex. Usage of an externally supplied mutex allows multiple instances of class
+ * [MultiCallbackSM](@ref gpcc::callback::MultiCallbackSM) to share the same mutex, which consumes
+ * less resources, if multiple instances of class [MultiCallbackSM](@ref gpcc::callback::MultiCallbackSM)
+ * are used.
+ *
+ * ## Example
+ * The following example shows an class `Server`, which offers two events. Class `Client` registers
+ * itself for the events. Note that both event's callbacks have different signature.
+ *
+ * ~~~{.cpp}
+ * class Server
+ * {
+ *   public:
+ *     ICallback<uint32_t, uint8_t>& AbcEvent(void) const { return &abcEvent; }
+ *     ICallback<>& XyzEvent(void) const { return &xyzEvent; }
+ *
+ *   private:
+ *     MultiCallback<uint32_t, uint8_t> mutable abcEvent;
+ *     MultiCallback<> mutable xyzEvent;
+ *
+ *     void DoSomething(void)
+ *     {
+ *       if (some event)
+ *         abcEvent.Notify(55,12);
+ *       if (some other event)
+ *         xyzEvent.Notify();
+ *     }
+ * };
+ *
+ * class Client
+ * {
+ *   public:
+ *     Client(Server const & _srv)
+ *     : srv(_srv)
+ *     {
+ *       srv.AbcEvent.Register(this, std::bind(Client::MyCallback1, this,
+ *                                             std::placeholders::_1, std::placeholders::_2));
+ *       srv.XyzEvent.Register(this, std::bind(Client::MyCallback2, this));
+ *     }
+ *     ~Client(void)
+ *     {
+ *       srv.AbcEvent().Unregister(this);
+ *       srv.XyzEvent().Unregister(this);
+ *     }
+ *
+ *   private:
+ *     Server const & srv;
+ *
+ *     void MyCallback1(uint32_t p1, uint8_t p2)
+ *     {
+ *       // this is invoked in the context of "srv" if "abcEvent" occurrs in "srv".
+ *     }
+ *     void MyCallback2(void)
+ *     {
+ *       // this is invoked in the context of "srv" if "xyzEvent" occurrs in "srv".
+ *     }
+ * };
+ * ~~~
+ *
+ * ## Thread safety
+ * All registered callbacks are always invoked with the MultiCallback's mutex being locked. A callback therefore
+ * must not invoke any method which locks the MultiCallback's mutex. Doing so would result in either a dead-lock
+ * or an fatal error (e.g. panic) depending on the underlying mutex implementation. Most obviously these methods
+ * are the MultiCallback's `Register()` and `Unregister()` methods.
+ *
+ * Not so obvious but also fatal are calls to the `Register()` and `Unregister()` methods of other MultiCallbacks
+ * offered by the same server, which share one mutex (class [MultiCallbackSM](@ref gpcc::callback::MultiCallbackSM)).
+ *
+ * Less obvious are calls to API methods of the object that originally provided the callback (the server). These
+ * calls might lead to invocation of `Notify()` of either the same MultiCallback (endless loop) or an MultiCallback
+ * sharing the same mutex (dead lock or fatal error).
+ *
+ * The same type of problem may also occur if the callback invokes an API method of the server which attempts to
+ * lock an internal mutex of the server, which is already locked by the server's code which originally executed
+ * `Notify()`.
+ *
+ * Objects which provide events using [MultiCallback](@ref gpcc::callback::MultiCallback) and
+ * [MultiCallbackSM](@ref gpcc::callback::MultiCallbackSM) should carefully document what the invoked callback is
+ * allowed to do and what must not be done.
+ *
+ * __Often the best solution is to forbid the callback to invoke any API method of the server.__
+ *
+ * If the callback must perform non-trivial operations, clients should use an own execution context to process
+ * the callback. This can be done by either using an own thread which is triggered by the callback or by enqueueing
+ * an [WorkPackage](@ref gpcc::execution::async::WorkPackage) into a
+ * [WorkQueue](@ref gpcc::execution::async::WorkQueue).
+ */

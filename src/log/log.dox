@@ -1,0 +1,274 @@
+/*
+    General Purpose Class Collection (GPCC)
+    Copyright (C) 2019, 2020 Daniel Jerolm
+
+    This file is part of the General Purpose Class Collection (GPCC).
+
+    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+                                      ---
+
+    A special exception to the GPL can be applied should you wish to distribute
+    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
+    to provide the source code for any proprietary components. See the file
+    license_exception.txt for full details of how and when the exception can be applied.
+*/
+
+/**
+ * \ingroup GPCC
+ * \defgroup GPCC_LOG Log system
+ *
+ * \brief Classes for logging, filtering, and processing of log messages.
+ *
+ * # Features
+ * - Simple structure: Clients -> Front-ends -> Log facility -> Back-end(s).
+ * - Clients who want to emit log messages...
+ *   + Instantiate a [front-end](@ref gpcc::log::Logger).
+ *   + Can register and unregister their front-end at the log facility at any time.
+ *   + Have self-assigned names and are referenced by these names.
+ *   + Have individual log levels assigned to suppress emission of uninteresting log messages.
+ * - Log messages are classified by [severity levels](@ref gpcc::log::LogType):
+ *   + debug
+ *   + info
+ *   + warning
+ *   + error
+ *   + fatal
+ * - Emission of log messages is easy for clients:
+ *   + Front-end offers methods to emit log messages.
+ *   + Down to 1 or 2 lines of code required at the client.
+ *   + The name of the client is automatically prepended to the log message.
+ *   + Optional information an be attached to a log message:
+ *     - timestamp
+ *     - std::exception_ptr
+ * - Processing of log messages is decoupled from clients:
+ *   + The log facility comprises a queue for decoupling of _emission_ and _processing_ of log messages.
+ *   + Log messages are _processed_ using the log facility's own execution context.
+ *   + Log messages _emitted_ by clients are composed of raw ingredients only. Composition of the log message
+ *     (string manipulation, conversion, concatenation etc.) is done by the log facility.\n
+ *     This approach minimizes the impact of logging on clients.
+ * - Final delivery of log messages via back-ends:
+ *   + Back-ends can print log messages, store them, record them, or send them via the internet.
+ *   + GPCC provides some types of [back-ends](@ref GPCC_LOG_BACKENDS).
+ *   + Users of GPCC can implement own custom back-ends.
+ *   + Multiple back-ends can be registered at a log facility.
+ * - Log message limitation.\n
+ *   The number of queued log messages can be limited. If the maximum number of queued log messages is exceeded,
+ *   then further log messages will be dropped and a log message will be send to all back-ends indicating that
+ *   one or more log messages have been dropped.
+ * - No silently dropped log messages.\n
+ *   If a log message is dropped due to an error or due to a full log message queue, then the log facility will send a
+ *   special error log message to all back-ends. The special error log message will be repeated if any error occurrs
+ *   during its delivery.
+ * - Configuration
+ *   + CLI command available for interactive configuration of log levels at runtime.
+ *   + CLI commands available for storing and restoring log levels from a file at runtime.
+ *   + Files containing log levels can be either binary or human-readable (and thus editable).
+ *   + A default configuration can be setup at a log facility at runtime before the first client is registered.
+ *
+ * # Overview
+ * A log system is comprised of three elements:
+ * - front-ends
+ * - log facility
+ * - back-ends
+ *
+ * __Front-ends__ are used by clients of the log system to emit log messages. Each client who wants to emit log
+ * messages should have its own front-end instance.\n
+ * The front-end functionality is provided by class [Logger](@ref gpcc::log::Logger).\n
+ * The front-end encapsulates the name of the client and a log-level. The log-level is used to suppress uninteresting
+ * log messages (e.g. debug log messages) emitted by the client.\n
+ * If a system is comprised of multiple sub-systems, then each sub-system should create its own front-end instance for
+ * emission of log messages. If each sub-system has its own front-end instance, then the source of a log message can
+ * be easily referenced by the sub-system's name and a specific log level can be setup for each sub-system.
+ *
+ * A __log facility__ is the core of the log system. Front-ends and back-ends are registered at the log facility. The
+ * log facility is responsible for processing of log messages issued through the registered front-ends. Processing
+ * incorporates:
+ * - queueing the log messages in a FIFO
+ * - building the log message text
+ * - delivery of the log message text to each back-end.
+ *
+ * Details about log facilities are located [here](@ref GPCC_LOG_LOGFACILITIES).
+ *
+ * __Back-ends__ are used for final delivery of log messages. Back-ends are registered at log-facilities. All log
+ * messages processed by a log facility are presented to all back-ends registered at the log facility for final
+ * delivery. "Final delivery" could incorporate printing the message to a CLI or store them in a file system or pass
+ * them to a log system on a higher application layer.
+ *
+ * Details about back-ends are located [here](@ref GPCC_LOG_BACKENDS).
+ *
+ * The following figure provides an example of a log system:
+ *
+ * \htmlonly <style>div.image img[src="log/log_system_example.png"]{width:40%;}</style> \endhtmlonly
+ * \image html "log/log_system_example.png" "Log system example"
+ *
+ * # Log message limitation
+ * Log message delivery is decoupled from log message emission. This means, that log messages are queued in the log
+ * facility before they are processed.
+ *
+ * The number of enqueued log messages is limited. If the limit is exceeded, then new log messages will be dropped.
+ * If any message is dropped, then a special error message will be generated and send to all back-ends. This ensures,
+ * that users will be informed if any log message is dropped. __Log messages are never dropped silently.__
+ *
+ * Messages of type "ERROR" and "FATAL" are __not__ affected by the limitation. The number of enqueued "ERROR" and
+ * "FATAL" messages is only limited by the resources of the system.
+ *
+ * # Configuration
+ * ## Configuration at runtime via CLI
+ * At runtime, the log levels of all clients registered at a log facility can be displayed and modified interactively
+ * using the CLI command [CLI_Cmd_LogCtrl()](@ref gpcc::log::CLI_Cmd_LogCtrl).
+ *
+ * The currently configued log levels can also be written into a binary file and loaded from a binary file using the
+ * following CLI commands:
+ * - [CLI_Cmd_WriteConfigToFile()](@ref gpcc::log::CLI_Cmd_WriteConfigToFile)
+ * - [CLI_Cmd_ReadConfigFromFile()](@ref gpcc::log::CLI_Cmd_ReadConfigFromFile)
+ *
+ * Alternatively the currently configued log levels can also be written into a human-readable text file and loaded from
+ * a text file using the following CLI commands:
+ * - [CLI_Cmd_WriteConfigToTextFile()](@ref gpcc::log::CLI_Cmd_WriteConfigToTextFile)
+ * - [CLI_Cmd_ReadConfigFromTextFile()](@ref gpcc::log::CLI_Cmd_ReadConfigFromTextFile)
+ *
+ * Note that text files are human-readable and can be easily modified using a text editor.
+ *
+ * ## Configuration at startup
+ * During instantiation, each front-end comes up with log level "info or above". This is the initial value, but usually
+ * one wants to apply a custom log level right from the beginning when the front-end is registered at the log facility.
+ *
+ * To accomplish this, the log facilities offered by GPCC allow to setup _default settings_ that are used to provide
+ * custom default log levels to subsequent registered front-ends. Usually the default settings are setup before the
+ * first front-end is registered. This guarantees, that the default settings are available right from the beginning
+ * and will be applied to all front-ends. Technically the default settings are a list of client's names and the desired
+ * default log level for each client.
+ *
+ * Default settings can be setup at any time using
+ * [ILogFacilityCtrl::SetDefaultSettings(...)](@ref gpcc::log::ILogFacilityCtrl::SetDefaultSettings).
+ * If a front-end is registered at the log facility whose name matches an entry in the default settings, then the
+ * front-end's log level will be set according to the default settings and the entry will be _consumed_ (= it is
+ * removed from the default settings).\n
+ * The default settings can be removed again using
+ * [ILogFacilityCtrl::RemoveDefaultSettings()](@ref gpcc::log::ILogFacilityCtrl::RemoveDefaultSettings).
+ * [ILogFacilityCtrl::RemoveDefaultSettings()](@ref gpcc::log::ILogFacilityCtrl::RemoveDefaultSettings) returns the
+ * list of default settings that have not been consumed yet.
+ *
+ * For details, please refer to
+ * [ILogFacilityCtrl::SetDefaultSettings(...)](@ref gpcc::log::ILogFacilityCtrl::SetDefaultSettings) and
+ * [ILogFacilityCtrl::RemoveDefaultSettings()](@ref gpcc::log::ILogFacilityCtrl::RemoveDefaultSettings).
+ *
+ * # Usage
+ * ## Log facility instantiation
+ * In order to use the log system offered by GPCC, the application must instantiate a log facility. There may be
+ * multiple log facility implementations available. Please refer to [this](@ref GPCC_LOG_LOGFACILITIES) and check out
+ * the different types of log facilities. Choose the one that fits your application best.
+ *
+ * In this example, a [ThreadedLogFacility](@ref gpcc::log::ThreadedLogFacility) is instantiated:
+ * ~~~{.cpp}
+ * using namespace gpcc::log;
+ *
+ * // The log system thread's name shall be "LogThread".
+ * // The capacity of the FIFO for log messages shall 250.
+ * auto spLogFacility = std::make_unique<ThreadedLogFacility>("LogThread", 250U);
+ *
+ * // setup default settings from file (optional)
+ * auto defaults = ReadLogSrcConfigFromTextFile(myFileStorage, "log_levels.conf");
+ * spLogFacility->SetDefaultSettings(std::move(defaults));
+ *
+ * spLogFacility->Start(...);
+ * ~~~
+ *
+ * ## Back end instantiation
+ * One or more back-ends for final delivery of log messages are required. Please refer to
+ * [this](@ref GPCC_LOG_BACKENDS) and check out the different types of back-ends.
+ *
+ * In this example, [Backend_CLI](@ref gpcc::log::Backend_CLI) will be instantiated in order to print all log
+ * messages to a @ref gpcc::cli::CLI instance:
+ * ~~~{.cpp}
+ * using namespace gpcc::log;
+ *
+ * // (myCLI is our command line interface)
+ * auto spBackEnd = std::make_unique<Backend_CLI>(myCLI);
+ *
+ * // register the back end
+ * pLogFacility->Register(*spBackEnd);
+ *
+ * // do not forget to unregister the back-end BEFORE the back-end is destroyed
+ * ~~~
+ *
+ * ## Front-end instantiation
+ * Each sub-system that wants to emit log messages needs to instantiate a @ref gpcc::log::Logger instance. The
+ * [Logger](@ref gpcc::log::Logger) is the front-end for the log system:
+ * ~~~{.cpp}
+ * class SubSystemXY
+ * {
+ *   public:
+ *     SubSystemXY(gpcc::log::ILogFacility & logFacility);
+ *     ~SubSystemXY(void);
+ *
+ *   private:
+ *     gpcc::log::Logger logger;  // sub-system's own log system frontend
+ * }
+ *
+ * SubSystemXY::SubSystemXY(gpcc::log::ILogFacility & logFacility)
+ * : logger("SubSystemXY")
+ * {
+ *   logFacility.Register(logger);
+ * }
+ *
+ * SubSystemXY::~SubSystemXY(void)
+ * {
+ *   // do not forget unregistration before object destruction!
+ *   logger.GetLogFacility()->Unregister(logger);
+ * }
+ * ~~~
+ *
+ * ## Logging
+ * Any sub-system can emit log messages through its front-end (instance of class [Logger](@ref gpcc::log::Logger)).
+ *
+ * To prevent creation of log messages which would be dropped by the front-end due to an insufficient log level, it
+ * is recommended to check the log level _before_ creating a complex log message:
+ *
+ * ~~~{.cpp}
+ * SubSystemXY::SomeFunc(void)
+ * {
+ *   // ... some code ...
+ *
+ *   if ((someEventHappened) && (myLogger.IsAboveLevel(LogType::Info)))
+ *   {
+ *     // OK, it is worth to build the string
+ *     try
+ *     {
+ *       std::string const msg = "Info: Event happened. Code: " + std::to_string(code);
+ *       myLogger.Log(LogType::Info, msg);
+ *     }
+ *     catch (std::exception const &)
+ *     {
+ *       // something went wrong during creation of the string "msg"
+ *       myLogger.LogFailed();
+ *     }
+ *   }
+ * }
+ * ~~~
+ *
+ * If creation of the log message is inexpensive or if there is almost zero overhead as it is for log messages
+ * comprised of ROM/const strings, then the call to `IsAboveLevel(...)` can be omitted:
+ * ~~~{.cpp}
+ * SubSystemXY::SomeOtherFunc(void)
+ * {
+ *   // ... some code ...
+ *
+ *   if (someEventHappened)
+ *   {
+ *     logger.Log(LogTypes::Info, "Event happened!");
+ *   }
+ * }
+ * ~~~
+ */

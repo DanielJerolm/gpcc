@@ -1,0 +1,11 @@
+==========================================
+Failed unit tests that need to be examined
+==========================================
+If you have any failed unit tests, then add the googletest console output via copy-paste into this file.
+
+Currently empty
+
+==========================================
+Fixed but not confirmed yet
+==========================================
+Currently empty

@@ -1,0 +1,1427 @@
+==================================================
+GPCC Implementation History and Current Activities
+==================================================
+
+Next to do:
+===============================================================================
+
+- COOD remote access
+  ==================
+  - RequestBase already checks version of binary. Derived classes do not need to check again.
+
+                                              impl  test     dox     review impl   remarks/todos
+  exceptions.hpp                              [OK]  [n.A. ]  [+1  ]  [+1]
+  IRemoteObjectDictionaryAccess               [OK]  [n.A. ]  [+1  ]  [+1]
+  IRemoteObjectDictionaryAccessNotifiable     [OK]  [n.A. ]  [+1  ]  [+1]
+  ObjectEnumRequest                           [OK]  [OK   ]  [OK  ]  [+1]
+  ObjectEnumResponse                          [OK]  [OK   ]  [OK  ]  [+1]
+  ObjectInfoRequest                           [OK]  [OK   ]  [OK  ]  [+1]
+  ObjectInfoResponse                          [OK]  [OK   ]  [OK  ]  [+1]
+  PingRequest                                 [OK]  [OK   ]  [OK  ]  [OK]
+  PingResponse                                [OK]  [OK   ]  [OK  ]  [OK]
+  ReadRequest                                 [OK]  [OK   ]  [OK  ]  [+1]
+  ReadRequestResponse                         [OK]  [OK   ]  [OK  ]  [+1]
+  infrastructure.dox                                         [+1  ]
+  requests_and_responses.dox                                 [+1  ]
+  roda_itf.dox                                               [+1  ]
+  remote_access.dox                                          [+1  ]
+  RequestBase                                 [OK]  [OK   ]  [+1  ]  [+1]           Test UndoPush()
+  ResponseBase                                [OK]  [OK   ]  [+1  ]  [+1]
+  ReturnStackItem                             [OK]  [OK   ]  [OK  ]  [+1]
+  IMultiRODACLIClient                         [OK]  [n.A. ]  [OK  ]  [OK]
+  Multiplexer                                 [OK]  [OK   ]  [OK  ]  [OK]
+  MultiplexerPort                             [OK]  [OK   ]  [OK  ]  [OK]
+  MultiRODACLIClient                          [OK]  [OK   ]  [OK  ]  [OK]
+  MultiRODACLIClientBase                      [OK]  [OK   ]  [OK  ]  [OK]
+  RemoteAccessServer                          [OK]  [OK   ]  [OK  ]  [+1]
+  RODACLIClientBase                           [OK]  [OK   ]  [OK  ]  [OK]           SessionCnt wrap around is not safe
+  SingleRODACLIClient                         [OK]  [OK   ]  [OK  ]  [OK]
+  SingleRODACLIClientBase                     [OK]  [OK   ]  [OK  ]  [OK]
+  ThreadBasedRemoteAccessServer               [OK]  [OK   ]  [OK  ]  [+1]
+  WorkQueueBasedRemoteAccessServer            [OK]  [OK   ]  [OK  ]  [OK]
+  WriteRequest                                [OK]  [OK   ]  [+1  ]  [+1]
+  WriteRequestResponse                        [OK]  [OK   ]  [OK  ]  [+1]
+
+  IRemoteObjectDictionaryAccessNotifiableMock [OK]  [n.A. ]  [OK  ]  [+1]
+  remote_access.dox                                          [OK  ]
+  RODAN_Listener                              [OK]  [     ]  [OK  ]  [+1]
+  TestbenchBase                               [OK]  [n.A. ]  [OK  ]  [+1]
+  TestbenchThreadBasedRAS                     [OK]  [n.A. ]  [OK  ]  [+1]
+  TestbenchWorkQueueBasedRAS                  [OK]  [n.A. ]  [OK  ]  [OK]
+  TestMultiplexer                             [OK]  [n.A. ]  [n.A.]  [OK]
+  TestMultiplexerRODAItf                      [OK]  [n.A. ]  [n.A.]  [OK]
+  TestIRODA_LoanExecutionContext              [OK]  [n.A. ]  [n.A.]  [+1]
+  TestIRODA_ObjectEnum                        [OK]  [n.A. ]  [n.A.]  [+1]
+  TestIRODA_ObjectInfo                        [OK]  [n.A. ]  [n.A.]  [+1]
+  TestIRODA_Ping                              [OK]  [n.A. ]  [n.A.]  [OK]
+  TestIRODA_Read                              [OK]  [n.A. ]  [n.A.]  [+1]          1 TODO (test invalid permission)
+  TestIRODA_RegisterUnregisterStartStop       [OK]  [n.A. ]  [n.A.]  [+1]
+  TestIRODA_Send                              [OK]  [n.A. ]  [n.A.]  [+1]
+  TestIRODA_Write                             [OK]  [n.A. ]  [n.A.]  [+1]          1 TODO (test invalid permission)
+  TestIRODA                                   [OK]  [n.A. ]  [OK  ]  [+1]
+  TestObjectEnumRequest                       [OK]  [n.A. ]  [n.A.]  [+1]
+  TestObjectEnumResponse                      [OK]  [n.A. ]  [n.A.]  [+1]
+  TestObjectInfoRequest                       [OK]  [n.A. ]  [n.A.]  [+1]
+  TestObjectInfoResponse                      [OK]  [n.A. ]  [n.A.]  [+1]
+  TestPingRequest                             [OK]  [n.A. ]  [n.A.]  [OK]
+  TestPingResponse                            [OK]  [n.A. ]  [n.A.]  [OK]
+  TestReadRequest                             [OK]  [n.A. ]  [n.A.]  [+1]
+  TestReadRequestResponse                     [OK]  [n.A. ]  [n.A.]  [+1]
+  TestRequestBase                             [OK]  [n.A. ]  [n.A.]  [+1]
+  TestResponseBase                            [OK]  [n.A. ]  [n.A.]  [+1]
+  TestReturnStackItem                         [OK]  [n.A. ]  [n.A.]  [+1]
+  TestThreadBasedRemoteAccessServer           [OK]  [n.A. ]  [n.A.]  [+1]
+  TestWorkQueueBasedRemoteAccessServer        [OK]  [n.A. ]  [n.A.]  [OK]
+  TestMultiRODACLIClient                      [OK]  [n.A. ]  [n.A.]  [OK]
+  TestSingleRODACLIClient                     [OK]  [n.A. ]  [n.A.]  [OK]
+  TestWriteRequest                            [OK]  [n.A. ]  [n.A.]  [+1]
+  TestWriteRequestResponse                    [OK]  [n.A. ]  [n.A.]  [+1]
+
+  [OK] Request size handling
+  [OK] Response size handling
+  [OK] Write request
+  [OK] ReadRequest impl/test/doxygen
+  [OK] ObjectEnumRequest impl/test/doxygen
+  [OK] ObjectInfoRequest impl/test/doxygen
+  [OK] Complete Access WriteRequest impl/test/doxygen
+  [OK] Complete Access ReadRequest impl/test/doxygen
+  [OK] RemoteAccessServer interface
+  [OK] RemoteAccessServer impl
+  [OK] RemoteAccessServer test
+  [OK] RemoteAccessServer doxygen
+  [OK] Enhance ObjectInfoRequest and Response to query ASM
+  [OK] CLIClient for RODA interface
+  [OK] Multiplexer
+
+  [IP] Interface for access rights and synchronization
+  [  ] Command object class
+  [  ] Request for command execution
+  [  ] IPC-Adapter
+
+- cleanup osal/universal
+
+- Review text messages passed to exception's ctors
+  (grep -n -r "throw .*\(.*\);")
+
+- Evaluate Feature Request:
+  - SharedLogger with prefix ("Instanzidentifier") that allows multiple users of a SharedLogger to log to one Logger.
+
+- fix constant definition and turn to constexpr where applicable
+
+- Add unit test cases for cood::ObjectVAR testing writing data read from a file to a VARIABLE object of type
+  VISIBLE_STRING. Intention:
+  Test Object::CANopenEncodedDataToNativeData() with an IStreamReader that does not support
+  IStreamReader::RemainingBytes().
+
+- Add unit tests for:
+  Object::ObjectCodeToString(ObjectCode const objCode);
+  Object::ToUint8(ObjectCode const objCode)
+  Object::ToObjectCode(uint8_t const value);
+  Object::AttributeToString(attr_t const attributes, bool const etherCATStyle);
+
+- Fix: IntrusiveDList<T>::ClearAndDestroyItems() should be provided as global function template, not as class member.
+
+- Fix: IntrusiveDList does not allow an item to detect if it is in a IntrusiveDList, if it is the one-and-only item in the
+  list.
+
+- Bugfix: IQueryAccessRights says that CLIAdapterBase uses it, but is does not.
+
+- TFC
+  - Check mutex unlock order
+  - Consider checking mutex locking order
+
+- rename Thread::priority_t to Thread::tPriority
+
+- enhance gpcc::string::InsertIndention:
+  - function does not provide what one might expect from its name
+
+- applicance of updated coding style to "file_systems" in process
+  - CLI (impl + unit tests)
+  - add CLI commands for IFileAndDirectoryStorage
+  - EEPROMSectionSystem (impl + unit tests)
+
+- check usage of std::system_error:
+  - use std::generic_category with POSIX values of errno
+  - do not use std::generic_category with non-POSIX values of errno
+  - on POSIX based platforms, std::system_error can be used with any errno value
+
+- Enhance unit tests:
+  TestConditionVariable.cpp: Measure timeout
+
+- Continue appliance of new coding style
+  - check for "__Thread-safety requirements/hints:__\n" without "__"
+
+- Review GPCC/ResourceManagement/Objects/LargeDynamicNamedRWLock
+- Review doc: GPCC/ResourceManagement/Objects/*
+
+- Remove gcc specific stuff:
+  - StreamReaderBase::Read_float
+  - StreamReaderBase::Read_double
+  - StreamWriterBase::Write_float
+  - StreamWriterBase::Write_double
+  - (chibios_arm) Thread::Start
+  - (chibios_arm) Thread::UniversalPrioToChibiOSPrio
+
+ - Fixme: 'Write_Bits' is ambiguous
+   Candidates are:
+   void Write_Bits(const unsigned char *, unsigned long int)
+   void Write_Bits(unsigned char, unsigned char)
+
+History:
+===============================================================================
+2022-06-09
+- Enhanced OSAL for ChibiOS/RT: Access to ChibiOS internals replaced by call to API function
+- Bugfix: Selection of 32/64bit specific code in RODACLIClientBase.cpp
+
+2022-05-11
+- Fixed unit tests with cli.Start() in Setup() of test fixture
+- Fixed exception safety in unit tests with TearDown()
+
+2022-05-06
+- Checked if unit-tests are properly excluded if they rely on TFC and TFC is not present or if they rely on CPU load.
+- Checked sleep times in unit tests with dependency on machine load.
+
+2022-04-28
+- Added table of content to coding style
+
+2022-04-27
+- Reviewed and enhanced doxygen_templates.txt
+- Updated readme_gpcc_configuration.txt
+- Updated list of cancellation points (gpcc/src/osal/cancellation_points.txt)
+- Updated coding style
+
+2022-04-06
+- Bugfix: Checked for missing appliance of "std::move()" in move CTORs and move assignment operators
+- Bugfix: ObjectEnumResponse::AddFragment() offered move-semantics, but did not make use of it. Changed from && to &.
+- Updated to latest version of googletest (commit af29db7ec28d6df1c7f0f745186884091e602e07)
+
+- Bugfix: Enhanced documentation of background of exception safety specification
+          "<Not thread safe, but non-modifying concurrent access is safe.>".
+
+2022-04-04
+- Added "noexcept" where applicable
+- Switched build scripts to C++17
+
+2022-03-22
+- Reviewed use of "inline" in OSAL
+
+2022-03-21
+- Reviewed all invocations of Panic() and replaced them by PANIC() or PANIC_E() if no special panic message is required.
+- Logger: Added noexcept where methods are no-throw.
+
+2022-03-15
+- Added some overloads to gpcc::osal::Panic() and two macros (PANIC() and PANIC_E()) to allow for a panic message
+  comprised of file name and line number.
+
+2022-03-10
+- Updated doxygen script files to version 1.9.1
+- Fixed usage of doxygen's "@ref":
+  All referenced including a '.' that is not the last char were interpreted as file names.
+  (https://www.doxygen.nl/manual/autolink.html)
+- Fixed doxygen warnings that occurred with "extract all" scripts.
+
+- Removed some std::move in return statements that prevented copy-elision
+
+- Bugfix:
+  WorkQueue::TerminateAfterCurrentWorkPackage() had no effect if there was no thread in Work().
+  This always required a flush after starting a thread, but FlushNonDeferredWorkPackages() may throw, which
+  would make it impossible to stop the thread. Same applies to DeferredWorkQueue.
+  (reported by A. Kraatz)
+  Solution:
+  TerminateAfterCurrentWorkPackage() has been replaced by "RequestTermination() noexcept" and the abort request
+  is sticky.
+
+- Bugfix: Ensured that there is no undefined behaviour when starting/stopping WQ threads in unit tests
+
+2022-02-25
+- Added variants of constructors and create functions with move semantics to class WorkPackage and
+  class DeferredWorkPackage.
+
+2022-02-24
+- Added Backend_Recorder::WriteToFile(...)
+
+2022-02-22
+- Bugfix: IStreamReader::Read_line() fails at end of stream if there is terminating character.
+          Further Read_line() cannot handle '\r' (Mac) and '\r\n' (Windows).
+  Fixed: Read_line() accepts NUL, \n, \r, and \r\n as terminating character now.
+
+2022-02-12
+- Bugfix: IRemoteObjectDictionaryAccess::Unregister() documentation
+  - Added note that Unregister() may block on I/O operations.
+  - Added note to Register() that synchronous I/O might be performed using the calling context.
+
+- Bugfix: Copy constructor of UserEnteredInvalidArgsError may throw.
+  Fixed: UserEnteredInvalidArgsError uses SharedString instead of std::string now.
+
+- Bugfix: Thread::minStackSize cannot use PTHREAD_STACK_MIN directly because it contains a system call on some platforms.
+  Replaced Thread::minStackSize, stackAlign and defaultStackSize with getters Get*().
+
+2022-01-25
+- Added unit tests for gpcc::string::ASPrintf(...) and VASPrintf(...)
+- Add Logger::LogV(...) and LogVTS(...)
+
+2022-01-19
+- Added gpcc::string::VASPrintf(...)
+
+2021-11-26
+- Logger revision complete
+  - Using gpcc::string::SharedString for logger names to reduce memory footprint during runtime
+  - Added missing log message types
+  - Enhanced unit tests
+
+2021-10-20
+- Added class gpcc::string::SharedString
+
+2021-10-26
+- Fixed &&-references that were intended to be moved but actually were not
+- Log system is capable of moving message strings into the logger
+
+2021-10-23
+- Enhanced CLIAdapterBase:
+  - Usage of argument parsers from cood/cli/internal
+  - Added Complete access read/write to CLIAdapterBase.cpp
+  - Adopted CLI command (parameters and output) to the CLI command published by RODACLIClientBase
+
+- Updated CLIAdapterForCANOpen
+
+2021-10-14
+- Added gpcc::cood::IQueryAccessRights
+
+2021-10-09
+- Bugfix: Added requirement to WorkQueueBasedRemoteAccessServer's documentation that provided WQ must have deferred
+  thread cancellation disabled.
+
+2021-10-03
+- gpcc::cood::ObjectInfoRequest/Response allow for query of application specific meta data
+- Added support for application specific meta data to gpcc::cood::RODACLIClientBase
+
+2021-09-25
+- Fixed usage of constexpr
+- Added flag to ObjectInfoRequest to control is ASM shall be included in the query
+
+2021-09-24
+- Finished class gpcc::cood::Multiplexer
+
+2021-09-14
+- COOD remote access:
+  - Multiplexer: Reduced number of sessionIDs from 2^16 to 2^8
+  - Fixed RODA interface policy documentation
+  - Added MultiplexerPort::IsClientRegistered()
+
+2021-09-12
+- Added MultiplexerPort::IsClientRegistered()
+- Updated RODA interface policies
+
+2021-09-06
+- Bugfix: Warning in CTOR of class Multiplexer at the calculation of "ownerID" when building for a 32-bit target.
+- Added unit tests that apply standart tests for RODA ITF to class Multiplexer.
+
+2021-08-29
+- Added Multiplexer. Unit-tests with standart tests for RODA ITF not yet done.
+
+2021-08-05
+- COOD remote access: Added "ping" request and response objects and added support to RAS
+
+2021-06-16
+- Finished:
+  - IMultiRODACLIClient
+  - MultiRODACLIClientBase
+  - MultiRODACLIClient
+
+2021-06-09
+- Finished:
+  - RODACLIClientBase
+  - SingleRODACLIClientBase
+  - SingleRODACLIClient
+
+2021-06-01
+- Reviewed gpcc::cli::UserEnteredInvalidArgsError and enhanced doxygen.
+- Added doxygen example how to use class FakeTerminal
+- ReadRequestResponse is aware of the size of the read data IN BIT.
+
+2021-05-25
+- Added gpcc::cli::UserEnteredInvalidArgsError
+- Bugfix in RemoteAccessServer: Object enum request did not stop enumeration at end of requested index range
+
+2021-05-20
+- Added missing test cases (open TODOs) to TestIRODA_ObjectEnum
+
+2021-05-19
+- Added WorkQueueBasedRemoteAccessServer
+- Added class DWQwithThread and unit tests
+- Refined documentation of work queue's behavior in case a work queue is destroyed and there are still work packages
+  enqueued in the work queue.
+
+2021-05-17
+- Review and consolidation of COOD remote access
+
+2021-05-10
+- Fixed UnmanagedConditionVariable in all Linux-TFC OSAL variants. On some systems, a convar signal could supercede
+  a pending request for deferred thread cancellation.
+
+2021-04-22
+- Fixed dead-lock in ThreadBasedRemoteAccessServer
+
+2021-04-21
+- Enhanced EEPROMSectionSystem's support for large storage devices
+
+2021-04-19
+- Cleaned up declarations of SetUp/TearDown (removed "virtual" and added "override")
+- Added const in any catch where applicable
+
+2021-04-18
+- Reviewed and enhanced some files for COOD remote access
+- Added missing "override" keyword in productive code
+
+2021-04-15
+- Added/enhanced text message of some static_asserts
+- EEPROMSectionSystem, BlockAccessor: Fixed dangerous cast from uint8_t to enum type
+- EEPROMSectionSystem: Fixed block size calculation if underlying device is not organized in blocks (e.g. plain RAM)
+
+2021-04-13
+- Bugfix: Some filesystems do not support dirent::d_type. Added fallback solution.
+
+2021-04-11
+- Reviewed and enhanced some files for COOD remote access
+
+2021-04-08
+- Reduced footprint of serialized ReadRequestResponse in case of negative status
+
+2021-04-05
+- Added gpcc::ResourceManagement::semaphores::NonBlockingSemaphore
+
+2021-04-02
+- COOD remote access: Added complete access write
+
+2021-03-29
+- COOD remote access: Added complete access read
+
+2021-03-22
+- CLIAdapterBase: Added support for application specific meta data
+
+2021-03-17
+- Rename customer-specific meta data -> application-specific meta data
+
+2021-03-16
+- Added support for customer specific meta data to gpcc::cood
+
+2021-03-15
+- Added gpcc::cood::IObjectAccess::GetNextNearestObject(...)
+
+2021-03-14
+- Added gpcc::cood::ObjectARRAY_wicb as a replacement for ObjectARRAY, which uses IObjectNotifiable now
+- Added gpcc::cood::ObjectRECORD_wicb as a replacement for ObjectRECORD, which uses IObjectNotifiable now
+- Revised directory structure for COOD remote acces stuff
+
+2021-03-13
+- Added gpcc::cood::IObjectNotifiable
+- Added gpcc::cood::ObjectVAR_wicb as a replacement for ObjectVAR, which uses IObjectNotifiable now
+
+2021-03-04
+- Added gpcc::cood::ObjectEnumRequest, incl. unit-tests
+
+2021-03-02
+- Added unittests for IRODA & ObjectInfoRequest
+
+2021-03-01
+- gpcc::cood::ObjectInfoRequest and ...::ObjectInfoResponse finished.
+- Added support for ObjectInfoRequest to RemoteAccessServer. Unit tests not yet updated.
+
+2021-01-31
+- Bugfix/Enhancements gpcc::cood:
+  - Bugfix CLI Command "ODInfo"
+  - Subindices with data types incorporating "flexible length" were not properly supported if the application changed
+    the length of the data. Bugfix is comprised of these major items:
+    - Before-read-callback will be invoked if the size of a subindex incorporating flexible length is queried.
+    - Another paramter was added to the before-read-callback to indicating if data shall be read or length shall be
+      queried.
+    - Updated documentation of Object::GetSubIdxActualSize() and ALL implementations provided by GPCC.
+  - Refined documentation of before-write-callback: If the callback agrees, then there is no guarantee that the write
+    will really happen, because there may be further checks that could fail.
+  - Refined documentation of ObjectRECORD regarding support of flexible length data types.
+- Enhancements gpcc::string:
+  - Added ToDouble(...)
+  - Enhanced conversion functions string to ... (doxygen and minor structural enhancements in code)
+
+2020-12-29
+- COOD Remote Access: ReadRequest implemented incl. doxygen, unit-tests and review
+
+2020-11-15
+- IStreamReader::RemainingBytes shall throw if not supported
+- IStreamWriter::RemainingCapacity shall throw if not supported
+
+2020-11-13
+- Added MemStreamReader::GetReadPtr(...)
+
+2020-11-07
+- Thread-names are passed to ChibiOS
+- Added stack top- and bottom-address to output of Thread::GetInfo(...) for OS "ChibiOS/RT"
+
+2020-11-04
+- Bugfix: There were some folders left in /tmp when death-test were executed
+
+2020-11-03
+- Added some corner-case tests to MD5sum related unit tests
+
+2020-11-02
+- Added ILogFacilityCtrl::GetLogLevel(...)
+
+2020-11-01
+- Added some methods to string/tools.hpp/cpp
+  (Trim overload, ConditionalConcat, ExtractFieldAndValue)
+
+2020-10-21
+- Added overload of gpcc::string::Split(...) which recognizes quotation mark characters
+- Added gpcc::string::IsPrintableASCIIOnly(...)
+
+2020-09-28
+- Added "::testing::FLAGS_gtest_death_test_style = "threadsafe";" to death tests.
+
+2020-09-12
+- Added MD5Sum(...)
+
+2020-06-15
+- Clarified documentation of gpcc::cood::ObjectARRAY: Value of SI0 is ...::GetNbOfSubIndices() - 1U
+
+2020-06-06
+- Log system: Log levels can also be stored and loaded in human-readable text files
+- Added gpcc::string::ExceptionDescriptionToString(std::exception_ptr const & ePtr)
+
+2020-05-31
+- gpcc::cood: Added DataType::boolean_native_bit1 (incl. unit tests)
+
+2020-03-26
+- Fixed gpcc::crc
+
+2020-02-14
+- Reviewed cood::ObjectArray (change from 2020-02-03) and enhanced doxygen
+
+2020-02-03
+- Fixed issue with min/max for SI0 in class cood::ObjectArray (review not yet done)
+
+2020-01-23
+- Added gpcc::log::Backend_CLILogHistory
+
+2019-12-04
+- OSAL update to ChibiOS Kernel 6.0.3
+
+2019-11-13
+- Added IntrusiveDList<T>::ClearAndDestroyItems()
+
+2019-10-09
+- CLI allows to embed font/color/style control information in text output
+- Log system: Backend_CLI prints log messages in different colors according to their severity
+
+2019-10-04
+- Updated image sizes
+
+2019-10-03
+- IntrusiveDList finished
+
+2019-09-14
+- Updated RWLock
+
+2019-09-12
+- Added unit tests for gpcc::cood::CLIAdapterForCANOpen
+- Fixed thread-safey notes in ObjectDictionary locking related documentation
+
+2019-09-09
+- Added unit tests for gpcc::cood::ObjectRECORD
+
+2019-08-18
+- Fixed integration of figures and images in Doxygen documentation
+- Enhancement: On Linux systems, thread's names appear htop now
+
+2019-08-17
+- Log-methods return void now
+- General clean-up and enhancement of gpcc::log
+- Bugfix: Fixed signed/unsigned error in MedianFilter1D
+- Added License info to dox-files and others
+
+2019-07-07
+- Added IntrusiveDList. No unit tests yet.
+
+2019-06-07
+- CLI: Reviewed bugfix from 2019-06-06
+- Unified doxygen command prefix
+
+2019-06-06
+- CLI: Fixed behavior of arrow-up/down keys for command history; Review open
+
+2019-05-29
+- COOD:
+  - Reviewed thread cancellation safety guarantees
+
+2019-05-19
+- Bugfix: gpcc::string::AnyStringToU8(...) and ::AnyStringToU8(...) and ::AnyStringToChar(...): Bugfix
+- COOD CLI Commands available:
+  - Class CLIAdapterBase
+  - Class CLIAdapterForCANOpen
+- Updated license exception
+- Added FAQ section for work packages
+
+2019-05-04
+- CANopenEncodedDataToString: For VISIBLE_STRING, output is enclosed by ""
+
+2019-05-02
+- Added IStreamWriter::GetNbOfCachedBits (incl. all derived classes and unit-tests)
+- Added IStreamWriter::AlignToByteBoundary (incl. all derived classes and  unit-tests)
+- Bugfix Thread::GetInfo (ChibiOS variant): "--- ----" is not corretly formatted if thread is not running/existing
+
+2019-04-20
+- Bugfix: Constants declared in classes have a definition in cpp-file now
+- Bugfix: src/Compiler/compiler/gcc_x64/builtins.hpp/.cpp uses a single constant look-up-table for bit reversal now
+
+2019-04-17
+- Doxygen is build for all OS configurations with and without "extract-private" now
+- Fixed all doxygen warnings
+
+2019-04-09
+- Provided OS_LINUX_ARM_TFC
+
+2019-04-05
+- COOD
+  - Reviews and unit tests
+
+2019-02-20
+- COOD
+  - Bugfix: Data types VISIBLE_STRING, OCTET_STRING, and UNICODE_STRING have dynamic length in non-CA-access
+
+2019-02-07
+- Added gpcc::string::FourDigitHexToU16()
+
+2019-01-29
+- COOD
+  - Bugfix: Renamed DataTypes enum values to prevent collision with defines in some header files
+            (e.g. DataTypes::DOMAIN collided with a #define from math.h)
+
+2019-01-28
+- COOD:
+  - Bugfix: Allow gap subindices (data type 0x0000, bit length != 0, data 0x0) in RECORD objects
+  - Reviewed use of FillBits/FillBytes/Skip
+
+2019-01-16
+- COOD:
+  Object::Write(...) and Object::CompleteWrite(...) return an SDO Abort Code now instead of throwing an exception
+  if an error during access to isr occurs (e.g. empty or ernob-mismatch). The following SDO Abort Codes are used:
+  - DataTypeMismatchTooLong (on stream empty-error)
+  - DataTypeMismatchTooSmall (if expected number of remaining bits does not match)
+
+2019-01-15
+- IStreamWriter
+  - Added IStreamWriter::FillBits(...)
+  - Added IStreamWriter::FillBytes(...)
+  - Enhanced StreamWriterBase
+  - Updated Unit Tests of implementations derived from IStreamWriter
+
+2019-01-13
+- Enhanced documentation of gpcc::execution::async (work packages and work queues)
+- Enhanced documentation of MemStreamReader::Shrink(...) and SubStream(...)
+
+2018-12-24
+- COOD:
+  - Enhanced documentation of error conditions for Read/Write/CompleteRead/CompleteWrite
+  - Write(...) and CompleteWrite(...) check the remaining number of bytes in the input data stream now
+
+2018-12-21
+- MemStreamReader: Added Shrink(...) and SubStream(...) (incl. unit-tests)
+
+2018-12-20
+- Bugfix: MemStreamReader::MemStreamReader initializes "pMem" with nullptr if size is zero.
+
+2018-12-18
+- Bugfix: gpcc::file_systems::EEPROMSectionSystem::internal::SectionReader::RemainingBytes():
+  Returns zero now if less than 8 bits are left
+
+- Added IStreamReader::EnsureRemainingBits(...)
+  - [OK] Doxygen IStreamReader: Describe difference GetState() <-> RemainingBytes() <-> EnsureRemainingBits()
+  - [OK] Review IStreamReader
+  - [OK] Review StreamErrors
+  - [OK] Review StreamReaderBase
+  - [OK] Review MemStreamReader
+  - [OK] Unit Test MemStreamReader
+  - [OK] Review linux_fs::StdIOFileReader
+  - [OK] Unit Test linux_fs::StdIOFileReader
+  - [OK] Review EEPROMSectionSystem::internal::SectionReader
+  - [OK] Unit Test EEPROMSectionSystem::internal::SectionReader
+
+2018-12-17
+- Bugfix: StdIOFileReader::RemainingBytes():
+  Returns zero now if less than 8 bits are left
+
+2018-12-12
+- COOD
+  - Bugfix: Unit test naming (ObjectVAR)
+  - Bugfix: ObjectARRAY::ObjectARRAY used wrong attributes in checks
+  - Added some unit tests for ObjectARRAY
+
+2018-12-09
+- COOD
+  - Bugfix: ObjectRECORD::GetObjectStreamSize() returned wrong value (always 8 bit too small)
+  - Reviewed ObjectARRAY
+  - Enhanced Doxygen (ObjectVAR, ObjectARRRAY)
+
+2018-11-29
+- COOD
+  - Unit tests for ObjectPtr are complete now
+
+2018-11-21
+- COOD:
+  - Bugfix: ObjectRECORD::ObjectRECORD: Fixed check of native size against CANopen encoded size
+  - Bugfix: ObjectARRAY: Meta data can be read for the maximum number of subindices now. Before the bugfix,
+            meta data could be read for indices up to the value given by SI0 only.
+
+2018-11-20
+- COOD:
+  - Added Object::GetMaxNbOfSubindices()
+
+2018-11-16 ***** Feature complete IStreamReader::Skip() *****
+- IStreamReader::Skip()
+  - Reviewed EEPROMSectionSystem::SectionReader::Skip()
+  - Added EEPROMSectionSystem::SectionReader unit tests for Skip() on block boundaries
+  - Added linux_fs::internal::StdIOFileReader::Skip()
+  - Reviewed linux_fs::internal::StdIOFileReader::Skip()
+  - Add additional unit tests for linux_fs::internal::StdIOFileReader::Skip()
+
+2018-11-14
+- IStreamReader::Skip()
+  - Added linux_fs::internal::StdIOFileReader unit tests
+  - Added EEPROMSectionSystem::SectionReader unit tests (basic)
+  - Added EEPROMSectionSystem::SectionReader::Skip()
+
+2018-11-13
+ - IStreamReader::Skip()
+  - Added MemStreamReader() unit tests for Skip()
+  - Reviewed MemStreamReader::Skip()
+
+2018-11-10
+ - IStreamReader::Skip()
+   - added to IStreamReader (incl. doxygen)
+   - added default implementation to StreamReaderBase
+
+ - COOD:
+  - ObjectVAR: Unit tests complete
+
+2018-11-05
+  - COOD: ObjectVAR supports data types VISIBLE_STRING, OCTET_STRING, and UNICODE_STRING now
+
+2018-10-30
+  - Bugfix: ThreadedLogFacility::StopService
+  - COOD: Finalized some files
+
+2018-10-27
+  - Finished gpcc::string::ToBin
+
+2018-10-25
+- COOD
+  - Finished implementation of ObjectRECORD
+
+2018-10-15
+- COOD
+  - ObjectARRAY reviewed.
+  - Started impl. of ObjectRECORD
+
+2018-10-11
+- COOD
+  - ObjectARRAY implemented but not yet reviewed
+
+2018-09-30
+- COOD
+  - ObjectVAR implemented and reviewed
+
+2018-09-23
+- COOD
+  - Reviewed data_types.hpp/cpp
+  - Reviewed exceptions.hpp
+  - Reviewed Object.hpp/.cpp (open: doc of class Object)
+  - Reviewed sdo_abort_codes.hpp/.cpp
+  - Reviewed cood.dox
+
+2018-09-22
+- added some functions to gpcc/src/string/tools.hpp (incl. unit tests)
+
+2018-09-19
+- bugfix: GPCC's file system API accepts unambigous filenames only
+
+2018-09-18
+- bugfix: Stop-methods are no-throw now
+
+2018-09-15
+- bugfix: Unit tests accessing the file system use a directory including the ID of the current process now.
+          This allows to execute unit tests of projects containing GPCC in parallel.
+
+2018-09-08
+- unit tests for gpcc::file_systems::linux_fs::FileStorage complete
+- added Thread::GetPID
+
+2018-09-07
+- gpcc::file_systems:
+  - linux_fs::FileStorage:
+    - Uses HierarchicNamedRWLock now
+  - added exception "DirectoryAlreadyAccessedError"
+  - added some unit tests for class linux_fs::FileStorage
+
+2018-09-04
+- repaired images in doxygen:
+  - Applied new template: \image html "figure.png" "Footer" width=75%
+  - changed format of figures to PNG
+
+2018-09-01
+- Finished HierarchicNamedRWLock
+
+2018-08-31
+- HierarchicNamedRWLockNode:
+  - Enhanced doc of GetOrCreateNode()
+  - continued review
+
+2018-08-30
+- HierarchicNamedRWLock:
+  - Added missing unit tests
+  - Added removal of unused tree nodes
+
+2018-08-25
+- HierarchicNamedRWLock:
+  - Added clean-up of tree upon unlock of nodes
+  - Review & Doc HierarchicNamedRWLockNode
+  - Review & Doc HierarchicNamedRWLock
+
+2018-08-24
+- HierarchicNamedRWLock:
+  - Added test fixture.
+
+2018-08-23
+- HierarchicNamedRWLock:
+  First working implementation, not yet cleaned-up, not reviewed, not documented.
+  Some unit tests available.
+
+2018-08-17
+- All images used by doxygen are located in gpcc/doc/figures now
+- reviewed generated doxygen from "IFileAndDirectoryStorage.hpp"
+
+2018-08-16
+- Interface IFileAndDirectoryStorage finished. Review of generated doxygen not yet done.
+- Class FileStorage realizes IFileAndDirectoryStorage now. Unit tests not implemented yet.
+
+2018-08-13
+- implemented IFileAndDirectoryStorage (not finished)
+- implemented FileStorage (not finished)
+
+2018-08-06
+- bugfix: IFileStorage (FileStorage) accepts non-portable path-names during file creation now
+
+2018-08-04
+- checked test_src/file_systems/linux_fs/TestFileStorage.cpp
+- added IFileAndDirectoryStorage interface
+
+2018-08-02
+- checked test_src/file_systems/linux_fs/Test_tools.cpp
+
+2018-08-01
+- Checked treatment of links and special files in
+  - file_systems/file_systems.dox
+  - file_systems/IFileStorage.hpp
+  - file_systems/exceptions.hpp
+  - file_systems/linux_fs/*
+
+2018-07-17
+- RWLockReadLocker and RWLockWriteLocker
+  - review unit tests
+  - add unit tests for time-limited read/write lock
+- added doxygen control file for OS_CHIBIOS_ARM and fixed some doxygen warnings
+
+2018-07-01
+- added RWLockReadLocker and RWLockWriteLocker incl. unit-tests
+
+2018-06-26
+- added /container/RAMBlock.hpp/cpp, incl. unit-tests
+
+2018-06-20
+- moved content of src/lists/ to src/container/
+- renamed namespace gpcc::lists -> gpcc::container
+
+2018-05-04
+- renamed gpcc::FileSystems to gpcc::file_systems
+- refacturing of file_systems/exceptions.hpp finished
+- refacturing of file_systems/IFileStorage.hpp finished
+
+2018-04-17 * * * * * * * * * * * * * * * * *
+- Removed "SKIP_TIME_BASED_TESTS". Replaced by "SKIP_TFC_BASED_TESTS" and "SKIP_LOAD_DEPENDENT_TESTS"
+
+2018-04-15
+- Enhanced documentation for unit test exclusion switches
+  (SKIP_TFC_BASED_TESTS, SKIP_LOAD_DEPENDENT_TESTS; prior: SKIP_TIME_BASED_TESTS)
+
+2018-04-10
+- FakeTerminal
+  - Lines dropped out at the top of the screen due to new lines printed at the bottom of the screen
+    can be recorded now.
+  - Screen's content can be retrieved as a single std::string for more advanced comparison against
+    expected values used e.g. regular expressions.
+
+2018-03-31
+- Added GetPanicHandler()
+- Unit tests for SetPanicHandler() recover the original panic handler at the end of the test
+
+2018-03-23
+- Fixed doxygen warnings
+
+2018-02-18 * * * * * * * * * * * * * * * * *
+- Class BitField enhanced:
+  - operator==
+  - coding style update
+  - white-spaces in text output
+
+2018-02-15
+- Reviewed BitField::operator==
+
+2018-02-14
+- Added BitField::operator==
+
+2018-02-13 * * * * * * * * * * * * * * * * *
+- CRC calculation
+  - Added functions for calculating 32 Bit CRCs
+  - Added table for CRC-32
+  - Added functions for calculating CRCs in reverse direction
+  - Added functions for calculating 32 Bit CRCs with input bit reflection
+  - Added missing unit tests
+
+2018-02-12
+- Compiler:
+  - Added gpcc::Compiler::ReverseBits8() and gpcc::Compiler::ReverseBits32()
+
+2018-01-31 * * * * * * * * * * * * * * * * *
+- Logger: Added new log message types:
+  - c-string + exception (incl. nested)
+  - std::string + exception (incl. nested)
+  - Unit tests added/updated
+  - Documentation updated
+
+2018-01-26 * * * * * * * * * * * * * * * * *
+- CLI APPLIED FEATURES:
+  - coding style update
+  - suppression of unprintable characters entered by user
+  - suppression of user-input during execution of command callbacks (!! FakeTerminal::WaitForInputProcessed !!)
+  - interface for connection to terminal
+  - bugfix: command sequence detection (reinsertion of last character into rx parser)
+  - bugfix: enhanced return keypress detection from CR/LF sequence
+  - command list is intrusive now
+  - suggestion list is intrusive now
+  - exception for CLI stop request
+  - exception for CTRL+C
+  - enhanced doxygen documentation
+  - enhanced unit tests for CLI
+  - adapter UART driver to ITerminal
+  - adapter stdin/stdout to ITerminal
+  - CLI compatibility: PUTTY, KDE "Konsole"
+
+2018-01-24
+ - updated unit tests for components using CLI/FakeTerminal (not yet complete)
+   - test_src/StdIf/TestIRandomAccessStorageCLI.cpp
+   - test_src/file_systems/CLI/TestISFCLICommands.cpp
+   - test_src/file_systems/EEPROMSectionSystem/CLI/TestESSCLICommands.cpp
+
+2018-01-23
+ - FakeTerminal: Fixed doxygen warnings
+ - updated unit tests for components using CLI/FakeTerminal (not yet complete)
+   - test_src/log/backends/TestBackend_CLI.cpp
+   - test_src/log/cli/Test_commands.cpp
+
+2018-01-22
+ - FakeTerminal: Applied new coding style; Some minor enhancements
+
+2018-01-11
+ - checked help text for CLI commands for trailing \n. It is no longer required.
+ - added unit tests for TerminalRxParser (new codes for POS1/END)
+
+2017-12-03
+- Enhanced gpcc::cli::CLI:
+  - Reviewed code (ICLINotifiable, ITerminal)
+
+2017-12-02
+- Enhanced gpcc::cli::CLI:
+  - Reviewed code (internal/, Command, exceptions)
+  - Added some unit test cases to reviewed code
+
+2017-11-29
+- Enhanced gpcc::cli::CLI:
+  - ITerminal::Read accepts zero timeout now
+  - Implemented CLI::TestTermination
+
+2017-11-07
+- Enhanced gpcc::cli::CLI:
+  - suggestion system uses std::vector now
+  - number of suggestions is limited
+
+2017-11-02
+- Enhanced gpcc::cli::CLI:
+  - ignore CR after LF and the other way round
+
+2017-10-28
+- Added gpcc::string::IsPrintableASCII()
+
+2017-10-27
+- CLI unit tests are all OK now. Tests for removal of commands at head/mid/tail are not yet implemented.
+
+2017-10-23
+- Appliance of new coding style:
+  - CLI (not yet complete)
+    - FakeTerminal finished
+    - exceptions.hpp created
+
+2017-10-21
+- Appliance of new coding style:
+  - CLI (not yet complete)
+    - CLI clean, but design not yet enhanced
+
+2017-10-16
+- Appliance of new coding style:
+  - CLI (not yet complete)
+
+2017-10-06
+- Appliance of new coding style:
+  - CLI (not yet complete)
+
+2017-10-04
+- Appliance of new coding style:
+  - CLI (not yet complete)
+
+2017-08-08
+- MemStreamWriter
+  - Added unit tests for Copy/Move assignment-operators
+
+2017-08-06
+- MemStreamReader
+  - Added unit tests for Copy/Move Ctor and =-operators
+- MemStreamWriter
+  - Added unit tests for Copy/Move Ctor (=-operators not yet tested -> next todo)
+
+2017-08-05
+- Added unit tests for:
+  - gpcc::string::ToHex()
+  - gpcc::string::DecimalToU8()
+  - gpcc::string::DecimalToU32()
+- Enhancement and Review of copy&move ctors and assignment-operators for MemStreamReader and MemStreamWriter
+
+2017-08-03
+- Added:
+  - gpcc::string::ToHex(...)
+  - gpcc::string::DecimalToU8(...)
+  - gpcc::string::DecimalToU32(...)
+
+2017-08-02
+- Added BitField::Assign(...) (incl. doc & full unit tests)
+- MemStreamWriter: (new methods (copy-/move-ctor and copy-/move-assignment operator))
+  - enhanced documentation
+  - review done
+
+2017-08-01
+- Added copy- and move-ctor and copy- and move-assignment operators in
+  gpcc::Stream::MemStreamReader and gpcc::Stream::MemStreamWriter
+
+2017-06-07
+- Bugfix (memory leak) in unit tests: GPCC_ResourceManagement_Objects_SmallDynamicNamedRWLock_DeathTests
+- Added gpcc::string::EndsWith(...)
+
+2017-05-29
+- Added gpcc:string::CountChar(...)
+
+2017-05-28
+- Bugfix in gpcc::string::Trim(...)
+
+2017-05-27
+- Implemented gpcc::string::TestSimplePatternMatch (incl. unit-tests)
+
+2017-05-24
+- Added IStreamReader::Read_line() complete, incl. all sub-classes and unit-tests
+- Added IStreamWriter::Write_line() complete, incl. all sub-classes and unit-tests
+
+2017-05-23
+- Added gpcc::string::ExceptionDescriptionToString()
+- Bugfix in EEPROMSectionSystemTestFixture (delete / delete [] mismatch)
+- Adding IStreamReader::Read_line() in process
+
+2017-05-22
+- Bugfixed unit-tests: gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF.StateStoppedStopPending_*
+
+2017-05-18
+- Finished TFC documentation
+- Added Thread::Sleep_ns() in all OSAL variants + unit test
+
+2017-05-17
+- Continued TFC documentation
+
+2017-04-28
+- Fixed some doxygen warnings
+
+2017-04-27
+- Fixed some doxygen warnings
+
+2017-04-26
+- WorkQueue and DeferredWorkQueue:
+  - reviewed bugfix from 2017-03-05
+  - unit tests OK (no helgrind complaints)
+
+2017-04-09
+- OSAL
+  - Tranfered updates linux_x64 -> linux_arm
+                                -> chibios_arm
+
+2017-04-08
+- TFC:
+  - Review finished
+  - OSAL unit tests updated
+  - TFC unit tests implemented
+                                                                    Cross-Check
+    File                                        Review Doc UnitTest Doc against linux_x64
+    -------------------------------------------------------------------------------------
+    internal/AdvancedUnmanagedMutexLocker.hpp   OK     OK  OK       n.A.
+    internal/TFCCore.cpp                        OK     OK  .        n.A.
+    internal/TFCCore.hpp                        OK     OK  .        n.A.
+    internal/ThreadBlocker.cpp                  OK     OK  OK       n.A.
+    internal/ThreadBlocker.hpp                  OK     OK  OK       n.A.
+    internal/ThreadBlockerBase.hpp              OK     OK  n.A.     n.A.
+    internal/TimeLimitedThreadBlocker.cpp       OK     OK  OK       n.A.
+    internal/TimeLimitedThreadBlocker.hpp       OK     OK  OK       n.A.
+    internal/UnmanagedConditionVariable.cpp     OK     OK  OK       n.A.
+    internal/UnmanagedConditionVariable.hpp     OK     OK  OK       n.A.
+    internal/UnmanagedMutex.cpp                 OK     OK  OK       n.A.
+    internal/UnmanagedMutex.hpp                 OK     OK  OK       n.A.
+    internal/UnmanagedMutexLocker.hpp           OK     OK  OK       n.A.
+    ConditionVariable.cpp                       OK     OK  Common   OK
+    ConditionVariable.hpp                       OK     OK  Common   OK
+    Mutex.cpp                                   OK     OK  Common   OK
+    Mutex.hpp                                   OK     OK  Common   OK
+    Panic.cpp                                   OK     OK  Common   OK
+    Panic.hpp                                   OK     OK  Common   OK
+    Semaphore.cpp                               OK     OK  Common   OK
+    Semaphore.hpp                               OK     OK  Common   OK
+    Thread.cpp                                  OK     OK  Common   OK
+    Thread.hpp                                  OK     OK  Common   OK
+
+2017-04-07
+- Review TFC
+
+2017-04-04
+- Review TFC
+
+2017-04-03
+- Added NORETURN1 and NORETURN2 to gpcc/Compiler
+- Review TFC
+
+2017-03-31
+- Review TFC
+
+2017-03-30
+- Review TFC
+
+2017-03-29
+- Review TFC. Next: Add unit tests for ThreadBlocker
+
+2017-03-28
+- Review TFCCore
+
+2017-03-15
+- Bugfix:
+  - OS_LINUX_ARM was missing for some linux-specific files
+  - Excluded some unit-tests for os configuration "OS_LINUX_X64_TFC"
+
+2017-03-14
+- CLI: Added:
+  - Support for Linux targets
+  - Support for Ctrl+C
+- Bugfixed RWLock unit tests
+
+2017-03-12
+- Bugfix: GPCC_CLI_CLI_TestsF.RemoveCommand_BlocksTillExecuted
+- continued implementation of linux_x64_tfc
+
+2017-03-07
+- Continued OSAL variant linux_x64_tfc. Started introduction of "ReportThreadAboutToWakeUp()".
+
+2017-03-05
+- removed helgrind complain in "ThreadedLogFacility::StopService" (signaled cv without mutex being locked)
+- bugfix in WorkQueue and DeferredWorkQueue: Potential usage of destroyed semaphore in FlushNonDeferredWorkPackages().
+
+2017-02-26
+- started implementation of OSAL variant "linux_x64_tfc"
+
+2017-02-23
+- added gpcc::osal::Panic(char const * const, std::exception const & e)
+
+2017-02-22
+- unit tests based on special user permissions can be skipped now
+
+2017-02-20
+- bugfixed src/execution/async workqueues
+- unit tests for work queues updated
+
+2017-02-15
+- Added gpcc::log::Backend_Recorder
+- Enhanced work queue implementations
+- Removed warning about unused parameters from MultiCallback template
+
+2017-02-14
+- Bugfix: Static work packages are able to enqueue themselves now
+
+2017-02-12
+- Bugfix: IDeferredWorkQueue can be used now to access functionality offered by IWorkQueue
+
+2017-02-10
+- Callback:
+  - Applied new coding style
+
+2017-02-04
+- OSAL:
+  - Applied new coding style
+  - New behaviour: Process will terminate, if an exception leaves the thread-entry function passed to
+    Thread::Start()
+
+2016-12-30
+- Work queues:
+  - Introduction of static work packages finished.
+
+2016-12-22
+- Work queues:
+  - using intrusive lists now
+  - updated according to GPCC coding style
+
+2016-12-15
+- Added:
+  - writing log config to stream (incl. unit-tests)
+  - reading log config from stream (incl. unit-tests)
+  - CLI commands for reading/writing log config to/from stream (incl. unit-tests)
+  - default settings for log facility
+    -> first version of log system COMPLETE
+
+2016-12-14
+- Added unit tests for StdIf/IRandomAccessStorageCLI.cpp
+- Added unit tests for StdIf/II2C_Tools.cpp
+
+2016-12-10
+- Added unit tests for IFileStorage CLI commands
+- Added unit tests for EEPROMSectionSystem CLI commands
+
+2016-12-04
+- Added GPCC::time::Timespan::ToString(void) const incl. unit-tests
+- Added GPCC::time::Timespan::ToString(Precision const prec) const incl. unit-tests
+- Added CLI commands for IFileStorage (no unit-tests yet)
+- Added CLI commands for EEPROMSectionSystem (no unit-tests yet)
+
+2016-09-10
+- GPCC::CLI finished
+
+2016-08-27
+- GPCC::file_systems finished
+
+2016-07-14
+- Console/internal/ConsoleRxParser: Finished and tested
+
+2016-05-26
+- file_systems/EEPROMSectionSystem/internal/SectionWriter.cpp/.hpp compiles.
+
+2016-05-20
+- EEPROMSectionSystem compiles, but implementation not yet complete: SectionWriter implementation in process
+
+2016-05-14
+- EEPROMSectionSystem compiles, but implementation not yet complete
+
+2016-04-30
+- Finished GPCC/ResourceManagement/Objects/SmallDynamicNamedRWLock
+- Finished GPCC/ResourceManagement/Objects/LargeDynamicNamedRWLock (except review)
+
+2016-04-28
+- Finished tests for GPCC/Execution/Cyclic/TTCEStartStopCtrl
+
+2016-04-23
+- GPCC/Execution/Cyclic/TTCEStartStopCtrl.hpp/cpp:
+  Implementation finished.
+  Units tests almost complete.
+
+2016-04-09
+- GPCC/Execution/Cyclic/TriggeredThreadedCyclicExec.hpp/.cpp:
+  Implementation finished.
+  Unit test fixture and helper stuff finished.
+  Unit tests not yet implemented.
+
+2016-04-06
+- Checked style: public/protected/private, then Typedefs, attributes, methods
+- Checked types of exceptions thrown
+- GPCC/Callback finished
+
+2016-03-31
+- Added GPCC/Compiler: Count-Leading-One/Zero builtin (incl. tests)
+- Added GPCC/DSP
+- Added GPCC/CRC
+- Added operator [] using proxy to GPCC::Lists::BitField
+
+2016-03-24
+- Added GPCC/Compiler: Count-Trailing-One/Zero builtin (incl. tests)
+- Added GPCC/Math: IntMath.cpp/.hpp (sqrt32) (incl. tests)
+- Added GPCC/Lists: BitField (incl. tests)
+
+2016-03-18
+- Added GPCC/Math
+- Added GPCC/ResourceManagement. Unit tests complete.
+
+2016-02-26
+- Added GPCC/Stream. Unit tests complete.
+
+2016-02-19
+- Added GPCC/Execution/WorkQueue. Unit tests complete.
+
+2016-02-09
+- ChibiOS OSAL Port implementation and review complete, but not yet tested
+
+2016-02-08
+- ChibiOS OSAL Port Review:
+  - Thread.cpp/.hpp (not yet finished)
+
+2016-02-07
+- ChibiOS OSAL Port Review:
+  - ConditionVariable.cpp/.hpp
+  - Mutex.cpp/.hpp
+  - Panic.cpp/.hpp
+  - Semaphore.cpp/.hpp
+
+2016-02-06
+- added Time/Clock.hpp
+- ChibiOS OSAL Port: Implementation complete, compiles, not yet reviewed, not yet tested
+- Synced with Linux-GPCC
+
+2016-01-29
+- implemented ChibiOS OSAL Port:
+  - ConditionVariable
+  - Mutex
+  - Panic
+  - Semaphore
+  - Thread (not yet complete)
+
+2016-01-28
+- finished unit tests for:
+  - GPCC/OSAL/Thread
+  - GPCC/OSAL/ThreadRegistry
+- cleaned GPCC/OSAL/IThreadRegistry
+
+2016-01-23
+- GPCC/OSAL/Thread
+  - continued implementation of class Thread
+  - unit tests for class thread finished
+
+2016-01-19
+- GPCC/OSAL/Thread
+  - Join() is aware for cancellation now
+
+2016-01-18
+- checked GPCC/OSAL/Thread
+
+2016-01-17
+- Checked doxygen doc:
+  - RWLock
+  - Thread.hpp
+
+2016-01-16
+- Added unit test for:
+  - GPCC/OSAL/RWLock
+
+2016-01-15
+- Started unit test implementation for GPCC/OSAL/Semaphore
+
+2016-01-14
+- Added unit tests for:
+  - GPCC/OSAL/Semaphore
+
+2016-01-12
+- Started unit test implementation TestSemaphore.cpp
+
+2016-01-09
+- Added unit tests for:
+  - GPCC/OSAL/AdvancedMutexLocker
+  - GPCC/OSAL/Panic
+  - GPCC/OSAL/ConditionVariable
+
+- Fixed DeathTests
+
+2016-01-08
+- Added unit tests for:
+  - GPCC/OSAL/Mutex
+  - GPCC/OSAL/MutexLocker
+
+2016-01-07
+- Checked exception safety and cancellation stuff in comments with respect to scope guards:
+  - GPCC/Compiler
+  - GPCC/RAII
+
+- Adopt doxygen templates:
+  - GPCC/RAII
+
+2016-01-06
+- Checked exception safety and cancellation stuff in comments with respect to scope guards:
+  - GPCC/Time
+
+2016-01-02
+- Added unit tests for GPCC/Compiler
+- TimePoint uses buildins provided by GPCC/Compiler for overflow-safe arithmethic now
+- Doxygen doc for GPCC/Compiler is fine now
+
+2016-01-01
+- class Timespan implemented
+- class TimePoint supports arithmetic operations with Timespan now
+
+2015-12-29
+- Added buildins to GPCC/Compiler
+
+2015-12-28
+- class String removed, using std::string now
+- implemented class TimePoint
+
+2015-11-07
+- OSAL and RAII are fine now
+
+2015-11-05
+- Class Thread finished
+
+2015-11-03
+- Enhanced method doc template's thread-safety section
+- Applied enhanced method doc template to class Thread
+- Cleared todo in class Thread::Start
+
+2015-11-02
+- review of GPCC::Thread
+
+2015-10-30
+- GPCC::Thread: Removed immediate cancellation
+
+2015-10-27
+- examined thread cancellation
+
+2015-10-23
+- transferred ThreadRegistry to c++11
+
+2015-10-20
+- Added Panic.hpp to GPCC/OSAL
+- GPCC/OWAL/Linux_x64_gcc uses Panic() now for stuff that cannot fail
+- Updated AdvancedMutexLocker and MutexLocker (OSAL uses Panic() now)
+
+
+2015-09-25
+- Decided to refactor to better style and C++11 and usage of exceptions
+- Refactored
+  - GPCC/Compiler
+  - GPCC/OSAL/Linux_x64_gcc
+    - Atomic
+    - ConditionVariable
+    - Mutex
+    - Semaphore
+
+2015-06-04
+- Reviewed: ConditionVariable, Mutex, Semaphore, Thread (not yet finished)
+
+2015-05-14
+- Linux OSAL Port
+  - Thread
+
+2015-05-05
+- Linux OSAL Port
+  - Mutex
+  - Condition Variable
+  - Semaphore

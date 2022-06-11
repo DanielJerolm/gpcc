@@ -1,0 +1,164 @@
+/*
+    General Purpose Class Collection (GPCC)
+    Copyright (C) 2019 Daniel Jerolm
+
+    This file is part of the General Purpose Class Collection (GPCC).
+
+    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+                                      ---
+
+    A special exception to the GPL can be applied should you wish to distribute
+    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
+    to provide the source code for any proprietary components. See the file
+    license_exception.txt for full details of how and when the exception can be applied.
+*/
+
+/**
+ * @ingroup GPCC
+ * @defgroup GPCC_FILESYSTEMS File Systems
+ *
+ * \brief File system implementations and portable API.
+ *
+ * GPCC provides interfaces which provide a portable API for accessing regular files stored in any kind of
+ * file system. The API offered by GPCC is the same on any platform and any operating system supported by GPCC.
+ *
+ * GPCC further offers classes which realize that API. There are multiple classes, each tailored to a specific
+ * file system. @ref gpcc::file_systems::linux_fs::FileStorage e.g. realizes the API for the Linux file system.
+ * Some API implementations (e.g. the one for Linux) restricts access through the API to a specific directory
+ * (and subdirectories) in the file system.
+ *
+ * Last but not least, GPCC offers file system implementations (currently only one) for embedded systems where
+ * no (suitable) third-party file system (e.g. build into the operating system) is available.
+ *
+ * # Portable API
+ * The file system API provided by GPCC is comprised of two interfaces which provide two different levels of
+ * functionality. This staged approach allows to use the API with full-featured and high sophisticated file systems
+ * as well as with simple, light-weight, and limited file systems that do not support the concept of directories
+ * (such as a simple EEPROM content management system).
+ *
+ * The [IFileStorage](@ref gpcc::file_systems::IFileStorage) interface allows to create, open, delete, rename and
+ * enumerate files and to measure file sizes independent of the underlying type of file system and storage device.
+ * Read- and write-access to files is offered through [IStreamReader](@ref gpcc::Stream::IStreamReader) and
+ * [IStreamWriter](@ref gpcc::Stream::IStreamWriter) interfaces.
+ *
+ * The [IFileAndDirectoryStorage](@ref gpcc::file_systems::IFileAndDirectoryStorage) interface is derived from the
+ * [IFileStorage](@ref gpcc::file_systems::IFileStorage) interface and extends it by the following functionality:
+ * Creation, deletion, enumeration, and rename of directories.
+ *
+ * Any application using the [IFileStorage](@ref gpcc::file_systems::IFileStorage) and
+ * [IFileAndDirectoryStorage](@ref gpcc::file_systems::IFileAndDirectoryStorage) interfaces for accessing files can be
+ * easily ported from one platform to another.
+ *
+ * # Limitations
+ * ## File and directory names
+ * All file and directory names used with GPCC's file system API must meet the requirements of the specific underlying
+ * file system.\n
+ * For details please refer to the documentation of the specific class which realizes the
+ * [IFileStorage](@ref gpcc::file_systems::IFileStorage) and
+ * [IFileAndDirectoryStorage](@ref gpcc::file_systems::IFileAndDirectoryStorage) interfaces for your particular
+ * file system.
+ *
+ * Further all file names and directory names used with GPCC's file system API for _creation of new files/directories_
+ * _or for rename of files/directories_ must meet the requirements of GPCC for portable file- and directory names:
+ * - Only characters 'A'-'Z', 'a'-'z', '0'-'9', '_', '-', '.', and ' ' are allowed.\n
+ *   Note: ' ' is allowed but should be avoided.
+ * - No leading ' '
+ * - No trailing ' '
+ * - No double ' '
+ * - No trailing '.'
+ * - No leading '-'
+ *
+ * In addition to the previous requirements, file names and directory names used with GPCC's file system API must
+ * meet the following requirements _regardless of the type of operation_:
+ * - No leading '/'
+ * - No trailing '/'
+ * - No double '/'
+ * - No "." or ".." as file or directory name
+ *
+ * This approach allows to open, delete, and rename existing files in existing directories whose names do not meet the
+ * requirements of GPCC for portable filenames. At the same time, it is guaranteed that the names of new files and new
+ * directories meet GPCC's requirements for portable filenames.
+ *
+ * ## Special files
+ * Regular files are full supported.
+ *
+ * Some functionality (e.g. open) may fail with an error if applied to special (non-regular) files such as
+ * drivers, pipes, fifos, etc. The exact behaviour depends on the particular file system.
+ *
+ * For details, please refer to the documentation of the class realizing the
+ * [IFileStorage](@ref gpcc::file_systems::IFileStorage) and
+ * [IFileAndDirectoryStorage](@ref gpcc::file_systems::IFileAndDirectoryStorage) interfaces for your particular
+ * file system.
+ *
+ * ## Links
+ * Symbolic links and hard links are transparent for the [IFileStorage](@ref gpcc::file_systems::IFileStorage) and
+ * [IFileAndDirectoryStorage](@ref gpcc::file_systems::IFileAndDirectoryStorage) interfaces.
+ *
+ * __Security hint:__\n
+ * Note that links may offer a way for the software to modify files outside the
+ * directory specified at the class realizing the [IFileStorage](@ref gpcc::file_systems::IFileStorage) and
+ * [IFileAndDirectoryStorage](@ref gpcc::file_systems::IFileAndDirectoryStorage) interfaces.\n
+ * This may create a security issue.
+ *
+ * However, [IFileStorage](@ref gpcc::file_systems::IFileStorage) and
+ * [IFileAndDirectoryStorage](@ref gpcc::file_systems::IFileAndDirectoryStorage) do not offer any functionality
+ * to _create_ links.
+ *
+ * For details, please refer to the documentation of the class realizing the [IFileStorage](@ref gpcc::file_systems::IFileStorage)
+ * and [IFileAndDirectoryStorage](@ref gpcc::file_systems::IFileAndDirectoryStorage) interfaces for your particular
+ * file system.
+ *
+ * ## IStreamReader::RemainingBytes()
+ * Not all classes offering the [IFileStorage](@ref gpcc::file_systems::IFileStorage) interface support
+ * [IStreamReader::RemainingBytes()](@ref gpcc::Stream::IStreamReader::RemainingBytes()) when reading files.
+ *
+ * For details, please refer to the documentation of the class realizing the [IFileStorage](@ref gpcc::file_systems::IFileStorage)
+ * and [IFileAndDirectoryStorage](@ref gpcc::file_systems::IFileAndDirectoryStorage) interfaces for your particular
+ * file system.
+ *
+ * # Available implementations
+ * All available classes realize either the basic [IFileStorage](@ref gpcc::file_systems::IFileStorage) or
+ * the more sophisticated [IFileAndDirectoryStorage](@ref gpcc::file_systems::IFileAndDirectoryStorage) interface and
+ * are interchangeable.
+ *
+ * ## Implementations for file systems build-in into operating systems
+ * ### Linux file system
+ * Class @ref gpcc::file_systems::linux_fs::FileStorage can be used on Linux platforms to provide access to the
+ * content of the file system offered by Linux. The access through a
+ * [linux::FileStorage](@ref gpcc::file_systems::linux_fs::FileStorage) instance is restricted to a specific directory
+ * and to the sub-directories below that directory. The path to that directory must be passed to the class' constructor.
+ *
+ * See @ref GPCC_FILESYSTEMS_LINUXFS for details.
+ *
+ * ## File system implementations offered by GPCC
+ * ### EEPROM Section System
+ * Class @ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem offers a 100% random-power-fail-safe
+ * file system that can be placed on top of any EEPROM device and some flash devices with capacities in the range
+ * of 32kB up to 512kB. It is designed for minimum memory foot-print and maximum data integrity. Almost any storage
+ * device which is accessible via the [IRandomAccessStorage](@ref gpcc::StdIf::IRandomAccessStorage) interface can
+ * be used. Directories are not supported. For details, please refer to class
+ * [EEPROMSectionSystem](@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem).
+ *
+ * ## Future
+ * Future implementations for MS Windows, or large flash devices on ChibiOS-based embedded platforms may follow.
+ */
+
+/**
+ * @ingroup GPCC_FILESYSTEMS
+ * @defgroup GPCC_FILESYSTEMS_EXCEPTIONS File System related exceptions
+ *
+ * \brief Common exceptions used by all [IFileStorage](@ref gpcc::file_systems::IFileStorage) and
+ *        [IFileAndDirectoryStorage](@ref gpcc::file_systems::IFileAndDirectoryStorage) implementations.
+ */

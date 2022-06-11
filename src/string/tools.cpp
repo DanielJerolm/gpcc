@@ -1,0 +1,2272 @@
+/*
+    General Purpose Class Collection (GPCC)
+    Copyright (C) 2011-2017, 2021, 2022 Daniel Jerolm
+
+    This file is part of the General Purpose Class Collection (GPCC).
+
+    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+                                      ---
+
+    A special exception to the GPL can be applied should you wish to distribute
+    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
+    to provide the source code for any proprietary components. See the file
+    license_exception.txt for full details of how and when the exception can be applied.
+*/
+
+#include "tools.hpp"
+#include "gpcc/src/raii/scope_guard.hpp"
+#include <iomanip>
+#include <limits>
+#include <sstream>
+#include <stdexcept>
+#include <cctype>
+#include <cstdio>
+#include <cstring>
+
+namespace
+{
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Internal helper for @ref ExceptionDescriptionToString(). \n
+ * Appends the description (returned by `what()`) of an exception and all nested
+ * exceptions (if any) to an `std::ostringstream`.
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Basic guarantee:
+ * - Incomplete or undefined text may have been written to `oss`.
+ *
+ * __Thread cancellation safety:__\n
+ * Safe, no cancellation point included.
+ *
+ * ---
+ *
+ * \param e
+ * Reference to the exception whose description (returned by `what()`) shall be appended to `oss`.\n
+ * The descriptions of all nested exceptions (if any) will also be appended to `oss`.\n
+ * Each nested exception's description will start on a new line.
+ * \param level
+ * Nesting level. It is prepended to the text output to indicate the nesting level.
+ * \param oss
+ * Reference to the `std::ostringstream` to which the descriptions of the exceptions
+ * shall be appended to.
+ */
+void ExceptionDescriptionToStringHelper(std::exception const & e, size_t level, std::ostringstream & oss)
+{
+  oss << level << ": " << e.what();
+
+  try
+  {
+    std::rethrow_if_nested(e);
+  }
+  catch (std::exception const & e2)
+  {
+    oss << std::endl;
+    ExceptionDescriptionToStringHelper(e2, level + 1U, oss);
+  }
+  catch (...)
+  {
+    oss << std::endl;
+    oss << (level + 1U) << ": " << "Unknown exception";
+  }
+}
+
+} // anonymous namespace
+
+namespace gpcc {
+namespace string {
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Removes leading and trailing white-spaces from a string.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * Constant reference to the string that shall be trimmed.
+ *
+ * \return
+ * Trimmed version of `s`.
+ */
+std::string Trim(std::string const & s)
+{
+  std::string result;
+
+  auto const start = s.find_first_not_of(' ');
+  auto const last  = s.find_last_not_of(' ');
+
+  if (start != std::string::npos)
+    result = s.substr(start, (last - start) + 1U);
+
+  return result;
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Removes specific leading and trailing characters from a string.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * Constant reference to the string that shall be trimmed.
+ *
+ * \param c
+ * Characters that shall be trimmed
+ *
+ * \return
+ * Trimmed version of `s`.
+ */
+std::string Trim(std::string const & s, char const c)
+{
+  std::string result;
+
+  auto const start = s.find_first_not_of(c);
+  auto const last  = s.find_last_not_of(c);
+
+  if (start != std::string::npos)
+    result = s.substr(start, (last - start) + 1U);
+
+  return result;
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Splits the string `s` into sub-strings separated by `separator`.
+ *
+ * If `s` does not contain `separator`, then a vector containing one string (`s`) will be returned.
+ *
+ * __Example 1:__\n
+ * s = 55, 23, 77,88,,2,\n
+ * separator = ','\n
+ * skipEmptyParts = false\n
+ * Result:\n
+ * "55", " 23", " 77", "88", "", "2", ""
+ *
+ * __Example 2:__\n
+ * s = 55, 23, 77,88,,2\n
+ * separator = ','\n
+ * skipEmptyParts = true\n
+ * Result:\n
+ * "55", " 23", " 77", "88", "2"
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * Unmodifiable reference to the string that shall be separated.
+ *
+ * \param separator
+ * Separating character.
+ *
+ * \param skipEmptyParts
+ * Controls if empty parts shall appear in the output vector or not.\n
+ * true  = empty parts shall not appear in the output vector\n
+ * false = empty parts shall appear in the output vector
+ *
+ * \return
+ * Vector containing the sub-strings.
+ */
+std::vector<std::string> Split(std::string const & s, char const separator, bool const skipEmptyParts)
+{
+  std::vector<std::string> v;
+
+  if (s.length() == 0U)
+    return v;
+
+  size_t pos1 = 0U;
+  size_t idx = s.find(separator);
+
+  while (idx != std::string::npos)
+  {
+    if (idx == pos1)
+    {
+      // (empty string)
+      if (!skipEmptyParts)
+        v.emplace_back();
+    }
+    else
+    {
+      // (not an empty string)
+      v.emplace_back(s.substr(pos1, idx - pos1));
+    }
+
+    // Is "separator" the last character? If yes, then the end of the string is reached but there
+    // is one empty string left
+    if (idx == (s.length() - 1U))
+    {
+      // (last empty string)
+      if (!skipEmptyParts)
+        v.emplace_back();
+
+      // finished
+      return v;
+    }
+
+    // look for next occurrence
+    pos1 = idx + 1U;
+    idx = s.find(separator, pos1);
+  }
+
+  // rest of string
+  v.emplace_back(s.substr(pos1));
+
+  return v;
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Splits the string `s` into sub-strings separated by `separator`. `separator` characters within areas
+ *        surrounded by `quotationMark` characters are ignored.
+ *
+ * If `s` does not contain `separator`, then a vector containing one string (`s`) will be returned.
+ *
+ * __Example 1:__\n
+ * s = Monkey Ball "Dog Cat Bird" Airplane\n
+ * separator = ' '\n
+ * skipEmptyParts = true\n
+ * quotationMark = '"'\n
+ * Result:\n
+ * 1. Monkey
+ * 2. Ball
+ * 3. "Dog Cat Bird" (`separator` was ignored)
+ * 4. Airplane
+ *
+ * __Example 2:__\n
+ * s = Name:"Willy" Age:5 Address : "Grey Road 5"\n
+ * separator = ' '\n
+ * skipEmptyParts = true\n
+ * quotationMark = '"'\n
+ * Result:\n
+ * 1. Name:"Willy"
+ * 2. Age:5
+ * 3. Address
+ * 4. :
+ * 5. "Grey Road 5" (`separator` was ignored)
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   `s` invalid, e.g. odd number of `quotationMark` characters.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * Unmodifiable reference to the string that shall be separated.
+ *
+ * \param separator
+ * Separating character.
+ *
+ * \param skipEmptyParts
+ * Controls if empty parts shall appear in the output vector or not.\n
+ * true  = empty parts shall not appear in the output vector\n
+ * false = empty parts shall appear in the output vector
+ *
+ * \param quotationMark
+ * `separator` characters within parts of `s` surrounded by this character will be ignored.\n
+ * `separator` and `quotationMark` must be different characters.
+ *
+ * \return
+ * Vector containing the sub-strings.
+ */
+std::vector<std::string> Split(std::string const & s, char const separator, bool const skipEmptyParts, char const quotationMark)
+{
+  if (separator == quotationMark)
+    throw std::invalid_argument("Split: Characters for separator and quotation mark are the same.");
+
+  std::vector<std::string> v;
+
+  if (s.length() == 0U)
+    return v;
+
+  auto separatorFinder = [&](size_t startPos) -> size_t
+  {
+    while (true)
+    {
+      // locate first quotation mark character
+      size_t const qm1 = s.find(quotationMark, startPos);
+      if (qm1 == std::string::npos)
+      {
+        // there is none, so just look for a separator character
+        return s.find(separator, startPos);
+      }
+
+      // locate second quotation mark character (there must be a second one!)
+      size_t const qm2 = s.find(quotationMark, qm1 + 1U);
+      if (qm2 == std::string::npos)
+        throw std::invalid_argument("Split: Can't find second quotation mark character.");
+
+      // locate next separator character
+      size_t nextSeparator = s.find(separator, startPos);
+
+      // If there is a separator character and if it is outside the area surrounded by the quotation mark characters,
+      // then we have the result
+      if (   (nextSeparator != std::string::npos)
+          && ((nextSeparator < qm1) || (nextSeparator > qm2)))
+      {
+        return nextSeparator;
+      }
+
+      // otherwise continue looking for a separator character behind the second quotation mark character
+      startPos = qm2 + 1U;
+    }
+  };
+
+  size_t pos1 = 0U;
+  size_t idx = separatorFinder(0U);
+
+  while (idx != std::string::npos)
+  {
+    if (idx == pos1)
+    {
+      // (empty string)
+      if (!skipEmptyParts)
+        v.emplace_back();
+    }
+    else
+    {
+      // (not an empty string)
+      v.emplace_back(s.substr(pos1, idx - pos1));
+    }
+
+    // Is "separator" the last character? If yes, then the end of the string is reached but there
+    // is one empty string left
+    if (idx == (s.length() - 1U))
+    {
+      // (last empty string)
+      if (!skipEmptyParts)
+        v.emplace_back();
+
+      // finished
+      return v;
+    }
+
+    // look for next occurrence
+    pos1 = idx + 1U;
+    idx = separatorFinder(pos1);
+  }
+
+  // rest of string
+  v.emplace_back(s.substr(pos1));
+
+  return v;
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Concatenates neighbouring strings in an std::vector of strings, if a special character is present at the
+ *        begin and/or end of the strings.
+ *
+ * __Rules:__\n
+ * - Concatenation of two neighbouring elements `v[n]` and `v[n+1]` takes place if one of the two conditions is valid:
+ *   - The last char of `v[n]` is `glueChar`
+ *   - The first char of `v[n+1]` is `glueChar`
+ * - Concatenation of three neighbouring elements `v[n-1]`, `v[n]` and `v[n+1]` takes place if:
+ *   - `v[n]` is comprised of one `glueChar` only
+ * - The result of a concatenation may be involved in further concatenations if the required conditions are met.\n
+ *   This may result in removal of empty strings from `v`.
+ *
+ * __Examples:__\n
+ * All following examples use ':' as `glueChar`.\n
+ * _Examples for common input:_
+ * - "Name:Willy" -> "Name:Willy"
+ * - "Name:Willy", "Age:5" -> "Name:Willy", "Age:5"
+ * - "Name:", "Willy" -> "Name:Willy"
+ * - "Name", ":Willy" -> "Name:Willy"
+ * - "Name", ":", "Willy" -> "Name:Willy"
+ * - "Name", ":", "Willy", "Age", ":", "50" -> "Name:Willy", "Age:50"
+ *
+ * _Examples containing empty strings:_
+ * - "Name:", "", "Willy", "" -> "Name:Willy", ""
+ * - "Name", "", ":", "", "Willy", "" -> "Name:Willy", ""
+ * - "Name:", "", "", "Willy", "" -> "Name:Willy", ""
+ *
+ * _Examples for not-so-common input:_
+ * - "Name", "::", "Willy" -> "Name::Willy"
+ * - "Name:", ":Willy" -> "Name::Willy"
+ * - "Name", ":", "Willy:", "Age:", "50" -> "Name:Willy:Age:50"
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Basic guarantee:
+ * - content of `v` is undefined
+ *
+ * \throws std::bad_alloc   Out of memory.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param v
+ * Reference to vector of std::string objects that shall be processed.
+ *
+ * \param glueChar
+ * Character that triggers concatenation of neighbouring elements in `v`.
+ */
+void ConditionalConcat(std::vector<std::string> & v, char const glueChar)
+{
+  // iterator to currently examined and processed string
+  auto it_curr = v.begin();
+
+  // iterator to previous processed string that may be target of concatenation
+  auto it_target = v.begin();
+
+  // flag indicating if "*it_curr" shall be concatenated (appended) to "*it_target"
+  bool concat = false;
+
+  // counter for preserving empty strings if no concatenation takes place
+  size_t nEmptyStrings = 0U;
+
+  while (it_curr != v.end())
+  {
+    std::string const & curr = *it_curr;
+
+    // first cycle?
+    if (it_curr == it_target)
+    {
+      if ((!curr.empty()) && (curr.back() == glueChar))
+        concat = true;
+
+      ++it_curr;
+      continue;
+    }
+
+    // check if "curr" requires concatenation with preceding string
+    if ((!curr.empty()) && (curr.front() == glueChar))
+      concat = true;
+
+    // concat *it_curr to *it_target ?
+    if (concat)
+    {
+      // eliminate any empty strings between it_target and it_curr
+      nEmptyStrings = 0U;
+
+      // current string empty?
+      // (may only happen it *it_target has a trailing glueChar)
+      if (curr.empty())
+      {
+        ++it_curr;
+        continue;
+      }
+
+      // concat
+      *it_target += *it_curr;
+
+      // move on and figure out if concatenation continues or not
+      ++it_curr;
+      concat = ((*it_target).back() == glueChar);
+      continue;
+    }
+
+    if (curr.empty())
+    {
+      // Count the empty string.
+      // If there is a 'glueChar' at the beginning of the next non-empty subsequent string, then all counted empty
+      // strings will be removed from 'v'. If there is no 'glueChar' at the beginning of the next non-empty subsequent
+      // string, then the counted empty strings will be preserved in 'v'.
+      nEmptyStrings++;
+      ++it_curr;
+      continue;
+    }
+
+    // "curr" is not empty and there was obviously no leading 'glueChar'. We have to preserve potential empty strings
+    // in 'v' between it_target and it_curr.
+    while (nEmptyStrings != 0U)
+    {
+      ++it_target;
+      (*it_target).clear();
+      nEmptyStrings--;
+    }
+
+    // check if "curr" has a trailing 'glueChar' and thus requires concatenation with a subsequent string
+    if (curr.back() == glueChar)
+      concat = true;
+
+    // Move the current string to the proper position in 'v' and remember it in it_target as potential target for
+    // concatenation with a subsequent string.
+    ++it_target;
+    if (it_target != it_curr)
+      *it_target = std::move(*it_curr);
+
+    // process next string during next loop cycle
+    ++it_curr;
+  }
+
+  // preserve counted empty strings
+  while (nEmptyStrings != 0U)
+  {
+    ++it_target;
+    (*it_target).clear();
+    nEmptyStrings--;
+  }
+
+  // finally truncate 'v' at it_target+1
+  if (it_target != v.end())
+  {
+    ++it_target;
+    v.erase(it_target, v.end());
+  }
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Inserts white-spaces after each "\\n" into an string in order to achieve indention.
+ *
+ * Example:\n
+ * "Text\\nLine1\\nLine2"\n
+ * ...passed to `InsertIndention()` with `n = 2` will result in: (with * = white space)\n
+ * Text\n
+ * **Line1\n
+ * **Line2\n
+ *
+ * ---
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Basic guarantee:
+ * - content of `s` will be undefined
+ *
+ * __Thread cancellation safety:__\n
+ * Safe, no cancellation point included.
+ *
+ * ---
+ *
+ * \param s
+ * String into which white-spaces for indention shall be inserted.
+ * \param n
+ * Number of white-spaces to be inserted after each "\\n" in `s`.
+ */
+void InsertIndention(std::string & s, size_t const n)
+{
+  if (n == 0)
+    return;
+
+  auto pos = s.find_first_of('\n', 0);
+  while (pos != std::string::npos)
+  {
+    s.insert(pos + 1, n, ' ');
+    pos += n;
+    if (pos != s.size())
+      pos = s.find_first_of('\n', pos);
+    else
+      break;
+  }
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Checks if a string starts with a given character sequence.
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * No-throw guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * Safe, no cancellation point included.
+ *
+ * ---
+ *
+ * \param s
+ * String that shall be tested.
+ * \param pCharSeq
+ * Pointer to a null-terminated c-string containing the character sequence.
+ * \return
+ * true = `s` starts with `pCharSeq` or `pCharSeq` is an empty string.\n
+ * false = `s` does not start with `pCharSeq`.
+ */
+bool StartsWith(std::string const & s, char const * pCharSeq) noexcept
+{
+  for (auto const c: s)
+  {
+    // get next character to test from character sequence
+    char const cseqc = *pCharSeq;
+
+    if (cseqc == 0)
+      return true;
+
+    // mismatch? -> out
+    if (c != cseqc)
+      return false;
+
+    pCharSeq++;
+  }
+
+  return (*pCharSeq == 0x00);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Checks if a string ends with a given character sequence.
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * No-throw guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * Safe, no cancellation point included.
+ *
+ * ---
+ *
+ * \param s
+ * String that shall be tested.
+ * \param pCharSeq
+ * Pointer to a null-terminated c-string containing the character sequence.
+ * \return
+ * true = `s` ends with `pCharSeq` or `pCharSeq` is an empty string.\n
+ * false = `s` does not end with `pCharSeq`.
+ */
+bool EndsWith(std::string const & s, char const * pCharSeq) noexcept
+{
+  size_t const l = strlen(pCharSeq);
+
+  if (l == 0)
+    return true;
+
+  if (s.length() < l)
+    return false;
+
+  return (memcmp(s.c_str() + (s.length() - l), pCharSeq, l) == 0);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Counts the number of occurrences of an specific character in a string.
+ *
+ * __Thread-safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception-safety:__\n
+ * No-throw guarantee.
+ *
+ * __Thread-cancellation-safety:__\n
+ * Safe, no cancellation point included.
+ *
+ * ---
+ *
+ * \param s
+ * String that shall be examined.
+ * \param c
+ * Character whose number of occurrences in `s` shall be counted.
+ * \return
+ * Number of occurrences of `c` in `s`.
+ */
+size_t CountChar(std::string const & s, char const c) noexcept
+{
+  size_t cnt = 0;
+  char const * p = s.c_str();
+  char sc;
+  while ((sc = *p) != 0)
+  {
+    if (sc == c)
+      cnt++;
+    p++;
+  }
+
+  return cnt;
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Compares an `std::string` against a character sequence containing simple wildcards ('*' and '?').
+ *
+ * __Thread-safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception-safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   Bad wildcard sequence (**), trailing '\\' or invalid escape sequence.
+ *
+ * __Thread-cancellation-safety:__\n
+ * Safe, no cancellation point included.
+ *
+ * ---
+ *
+ * \param s
+ * String that shall be checked for matching the character sequence given by `pCharSeq`.
+ * \param pCharSeq
+ * Pointer to a null-terminated string containing the character sequence used for the comparison.\n
+ * The character sequence may contain wildcard characters:
+ * - '*' = any string
+ * - '?' = any character
+ * - '\' = escape for characters '*', '?', and '\'
+ * \param caseSensitive
+ * Controls if the comparison shall be case sensitive:
+ * `true` = case sensitive\n
+ * `false` = case insensitive
+ * Note: Case sensitive comparison is slightly faster than case insensitive comparison.
+ * \return
+ * true = match\n
+ * false = no match
+ */
+bool TestSimplePatternMatch(std::string const & s, char const * pCharSeq, bool const caseSensitive)
+{
+  return TestSimplePatternMatch(s.c_str(), pCharSeq, caseSensitive);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Compares an null-terminated string against a character sequence containing
+ * simple wildcards ('*' and '?').
+ *
+ * __Thread-safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception-safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   Bad wildcard sequence (**), trailing '\\' or invalid escape sequence.
+ *
+ * __Thread-cancellation-safety:__\n
+ * Safe, no cancellation point included.
+ *
+ * ---
+ *
+ * \param pStr
+ * Pointer to a null-terminated string that shall be checked for matching the character sequence
+ * given by `pCharSeq`.
+ * \param pCharSeq
+ * Pointer to a null-terminated string containing the character sequence used for the comparison.\n
+ * The character sequence may contain wildcard characters:
+ * - '*' = any string
+ * - '?' = any character
+ * - '\' = escape for characters '*', '?', and '\'
+ * \param caseSensitive
+ * Controls if the comparison shall be case sensitive:
+ * `true` = case sensitive\n
+ * `false` = case insensitive
+ * Note: Case sensitive comparison is slightly faster than case insensitive comparison.
+ * \return
+ * true = match\n
+ * false = no match
+ */
+bool TestSimplePatternMatch(char const * pStr, char const * pCharSeq, bool const caseSensitive)
+{
+  // Character where to retry looking for a matching sequence after a wildcard in the
+  // reference character sequence.
+  // nullptr = no wildcard yet or no initial match yet
+  char const * pStrRetry = nullptr;
+
+  // Character behind the *-wildcard inside the reference character sequence.
+  // nullptr = no wildcard yet
+  char const * pRefBehindWildCard = nullptr;
+
+  // Flag indicating if the character referenced by pCharSeq is an escaped '*', '?' or '/'
+  bool escapeActive = false;
+
+  while (true)
+  {
+    char actual   = *pStr;
+    char expected = *pCharSeq;
+
+    bool singleCharWildcard;
+    if (!escapeActive)
+    {
+      // check for "any string" wildcard
+      if (expected == '*')
+      {
+        expected = *(++pCharSeq);
+        if (expected == 0)
+          return true;
+
+        if (expected == '*')
+          throw std::invalid_argument("TestSimplePatternMatch: pCharSeq contains '**'");
+
+        pStrRetry = nullptr;
+        pRefBehindWildCard = pCharSeq;
+      }
+
+      // check for "single character" wildcard
+      singleCharWildcard = (expected == '?');
+
+      // resolve escaped characters
+      if (expected == '\\')
+      {
+        expected = *(++pCharSeq);
+        if (expected == 0)
+          throw std::invalid_argument("TestSimplePatternMatch: pCharSeq contains single trailing '\\'");
+        if ((expected != '*') && (expected != '?') && (expected != '\\'))
+          throw std::invalid_argument("TestSimplePatternMatch: pCharSeq contains invalid escape sequence");
+        escapeActive = true;
+      }
+    } // if (!escapeActive)
+    else
+    {
+      singleCharWildcard = false;
+    } // if (!escapeActive)... else...
+
+    // end of string to be checked reached?
+    if (actual == 0)
+    {
+      // expected character sequence also at its end?
+      if (expected == 0)
+        return true;
+      else
+        return false;
+    }
+
+    // end of expected character sequence reached?
+    // (note: string to be checked is not at its end yet)
+    if (expected == 0)
+      return false;
+
+    // apply case in-sensitivity if required
+    if ((!caseSensitive) && (!singleCharWildcard))
+    {
+      actual   = toupper(actual);
+      expected = toupper(expected);
+    }
+
+    // compare
+    if ((actual == expected) || (singleCharWildcard))
+    {
+      // (MATCH)
+
+      // no any-string-wildcard yet?
+      if (pRefBehindWildCard == nullptr)
+      {
+        // just move on
+        pStr++;
+        pCharSeq++;
+        escapeActive = false;
+      }
+      else
+      {
+        // do we have a matching sequence after any-string-wildcard?
+        if (pStrRetry != nullptr)
+        {
+          // just move on
+          pStr++;
+          pCharSeq++;
+          escapeActive = false;
+        }
+        else
+        {
+          // Move on, but store the current value of pStr.
+          // The stored position is required to retry looking for a matching sequence
+          // if we get a mismatch.
+          pStr++;
+          pCharSeq++;
+          escapeActive = false;
+          pStrRetry = pStr;
+        }
+      }
+    } // if match...
+    else
+    {
+      // (MISMATCH)
+
+      // no any-string-wildcard yet?
+      if (pRefBehindWildCard == nullptr)
+      {
+        return false;
+      }
+      else
+      {
+        // do we have a matching sequence after any-string-wildcard?
+        if (pStrRetry != nullptr)
+        {
+          // Restart looking for a matching sequence. The result is, that one
+          // more character of pStr is covered by the wildcard in the reference character sequence.
+          pStr = pStrRetry;
+          pStrRetry = nullptr;
+          pCharSeq = pRefBehindWildCard;
+          escapeActive = false;
+        }
+        else
+        {
+          // move on looking for a matching sequence
+          pStr++;
+        }
+      }
+    } // if match... else...
+  } // while (true)
+}
+
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Queries if a character is a printable ASCII character.
+ *
+ * - - -
+ *
+ * __Thread-safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception-safety:__\n
+ * No-throw guarantee.
+ *
+ * __Thread-cancellation-safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param c
+ * Character, that shall be checked.
+ *
+ * \retval true   Character is a printable ASCII character
+ * \retval false  Character is not a printable ASCII character
+ */
+bool IsPrintableASCII(char const c) noexcept
+{
+  return ((c >= 0x20) && (c <= 0x7E));
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Checks if a string contains printable ASCII characters only.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * No-throw guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String to be checked.
+ *
+ * \retval true   The string is comprised of printable ASCII characters only, or the string is empty.
+ * \retval false  The string contains at least one not-printable character.
+ */
+bool IsPrintableASCIIOnly(std::string const & s) noexcept
+{
+  for (char const c : s)
+  {
+    if (!IsPrintableASCII(c))
+      return false;
+  }
+
+  return true;
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Checks if a string contains a decimal number with optional leading sign (-).
+ *
+ * Examples for positives (returns true):\n
+ * "0", "1", "2", "3", "44", "-0", "-1", "-2", "-3"
+ *
+ * Examples for negatives (returns false):\n
+ * "a", "b", "--4", "2f", "+5", " 3", " "
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * No-throw guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String to be checked.
+ *
+ * \retval true   The string represents a number comprised of decimal digits and a sign (-) only.
+ * \retval false  The string does not represent a decimal number.
+ */
+bool IsDecimalDigitsOnly(std::string const & s) noexcept
+{
+  if (s.find_first_not_of("-1234567890") != std::string::npos)
+    return false;
+
+  auto const last_minus = s.find_last_of('-');
+  if ((last_minus != std::string::npos) && (last_minus > 0))
+    return false;
+
+  if (s.empty())
+    return false;
+
+  return true;
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Creates an std::string from the description (returned by `what()`) of an exception and all nested
+ *        exceptions (if any).
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::bad_alloc   Out of memory.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param e
+ * Reference to the exception whose description (returned by `what()`) shall be contained in the string. If there are
+ * any nested exceptions, then their descriptions will also be contained in the string. Each nested exception's
+ * description will start on a new line.\n
+ * Unknown exceptions (exceptions not derived from `std::exception`) are handled gracefully.
+ *
+ * \return
+ * The created string. Example output for a 3-level nested exception:\n
+ * 1: X gave up, because Y failed\\n\n
+ * 2: Y failed\\n\n
+ * 3: Could not complete
+ */
+std::string ExceptionDescriptionToString(std::exception const & e)
+{
+  std::ostringstream oss;
+  ExceptionDescriptionToStringHelper(e, 1U, oss);
+  return oss.str();
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Creates an std::string from the description (returned by `what()`) of an exception and all nested
+ *        exceptions (if any).
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::bad_alloc   Out of memory.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param ePtr
+ * Unmodifiable reference to an exception pointer referencing to the exception whose description (returned by `what()`)
+ * shall be contained in the string. If there are any nested exceptions, then their descriptions will also be contained
+ * in the string. Each nested exception's description will start on a new line.\n
+ * If this is a nullptr, then this will throw an std::invalid_argument.\n
+ * Unknown exceptions (exceptions not derived from `std::exception`) are handled gracefully.
+ *
+ * \return
+ * The created string. Example output for a 3-level nested exception:\n
+ * 1: X gave up, because Y failed\\n\n
+ * 2: Y failed\\n\n
+ * 3: Could not complete
+ */
+std::string ExceptionDescriptionToString(std::exception_ptr const & ePtr)
+{
+  if (!ePtr)
+    throw std::invalid_argument("ExceptionDescriptionToString: !ePtr");
+
+  try
+  {
+    std::rethrow_exception(ePtr);
+  }
+  catch (std::exception const & e)
+  {
+    return ExceptionDescriptionToString(e);
+  }
+  catch (...)
+  {
+    return "1: Unknown exception";
+  }
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Creates a string containing an detailed hex-dump of some binary data.
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * Safe, no cancellation point included.
+ *
+ * ---
+ *
+ * \param address
+ * Address where the first byte of data is located at.\n
+ * This is used for printing only. No read-access on the given address will be performed by this.
+ * \param pData
+ * Pointer to the data located at `address`.
+ * \param n
+ * Number of bytes inside the buffer referenced by `pData`.\n
+ * `wordSize` must divide this without any remainder.
+ * \param wordSize
+ * Word size for displaying data in hex-format. This must be 1, 2, or 4.
+ * \param valuesPerLine
+ * Number of hex values per line. If `n` / `wordSize` is less than this, then white spaces
+ * will be inserted.
+ * \return
+ * String containing a detailed hex-dump of the binary data referenced by `pData` and `n`.\n
+ * Example output (n = 4, wordSize = 1, valuePerLine = 4):\n
+ * 0x10005321: 21 41 5C 87 .A..\n
+ * Example output (n = 4, wordSize = 1, valuePerLine = 8):\n
+ * 0x10005321: 21 41 5C 87 __ __ __ __ .A.. ('_' are not printed)
+ */
+std::string HexDump(uint32_t const address,
+                    void const * const pData,
+                    size_t const n,
+                    uint8_t const wordSize,
+                    uint8_t valuesPerLine)
+{
+  if (pData == nullptr)
+    throw std::invalid_argument("HexDump: pData");
+
+  if ((wordSize == 0) || (n % wordSize != 0))
+    throw std::invalid_argument("HexDump: n <-> wordSize");
+
+  if (valuesPerLine < n / wordSize)
+    throw std::invalid_argument("HexDump: valuesPerLine invalid");
+
+  std::ostringstream oss;
+
+  oss << "0x" << std::uppercase << std::right << std::setw(8) << std::setfill('0') << std::hex << address << ": ";
+
+  switch (wordSize)
+  {
+    case 1U:
+    {
+      uint8_t const * p = reinterpret_cast<uint8_t const *>(pData);
+      for (size_t i = 0; i < n; i++, valuesPerLine--)
+        oss << std::uppercase << std::right << std::setw(2) << std::setfill('0') << std::hex << static_cast<unsigned int>(p[i]) << " ";
+      while (valuesPerLine-- != 0)
+        oss << "   ";
+      break;
+    }
+
+    case 2U:
+    {
+      uint16_t const * p = reinterpret_cast<uint16_t const *>(pData);
+      for (size_t i = 0; i < (n / 2); i++, valuesPerLine--)
+        oss << std::uppercase << std::right << std::setw(4) << std::setfill('0') << std::hex << static_cast<unsigned int>(p[i]) << " ";
+      while (valuesPerLine-- != 0)
+        oss << "     ";
+      break;
+    }
+
+    case 4U:
+    {
+      uint32_t const * p = reinterpret_cast<uint32_t const *>(pData);
+      for (size_t i = 0; i < (n / 4); i++, valuesPerLine--)
+        oss << std::uppercase << std::right << std::setw(8) << std::setfill('0') << std::hex << static_cast<unsigned int>(p[i]) << " ";
+      while (valuesPerLine-- != 0)
+        oss << "         ";
+      break;
+    }
+
+    default:
+      throw std::invalid_argument("HexDump: wordSize invalid");
+  }
+
+  char const * p = reinterpret_cast<char const *>(pData);
+  for (size_t i = 0; i < n; i++)
+  {
+    char c = *p++;
+    if ((c < 0x20) || (c > 0x7E))
+      c = '.';
+    oss << c;
+  }
+
+  return oss.str();
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts an uint32_t into an std::string using hexadecimal representation and prefix "0x".
+ *
+ * Example:\n
+ * ToHex(11, 2) -> 0x0B
+ *
+ * ---
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee
+ *
+ * __Thread cancellation safety:__\n
+ * Safe, no cancellation point included.
+ *
+ * ---
+ *
+ * \param value
+ * Number that shall be converted.
+ * \param width
+ * Minimum number of digits. Range: 0..8.
+ * \return
+ * Result of the conversion.
+ */
+std::string ToHex(uint32_t const value, uint8_t const width)
+{
+  if (width > 8U)
+    throw std::invalid_argument("ToHex: width invalid");
+
+  std::ostringstream oss;
+  oss << "0x" << std::uppercase << std::right;
+  if (width != 0U)
+    oss << std::setw(width) << std::setfill('0');
+  oss << std::hex << value;
+
+  return oss.str();
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts an uint32_t into an std::string using binary representation and prefix "0b".
+ *
+ * Example:\n
+ * ToHex(11, 6) -> 0b001011
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::bad_alloc   Out of memory.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param value
+ * Number that shall be converted.
+ * \param width
+ * Minimum number of digits. Range: 0..32.
+ * \return
+ * Result of the conversion.
+ */
+std::string ToBin(uint32_t value, uint8_t width)
+{
+  if (width > 32U)
+    throw std::invalid_argument("ToBin: width invalid");
+
+  if (width == 0U)
+    width = 1U;
+
+  char buffer[35];
+  char* p = &buffer[34];
+
+  *p-- = 0;
+
+  while ((value != 0U) || (width != 0))
+  {
+    if ((value & 1U) != 0U)
+      *p-- = '1';
+    else
+      *p-- = '0';
+
+    value >>= 1U;
+
+    if (width != 0U)
+      width--;
+  }
+
+  *p-- = 'b';
+  *p = '0';
+
+  return p;
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts an uint32_t into an std::string using hexadecimal representation with no prefix.
+ *
+ * Example:\n
+ * ToHexNoPrefix(11, 2) -> 0B
+ *
+ * ---
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee
+ *
+ * __Thread cancellation safety:__\n
+ * Safe, no cancellation point included.
+ *
+ * ---
+ *
+ * \param value
+ * Number that shall be converted.
+ * \param width
+ * Minimum number of digits. Range: 0..8.
+ * \return
+ * Result of the conversion.
+ */
+std::string ToHexNoPrefix(uint32_t const value, uint8_t const width)
+{
+  if (width > 8U)
+    throw std::invalid_argument("ToHexNo0x: witdh invalid");
+
+  std::ostringstream oss;
+  oss << std::uppercase << std::right;
+  if (width != 0)
+    oss << std::setw(width) << std::setfill('0');
+  oss << std::hex << value;
+
+  return oss.str();
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts an uint32_t into an std::string using decimal and hexadecimal representation.
+ *
+ * Example:\n
+ * ToDecAndHex(11, 2) -> 11 (0x0B)
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param value
+ * Number that shall be converted.
+ * \param width
+ * Minimum number of digits used for the hexadecimal representation. Range: 0..8.
+ * \return
+ * Result of the conversion.
+ */
+std::string ToDecAndHex(uint32_t const value, uint8_t const width)
+{
+  return std::to_string(value) + " (" + ToHex(value, width) + ")";
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing a number in decimal representation into a value of type `uint8_t`.
+ *
+ * The function accepts the following textual representations of data of type `uint8_t`:
+ * - Integer numbers: 1, 3, 5; Range: 0..255
+ * - Any leading spaces characters are ignored
+ * - Trailing space characters are not allowed
+ *
+ * This function is intended to be used in function interpreting user input.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::out_of_range       Result does not fit into `uint8_t`.
+ *
+ * \throws std::invalid_argument   `s` is invalid.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String containing the number that shall be converted to an `uint8_t`.
+ * \return
+ * `uint8_t` value.
+ */
+uint8_t DecimalToU8(std::string const & s)
+{
+  size_t n;
+  long const value = std::stol(s, &n, 10);
+
+  if (n != s.size())
+    throw std::invalid_argument("DecimalToU8");
+
+  if ((value < std::numeric_limits<uint8_t>::min()) || (value > std::numeric_limits<uint8_t>::max()))
+    throw std::out_of_range("DecimalToU8");
+
+  return static_cast<uint8_t>(value);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing a number in decimal representation into a value of type `uint32_t`.
+ *
+ * The function accepts the following textual representations of data of type `uint32_t`:
+ * - Integer numbers: 1, 3, 5; Range: 0..2^32-1
+ * - Any leading spaces characters are ignored
+ * - Trailing space characters are not allowed
+ *
+ * This function is intended to be used in function interpreting user input.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::out_of_range       Result does not fit into `uint32_t`.
+ *
+ * \throws std::invalid_argument   `s` is invalid.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String containing the number that shall be converted to an `uint32_t`.
+ * \return
+ * `uint32_t` value.
+ */
+uint32_t DecimalToU32(std::string const & s)
+{
+  size_t n;
+  long long const value = std::stoll(s, &n, 10);
+
+  if (n != s.size())
+    throw std::invalid_argument("DecimalToU32");
+
+  if ((value < std::numeric_limits<uint32_t>::min()) || (value > std::numeric_limits<uint32_t>::max()))
+    throw std::out_of_range("DecimalToU32");
+
+  return static_cast<uint32_t>(value);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing a number in decimal representation into a value of type `int32_t`.
+ *
+ * The function accepts the following textual representations of data of type `int32_t`:
+ * - Integer numbers: -4, -2, 0, 1, 3, 5; Range: -2^31 .. 2^31-1
+ * - Any leading spaces characters are ignored
+ * - Trailing space characters are not allowed
+ *
+ * This function is intended to be used in function interpreting user input.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::out_of_range       Result does not fit into `int32_t`.
+ *
+ * \throws std::invalid_argument   `s` is invalid.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String containing the number that shall be converted to an `int32_t`.
+ * \return
+ * `int32_t` value.
+ */
+int32_t DecimalToI32(std::string const & s)
+{
+  size_t n;
+  long long const value = std::stoll(s, &n, 10);
+
+  if (n != s.size())
+    throw std::invalid_argument("DecimalToI32");
+
+  if ((value < std::numeric_limits<int32_t>::min()) || (value > std::numeric_limits<int32_t>::max()))
+    throw std::out_of_range("DecimalToI32");
+
+  return static_cast<int32_t>(value);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing any valid number representation into a value of type `uint8_t`.
+ *
+ * The function accepts the following textual representations of data of type `uint8_t`:
+ * - Hex values: 0x12, 0xAB, 0xab; Range: 0x00..0xFF
+ * - Binary values: 0b00001000; Range: 0b00000000..0b11111111
+ * - Integer numbers: 1, 3, 5; Range: 0..255
+ * - Leading and trailing space characters are not allowed
+ *
+ * This function is intended to be used in function interpreting user input. It provides
+ * maximum flexibility to the user when a `uint8_t` shall be entered.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::out_of_range       Result does not fit into `uint8_t`.
+ *
+ * \throws std::invalid_argument   `s` is invalid.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String that shall be converted to an `uint8_t`.
+ * \return
+ * `uint8_t` value.
+ */
+uint8_t AnyStringToU8(std::string const & s)
+{
+  long value;
+  size_t n;
+  if (StartsWith(s, " "))
+  {
+    throw std::invalid_argument("AnyStringToU8");
+  }
+  else if (StartsWith(s, "0x"))
+  {
+    value = std::stol(s, &n, 16);
+
+    if (n != s.size())
+      throw std::invalid_argument("AnyStringToU8");
+  }
+  else if (StartsWith(s, "0b"))
+  {
+    value = std::stol(s.substr(2), &n, 2);
+
+    if (n != s.size() - 2U)
+      throw std::invalid_argument("AnyStringToU8");
+  }
+  else if (StartsWith(s, "-"))
+  {
+    throw std::invalid_argument("AnyStringToU8");
+  }
+  else
+  {
+    value = std::stol(s, &n, 10);
+
+    if (n != s.size())
+      throw std::invalid_argument("AnyStringToU8");
+  }
+
+  if ((value < std::numeric_limits<uint8_t>::min()) || (value > std::numeric_limits<uint8_t>::max()))
+    throw std::out_of_range("AnyStringToU8");
+
+  return static_cast<uint8_t>(value);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing any valid number representation into a value of type `uint32_t`.
+ *
+ * The function accepts the following textual representations of data of type `uint32_t`:
+ * - Hex values: 0x12000000, 0xAB000000, 0xab00; Range: 0x00000000..0xFF000000
+ * - Binary values: 0b001000; Range: max. 32 bits
+ * - Integer numbers: 1, 3, 5; Range: 0..2^32-1
+ * - Leading and trailing space characters are not allowed
+ *
+ * This function is intended to be used in function interpreting user input. It provides
+ * maximum flexibility to the user when a `uint32_t` shall be entered.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::out_of_range       Result does not fit into `uint32_t`.
+ *
+ * \throws std::invalid_argument   `s` is invalid.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String that shall be converted to an `uint32_t`.
+ * \return
+ * `uint32_t` value.
+ */
+uint32_t AnyStringToU32(std::string const & s)
+{
+  long long value;
+  size_t n;
+  if (StartsWith(s, " "))
+  {
+    throw std::invalid_argument("AnyStringToU32");
+  }
+  else if (StartsWith(s, "0x"))
+  {
+    value = std::stoll(s, &n, 16);
+
+    if (n != s.size())
+      throw std::invalid_argument("AnyStringToU32");
+  }
+  else if (StartsWith(s, "0b"))
+  {
+    value = std::stoll(s.substr(2), &n, 2);
+
+    if (n != s.size() - 2U)
+      throw std::invalid_argument("AnyStringToU32");
+  }
+  else if (StartsWith(s, "-"))
+  {
+    throw std::invalid_argument("AnyStringToU32");
+  }
+  else
+  {
+    value = std::stoll(s, &n, 10);
+
+    if (n != s.size())
+      throw std::invalid_argument("AnyStringToU32");
+  }
+
+  if ((value < std::numeric_limits<uint32_t>::min()) || (value > std::numeric_limits<uint32_t>::max()))
+    throw std::out_of_range("AnyStringToU32");
+
+  return static_cast<uint32_t>(value);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing any valid character representation into a value of type `char`.
+ *
+ * The function accepts the following textual representations of data of type `char`:
+ * - Hex values: 0x12, 0xAB, 0xab; Range: 0x00..0xFF
+ * - Binary values: 0b00001000; Range: 0b00000000..0b11111111
+ * - Single ASCII characters in '': 'a', 'b', ''' -> '
+ * - Integer numbers: 1, 3, -5; Range: -128..127
+ * - Leading and trailing space characters are not allowed
+ *
+ * This function is intended to be used in function interpreting user input. It provides
+ * maximum flexibility to the user when a `char` shall be entered.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::out_of_range       Result does not fit into `char`.
+ *
+ * \throws std::invalid_argument   `s` is invalid.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String that shall be converted to an `char`.
+ * \return
+ * `char` value.
+ */
+char AnyStringToChar(std::string const & s)
+{
+  long value;
+  size_t n;
+  if (StartsWith(s, " "))
+  {
+    throw std::invalid_argument("AnyStringToChar");
+  }
+  else if (StartsWith(s, "0x"))
+  {
+    value = std::stol(s, &n, 16);
+
+    if (n != s.size())
+      throw std::invalid_argument("AnyStringToChar");
+
+    if ((value < 0) || (value > 255))
+      throw std::out_of_range("AnyStringToChar");
+  }
+  else if (StartsWith(s, "0b"))
+  {
+    value = std::stol(s.substr(2), &n, 2);
+
+    if (n != s.size() - 2U)
+      throw std::invalid_argument("AnyStringToChar");
+
+    if ((value < 0) || (value > 255))
+      throw std::out_of_range("AnyStringToChar");
+  }
+  else if (StartsWith(s, "'"))
+  {
+    if ((s.length() != 3U) || (s[2] != '\''))
+      throw std::invalid_argument("AnyStringToChar");
+
+    return s[1];
+  }
+  else
+  {
+    value = std::stol(s, &n, 10);
+
+    if (n != s.size())
+      throw std::invalid_argument("AnyStringToChar");
+
+    if ((value < std::numeric_limits<char>::min()) || (value > std::numeric_limits<char>::max()))
+      throw std::out_of_range("AnyStringToChar");
+  }
+
+  return static_cast<char>(value);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing a two digit hexadecimal number into a value of type `uint8_t`.
+ *
+ * The input format is strict:
+ * - two digits, hexadecimal format
+ * - no "0x" prefix
+ * - Leading and trailing space characters are not allowed
+ *
+ * This function is intended to be used in functions interpreting user input.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::out_of_range       Result does not fit into `uint8_t`.
+ *
+ * \throws std::invalid_argument   `s` is invalid.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String containing the 2-digit hexadecimal number that shall be converted to an `uint8_t`.
+ * \return
+ * `uint8_t` value.
+ */
+uint8_t TwoDigitHexToU8(std::string const & s)
+{
+  if ((s.size() != 2U) || (s.front() == '+') || (s.front() == '-') || (s.front() == ' '))
+    throw std::invalid_argument("TwoDigitHexToU8");
+
+  size_t n;
+  auto const value = std::stol(s, &n, 16);
+
+  if (n != 2U)
+    throw std::invalid_argument("TwoDigitHexToU8");
+
+  if ((value < std::numeric_limits<uint8_t>::min()) || (value > std::numeric_limits<uint8_t>::max()))
+    throw std::out_of_range("TwoDigitHexToU8");
+
+  return static_cast<uint8_t>(value);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing a two digit hexadecimal number into a value of type `uint16_t`.
+ *
+ * The input format is strict:
+ * - four digits, hexadecimal format
+ * - no "0x" prefix
+ * - Leading and trailing space characters are not allowed
+ *
+ * This function is intended to be used in functions interpreting user input.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::out_of_range       Result does not fit into `uint16_t`.
+ *
+ * \throws std::invalid_argument   `s` is invalid.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String containing the 4-digit hexadecimal number that shall be converted to an `uint16_t`.
+ * \return
+ * `uint16_t` value.
+ */
+uint16_t FourDigitHexToU16(std::string const & s)
+{
+  if ((s.size() != 4U) || (s.front() == '+') || (s.front() == '-') || (s.front() == ' '))
+    throw std::invalid_argument("FourDigitHexToU16");
+
+  size_t n;
+  long const value = std::stol(s, &n, 16);
+
+  if (n != 4U)
+    throw std::invalid_argument("FourDigitHexToU16");
+
+  if ((value < std::numeric_limits<uint16_t>::min()) || (value > std::numeric_limits<uint16_t>::max()))
+    throw std::out_of_range("FourDigitHexToU16");
+
+  return static_cast<uint16_t>(value);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing a double-precision floating point number into a value of type `double`.
+ *
+ * The function accepts the following textual representations of data of type `double`:
+ * - 0, +0, -0, 0.5, +0.5, -0.5, 0.5E+1, 0.5E1. 0.5E-1, 0.5e1
+ * - INF, INFINITY (both case-insensitive)
+ * - NAN, NAN(*) (both case-insensitive; * may be any sequence of digits, letters, and underscores)
+ * - Any leading spaces characters are ignored
+ * - Trailing space characters are not allowed
+ *
+ * This function is intended to be used in functions interpreting user input.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::out_of_range       Result does not fit into `double`.
+ *
+ * \throws std::invalid_argument   `s` is invalid.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String containing the floating point number that shall be converted into a value of type `double`.
+ * \return
+ * `double` value.
+ */
+double ToDouble(std::string const & s)
+{
+  if (StartsWith(s, " "))
+    throw std::invalid_argument("ToDouble");
+
+  size_t n;
+  double const d = std::stod(s, &n);
+  if (n != s.length())
+    throw std::invalid_argument("ToDouble");
+
+  return d;
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Disassembles strings similar to sample "Field1 = Value1, Field2 = Value2" (or configurable variants of the
+ *        sample) into a vector of pairs of field and value.
+ *
+ * __Example:__\n
+ * _Input:_ Name: "Willy Black" Age: 50\n
+ * _separatorChar_: space\n
+ * _assignmentChar_: colon (:)\n
+ * _quotationMarkChar_: double quote (")\n
+ * _Result_:\n
+ * 1st pair: {"Name", "Willy Black"}\n
+ * 2nd pair: {"Age", "50"}\n
+ * \n
+ * _Input:_ Name: "Willy Black", Age: 50\n
+ * _separatorChar_: comma (,)\n
+ * _assignmentChar_: colon (:)\n
+ * _quotationMarkChar_: double quote (")\n
+ * _Result_:\n
+ * 1st pair: {"Name", "Willy Black"}\n
+ * 2nd pair: {"Age", "50"}\n
+ * \n
+ * _Input:_ Type=Potatoe; maxSize=12; maxWeight=3000\n
+ * _separatorChar_: semicolon (;)\n
+ * _assignmentChar_: equality sign (=)\n
+ * _quotationMarkChar_: double quote (")\n
+ * _Result_:\n
+ * 1st pair: {"Type", "Potatoe"}\n
+ * 2nd pair: {"maxSize", 12}\n
+ * 3rd pair: {"maxWeight", 3000}
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   `input` is invalid
+ *
+ * \throws std::invalid_argument   Separator and quotation mark characters are not different.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param input
+ * String that shall be disassembled.
+ *
+ * \param separatorChar
+ * Character that shall be recognized as separator between _pairs_ of field and value.\n
+ * Typical examples: space, comma, or semicolon
+ *
+ * \param assignmentChar
+ * Character that shall be recognized as separator between field and value _within a pair_.\n
+ * Typical examples: colon or equality sign\n
+ * If `separatorChar` is the space character, then the separator between field and value may be surrounded by any number
+ * of space characters.
+ *
+ * \param quotationMarkChar
+ * Character that shall be recognized as quotation mark. Each field and value may be surrounded by quotation mark
+ * characters. If so, then any occurrence of `separatorChar` and `assignmentChar` will be ignored within the quoted
+ * section. Quotation mark characters will be removed from the results.
+ *
+ * \return
+ * Vector of pairs of field and value extracted from `input`.
+ */
+std::vector<std::pair<std::string,std::string>> ExtractFieldAndValue(std::string const & input,
+                                                                     char const separatorChar,
+                                                                     char const assignmentChar,
+                                                                     char const quotationMarkChar)
+{
+  if (   (separatorChar == assignmentChar)
+      || (separatorChar == quotationMarkChar)
+      || (assignmentChar == quotationMarkChar))
+  {
+    throw std::invalid_argument("ExtractFieldAndValue: Separator and quotation mark characters must be different.");
+  }
+
+  // Split input by 'separatorChar'. Adjacent separators will be ignored if the space character is the separator.
+  auto pairs = Split(input, separatorChar, (separatorChar == ' '), quotationMarkChar);
+
+  // ensure that there are no empty pairs
+  if (separatorChar != ' ')
+  {
+    for (auto const & pair: pairs)
+    {
+      if (pair.empty())
+        throw std::invalid_argument("ExtractFieldAndValue: 'input' is malformed (two adjacent separators)");
+    }
+  }
+
+  // If 'separatorChar' is the space character, then undo the split in cases where 'assignmentChar' characters
+  // were surrounded by space characters.
+  if (separatorChar == ' ')
+    ConditionalConcat(pairs, assignmentChar);
+
+  // -------------------------------------------------------------------------------
+  // At this point, each item in "pairs" should have the following structure:
+  // field<assignmentChar>value
+  //
+  // Note:
+  // - field and value may or may not be surrounded by quotationMarkChar characters
+  // - field and value may or may not have leading or trailing space characters in
+  //   addition to potential quotationMarkChar characters.
+  // - presence of assignmentChar character is not guaranteed
+  // -------------------------------------------------------------------------------
+
+  // process each pair and fill vector "result"
+  std::vector<std::pair<std::string,std::string>> result;
+  for (auto const & pair: pairs)
+  {
+    // split the pair into field and value
+    auto fieldAndValue = Split(pair, assignmentChar, false, quotationMarkChar);
+    if (fieldAndValue.size() != 2U)
+      throw std::invalid_argument("ExtractFieldAndValue: Field/value-pair \"" + pair + "\" from 'input' is malformed.");
+
+    // Ensure that both field and value contain exactly zero or exactly two quotation mark characters.
+    // Further trim any space characters, then trim any quotation mark characters from both field and value.
+    // Finally ensure that there are not any quotation mark characters left in field and value.
+    for (auto & str: fieldAndValue)
+    {
+      // ensure that there are exactly zero or exactly two quotation mark characters
+      auto nbOfQMC = CountChar(str, quotationMarkChar);
+      if ((nbOfQMC != 0U) && (nbOfQMC != 2U))
+        throw std::invalid_argument("ExtractFieldAndValue: Field/value-pair \"" + pair + "\" from 'input' is malformed (invalid number of quotation mark characters).");
+
+      // trim any space characters, then trim any quotation mark characters
+      auto strNew = Trim(Trim(str), quotationMarkChar);
+
+      // ensure that there are not any quotation mark characters left
+      if (strNew.find(quotationMarkChar) != std::string::npos)
+        throw std::invalid_argument("ExtractFieldAndValue: Field/value-pair \"" + pair + "\" from 'input' is malformed (invalid placement of quotation mark characters).");
+
+      str = std::move(strNew);
+    }
+
+    result.emplace_back(std::move(fieldAndValue[0]), std::move(fieldAndValue[1]));
+  }
+
+  return result;
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Allocates storage for a null-terminated c-string and prints formatted text into it.
+ *
+ * This provides approximatedly the same functionality as `vasprintf()` (extensions of the C-library), which is not
+ * available on all platforms.
+ *
+ * __Format specifiers:__\n
+ * Parameter `pFmt` shall refer to a null-terminated c-string containing the log message text and printf-style
+ * conversion specifiers. Each conversion specifier must have the following format:\n
+ * %[flags][width][.prec][size]type
+ *
+ * _%:_\n
+ * Indicates start of a conversion specifier. Use %% to print a %-character.
+ *
+ * _flags (optional):_
+ * - '-' Output shall be left justified and will be padded with space characters on the right. The default is right
+ *   justified with padding on the left.
+ * - '+' Always print sign (+/-) in case of a signed conversion (type d, i, f, F, e, E, a, A, g, G). By default, the
+ *   sign is only printed for negative values.
+ * - ' ' Print a space character instead of '+' in case of a signed convserion. This is ignored if '+' flag is present.
+ * - '0' Use leading zeros for padding of integers and floating point numbers (type d, i, o, x, X, u, f, F, e, E, a, A,
+ *   g, G) instead of space characters.\n
+ *   For integers (type d, i, o, x, X, u) this is ignored if '.prec' is specified.\n
+ *   This is ignored if '-' flag is present.\n
+ *   This is ignored if .prec is present and type is d, i, o, u, x, or X.\n
+ *   Specifying this flag for conversions other than integer and floating-point will result in undefined behaviour.
+ * - '#' Use alternative format:\n
+ *   Type o: Increase precision so that first digit is '0'.\n
+ *   Type x,X: Prepend 0x / 0X\n
+ *   Type f,F,e,E,a,A: Always print decimal point. Trailing zeros are removed.\n
+ *   Type g,G: Always print decimal point. Trailing zeros are not removed.\n
+ *   All other types: undefined
+ *
+ * _width (optional):_\n
+ * If present, then this controls the minimum width of the field. If necessary, the field will be padded with space
+ * characters or zeros.\n
+ * If this is '*', then an additional argument of type `int` must be present in the list of variable arguments in front
+ * of the value that shall be printed.
+ *
+ * _prec (optional):_\n
+ * '.' followed by a decimal number or '*'.\n
+ * If this is '*' then an additional argument of type `int` must be present in the list of variable arguments in front
+ * of the value that shall be printed.
+ * - For decimal numbers (type d, i, o, x, X, u), this specifies the minimum number of digits that shall appear in the
+ *   output.
+ * - For floating point numbers (type a, A), this specifies the exact number of digits after the decimal point.
+ * - For floating point numbers (type e, E, f, F), this specifies the exact number of digits after the decimal point.
+ *   Default is 6.
+ * - For floating point numbers (type g, G), this specifies the maximum number of significant digits after the decimal
+ *   point. Default is 6.
+ * - For a character string (type s), this specifies the maximum number of characters that shall be written. By default
+ *   the complete string is printed.
+ *
+ * _size (optional):_\n
+ * Length modifier. In conjunction with 'type', this specifies the expected argument type, see table below.
+ *
+ * _type:_\n
+ * Conversion format specifier.
+ *
+ * type  | output format                            | size hh       | size h         | none         | size l        | size ll            | size L
+ * ----- | ---------------------------------------- | ------------- | -------------- | ------------ | ------------- | ------------------ | ------
+ * c     | single char                              | -             | -              | int          | wint_t        | -                  | -
+ * s     | character string                         | -             | -              | char*        | wchar_t *     | -                  | -
+ * d/i   | signed integer, decimal                  | signed char   | short          | int          | long          | long long          | -
+ * o     | unsigned integer, octal                  | unsigned char | unsigned short | unsigned int | unsigned long | unsigned long long | -
+ * x/X   | unsigned integer, hex                    | unsigned char | unsigned short | unsigned int | unsigned long | unsigned long long | -
+ * u     | unsigned integer, decimal                | unsigned char | unsigned short | unsigned int | unsigned long | unsigned long long | -
+ * f/F   | floating point [-]d.d                    | -             | -              | double       | double        | -                  | long double
+ * e/E   | floating point, exp. notation            | -             | -              | double       | double        | -                  | long double
+ * a/A   | floating point, hex exp. notation        | -             | -              | double       | double        | -                  | long double
+ * g/G   | floating point, decimal or exp. notation | -             | -              | double       | double        | -                  | long double
+ * p     | Pointer, impl. defined format            | -             | -              | void*        | -             | -                  | -
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::bad_alloc   Out of memory.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param pFmt
+ * Pointer to a null-terminated c-string containing the text that shall be printed and printf-style conversion
+ * specifications that control how the `args` shall be converted and integrated into the text.\n
+ * nullptr is not allowed.
+ *
+ * \param args
+ * Variable number of arguments that shall be printed. The number and type of arguments must match the conversion
+ * specifiers embedded in `pFmt`.
+ *
+ * \return
+ * Pointer to the created null-terminated c-string.
+ */
+std::unique_ptr<char[]> VASPrintf(char const * const pFmt, va_list args)
+{
+  if (pFmt == nullptr)
+    throw std::invalid_argument("VASPrintf: !pFmt");
+
+  va_list args2;
+  va_copy(args2, args);
+  ON_SCOPE_EXIT(end_args) { va_end(args2); };
+
+  // determine size of output string
+  int size = vsnprintf(nullptr, 0U, pFmt, args);
+  if (size < 0)
+    throw std::runtime_error("VASPrintf: Failed (1)");
+
+  // trailing NUL is not counted by vsnprintf()
+  size += 1;
+
+  // allocate memory
+  std::unique_ptr<char[]> spBuffer(new char[size]);
+
+  // Create the output string.
+  // This time size includes the trailing NUL.
+  int const status = vsnprintf(spBuffer.get(), size, pFmt, args2);
+  if ((status < 0) || (status != (size - 1)))
+    throw std::runtime_error("VASPrintf: Failed (2)");
+
+  // success
+  return spBuffer;
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Allocates storage for a null-terminated c-string and prints formatted text into it.
+ *
+ * This provides approximatedly the same functionality as `asprintf()` (extensions of the C-library), which is not
+ * available on all platforms.
+ *
+ * For details about format specifiers, please refer to @ref VASPrintf().
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::bad_alloc   Out of memory.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param pFmt
+ * Pointer to a null-terminated c-string containing the text that shall be printed and printf-style conversion
+ * specifications that control how the `args` shall be converted and integrated into the text.\n
+ * nullptr is not allowed.
+ *
+ * \param ...
+ * Variable number of arguments that shall be printed. The number and type of arguments must match the conversion
+ * specifiers embedded in `pFmt`.
+ *
+ * \return
+ * Pointer to the created null-terminated c-string.
+ */
+std::unique_ptr<char[]> ASPrintf(char const * const pFmt, ...)
+{
+  va_list args;
+  va_start(args, pFmt);
+  ON_SCOPE_EXIT(end_args) { va_end(args); };
+
+  return VASPrintf(pFmt, args);
+}
+
+} // namespace string
+} // namespace gpcc

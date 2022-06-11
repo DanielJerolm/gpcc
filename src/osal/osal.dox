@@ -1,0 +1,605 @@
+/*
+    General Purpose Class Collection (GPCC)
+    Copyright (C) 2019, 2022 Daniel Jerolm
+
+    This file is part of the General Purpose Class Collection (GPCC).
+
+    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+                                      ---
+
+    A special exception to the GPL can be applied should you wish to distribute
+    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
+    to provide the source code for any proprietary components. See the file
+    license_exception.txt for full details of how and when the exception can be applied.
+*/
+
+/**
+ * @ingroup GPCC
+ * @defgroup GPCC_OSAL OSAL
+ *
+ * \brief Portable Operating System Abstraction Layer.
+ *
+ * # Provided functionality
+ * GPCC's OSAL provides three groups of functionality:
+ * - Panic handling (see @ref GPCC_OSAL_PANIC for details)
+ * - Multithreading primitives (see @ref GPCC_OSAL_THREADING for details)
+ * - Time Flow Control (TFC) for unit tests (see @ref GPCC_TIME_FLOW_CONTROL for details)
+ *
+ * Panic handling and threading primitives are provided for all supported operating systems. The API and the provided
+ * functionality are the same or almost equivalent on all supported operating systems in order to achieve portability.
+ * If there are any differences or specific topics, then they will be clearly pointed out in the documenation. Please
+ * pay attention to section "Documentation" below.
+ *
+ * TFC is only available for selected operating systems. See section "Configuration" below.
+ *
+ * # Usage
+ * To access any of the classes offered by GPCC's OSAL you just have to include the desired header files located in
+ * folder "gpcc/src/osal".
+ *
+ * __Do not include headers from the subdirectories of "gpcc/src/osal"!__
+ *
+ * The headers located in "gpcc/src/osal" will include the required headers according to your specific operating system.
+ * For details please refer to section "Configuration" below.
+ *
+ * # Configuration
+ * To select a specific OSAL implementation for your project please set the defines as described in
+ * "gpcc/readme_gpcc_configuration.txt".
+ *
+ * Currenty the following platforms and operating systems are supported:
+ * - Linux x64
+ * - Linux x64 with TFC for unit tests
+ * - Linux ARM (32/64 bit)
+ * - Linux ARM (32/64 bit) with TFC for unit tests
+ * - ChibiOS/RT (Kernel 6.0.3) for ARM
+ *
+ * # Documentation
+ * Though the OSAL's API is identical among all supported platforms and operating systems, there are small differences
+ * (e.g. constants, mapping of scheduling policies, availability of deferred thread cancellation, etc.) that are pointed
+ * out in the doxygen documentation. There is a specific doxygen documentation dedicated to each supported platform and
+ * operating system available. Ensure that you have generated the correct doxygen documentation for your platform. It
+ * will point out important differences to other platforms.
+ */
+
+/**
+ * @ingroup GPCC_OSAL
+ * @defgroup GPCC_OSAL_PANIC Panic Handling
+ *
+ * \brief Offers abort of program execution with panic message in case of unrecoverable errors.
+ *
+ * # Use cases
+ * ## Unhandled/unexpected exceptions
+ * If a C++ function/method is not expected to throw any exception, then the author should attach the `noexcept`-
+ * specifier to the functions's definition and declaration. The `noexcept` keyword expresses that the function provides
+ * the no-throw guarantee.
+ *
+ * If the function throws anyway, then the noexcept-specification is violated and the C/C++ runtime will abort the
+ * program:\n
+ * An unexpected exception is this function...
+ * ~~~{.cpp}
+ * void MyFunc(void) noexcept
+ * {
+ *   gpcc::osal::MutexLocker m(mutex); // <-- may throw, but is absolutely not expected to do so
+ *
+ *   // [more code]
+ * }
+ * ~~~
+ * ...may result in the following output from the C/C++ runtime:
+ * ~~~{.txt}
+ * terminate called after throwing an instance of 'std::system_error'
+ * what(): pthread_mutex_lock(...) failed
+ * Aborted (core-dump written)
+ * ~~~
+ *
+ * With this output it is hard to locate the function whose noexcept-specification has been violated. On the other hand,
+ * the what()-description of the exception clearly indicates a problem with the underlying mutex lock functionality
+ * offered by the operating system.
+ *
+ * If information about the location of the error is useful for debugging, then GPCC's Panic()-functions can be used
+ * __in addition__ to the `noexcept`-specification:
+ * ~~~{.cpp}
+ * void MyFunc(void) noexcept
+ * {
+ *   try
+ *   {
+ *     gpcc::osal::MutexLocker m(mutex); // <-- may throw, but is absolutely not expected to do so
+ *
+ *     // [...] <-- more code that could throw, but is absolutely not expected to do so
+ *   }
+ *   catch (...)
+ *   {
+ *     PANIC();
+ *   }
+ * }
+ * ~~~
+ * The output will be something like this:
+ * ~~~{.txt}
+ * PANIC: FileXYZ.cpp (233)
+ * Aborted (core-dump written)
+ * ~~~
+ *
+ * If more detailled output is required, then there are more sophisticated PANIC()-macros and Panic()-functions
+ * available.
+ *
+ * __Rule of thumb:__\n
+ * If an exception should not occurr (e.g. mutex lock failed), or if its only root cause would be a software bug inside
+ * _your_ code, then a `noexcept` should be sufficient and the try-catch-panic could be omitted.
+ *
+ * However if an error can be triggered by a software bug in the code of the _user_ of your functionality, e.g. due to
+ * violation of an interface contract, then you should consider using a try-catch-panic in addition to the `noexcept`
+ * keyword. A try-catch-panic can also be applied if your function is large and complex. It may also be removed again at
+ * a later point in time.
+ *
+ * Using a try-catch-panic slightly increases code footprint and decreases readability of source code due to the
+ * try-catch-block.
+ *
+ * ## Broken invariants
+ * Almost any software contains invariants, which must be valid at any time:
+ * - Number of items in a linked list and a variable tracking the number of items.
+ * - Bookkeeping of a memory pool or memory manager.
+ * - Two state machines whose states have certain valid combinations only.
+ *
+ * In case of a broken invariant, as a last resort, the program should be terminated to avoid undefined behavior. This
+ * can be done via GPCC's Panic().
+ *
+ * # Panic handling provided by GPCC
+ * ## API
+ * GPCC provides a set of overloaded Panic()-functions that can be used to abort program execution in case of an
+ * unrecoverable error. In addition to program abort, the functions allow to submit a panic text message to the runtime,
+ * which can be used to inform about details and/or the location of the panic condition.
+ *
+ * The following overloads are available:
+ * - @ref gpcc::osal::Panic(void)
+ * - @ref gpcc::osal::Panic(char const * const pMessage)
+ * - @ref gpcc::osal::Panic(char const * const pMessage, std::exception const & e)
+ * - @ref gpcc::osal::Panic(char const * const pFileName, int const line)
+ * - @ref gpcc::osal::Panic(char const * const pFileName, int const line, std::exception const & e)
+ *
+ * Calling any of these functions will result in invocation of a panic handler, which will terminate program execution.
+ * Depending on the platform and operating system, an output to `stderr` or a post-mortem-log will be created.
+ *
+ * ## Hint on code size
+ * The size of code memory occupied by the text messages passed to each call to Panic() should be considered:
+ *
+ * If `pMessage` contains exhaustive information about the location and error reason (e.g. "MyClass::MyMethod: Fatal
+ * error XY"), then there will be likely one unique message string (each 40-80 bytes) stored in code memory per
+ * invocation of Panic().
+ *
+ * If the overloads of Panic() taking `pFileName` or the macros @ref PANIC() and @ref PANIC_E() are used, then the size
+ * of the consumed code memory is minimal since all panics in a file share the same `pFileName` string.
+ *
+ * ## The panic handler
+ * The implementation of the panic handler is platform and operating system specific.
+ *
+ * For Linux, the default panic handler provided by GPCC will dump the text message passed to Panic() to `stderr` and
+ * abort the process.
+ *
+ * For ChibiOS/RT, the default panic handler provided by GPCC will forward the text message passed to Panic() to
+ * `chSysHalt()`.
+ *
+ * If the default panic handler is not sufficient, then it can be replaced by a user-defined panic handler at any time
+ * via @ref gpcc::osal::SetPanicHandler().
+ */
+
+/**
+ * @ingroup GPCC_OSAL
+ * @defgroup GPCC_OSAL_THREADING Threading
+ *
+ * \brief Threading primitives.
+ *
+ * GPCC's OSAL provides the following primitives for multithreading:
+ * - Thread (see class [Thread](@ref gpcc::osal::Thread))
+ * - Mutex (see class [Mutex](@ref gpcc::osal::Mutex))
+ * - Condition Variable (see class [ConditionVariable](@ref gpcc::osal::ConditionVariable))
+ * - Semaphore (see class [Semaphore](@ref gpcc::osal::Semaphore))
+ * - R/W-Lock (see class [RWLock](@ref gpcc::osal::RWLock))
+ * - Automatic mutex locker/unlocker (see classes [MutexLocker](@ref gpcc::osal::MutexLocker) and
+ *   [AdvancedMutexLocker](@ref gpcc::osal::AdvancedMutexLocker))
+ * - Thread Registry (see class [ThreadRegistry](@ref gpcc::osal::ThreadRegistry))
+ *
+ * # Platform / Operating System specific differences
+ * ## Condition Variable
+ * OS / Platform | Thread unblocked upon signal
+ * ------------- | ----------------------------
+ * chibios_arm   | Thread with highest priority
+ * linux_arm     | Thread with highest priority
+ * linux_x64     | Thread with highest priority
+ * linux_arm_tfc | Latest blocked thread (LIFO)
+ * linux_x64_tfc | Latest blocked thread (LIFO)
+ *
+ * ## Mutex
+ * OS / Platform | Priority Inheritance Protocol | Thread that locks when another thread unlocks | Runtime error checks
+ * ------------- | ----------------------------- | --------------------------------------------- | --------------------
+ * chibios_arm   | Yes                           | Thread with highest priority                  | unlock without lock, unlock order violation
+ * linux_arm     | Yes                           | Thread with highest priority                  | ?
+ * linux_x64     | Yes                           | Thread with highest priority                  | ?
+ * linux_arm_tfc | No                            | Random                                        | Recursion, unlock without lock
+ * linux_x64_tfc | No                            | Random                                        | Recursion, unlock without lock
+ *
+ * ## Semaphore
+ * OS / Platform | Thread unblocked upon post/increment
+ * ------------- | ------------------------------------
+ * chibios_arm   | FIFO if `CH_CFG_USE_SEMAPHORES_PRIORITY = false` (default), otherwise thread with highest priority
+ * linux_arm     | ?
+ * linux_x64     | ?
+ * linux_arm_tfc | Thread with highest priority
+ * linux_x64_tfc | Thread with highest priority
+ *
+ * ## Thread
+ * OS / Platform | Sleep_ms() and Sleep_ns()
+ * ------------- | -------------------------
+ * chibios_arm   | Minimum sleep time: Round up to system tick period + 0..1 system tick periods
+ * linux_arm     | Same as chibios_arm or better
+ * linux_x64     | Same as chibios_arm or better
+ * linux_arm_tfc | One nanosecond precision
+ * linux_x64_tfc | One nanosecond precision
+ *
+ * ### Linux (linux_x64, linux_arm)
+ * Full support.\n
+ * Be aware that some scheduling policies might require special user rights/permissions.
+ *
+ * \htmlonly <style>div.image img[src="osal/os/priority_mapping_linux.png"]{width:50%;}</style> \endhtmlonly
+ * \image html "osal/os/priority_mapping_linux.png" "Priority Mapping for Linux"
+ *
+ * ### ChibiOS/RT (chibios_arm)
+ * - Scheduling policies `Other`, `Idle`, and `Batch` are emulated by mapping them to specific fixed priorities (see
+ *   figure below).
+ * - Scheduling policies `Fifo` and `RR` have the same behavior (both `RR`). Priority is always above the other
+ *   policies (see figure below).
+ * - System calls (e.g. blocking on a ConditionVariable) do not support deferred cancellation.
+ *
+ * \htmlonly <style>div.image img[src="osal/os/priority_mapping_chibiosrt.png"]{width:50%;}</style> \endhtmlonly
+ * \image html "osal/os/priority_mapping_chibiosrt.png" "Priority Mapping for ChibiOS/RT"
+ *
+ * ### TFC (linux_arm_tfc, linux_x64_tfc)
+ * - All scheduling policies and priorities are mapped to Linux scheduling policy `Other`.\n
+ *   This is OK, because TFC provides the illusion of an CPU with infinite speed and infinite number of cores.
+ * - System calls (e.g. blocking on a ConditionVariable) support deferred cancellation.
+ */
+
+/**
+ * @ingroup GPCC_OSAL
+ * @defgroup GPCC_TIME_FLOW_CONTROL Time Flow Control
+ *
+ * \brief Makes timed sleeps and timeouts independent of the machine's performance and workload.
+ *
+ * # Main Use Case
+ * TFC's time flow control feature is intended to be used in conjunction with unit- and integration- tests. Sometimes
+ * test fixtures used in test case implementations include fake modules, which emulate both device drivers _and the_
+ * _real hardware usually connected to the real device drivers_. This is often the case if the UUT requires access to
+ * hardware in order to work in a meaningful way.\n
+ * Here are two examples for scenarios, which require use of an hardware fake implemented in software:
+ * - Test cases for low-level software components which are closely coupled to hardware.
+ * - Simulation of an __complete embedded firmware__ inside unit tests.
+ *
+ * The main difficulty is that actions carried out in hardware consume physical time and that software often uses
+ * timeouts to supervise these actions. Examples for actions which are usually supervised using a timeout are:
+ * - Writing to an EEPROM device.
+ * - Transmitting a message over a network.
+ * - Communication with a peripheral chip.
+ * - Driving an actuator and reception of feedback from a sensor.
+ *
+ * TFC emulates the system time visible to the process executing the tests. All timed sleeps and all timeouts depend on
+ * the system time emulated by TFC. TFC emulates the system time in such a way that the processing power and workload of
+ * the machine executing the tests have no impact on the relationship between timeouts implemented in the UUT and the
+ * timing implemented in the hardware fake. TFC allows to build hardware fakes which model the timing behaviour of the
+ * real hardware down to nanosecond precision.
+ *
+ * # How does it work?
+ * Like any port of GPCC's OSAL, the TFC port/variant just provides another implementation of the threading primitives
+ * offered by any GPCC OSAL variant. The software build on GPCC therefore does not recognize any difference regardless
+ * which concrete OSAL implementation is in use.\n
+ * (see @ref GPCC_OSAL and @ref GPCC_OSAL_THREADING)
+ *
+ * "Normal" ports of GPCC's OSAL usually just wrap the primitives offered by the underlying operating system into a
+ * class and offer a defined API:
+ *
+ * \htmlonly <style>div.image img[src="osal/tfc/TFC_Standard_OSAL.png"]{width:50%;}</style> \endhtmlonly
+ * \image html "osal/tfc/TFC_Standard_OSAL.png" "Normal OSAL implementation"
+ *
+ * In contrast to the "normal" ports of GPCC's OSAL, the TFC port/variant does not wrap the primitives offered by the
+ * underlying operating system. Instead the OSAL primitives offered by TFC __emulate__ the behaviour of threads,
+ * mutexes, condition variables, and semaphores.
+ *
+ * \htmlonly <style>div.image img[src="osal/tfc/TFC_Overview_OSAL.png"]{width:70%;}</style> \endhtmlonly
+ * \image html "osal/tfc/TFC_Overview_OSAL.png" "OSAL implementation with TFC"
+ *
+ * The emulation of OSAL primitives allows TFC to monitor the function calls issued by the application to the OSAL
+ * primitives. This gives TFC a deep insight into the threads running inside the application.\n
+ * TFC knows at any point in time:
+ * - The number of existing threads.
+ * - Which threads are blocked and which threads are not blocked.
+ * - On what kind of primitive a thread is blocked.
+ * - If threads are blocked with a timeout and what the timeout's value is.
+ * - Which threads are blocked but about to wake up.
+ *
+ * On the other hand, TFC has full control of the following:
+ * - Expiration of any timeout
+ * - System time
+ *
+ * At this point, it is time to explain what TFC does. It can be described in two sentences:\n
+ * 1. __TFC increments the system time whenever all threads in the process are blocked.__
+ * 2. __The size of the increment is choosen in such a way, that the system time is advanced to the next nearest point__
+ *    __in time at which at least one thread in the process wakes up due to expiration of a timeout.__
+ *
+ * This gives the process the illusion of being executed on a machine with infinite processing power and an infinite
+ * number of CPU cores.
+ *
+ * The figure below provides an example:
+ * \htmlonly <style>div.image img[src="osal/tfc/TFC_EmulatedTimeIncrement.png"]{width:50%;}</style> \endhtmlonly
+ * \image html "osal/tfc/TFC_EmulatedTimeIncrement.png" "Emulated time example"
+ *
+ * The figure shows two threads. Initially both threads are in a runnable state ("run" / green) and are executed either
+ * in parallel (if two CPU cores are available and assigned to the threads by the scheduler) or in some alternating mode
+ * according to the operating system's scheduler (e.g. time-slice or round-robin) in order to provide the illusion of
+ * parallel execution.
+ *
+ * The physical time is shown in the top lane of the figure. It increments strictly monotonous because execution of the
+ * process' threads consumes time. The "physical time lane" in the figure may be viewed as a placeholder for the
+ * machine's time _not_ emulated by GPCC (e.g. the time one can acquire via `clock()`, `clock_gettime()`, `std::chrono`
+ * or similar). The machine's time also increments continously while the CPU is executing code.
+ *
+ * The emulated time is shown at the bottom lane. It does not change until all threads are blocked. At point (1)
+ * thread 1 sleeps for one second of _emulated time_ (e.g. via @ref gpcc::osal::Thread::Sleep_ms()). The emulated system
+ * time does not increment since thread 2 is still in a runnable state. At point (2), thread 2 attempts to decrement a
+ * semaphore that is already zero and the thread is blocked on the semaphore. Since all threads in the process are
+ * blocked now, the emulated system time is incremented to the next event that will ocurr. This is _always_ some kind of
+ * timeout. In this scenario, the next event is the expiration of the sleep of thread 1. The emulated time is
+ * incremented to that point in time and thread 1 is switched back into the runnable state. The fact that the emulated
+ * time only increments if all threads are blocked on something creates the illusion of an CPU with infinite processing
+ * power.
+ *
+ * At point (3), thread 1 takes another sleep of 1s. Since all threads are blocked, the emulated system time is
+ * incremented immediately and thread 1 directly continues. At point (3), thread 1 does _not_ sleep. This is typical for
+ * code executed with TFC: At least one thread is always working. This behaviour is unusable for productive code, but it
+ * is perfect for unit test code: The test scenario is executed with maximum speed, even if the test includes sleeps or
+ * timeouts.
+ *
+ * At point (4), thread 1 increments the semaphore on which thread 2 is blocked. Thread 2 is switched to the runnable
+ * state and will execute code if the scheduler grants the CPU to the thread. The emulated system time is not
+ * incremented at this point.
+ *
+ * # Availability
+ * TFC is currently implemented for the following OS configurations:
+ * - x64 Linux
+ * - ARM (32bit/64bit) Linux
+ *
+ * # Rules
+ *
+ * ## Dont's
+ * - Do not implement an idle loop which does not contain any sleep or any blocking function.\n
+ *   Sytem time would never be incremented in this case and your software (especially hardware fakes) could not proceed
+ *   in a meaningful way.
+ * - Do not use `clock()`, `clock_gettime()`, `std::chrono` or similar. Use @ref gpcc::time only.\n
+ *   After process creation, TFC synchronizes the emulated time with the machine's time.\n
+ *   From that point on, the emulated time and the machine's time will be out of sync.\n
+ *   @ref gpcc::time provides the emulated time, other functions (e.g. offered by your C library) provide the machine's
+ *   time.
+ * - Do not use pthread- or STL- threading primitives. Use @ref gpcc::osal only.\n
+ *   TFC cannot monitor calls to those primitives and therefore cannot track the activities of the threads inside the
+ *   software using other threading primitives than those offered by @ref gpcc::osal.
+ * - Do not use `sleep()`, `usleep()`, `nanosleep()`, `clock_nanosleep()` or similar.\n
+ *   These functions are based on the machine's time and TFC cannot monitor calls to these functions. For TFC these
+ *   functions look as if a thread is busy with work. The emulated system time will not be incremented.\n
+ *   Instead use @ref gpcc::osal::Thread::Sleep_ms() or @ref gpcc::osal::Thread::Sleep_ns() only.
+ * - Do not process time information from file metadata (e.g. creation timestamp or last change timestamp).\n
+ *   These timing information is based on the machine's time, not on TFC's emulated time. Both times are not synchronized
+ *   to each other.
+ *
+ * ## Do's
+ * - TFC welcomes an event driven software design.
+ * - Designs using polling loops are also feasible, if the polling loops contain a blocking operation or a sleep.
+ *
+ * # Error Detection
+ * TFC monitors all calls issued to the OSAL's API. This allows TFC to detect some errors:
+ * - Attempt to lock a mutex which is already locked by the same thread.
+ * - Dead-lock detection (all threads blocked on events -> there is nobody who could wake up someone).
+ *
+ * # Special notes on deferred thread cancellation
+ * - TFC's dead lock detection is disabled whenever at least one thread has a cancellation request is pending.\n
+ *   This is due to the fact, that POSIX does not provide any information to TFC if a thread with a pending deferred
+ *   cancellation request actually hit a cancellation point.
+ * - Emulated system time may increment during deferred thread cancellation, though TFC pretends a machine with
+ *   infinite speed and an infinite number of CPU cores.
+ *
+ * # Software Architecture Recommendations
+ * This chapter describes a software architecture that can be applied to embedded software projects in order to get
+ * maximum benefit from TFC. The architecture focuses on the very top level of the software. It divides the software
+ * into blocks with certain responsibilities and limitations.\n
+ * The intention of the proposed architecture is:
+ * - Maximization of code reuse.\n
+ *   This can be achieved by concentrating as many lines of code as possible of the software inside a _portable_ and
+ *   thus _reusable_ application.\n
+ *   Portable means:
+ *   - independent of the underlying operating system
+ *   - independent of the underlying hardware
+ *   - independent of the CPU executing the application
+ * - Allow for unit-testing of the components and classes the application is comprised of.
+ * - Allow for unit-testing especially of those parts of the application which are closely coupled to hardware.
+ * - Allow for executing the whole application in an artifical environment for unit- and integration-test purposes and
+ *   for simulation purposes.
+ *
+ * The figure below shows the proposed architecture applied to three major scenarios:
+ * - __Left picture__:\n
+ *   This shows a productive firmware using a small RTOS (e.g. Chibios/RT) with no enforced separation between user- and
+ *   kernel-space and without support for processes. Typically the whole software inclusive the operating system is
+ *   compiled into a single monolitic binary image which could be programmed into flash memory.
+ * - __Middle picture__:\n
+ *   This shows a productive firmware using Embedded Linux or a comparable operating system with enforced separation
+ *   between user- and kernel-space.
+ * - __Right picture__:\n
+ *   This shows a test environment on the developer's work-station or on a build-server used to:
+ *   - Run unit tests.
+ *   - Run integration tests.
+ *   - Execute the application in a simulated environment.
+ *
+ * \htmlonly <style>div.image img[src="osal/tfc/TFC_Recommended_SW_Arch.png"]{width:75%;}</style> \endhtmlonly
+ * \image html "osal/tfc/TFC_Recommended_SW_Arch.png" "Proposed Software Architecture mapped to major use cases"
+ *
+ * - __Block "Application":__\n
+ *   This block contains the code which implements the primary functionality of the software.\n
+ *   It is the intention of the proposed architecture to allow for usage of _100% the same application code_ in the
+ *   three major use cases shown in the figure above:
+ *   - Productive code using small RTOS.
+ *   - Productive code using Embedded Linux or similar.
+ *   - Test environment on desktop workstation or build server.
+ *
+ *   _The application is not allowed to_:
+ *   - ...access hardware directly.\n
+ *     Instead the application uses an abstract interface to access hardware functionality. This approach allows to have
+ *     different implementations for hardware access: Device drivers, UIO drivers, API for kernel drivers, or a hardware
+ *     fake.
+ *   - ...execute any code in interrupt context. All application code is executed in thread context only.\n
+ *     This allows to execute the application in user space of a desktop workstation or build server.
+ *   - ...use operating system threading primitives directly.\n
+ *     Instead it uses the OSAL offered by GPCC. This enables portablilty and allows GPCC's TFC feature to be used.
+ *   - ...use operating system file system access directly.\n
+ *     Instead it uses the file system abstractions offered by GPCC. This enables portablilty.
+ *   - ...retrieve the system time from anywhere except GPCC's "Time" block (@ref gpcc::time).\n
+ *     This allows GPCC's TFC feature to be used.
+ *
+ * - __Block "GPCC":__\n
+ *   General Purpose Class Collection. This library contains classes providing functionality which is often required in
+ *   an embedded environment: Log facility, Command Line Interface, File Systems and File System Abstraction, and many
+ *   more. The application instantiates classes from this library as needed.\n
+ *   The blocks "OSAL" (@ref gpcc::osal) and "Time" (@ref gpcc::time) are special. They provide an abstraction for both
+ *   the operating system's threading primitives and for the system time. The yellow highlight indicates that the
+ *   classes offered by "OSAL" and "Time" have a well-defined and immutable interface, which is _the same_ on any
+ *   operating system supported by GPCC.\n
+ *   The "OSAL" block allows to use the same application code with different operating systems.\n
+ *   The "Time" block allows to implement GPCC's TFC-feature, which is necessary to run the application on a desktop
+ *   machine or on a build server for test and simulation purposes.
+ *
+ * - __Block "Abstract Interfaces":__\n
+ *   This block contains a set of abstract C++ classes. The interfaces are used by the application block to access the
+ *   hardware. The interfaces must be implemented by the hardware drivers (see below).
+ *
+ * - __Block "Device Drivers":__\n
+ *   - __RTOS scenario (left figure):__\n
+ *     The block provides access to the hardware through an abstract interface. The interface is implemented by one or
+ *     more abstract C++ base classes. The drivers accessing the hardware are implemented as C++ classes derived from
+ *     the interface classes.\n
+ *     In the RTOS scenario, device drivers are:
+ *     - hardware specific
+ *     - operating system specific
+ *     - allowed to execute code in interrupt context
+ *     - allowed to use all functionality offered by the operating system
+ *
+ *     Though the RTOS scenario (left figure) does not enforce a separation between kernel- and user-space, the device
+ *     drivers are considered to be the connection between kernel- and user-space.
+ *
+ *   - __Embedded Linux scenario (mid figure):__\n
+ *     The block provides access to the hardware. In the Linux scenario, the device drivers are located in kernel space.
+ *     We will see later that UIO drivers may be located in user-space, too. The kernel device drivers are accessed
+ *     through the file system: open(), close(), read(), write(), ioctrl(). In the proposed architecture, there are
+ *     classes offering a more user friendly API in user space. For details, see "API for Device Drivers" below.
+ *
+ * - __Block "UIO-Driver":__\n
+ *   This block is present in the Embedded Linux scenario (mid figure) only.\n
+ *   The block is almost the same as a _Device Driver_ from the RTOS scenario (left figure) described above. It
+ *   accesses the hardware directly from user space using UIO-mappings. UIO-drivers should be implemented as C++ classes
+ *   derived from the same abstract interface classes used by RTOS device drivers.
+ *
+ * - __Block "API for Device Driver":__\n
+ *   This block is present in the Embedded Linux scenario (mid figure) only.\n
+ *   It contains classes offering a user friendly API for device drivers located in kernel space, which can be accessed
+ *   through the file system only (open(), close(), read(), write(), ioctrl()). The classes implementing the API are
+ *   derived from the same abstract interface classes which are used by the device drivers in the RTOS scenario (left
+ *   figure).
+ *
+ * - __Block "UIO":__\n
+ *   UIO library available on Linux. This functionality allows to implement device drivers in user space. This is
+ *   accomplished by mapping hardware registers to user-space processes and by offering a way to block user-space
+ *   threads until an interrupt occurs.
+ *
+ * - __Block "Hardware Fake":__\n
+ *   This block is present in the test environment scenario (right figure) only.\n
+ *   It contains classes implementing the abstract interfaces used by device drivers. But instead of accessing real
+ *   hardware, these classes emulate the behaviour of the hardware. This allows to inject errors and to setup special
+ *   scenarios which are difficult to reproduce using real hardware, e.g. corner cases etc.\n
+ *   GPCC's TFC feature allows hardware fakes to simulate the timing-behaviour of the hardware down to nanosecond
+ *   precision.
+ *
+ * - __Block "Main":__\n
+ *   This block contains the program's entry point `int main(...)`. This block is different in all three scenarios,
+ *   because this is the point where all stuff is instantiated, configured, and where the connections to the outside
+ *   world are setup:
+ *   - access to hardware
+ *   - logging
+ *   - access to file system
+ *   - command line interface
+ *   - test management
+ *   - etc.
+ *
+ * - __Block "RTOS" (left figure):__\n
+ *   This block represents an embedded real time operating system (RTOS). There are numerous RTOS implementations for
+ *   the different types of CPU and for different applications available. The RTOS implementations meant by the left
+ *   scenario do not support processes.
+ *
+ * - __Block "RTOS" (mid figure):__\n
+ *   This block represents a larger RTOS like Embdedded Linux or similar. The RTOS implementation meant by the mid
+ *   scenario supports multiple processes and enforces the separation between kernel- and user-space. Beside Embedded
+ *   Linux, there are several (commercial) RTOS implementations supporting processes available.
+ *
+ * - __Block "Workstation's OS":__\n
+ *   Operating system used on the machine executing tests.
+ *
+ * - __Block "Runtime":__\n
+ *   This block is present in the RTOS scenario (left figure) only.\n
+ *   It represents the following functionalities which are necessary to run code on a bare-metal system. Parts or all of
+ *   this functionality might be delivered by the RTOS.
+ *   - Startup code.
+ *   - CPU, clock, and memory controller initialization.
+ *   - Memory initialization (.data and .bss segments).
+ *   - CPU exception handlers.\n
+ *     (Some CPUs are able to detect errors like bad memory accesses)
+ *   - Retargeting for C-library.
+ *   - Retargeting for STL and C++ runtime.
+ *   - Modules providing the system time to C-library, STL, and GPCC.
+ *   - Post mortem log.\n
+ *     (Sometimes software must die. If it does, then a post mortem log and a clean reboot are very useful, even in
+ *     release code)
+ *
+ * ## Recommendations and Best Practices
+ * ### Interfaces for Hardware Drivers
+ * - Create an abstract base class comprised of pure virtual methods only.\n
+ *   In addition to this, types, enums, and constants may be declared, too.
+ * - The hardware functionality shall be accessible through the provided methods only.\n
+ *   The application shall not access the hardware directly through e.g. pointers.
+ * - The provided methods shall abstract the hardware's functionality.\n
+ *   Instead of having methods like `void SetBaudRateScaler(uint32_t divider)` you should better offer an
+ *   `void SetBaudrate(uint32_t baudrate)`.
+ * - Methods should not require polling by the application.\n
+ *   Bad: `void RequestEnable(void)` and `void IsEnabled(void)`.\n
+ *   Better: Provide a method `void Enable(void)` which blocks until the hardware is enabled.
+ * - The interface shall offer the _functionality_ offered by the hardware only.\n
+ *   If a driver requires specific settings, initialization, startup sequences or whatever, then these stuff should be
+ *   part of the derived class (= the driver's implementation) only.
+ * - Example for an interface for an I2C Master IP: @ref gpcc::StdIf::II2C_Master_Driver
+ *
+ * ### Hardware Fake Design
+ * - The hardware driver interface must follow the recommendations given above in chapter "Interface for Hardware
+ *   Drivers".
+ * - Some drivers provide callbacks to the application if e.g. data has been received.\n
+ *   Hardware fakes should use a [DeferredWorkQueue](@ref gpcc::execution::async::DeferredWorkQueue) for executing
+ *   code. The [DeferredWorkQueue](@ref gpcc::execution::async::DeferredWorkQueue) also greatly simplifies modeling of
+ *   timing behaviour.
+ */
+
+/**
+ * @ingroup GPCC_OSAL
+ * @defgroup GPCC_OSAL_EXCEPTIONS Exceptions
+ *
+ * \brief OSAL related exceptions.
+ */

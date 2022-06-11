@@ -1,0 +1,359 @@
+/*
+    General Purpose Class Collection (GPCC)
+    Copyright (C) 2019-2022 Daniel Jerolm
+
+    This file is part of the General Purpose Class Collection (GPCC).
+
+    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+                                      ---
+
+    A special exception to the GPL can be applied should you wish to distribute
+    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
+    to provide the source code for any proprietary components. See the file
+    license_exception.txt for full details of how and when the exception can be applied.
+*/
+
+======================
+GPCC doxygen templates
+======================
+Please also have a look at the "GPCC coding style" section in the doxygen documentation.
+
+=======================================================================================================================
+File header
+=======================================================================================================================
+/*
+    General Purpose Class Collection (GPCC)
+    Copyright (C) 2022 Daniel Jerolm
+
+    This file is part of the General Purpose Class Collection (GPCC).
+
+    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+                                      ---
+
+    A special exception to the GPL can be applied should you wish to distribute
+    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
+    to provide the source code for any proprietary components. See the file
+    license_exception.txt for full details of how and when the exception can be applied.
+*/
+
+=======================================================================================================================
+Doxygen class documentation for normal classes and for provided interfaces
+=======================================================================================================================
+[] = Comments. Delete them when instantiating the template.
+<> = Placeholder or template. Needs to be filled with text or predefined text needs to be choosen if multiple templates
+     are available. May also be deleted if not applicable.
+
+------------------------------------------------------------------
+Class documentation for normal classes and for provided interfaces
+------------------------------------------------------------------
+/**
+ * \ingroup <group_name>
+ * \brief <Brief description.>
+ *
+ * <Detailed description.>
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * <Thread-safe.>
+ * <Not thread safe, but non-modifying concurrent access is safe.>
+ */
+
+-------------------------------------------------------------------
+Method documentation for normal classes and for provided interfaces
+(also applicable to static and global non-member-functions)
+-------------------------------------------------------------------
+/**
+ * \brief <Brief documentation.>
+ *
+ * <Detailed documentation.>
+ *
+ * <\pre    precondition>
+ * <\post   postcondition>
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * [Delete this section for constructors and destructors.]
+ * [Separate multiple lines with '\n'.]
+ * <The state of the object is not modified. Concurrent accesses are safe.>
+ * <The state of the object is modified. Any concurrent accesses are not safe.>
+ * <This is thread-safe.>
+ * <This is not thread-safe.>
+ * <@ref Mutex_A must be locked by caller.>
+ * <@ref Mutex_B must __not__ be locked by caller.>
+ * <Custom text.>
+ *
+ * __Exception safety:__\n
+ * <No-throw guarantee.>
+ * <Strong guarantee.>
+ * <Basic guarantee:>
+ *   <Describe possible side effects here. Preferred format: List of bullet points "- ...">
+ *
+ * <\throws xyz_exception   Describe error condition <(Details: @ref xyz_exception) [Use this for self-defined exceptions]>>
+ *
+ * __Thread cancellation safety:__\n
+ * <No cancellation point included.>
+ * <Strong guarantee.>
+ * <Basic guarantee:>
+ *   <Describe possible side effects here. Preferred format: List of bullet points "- ...">
+ * <Deferred cancellation is not allowed.>
+ *
+ * - - -
+ *
+ * \param arg1   Argument 1 documentation. [Use this for one-line comments]
+ * \param arg2
+ * Argument 2 documentation. [Use this for long comments]
+ *
+ * \return
+ * \retval
+ * Return value documentation.
+ */
+
+=======================================================================================================================
+Doxygen class documentation for required interfaces intended to receive notifications
+=======================================================================================================================
+[] = Comments. Delete them when instantiating the template.
+<> = Placeholder or template. Needs to be filled with text or predefined text needs to be choosen if multiple templates
+     are available. May also be deleted if not applicable.
+
+-----------------------------------------------------------------------------
+Class documentation for required interfaces intended to receive notifications
+-----------------------------------------------------------------------------
+/**
+ * \ingroup <group_name>
+ * \brief <Interface which must be implemented by ... in order to ...>
+ *
+ * <Detailed description.>
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * <All methods offered by this interface will be invoked in the context of the ... component.>
+ * <The ... component guarantees, that no more than one method is invoked at any time.>
+ * <Multiple methods may be invoked at the same time.>
+ * <Custom text.>
+ */
+
+------------------------------------------------------------------------------
+Method documentation for required interfaces intended to receive notifications
+------------------------------------------------------------------------------
+/**
+ * \brief <Brief documentation.>
+ *
+ * <Detailed documentation.>
+ *
+ * <\pre    precondition>
+ * <\post   postcondition>
+ *
+ * - - -
+ *
+ * __Thread safety requirements/hints:__\n
+ * <Describe who will invoke this method in which context.>
+ * <Describe if the method is allowed to invoke interfaces offered by the caller.>
+ *
+ * __Exception safety requirements/hints:__\n
+ * <This method shall provide the no-throw guarantee.>
+ * <This method shall provide at least the strong guarantee.>
+ * <This method shall provide at least the basic guarantee:>
+ *   <Describe allowed side effects here. Preferred format: List of bullet points "- ...">
+ *
+ * __Thread cancellation safety requirements/hints:__\n
+ * <This method shall not contain any cancellation point.>
+ * <This method shall provide at least the strong guarantee.>
+ * <This method shall provide at least the basic guarantee:>
+ *   <Describe allowed side effects here. Preferred format: List of bullet points "- ...">
+ * <This method will be invoked with deferred thread cancellation disabled.>
+ *
+ * - - -
+ *
+ * \param arg1   Argument 1 documentation. [Use this for one-line comments]
+ * \param arg2
+ * Argument 2 documentation. [Use this for long comments]
+ *
+ * \return
+ * \retval
+ * Return value documentation.
+ */
+
+=======================================================================================================================
+Doxygen function pointer / function object (callback) documentation
+=======================================================================================================================
+[] = Comments. Delete them when instantiating the template.
+<> = Placeholder or template. Needs to be filled with text or predefined text needs to be choosen if multiple templates
+     are available. May also be deleted if not applicable.
+
+/**
+ * \brief <Brief description.>
+ *
+ * <Detailed description.>
+ *
+ * <\pre    precondition>
+ * <\post   postcondition>
+ *
+ * - - -
+ *
+ * <\param 1st>
+ * <Document first paramter>
+ *
+ * <\param 2nd>
+ * <Document second parameter>
+ * <...>
+ *
+ * <\return>
+ * <\retval>
+ * <Document return value>
+ *
+ * - - -
+ *
+ * __Thread safety requirements/hints:__\n
+ * <Describe who will invoke the referenced function/method in which context.>
+ * <Describe if the invoked function/method is allowed to invoke interfaces offered by the caller.>
+ *
+ * __Exception safety requirements/hints:__\n
+ * <The referenced function/method shall provide the no-throw guarantee.>
+ * <The referenced function/method shall provide at least the strong guarantee.>
+ * <The referenced function/method shall provide at least the basic guarantee:>
+ *   <Describe allowed side effects here. Preferred format: List of bullet points "- ...">
+ *
+ * __Thread cancellation safety requirements/hints:__\n
+ * <The referenced function/method shall not contain any cancellation point.>
+ * <The referenced function/method shall provide at least the strong guarantee.>
+ * <The referenced function/method shall provide at least the basic guarantee:>
+ *   <Describe allowed side effects here. Preferred format: List of bullet points "- ...">
+ * <The referenced function/method will be invoked with deferred thread cancellation disabled.>
+ */
+
+=======================================================================================================================
+Doxygen style stuff
+=======================================================================================================================
+Appearance:
+-----------
+\n - new line
+
+Headers:
+--------
+# Level 1 header
+## Level 2 header
+### Level 3 header
+
+Quotations:
+-----------
+> Block quote.
+> Note that a space is required after the '>'
+
+Lists:
+------
+- Item 1
+
+  More text for this item.
+
+- Item 2
+  + nested list item.
+  + another nested item.
+- Item 3
+
+
+1. First item.
+2. Second item.
+
+Code Blocks:
+------------
+Normal doc
+
+~~~
+Fenced code block. Requires at least 3x~
+~~~
+
+~~~{.c}
+Fenced code block. Requires at least 3x~
+~~~
+
+~~~{.cpp}
+Fenced code block. Requires at least 3x~
+~~~
+
+Horizontal rulers:
+------------------
+- - - - - (starts at left border)
+--------- (starts where the current text block is indented)
+
+Emphasis:
+---------
+_normal emphasis (italic)_
+__strong emphasis (bold)__
+
+Code spans:
+-----------
+Normal documentation. Use the `printf()` function. Type `` to get a back-tick character.
+
+Images:
+-------
+Absolute size:
+\htmlonly <style>div.image img[src="figure.png"]{width:1000px;}</style> \endhtmlonly
+\image html "figure.png" "Footer"
+
+Size relative to window size:
+\htmlonly <style>div.image img[src="figure.png"]{width:75%;}</style> \endhtmlonly
+\image html "figure.png" "Footer"
+
+Note: png is the preferred format for images
+
+Links:
+------
+[Link Text](http://bla.de)
+[Link Text](@ref MyClass)
+
+- Target of "@ref" must be in same namespace. If it is not, then a fully qualified namespace is required.
+- References containing a '.' are interpreted as file names. This may lead to issues if a class or method is referenced
+  at the end of the line:
+  @ref MyClass. \n
+               ^
+               Space required. Otherwise doxygen interprets "MyClass.\n" as a file name.
+  @ref MyClass::MyMethod(). \n
+                           ^
+                           Space required. Otherwise doxygen interprets "MyClass::MyMethod().\n" as a file name.
+
+Adding a label (e.g. to a headline)
+# Level 1 header {#label_id_header1}
+
+Note:
+In documentation that may be referenced via "@copydoc" (typically documentation of interface methods), full qualified
+namespaces are required when using "@ref".
+
+Member group:
+-------------
+///@{
+...
+///@}
+
+Special annotations
+-------------------
+\todo
+\bug
+\deprecated
+\tableofcontents
