@@ -30,11 +30,11 @@
 #ifndef CLOCK_HPP_201701162118
 #define CLOCK_HPP_201701162118
 
+#include <ctime>
+
 #ifndef _POSIX_MONOTONIC_CLOCK
 #error "_POSIX_MONOTONIC_CLOCK is required"
 #endif
-
-#include <ctime>
 
 namespace gpcc {
 namespace time {

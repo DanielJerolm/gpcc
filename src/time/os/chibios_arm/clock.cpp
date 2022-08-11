@@ -28,7 +28,7 @@
 #ifdef OS_CHIBIOS_ARM
 
 #include "clock.hpp"
-#include "platform/system_time/system_time.h"
+#include <platform/system_time/system_time.h>
 #include <stdexcept>
 
 namespace gpcc {
