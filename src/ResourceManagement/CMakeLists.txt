@@ -3,17 +3,17 @@
 # -------------------------------------
 target_sources(${PROJECT_NAME}
                PRIVATE
-               ${CMAKE_CURRENT_LIST_DIR}/Memory/HeapManager.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Memory/HeapManagerSPTS.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Memory/HeapManagerStatistics.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Memory/internal/FreeBlockPool.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Memory/internal/MemoryDescriptorPool.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Memory/MemoryDescriptor.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Memory/MemoryDescriptorSPTS.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Objects/HierarchicNamedRWLock.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Objects/internal/HierarchicNamedRWLockNode.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Objects/internal/NamedRWLockEntry.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Objects/LargeDynamicNamedRWLock.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Objects/SmallDynamicNamedRWLock.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/semaphores/NonBlockingSemaphore.cpp
+               Memory/HeapManager.cpp
+               Memory/HeapManagerSPTS.cpp
+               Memory/HeapManagerStatistics.cpp
+               Memory/internal/FreeBlockPool.cpp
+               Memory/internal/MemoryDescriptorPool.cpp
+               Memory/MemoryDescriptor.cpp
+               Memory/MemoryDescriptorSPTS.cpp
+               Objects/HierarchicNamedRWLock.cpp
+               Objects/internal/HierarchicNamedRWLockNode.cpp
+               Objects/internal/NamedRWLockEntry.cpp
+               Objects/LargeDynamicNamedRWLock.cpp
+               Objects/SmallDynamicNamedRWLock.cpp
+               semaphores/NonBlockingSemaphore.cpp
               )

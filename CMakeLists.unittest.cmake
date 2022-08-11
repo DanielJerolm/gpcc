@@ -23,14 +23,15 @@ ValidateSkipOptions()
 # ---------------------------------------------------------------------------------------------------------------------
 add_library(${PROJECT_NAME})
 
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/src)
+add_subdirectory(src)
 
 target_include_directories(${PROJECT_NAME}
                            PRIVATE
-                           ${CMAKE_CURRENT_SOURCE_DIR}/..
-                           ${CMAKE_CURRENT_SOURCE_DIR}/include
+                           ..
+                           include
                            INTERFACE
-                           ${CMAKE_CURRENT_SOURCE_DIR}/include
+                           ..
+                           include
                           )
 
 SetupBasicDefines(${PROJECT_NAME})
@@ -42,12 +43,9 @@ SetupLinkLibraries(${PROJECT_NAME})
 # ---------------------------------------------------------------------------------------------------------------------
 add_library(${PROJECT_NAME}_testcases OBJECT)
 
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/test_src)
+add_subdirectory(test_src)
 
-target_include_directories(${PROJECT_NAME}_testcases
-                           PRIVATE
-                           ${CMAKE_CURRENT_SOURCE_DIR}/..
-                          )
+target_include_directories(${PROJECT_NAME}_testcases PRIVATE ..)
 
 if(${GPCC_OS} STREQUAL "chibios_arm")
   message(FATAL_ERROR "Error: 'GPCC_OS=chibios_arm' not supported for unit test environment.")
@@ -59,4 +57,4 @@ SetupDefinesForSkippingUnitTests(${PROJECT_NAME}_testcases)
 SetRequiredCompilerOptionsAndFeatures(${PROJECT_NAME}_testcases)
 SetupLinkLibraries(${PROJECT_NAME}_testcases)
 
-target_link_libraries(${PROJECT_NAME}_testcases PRIVATE gpcc gmock)
+target_link_libraries(${PROJECT_NAME}_testcases PRIVATE ${PROJECT_NAME} gmock)

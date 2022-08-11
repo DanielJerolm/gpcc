@@ -4,9 +4,9 @@
 # -------------------------------------
 target_sources(${PROJECT_NAME}
                PRIVATE
-               ${CMAKE_CURRENT_LIST_DIR}/ConditionVariable.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Mutex.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Panic.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Semaphore.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Thread.cpp
+               ConditionVariable.cpp
+               Mutex.cpp
+               Panic.cpp
+               Semaphore.cpp
+               Thread.cpp
               )

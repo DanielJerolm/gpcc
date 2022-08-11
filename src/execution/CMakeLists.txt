@@ -3,10 +3,10 @@
 # -------------------------------------
 target_sources(${PROJECT_NAME}
                PRIVATE
-               ${CMAKE_CURRENT_LIST_DIR}/async/DeferredWorkPackage.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/async/DeferredWorkQueue.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/async/WorkPackage.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/async/WorkQueue.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/cyclic/TriggeredThreadedCyclicExec.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/cyclic/TTCEStartStopCtrl.cpp
+               async/DeferredWorkPackage.cpp
+               async/DeferredWorkQueue.cpp
+               async/WorkPackage.cpp
+               async/WorkQueue.cpp
+               cyclic/TriggeredThreadedCyclicExec.cpp
+               cyclic/TTCEStartStopCtrl.cpp
               )

@@ -13,15 +13,16 @@ option(GPCC_CliNoFontStyles "Disables gpcc::cli::CLI font style control." OFF)
 # ---------------------------------------------------------------------------------------------------------------------
 add_library(${PROJECT_NAME})
 
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/src)
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/src_notest)
+add_subdirectory(src)
+add_subdirectory(src_notest)
 
 target_include_directories(${PROJECT_NAME}
                            PRIVATE
-                           ${CMAKE_CURRENT_SOURCE_DIR}/..
-                           ${CMAKE_CURRENT_SOURCE_DIR}/include
+                           ..
+                           include
                            INTERFACE
-                           ${CMAKE_CURRENT_SOURCE_DIR}/include
+                           ..
+                           include
                           )
 
 SetupBasicDefines(${PROJECT_NAME})

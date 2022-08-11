@@ -134,10 +134,4 @@ endif()
 # ---------------------------------------------------------------------------------------------------------------------
 # Continue in cmake files specific to the target environment
 # ---------------------------------------------------------------------------------------------------------------------
-if(${GPCC_TargetEnvironment} STREQUAL "productive")
-  include(CMakeLists.productive.cmake)
-elseif(${GPCC_TargetEnvironment} STREQUAL "unittest")
-  include(CMakeLists.unittest.cmake)
-else()
-  message(FATAL_ERROR "Error: Value of 'GPCC_TargetEnvironment' not supported.")
-endif()
+include(CMakeLists.${GPCC_TargetEnvironment}.cmake)

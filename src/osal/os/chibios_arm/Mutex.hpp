@@ -30,7 +30,7 @@
 #ifndef MUTEX_HPP_201701282154
 #define MUTEX_HPP_201701282154
 
-#include "ch.h"
+#include <ch.h>
 
 namespace gpcc {
 namespace osal {

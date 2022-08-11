@@ -3,14 +3,14 @@
 # -------------------------------------
 target_sources(${PROJECT_NAME}
                PRIVATE
-               ${CMAKE_CURRENT_LIST_DIR}/CLI/ISFCLICommands.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/EEPROMSectionSystem/CLI/ESSCLICommands.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/EEPROMSectionSystem/EEPROMSectionSystem.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/EEPROMSectionSystem/internal/BlockAccessor.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/EEPROMSectionSystem/internal/EEPROMSectionSystemInternals.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/EEPROMSectionSystem/internal/FreeBlockListBackup.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/EEPROMSectionSystem/internal/SectionReader.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/EEPROMSectionSystem/internal/SectionWriter.cpp
+               CLI/ISFCLICommands.cpp
+               EEPROMSectionSystem/CLI/ESSCLICommands.cpp
+               EEPROMSectionSystem/EEPROMSectionSystem.cpp
+               EEPROMSectionSystem/internal/BlockAccessor.cpp
+               EEPROMSectionSystem/internal/EEPROMSectionSystemInternals.cpp
+               EEPROMSectionSystem/internal/FreeBlockListBackup.cpp
+               EEPROMSectionSystem/internal/SectionReader.cpp
+               EEPROMSectionSystem/internal/SectionWriter.cpp
               )
 
 if((${GPCC_OS} STREQUAL "linux_arm") OR
@@ -19,10 +19,10 @@ if((${GPCC_OS} STREQUAL "linux_arm") OR
    (${GPCC_OS} STREQUAL "linux_x64_tfc"))
   target_sources(${PROJECT_NAME}
                  PRIVATE
-                 ${CMAKE_CURRENT_LIST_DIR}/linux_fs/FileStorage.cpp
-                 ${CMAKE_CURRENT_LIST_DIR}/linux_fs/internal/StdIOFileReader.cpp
-                 ${CMAKE_CURRENT_LIST_DIR}/linux_fs/internal/StdIOFileWriter.cpp
-                 ${CMAKE_CURRENT_LIST_DIR}/linux_fs/internal/tools.cpp
-                 ${CMAKE_CURRENT_LIST_DIR}/linux_fs/internal/UnitTestDirProvider.cpp
+                 linux_fs/FileStorage.cpp
+                 linux_fs/internal/StdIOFileReader.cpp
+                 linux_fs/internal/StdIOFileWriter.cpp
+                 linux_fs/internal/tools.cpp
+                 linux_fs/internal/UnitTestDirProvider.cpp
                 )
 endif()
