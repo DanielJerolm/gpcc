@@ -169,6 +169,10 @@ Next to do:
 
 History:
 ===============================================================================
+2022-08-12
+- Enhanced cmake files
+- Fixed includes in time/chibios_arm
+
 2022-06-09
 - Enhanced OSAL for ChibiOS/RT: Access to ChibiOS internals replaced by call to API function
 - Bugfix: Selection of 32/64bit specific code in RODACLIClientBase.cpp
