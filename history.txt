@@ -169,6 +169,9 @@ Next to do:
 
 History:
 ===============================================================================
+2022-08-17
+- Changed license to Mozilla Public License 2.0
+
 2022-08-12
 - Enhanced cmake files
 - Fixed includes in time/chibios_arm
