@@ -169,6 +169,12 @@ Next to do:
 
 History:
 ===============================================================================
+2022-08-20
+- Update doxygen scripts and checked that all doc builds with zero errors
+
+2022-08-19
+- Checked against old CMAKE project files: All unittest-cases are build and executed.
+
 2022-08-17
 - Changed license to Mozilla Public License 2.0
 
