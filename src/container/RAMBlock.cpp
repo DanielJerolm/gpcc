@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "RAMBlock.hpp"
+#include <gpcc/container/RAMBlock.hpp>
 #include "gpcc/src/osal/MutexLocker.hpp"
 #include "gpcc/src/Stream/IStreamReader.hpp"
 #include "gpcc/src/Stream/IStreamWriter.hpp"

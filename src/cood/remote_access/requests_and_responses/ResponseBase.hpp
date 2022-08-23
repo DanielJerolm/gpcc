@@ -12,7 +12,7 @@
 #define RESPONSEBASE_HPP_202006282132
 
 #include "ReturnStackItem.hpp"
-#include "gpcc/src/container/IntrusiveDList.hpp"
+#include <gpcc/container/IntrusiveDList.hpp>
 #include <cstddef>
 #include <cstdint>
 #include <limits>

@@ -8,7 +8,7 @@
     Copyright (C) 2019 Daniel Jerolm
 */
 
-#include "gpcc/src/container/IntrusiveDList.hpp"
+#include <gpcc/container/IntrusiveDList.hpp>
 #include "gpcc/src/osal/Panic.hpp"
 #include "gpcc/src/raii/scope_guard.hpp"
 #include "gtest/gtest.h"

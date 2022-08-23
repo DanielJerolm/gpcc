@@ -10,10 +10,10 @@
 
 #include "EEPROMSectionSystem.hpp"
 #include "Exceptions.hpp"
+#include <gpcc/container/BitField.hpp>
 #include "gpcc/src/file_systems/exceptions.hpp"
 #include "internal/SectionReader.hpp"
 #include "internal/SectionWriter.hpp"
-#include "gpcc/src/container/BitField.hpp"
 #include "gpcc/src/osal/MutexLocker.hpp"
 #include "gpcc/src/osal/Panic.hpp"
 #include "gpcc/src/raii/scope_guard.hpp"

@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/container/BitField.hpp"
+#include <gpcc/container/BitField.hpp>
 #include "gtest/gtest.h"
 #include <string>
 

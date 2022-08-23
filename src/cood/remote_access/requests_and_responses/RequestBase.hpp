@@ -12,7 +12,7 @@
 #define REQUESTBASE_HPP_202006251835
 
 #include "ReturnStackItem.hpp"
-#include "gpcc/src/container/IntrusiveDList.hpp"
+#include <gpcc/container/IntrusiveDList.hpp>
 #include <limits>
 #include <memory>
 #include <string>
