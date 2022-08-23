@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/cli/Command.hpp"
+#include <gpcc/cli/Command.hpp>
 #include "gtest/gtest.h"
 
 namespace gpcc {

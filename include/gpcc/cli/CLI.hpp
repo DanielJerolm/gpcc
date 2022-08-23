@@ -11,15 +11,21 @@
 #ifndef CLI_HPP_201710051347
 #define CLI_HPP_201710051347
 
-#include "Command.hpp"
-#include "internal/ReturnKeyFilter.hpp"
-#include "internal/TerminalRxParser.hpp"
+#include <gpcc/cli/Command.hpp>
 #include "gpcc/src/osal/ConditionVariable.hpp"
 #include "gpcc/src/osal/Mutex.hpp"
 #include "gpcc/src/osal/Thread.hpp"
+#include <memory>
 #include <stdexcept>
 #include <vector>
 #include <cstddef>
+
+namespace gpcc     {
+namespace cli      {
+namespace internal {
+  class ReturnKeyFilter;
+  class TerminalRxParser;
+}}}
 
 namespace gpcc {
 namespace cli  {
@@ -356,11 +362,11 @@ class CLI final
 
     /// Parser for data received from the terminal.
     /** No mutex is required, this is only accessed by the CLI's thread. */
-    internal::TerminalRxParser rxParser;
+    std::unique_ptr<internal::TerminalRxParser> spRxParser;
 
     /// Filter for recognizing RETURN-keypress in CR/LF sequences received from the terminal.
     /** No mutex is required, this is only accessed by the CLI's thread. */
-    internal::ReturnKeyFilter returnKeyFilter;
+    std::unique_ptr<internal::ReturnKeyFilter> spReturnKeyFilter;
 
     /// Command history containing commands that have been entered into the terminal.
     /** No mutex is required, this is only accessed by the CLI's thread.\n

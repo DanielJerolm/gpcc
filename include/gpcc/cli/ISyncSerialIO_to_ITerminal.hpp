@@ -11,7 +11,7 @@
 #ifndef ISYNCSERIALIO_TO_ITERMINAL_HPP_201712292136
 #define ISYNCSERIALIO_TO_ITERMINAL_HPP_201712292136
 
-#include "ITerminal.hpp"
+#include <gpcc/cli/ITerminal.hpp>
 #include "gpcc/src/StdIf/serial/ISyncSerialIO.hpp"
 
 namespace gpcc {

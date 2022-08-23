@@ -9,8 +9,8 @@
 */
 
 #include "Backend_CLI.hpp"
-#include "gpcc/src/cli/CLI.hpp"
-#include "gpcc/src/cli/CLIColors.hpp"
+#include <gpcc/cli/CLI.hpp>
+#include <gpcc/cli/CLIColors.hpp>
 
 namespace gpcc {
 namespace log  {

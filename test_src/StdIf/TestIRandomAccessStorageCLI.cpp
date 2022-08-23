@@ -8,10 +8,10 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
+#include <gpcc/cli/CLI.hpp>
+#include <gpcc/cli/Command.hpp>
 #include "gpcc/test_src/file_systems/EEPROMSectionSystem/FakeEEPROM.hpp"
 #include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"
-#include "gpcc/src/cli/CLI.hpp"
-#include "gpcc/src/cli/Command.hpp"
 #include "gpcc/src/osal/Thread.hpp"
 #include "gpcc/src/raii/scope_guard.hpp"
 #include "gpcc/src/StdIf/IRandomAccessStorage.hpp"

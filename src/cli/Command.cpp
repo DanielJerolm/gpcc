@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "Command.hpp"
+#include <gpcc/cli/Command.hpp>
 #include <stdexcept>
 #include <cstddef>
 #include <cstring>

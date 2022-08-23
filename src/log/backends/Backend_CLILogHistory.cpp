@@ -9,9 +9,9 @@
 */
 
 #include "Backend_CLILogHistory.hpp"
-#include "gpcc/src/cli/CLI.hpp"
-#include "gpcc/src/cli/CLIColors.hpp"
-#include "gpcc/src/cli/Command.hpp"
+#include <gpcc/cli/CLI.hpp>
+#include <gpcc/cli/CLIColors.hpp>
+#include <gpcc/cli/Command.hpp>
 #include "gpcc/src/osal/MutexLocker.hpp"
 #include "gpcc/src/osal/Panic.hpp"
 #include "gpcc/src/raii/scope_guard.hpp"

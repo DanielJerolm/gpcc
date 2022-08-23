@@ -9,7 +9,7 @@
 */
 
 #include "commands.hpp"
-#include "gpcc/src/cli/CLI.hpp"
+#include <gpcc/cli/CLI.hpp>
 #include "gpcc/src/file_systems/IFileStorage.hpp"
 #include "gpcc/src/log/logfacilities/ILogFacilityCtrl.hpp"
 #include "gpcc/src/log/log_tools.hpp"

@@ -9,7 +9,7 @@
 */
 
 #include "ISFCLICommands.hpp"
-#include "gpcc/src/cli/CLI.hpp"
+#include <gpcc/cli/CLI.hpp>
 #include "gpcc/src/file_systems/IFileStorage.hpp"
 #include "gpcc/src/file_systems/exceptions.hpp"
 #include "gpcc/src/raii/scope_guard.hpp"

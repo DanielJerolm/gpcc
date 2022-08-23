@@ -25,7 +25,7 @@
  * # Usage
  * The string fragments defined in this group are intended to be integrated into your CLI output:
  * ~~~{.cpp}
- * #include "gpcc/src/cli/CLIColors.hpp"
+ * #include <gpcc/cli/CLIColors.hpp>
  *
  * // [...]
  *

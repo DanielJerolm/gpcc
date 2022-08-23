@@ -9,8 +9,8 @@
 */
 
 #include "RODACLIClientBase.hpp"
-#include "gpcc/src/cli/exceptions.hpp"
-#include "gpcc/src/cli/CLI.hpp"
+#include <gpcc/cli/CLI.hpp>
+#include <gpcc/cli/exceptions.hpp>
 #include "gpcc/src/cood/cli/string_conversion.hpp"
 #include "gpcc/src/cood/cli/internal/CAReadArgsParser.hpp"
 #include "gpcc/src/cood/cli/internal/CAWriteArgsParser.hpp"

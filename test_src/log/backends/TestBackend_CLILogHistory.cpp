@@ -8,7 +8,7 @@
     Copyright (C) 2020 Daniel Jerolm
 */
 
-#include "gpcc/src/cli/CLI.hpp"
+#include <gpcc/cli/CLI.hpp>
 #include "gpcc/src/log/backends/Backend_CLILogHistory.hpp"
 #include "gpcc/src/log/log_levels.hpp"
 #include "gpcc/src/osal/Thread.hpp"

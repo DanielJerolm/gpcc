@@ -9,6 +9,9 @@
 */
 
 #include "CLIAdapterBase.hpp"
+#include <gpcc/cli/CLI.hpp>
+#include <gpcc/cli/Command.hpp>
+#include <gpcc/cli/exceptions.hpp>
 #include "string_conversion.hpp"
 #include "gpcc/src/cood/cli/internal/CAReadArgsParser.hpp"
 #include "gpcc/src/cood/cli/internal/CAWriteArgsParser.hpp"
@@ -18,9 +21,6 @@
 #include "gpcc/src/cood/cli/internal/WriteArgsParser.hpp"
 #include "gpcc/src/cood/IObjectAccess.hpp"
 #include "gpcc/src/cood/ObjectPtr.hpp"
-#include "gpcc/src/cli/exceptions.hpp"
-#include "gpcc/src/cli/CLI.hpp"
-#include "gpcc/src/cli/Command.hpp"
 #include "gpcc/src/osal/MutexLocker.hpp"
 #include "gpcc/src/osal/Panic.hpp"
 #include "gpcc/src/raii/scope_guard.hpp"

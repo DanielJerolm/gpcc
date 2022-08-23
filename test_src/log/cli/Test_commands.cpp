@@ -8,8 +8,8 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/cli/CLI.hpp"
-#include "gpcc/src/cli/Command.hpp"
+#include <gpcc/cli/CLI.hpp>
+#include <gpcc/cli/Command.hpp>
 #include "gpcc/src/file_systems/linux_fs/FileStorage.hpp"
 #include "gpcc/src/file_systems/linux_fs/internal/tools.hpp"
 #include "gpcc/src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"

@@ -9,9 +9,9 @@
 */
 
 #include "MultiRODACLIClientBase.hpp"
-#include "gpcc/src/cli/exceptions.hpp"
-#include "gpcc/src/cli/CLI.hpp"
-#include "gpcc/src/cli/Command.hpp"
+#include <gpcc/cli/CLI.hpp>
+#include <gpcc/cli/Command.hpp>
+#include <gpcc/cli/exceptions.hpp>
 #include "gpcc/src/osal/Panic.hpp"
 #include "gpcc/src/osal/MutexLocker.hpp"
 #include "gpcc/src/string/tools.hpp"

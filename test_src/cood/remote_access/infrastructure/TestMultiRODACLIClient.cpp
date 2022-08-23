@@ -10,7 +10,7 @@
 
 #include "gpcc/src/cood/remote_access/infrastructure/MultiRODACLIClient.hpp"
 #include "TestbenchThreadBasedRAS.hpp"
-#include "gpcc/src/cli/CLI.hpp"
+#include <gpcc/cli/CLI.hpp>
 #include "gpcc/src/osal/MutexLocker.hpp"
 #include "gpcc/src/osal/Panic.hpp"
 #include "gpcc/src/osal/Thread.hpp"

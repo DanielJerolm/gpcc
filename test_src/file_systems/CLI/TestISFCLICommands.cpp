@@ -8,11 +8,11 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
+#include <gpcc/cli/CLI.hpp>
+#include <gpcc/cli/Command.hpp>
 #include "../EEPROMSectionSystem/EEPROMSectionSystemTestFixture.hpp"
 #include "../EEPROMSectionSystem/RandomData.hpp"
 #include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"
-#include "gpcc/src/cli/CLI.hpp"
-#include "gpcc/src/cli/Command.hpp"
 #include "gpcc/src/file_systems/CLI/ISFCLICommands.hpp"
 #include "gpcc/src/osal/Panic.hpp"
 #include "gpcc/src/osal/Thread.hpp"

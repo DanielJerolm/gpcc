@@ -10,7 +10,7 @@
 
 #include "IRandomAccessStorageCLI.hpp"
 #include "IRandomAccessStorage.hpp"
-#include "gpcc/src/cli/CLI.hpp"
+#include <gpcc/cli/CLI.hpp>
 #include "gpcc/src/string/tools.hpp"
 #include <limits>
 #include <vector>

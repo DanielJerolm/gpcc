@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "ISyncSerialIO_to_ITerminal.hpp"
+#include <gpcc/cli/ISyncSerialIO_to_ITerminal.hpp>
 #include <stdexcept>
 
 namespace gpcc {

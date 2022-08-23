@@ -11,7 +11,7 @@
 #ifndef FAKETERMINAL_HPP_201710172039
 #define FAKETERMINAL_HPP_201710172039
 
-#include "gpcc/src/cli/ITerminal.hpp"
+#include <gpcc/cli/ITerminal.hpp>
 #include "gpcc/src/osal/Mutex.hpp"
 #include "gpcc/src/osal/ConditionVariable.hpp"
 #include <stdexcept>

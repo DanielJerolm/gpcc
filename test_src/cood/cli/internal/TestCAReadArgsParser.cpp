@@ -8,7 +8,7 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "gpcc/src/cli/exceptions.hpp"
+#include <gpcc/cli/exceptions.hpp>
 #include "gpcc/src/cood/cli/internal/CAReadArgsParser.hpp"
 #include "gtest/gtest.h"
 #include <memory>

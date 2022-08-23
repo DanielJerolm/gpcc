@@ -13,7 +13,7 @@
 #ifndef STDIO_TO_ITERMINAL_HPP_201712292228
 #define STDIO_TO_ITERMINAL_HPP_201712292228
 
-#include "ITerminal.hpp"
+#include <gpcc/cli/ITerminal.hpp>
 #include "gpcc/src/osal/Mutex.hpp"
 #include <termios.h>
 

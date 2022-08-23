@@ -9,7 +9,7 @@
 */
 
 #include "ESSCLICommands.hpp"
-#include "gpcc/src/cli/CLI.hpp"
+#include <gpcc/cli/CLI.hpp>
 #include "gpcc/src/file_systems/EEPROMSectionSystem/EEPROMSectionSystem.hpp"
 
 namespace gpcc
