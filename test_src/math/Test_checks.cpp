@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/math/checks.hpp"
+#include <gpcc/math/checks.hpp>
 #include "gtest/gtest.h"
 
 namespace gpcc_tests {

@@ -8,9 +8,9 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "MemoryDescriptor.hpp"
 #include "HeapManager.hpp"
-#include "gpcc/src/math/checks.hpp"
+#include "MemoryDescriptor.hpp"
+#include <gpcc/math/checks.hpp>
 #include "gpcc/src/raii/scope_guard.hpp"
 #include <stdexcept>
 #include <limits>
