@@ -8,7 +8,7 @@
     Copyright (C) 2020 Daniel Jerolm
 */
 
-#include "gpcc/src/hash/md5.hpp"
+#include <gpcc/hash/md5.hpp>
 #include "gpcc/src/string/tools.hpp"
 #include "gtest/gtest.h"
 #include <iostream>

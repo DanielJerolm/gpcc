@@ -18,7 +18,7 @@
  * See https://tools.ietf.org/html/rfc1321 for details.
  */
 
-#include "md5.hpp"
+#include <gpcc/hash/md5.hpp>
 #include "gpcc/src/Compiler/definitions.hpp"
 #include "gpcc/src/raii/scope_guard.hpp"
 #include "gpcc/src/Stream/MemStreamWriter.hpp"
