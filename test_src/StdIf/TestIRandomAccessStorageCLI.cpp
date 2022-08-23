@@ -13,7 +13,7 @@
 #include "gpcc/test_src/file_systems/EEPROMSectionSystem/FakeEEPROM.hpp"
 #include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"
 #include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/StdIf/IRandomAccessStorage.hpp"
 #include "gpcc/src/StdIf/IRandomAccessStorageCLI.hpp"
 #include "gtest/gtest.h"

@@ -15,7 +15,7 @@
 #include "UnmanagedMutexLocker.hpp"
 #include "../Mutex.hpp"
 #include "../Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include <stdexcept>
 
 namespace gpcc {

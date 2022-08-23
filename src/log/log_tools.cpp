@@ -10,7 +10,7 @@
 
 #include "log_tools.hpp"
 #include "gpcc/src/file_systems/IFileStorage.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/string/tools.hpp"
 #include <stdexcept>
 #include <cstdint>

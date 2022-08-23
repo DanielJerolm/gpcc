@@ -9,7 +9,7 @@
 */
 
 #include "tools.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include <iomanip>
 #include <limits>
 #include <sstream>

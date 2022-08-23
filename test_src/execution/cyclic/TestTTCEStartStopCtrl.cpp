@@ -17,7 +17,7 @@
 #include "gpcc/src/execution/async/WorkQueue.hpp"
 #include "gpcc/src/osal/Panic.hpp"
 #include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/time/TimeSpan.hpp"
 #include "gtest/gtest.h"
 #include <stdexcept>

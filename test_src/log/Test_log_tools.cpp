@@ -16,7 +16,7 @@
 #include "gpcc/src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
 #include "gpcc/src/log/logfacilities/ILogFacilityCtrl.hpp"
 #include "gpcc/src/log/log_tools.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include "gtest/gtest.h"
 #include <memory>
 #include <stdexcept>

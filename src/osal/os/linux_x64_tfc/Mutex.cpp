@@ -14,7 +14,7 @@
 #include "Panic.hpp"
 #include "internal/TFCCore.hpp"
 #include "internal/UnmanagedMutexLocker.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include <pthread.h>
 
 namespace gpcc {

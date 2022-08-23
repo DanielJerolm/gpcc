@@ -12,7 +12,7 @@
 #include "RandomData.hpp"
 #include "gpcc/src/file_systems/EEPROMSectionSystem/Exceptions.hpp"
 #include "gpcc/src/file_systems/exceptions.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/Stream/IStreamReader.hpp"
 #include "gpcc/src/Stream/IStreamWriter.hpp"
 #include "gpcc/src/Stream/StreamErrors.hpp"

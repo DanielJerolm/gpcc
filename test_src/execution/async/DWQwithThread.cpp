@@ -10,7 +10,7 @@
 
 #include "DWQwithThread.hpp"
 #include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/string/tools.hpp"
 
 namespace gpcc_tests {

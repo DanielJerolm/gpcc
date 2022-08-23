@@ -11,7 +11,7 @@
 #include "HeapManager.hpp"
 #include "MemoryDescriptor.hpp"
 #include <gpcc/math/checks.hpp>
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include <stdexcept>
 #include <limits>
 

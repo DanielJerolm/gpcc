@@ -11,7 +11,7 @@
 #include "gpcc/src/osal/Mutex.hpp"
 #include "gpcc/src/osal/MutexLocker.hpp"
 #include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/string/tools.hpp"
 #include "gpcc/src/time/TimePoint.hpp"
 #include "gpcc/src/time/TimeSpan.hpp"

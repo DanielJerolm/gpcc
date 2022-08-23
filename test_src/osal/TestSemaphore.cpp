@@ -10,7 +10,7 @@
 
 #include "gpcc/src/osal/Semaphore.hpp"
 #include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include "gtest/gtest.h"
 #include <atomic>
 #include <functional>

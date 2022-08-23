@@ -9,7 +9,7 @@
 */
 
 #include "gpcc/src/file_systems/EEPROMSectionSystem/EEPROMSectionSystem.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/Stream/IStreamReader.hpp"
 #include "gpcc/src/Stream/IStreamWriter.hpp"
 #include "RandomData.hpp"

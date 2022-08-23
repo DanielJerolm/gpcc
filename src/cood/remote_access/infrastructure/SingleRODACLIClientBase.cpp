@@ -13,7 +13,7 @@
 #include <gpcc/cli/Command.hpp>
 #include <gpcc/cli/exceptions.hpp>
 #include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include <functional>
 #include <stdexcept>
 

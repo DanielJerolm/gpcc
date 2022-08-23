@@ -13,7 +13,7 @@
 #include "gpcc/src/osal/os/linux_arm_tfc/internal/UnmanagedMutex.hpp"
 #include "gpcc/src/osal/os/linux_arm_tfc/internal/UnmanagedMutexLocker.hpp"
 #include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/time/TimePoint.hpp"
 #include "gpcc/src/time/TimeSpan.hpp"
 #include "gtest/gtest.h"

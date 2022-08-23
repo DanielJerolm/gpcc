@@ -12,7 +12,7 @@
 #include "gpcc/src/log/backends/Backend_CLILogHistory.hpp"
 #include "gpcc/src/log/log_levels.hpp"
 #include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/Stream/MemStreamWriter.hpp"
 #include "gpcc/src/string/tools.hpp"
 #include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"

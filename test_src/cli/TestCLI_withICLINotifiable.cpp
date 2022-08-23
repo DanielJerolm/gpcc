@@ -12,7 +12,7 @@
 #include <gpcc/cli/Command.hpp>
 #include <gpcc/cli/exceptions.hpp>
 #include <gpcc/cli/ICLINotifiable.hpp>
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/time/TimePoint.hpp"
 #include "gpcc/src/time/TimeSpan.hpp"
 #include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"

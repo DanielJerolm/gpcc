@@ -16,7 +16,7 @@
 #include "internal/TimeLimitedThreadBlocker.hpp"
 #include "internal/UnmanagedMutexLocker.hpp"
 #include "Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/time/TimePoint.hpp"
 #include "gpcc/src/time/TimeSpan.hpp"
 #include <iomanip>

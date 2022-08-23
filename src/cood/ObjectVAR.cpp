@@ -13,7 +13,7 @@
 #include "exceptions.hpp"
 #include "gpcc/src/osal/Mutex.hpp"
 #include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/Stream/StreamErrors.hpp"
 #include "gpcc/src/Stream/IStreamWriter.hpp"
 #include <cstring>

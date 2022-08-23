@@ -12,7 +12,7 @@
 #include "Object.hpp"
 #include "ObjectDictionary.hpp"
 #include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 
 namespace gpcc {
 namespace cood {

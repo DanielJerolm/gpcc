@@ -13,7 +13,7 @@
 #include "gpcc/src/log/Logger.hpp"
 #include "gpcc/src/log/log_levels.hpp"
 #include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include "gtest/gtest.h"
 #include <exception>
 #include <iostream>

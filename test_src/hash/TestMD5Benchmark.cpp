@@ -11,7 +11,7 @@
 #if defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC)
 
 #include <gpcc/hash/md5.hpp>
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/string/tools.hpp"
 #include "gtest/gtest.h"
 #include <sys/types.h>

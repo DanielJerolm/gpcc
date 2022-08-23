@@ -16,7 +16,7 @@
 #include "internal/SectionWriter.hpp"
 #include "gpcc/src/osal/MutexLocker.hpp"
 #include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include <limits>
 #include <stdexcept>
 #include <cassert>

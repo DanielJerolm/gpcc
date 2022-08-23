@@ -12,7 +12,7 @@
 #include "gpcc/src/cood/exceptions.hpp"
 #include "gpcc/src/osal/AdvancedMutexLocker.hpp"
 #include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/Stream/MemStreamReader.hpp"
 #include "gpcc/src/Stream/MemStreamWriter.hpp"
 #include "gpcc/src/Stream/StreamErrors.hpp"

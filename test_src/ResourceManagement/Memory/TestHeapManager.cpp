@@ -12,7 +12,7 @@
 #include "gpcc/src/ResourceManagement/Memory/HeapManager.hpp"
 #include "gpcc/src/ResourceManagement/Memory/HeapManagerStatistics.hpp"
 #include "gpcc/src/ResourceManagement/Memory/MemoryDescriptor.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include <limits>
 #include <memory>
 #include <vector>

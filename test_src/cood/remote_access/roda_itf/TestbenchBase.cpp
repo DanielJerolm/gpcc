@@ -14,7 +14,7 @@
 #include "gpcc/src/cood/ObjectARRAY.hpp"
 #include "gpcc/src/cood/ObjectVAR.hpp"
 #include "gpcc/src/cood/ObjectVAR_wicb.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/osal/Panic.hpp"
 #include "gpcc/src/osal/Thread.hpp"
 #include "gpcc/src/osal/MutexLocker.hpp"

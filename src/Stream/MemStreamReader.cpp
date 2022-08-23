@@ -11,7 +11,7 @@
 #include "MemStreamReader.hpp"
 #include "StreamErrors.hpp"
 #include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/raii/scope_guard.hpp>
 #include <cstring>
 
 
