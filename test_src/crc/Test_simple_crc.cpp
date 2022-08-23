@@ -8,13 +8,13 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/crc/simple_crc.hpp"
+#include <gpcc/crc/simple_crc.hpp>
 #include "gpcc/src/Compiler/builtins.hpp"
 #include "gpcc/src/string/tools.hpp"
 #include "gtest/gtest.h"
-#include <cstring>
 #include <string>
 #include <iostream>
+#include <cstring>
 
 namespace gpcc_tests {
 namespace crc {

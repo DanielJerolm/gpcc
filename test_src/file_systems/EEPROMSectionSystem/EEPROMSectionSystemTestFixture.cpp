@@ -10,7 +10,7 @@
 */
 
 #include "EEPROMSectionSystemTestFixture.hpp"
-#include "gpcc/src/crc/simple_crc.hpp"
+#include <gpcc/crc/simple_crc.hpp>
 #include <list>
 #include <memory>
 #include <stdexcept>

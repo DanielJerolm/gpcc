@@ -8,12 +8,12 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gtest/gtest.h"
-#include "gpcc/src/crc/simple_crc.hpp"
+#include <gpcc/crc/simple_crc.hpp>
 #include "gpcc/src/file_systems/EEPROMSectionSystem/internal/BlockAccessor.hpp"
 #include "gpcc/src/file_systems/EEPROMSectionSystem/internal/EEPROMSectionSystemInternals.hpp"
 #include "gpcc/src/file_systems/EEPROMSectionSystem/Exceptions.hpp"
 #include "../FakeEEPROM.hpp"
+#include "gtest/gtest.h"
 #include <limits>
 #include <stdexcept>
 #include <cstring>
