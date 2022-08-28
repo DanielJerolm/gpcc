@@ -3,7 +3,7 @@
 # -------------------------------------
 add_subdirectory(callback)
 add_subdirectory(cli)
-add_subdirectory(Compiler)
+add_subdirectory(compiler)
 add_subdirectory(container)
 add_subdirectory(cood)
 add_subdirectory(crc)
