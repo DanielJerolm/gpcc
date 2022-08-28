@@ -19,7 +19,7 @@
  */
 
 #include <gpcc/hash/md5.hpp>
-#include "gpcc/src/Compiler/definitions.hpp"
+#include <gpcc/compiler/definitions.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/Stream/MemStreamWriter.hpp"
 #include <cstring>

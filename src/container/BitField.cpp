@@ -9,7 +9,7 @@
 */
 
 #include <gpcc/container/BitField.hpp>
-#include "gpcc/src/Compiler/builtins.hpp"
+#include <gpcc/compiler/builtins.hpp>
 #include <sstream>
 #include <stdexcept>
 #include <cstring>

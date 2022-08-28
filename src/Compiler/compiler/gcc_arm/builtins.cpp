@@ -10,7 +10,7 @@
 
 #ifdef COMPILER_GCC_ARM
 
-#include "builtins.hpp"
+#include <gpcc/compiler/compiler/gcc_arm/builtins.hpp>
 #include <limits>
 
 namespace gpcc

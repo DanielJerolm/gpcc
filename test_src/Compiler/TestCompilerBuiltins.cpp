@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/Compiler/builtins.hpp"
+#include <gpcc/compiler/builtins.hpp>
 
 #include "gtest/gtest.h"
 #include <cstdint>

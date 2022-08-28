@@ -9,7 +9,7 @@
 */
 
 #include "IStreamReader.hpp"
-#include "gpcc/src/Compiler/definitions.hpp"
+#include <gpcc/compiler/definitions.hpp>
 
 namespace gpcc   {
 namespace Stream {

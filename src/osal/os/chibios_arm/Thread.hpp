@@ -15,7 +15,7 @@
 
 #include "ConditionVariable.hpp"
 #include "Mutex.hpp"
-#include "gpcc/src/Compiler/definitions.hpp"
+#include <gpcc/compiler/definitions.hpp>
 #include "gpcc/src/osal/ThreadRegistry.hpp"
 #include "ch.h"
 #include <atomic>

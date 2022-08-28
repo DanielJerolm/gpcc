@@ -10,7 +10,7 @@
 
 #include "TimePoint.hpp"
 #include "TimeSpan.hpp"
-#include "gpcc/src/Compiler/builtins.hpp"
+#include <gpcc/compiler/builtins.hpp>
 #include <limits>
 #include <stdexcept>
 #include <cstdio>

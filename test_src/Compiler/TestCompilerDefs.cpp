@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/Compiler/definitions.hpp"
+#include <gpcc/compiler/definitions.hpp>
 #include "gpcc/src/osal/Panic.hpp"
 
 #include "gtest/gtest.h"

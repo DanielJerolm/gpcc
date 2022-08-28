@@ -10,7 +10,7 @@
 
 #ifdef COMPILER_GCC_X64
 
-#include "builtins.hpp"
+#include <gpcc/compiler/compiler/gcc_x64/builtins.hpp>
 
 namespace gpcc
 {

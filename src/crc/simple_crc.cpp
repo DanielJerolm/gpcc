@@ -9,7 +9,7 @@
 */
 
 #include <gpcc/crc/simple_crc.hpp>
-#include "gpcc/src/Compiler/builtins.hpp"
+#include <gpcc/compiler/builtins.hpp>
 
 namespace gpcc {
 namespace crc  {

@@ -14,7 +14,7 @@
 #include "TimeLimitedThreadBlocker.hpp"
 #include "UnmanagedMutexLocker.hpp"
 #include "../Panic.hpp"
-#include "gpcc/src/Compiler/builtins.hpp"
+#include <gpcc/compiler/builtins.hpp>
 #include "gpcc/src/time/TimePoint.hpp"
 #include "gpcc/src/time/TimeSpan.hpp"
 #include <algorithm>

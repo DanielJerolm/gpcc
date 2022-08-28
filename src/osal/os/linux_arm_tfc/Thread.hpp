@@ -15,7 +15,7 @@
 
 #include "internal/UnmanagedConditionVariable.hpp"
 #include "internal/UnmanagedMutex.hpp"
-#include "gpcc/src/Compiler/definitions.hpp"
+#include <gpcc/compiler/definitions.hpp>
 #include "gpcc/src/osal/ThreadRegistry.hpp"
 #include <atomic>
 #include <functional>

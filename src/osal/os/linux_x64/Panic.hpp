@@ -13,7 +13,7 @@
 #ifndef PANIC_HPP_201701282159
 #define PANIC_HPP_201701282159
 
-#include "gpcc/src/Compiler/definitions.hpp"
+#include <gpcc/compiler/definitions.hpp>
 #include <stdexcept>
 
 namespace gpcc {
