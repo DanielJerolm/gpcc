@@ -16,7 +16,7 @@
 #include "gpcc/src/osal/Panic.hpp"
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/Stream/IStreamWriter.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include <stdexcept>
 #include <vector>
 

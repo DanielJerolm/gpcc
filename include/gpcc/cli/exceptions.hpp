@@ -11,7 +11,7 @@
 #ifndef EXCEPTIONS_HPP_201710232109
 #define EXCEPTIONS_HPP_201710232109
 
-#include "gpcc/src/string/SharedString.hpp"
+#include <gpcc/string/SharedString.hpp>
 #include <stdexcept>
 #include <string>
 

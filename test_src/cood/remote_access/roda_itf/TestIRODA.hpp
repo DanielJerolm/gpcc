@@ -21,7 +21,7 @@
 #include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp"
 #include "gpcc/src/osal/Panic.hpp"
 #include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 
 #include "gtest/gtest.h"
 

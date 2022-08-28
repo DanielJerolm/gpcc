@@ -18,7 +18,7 @@
 #include "gpcc/src/osal/Panic.hpp"
 #include "gpcc/src/osal/Thread.hpp"
 #include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include "gpcc/test_src/cood/ObjectVAR_wicb_withASM.hpp"
 #include <functional>
 #include <memory>

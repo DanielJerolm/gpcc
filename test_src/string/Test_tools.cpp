@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include "gtest/gtest.h"
 
 namespace {

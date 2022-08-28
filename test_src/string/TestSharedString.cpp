@@ -8,7 +8,7 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "gpcc/src/string/SharedString.hpp"
+#include <gpcc/string/SharedString.hpp>
 #include "gtest/gtest.h"
 
 namespace gpcc_tests {

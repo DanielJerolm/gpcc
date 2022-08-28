@@ -12,7 +12,7 @@
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/Stream/IStreamReader.hpp"
 #include "gpcc/src/Stream/IStreamWriter.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include <exception>
 #include <sstream>
 #include <stdexcept>

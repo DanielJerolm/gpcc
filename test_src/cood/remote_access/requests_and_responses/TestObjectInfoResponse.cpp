@@ -18,7 +18,7 @@
 #include "gpcc/src/osal/Mutex.hpp"
 #include "gpcc/src/Stream/MemStreamReader.hpp"
 #include "gpcc/src/Stream/MemStreamWriter.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include "gpcc/test_src/cood/ObjectVARwithASM.hpp"
 #include "gtest/gtest.h"
 #include <iostream>

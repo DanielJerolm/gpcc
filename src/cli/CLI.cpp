@@ -19,8 +19,8 @@
 #include "gpcc/src/osal/MutexLocker.hpp"
 #include "gpcc/src/osal/Panic.hpp"
 #include <gpcc/raii/scope_guard.hpp>
-#include "gpcc/src/string/levenshtein_distance.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/levenshtein_distance.hpp>
+#include <gpcc/string/tools.hpp>
 #include <exception>
 #include <cstdio>
 #include <cstring>

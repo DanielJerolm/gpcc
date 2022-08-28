@@ -11,7 +11,7 @@
 #include "gpcc/src/cood/remote_access/requests_and_responses/ReturnStackItem.hpp"
 #include "gpcc/src/Stream/MemStreamReader.hpp"
 #include "gpcc/src/Stream/MemStreamWriter.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include "gtest/gtest.h"
 
 namespace gpcc_tests {

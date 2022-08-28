@@ -9,7 +9,7 @@
 */
 
 #include "string_conversion.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include <limits>
 #include <stdexcept>
 

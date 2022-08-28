@@ -13,7 +13,7 @@
 #include "tools.hpp"
 #include "gpcc/src/file_systems/exceptions.hpp"
 #include <gpcc/raii/scope_guard.hpp>
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>

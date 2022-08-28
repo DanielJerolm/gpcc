@@ -9,7 +9,7 @@
 */
 
 #include "TerminalRxParser.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include <stdexcept>
 
 namespace gpcc     {

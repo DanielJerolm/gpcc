@@ -11,7 +11,7 @@
 #include "HierarchicNamedRWLockNode.hpp"
 #include "gpcc/src/ResourceManagement/Objects/exceptions.hpp"
 #include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include <algorithm>
 #include <cstring>
 

@@ -12,7 +12,7 @@
 #include "exceptions.hpp"
 #include "gpcc/src/Stream/IStreamReader.hpp"
 #include "gpcc/src/Stream/IStreamWriter.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include <cstdio>
 #include <exception>
 #include <limits>

@@ -9,7 +9,7 @@
 */
 
 #include <gpcc/hash/md5.hpp>
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include "gtest/gtest.h"
 #include <iostream>
 #include <stdexcept>

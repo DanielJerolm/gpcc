@@ -34,7 +34,7 @@
 #include "gpcc/src/time/TimeSpan.hpp"
 #include "gpcc/src/Stream/MemStreamReader.hpp"
 #include "gpcc/src/Stream/MemStreamWriter.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>

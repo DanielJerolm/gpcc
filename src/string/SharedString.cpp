@@ -8,7 +8,7 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "SharedString.hpp"
+#include <gpcc/string/SharedString.hpp>
 #include "gpcc/src/osal/Panic.hpp"
 #include <limits>
 #include <memory>

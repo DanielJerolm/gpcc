@@ -11,7 +11,7 @@
 #include "DWQwithThread.hpp"
 #include "gpcc/src/osal/Panic.hpp"
 #include <gpcc/raii/scope_guard.hpp>
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 
 namespace gpcc_tests {
 namespace execution  {

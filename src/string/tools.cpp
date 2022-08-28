@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <iomanip>
 #include <limits>

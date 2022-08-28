@@ -10,7 +10,7 @@
 
 #include <gpcc/crc/simple_crc.hpp>
 #include "gpcc/src/Compiler/builtins.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include "gtest/gtest.h"
 #include <string>
 #include <iostream>

@@ -11,7 +11,7 @@
 #include "CAWriteArgsParser.hpp"
 #include <gpcc/cli/exceptions.hpp>
 #include "gpcc/src/cood/cli/string_conversion.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include <stdexcept>
 #include <exception>
 

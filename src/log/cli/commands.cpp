@@ -13,7 +13,7 @@
 #include "gpcc/src/file_systems/IFileStorage.hpp"
 #include "gpcc/src/log/logfacilities/ILogFacilityCtrl.hpp"
 #include "gpcc/src/log/log_tools.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include <algorithm>
 #include <stdexcept>
 

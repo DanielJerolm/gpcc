@@ -9,7 +9,7 @@
 */
 
 #include "StringLogMessageTS.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 
 namespace gpcc     {
 namespace log      {

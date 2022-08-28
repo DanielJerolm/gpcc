@@ -22,7 +22,7 @@
 #include "logfacilities/ILogFacility.hpp"
 #include "gpcc/src/osal/Panic.hpp"
 #include <gpcc/raii/scope_guard.hpp>
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include <memory>
 #include <stdexcept>
 

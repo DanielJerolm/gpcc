@@ -9,7 +9,7 @@
 */
 
 #include "RomConstExceptionLogMessage.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include <cstring>
 #include <stdexcept>
 

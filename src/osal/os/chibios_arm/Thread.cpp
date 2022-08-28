@@ -14,7 +14,7 @@
 #include "Panic.hpp"
 #include "gpcc/src/osal/AdvancedMutexLocker.hpp"
 #include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>

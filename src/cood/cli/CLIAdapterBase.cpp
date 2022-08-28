@@ -26,7 +26,7 @@
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/Stream/MemStreamReader.hpp"
 #include "gpcc/src/Stream/MemStreamWriter.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include <functional>
 #include <iomanip>
 #include <limits>

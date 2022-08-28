@@ -12,7 +12,7 @@
 
 #include <gpcc/hash/md5.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include "gtest/gtest.h"
 #include <sys/types.h>
 #include <sys/stat.h>
