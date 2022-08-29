@@ -8,7 +8,7 @@
     Copyright (C) 2020 Daniel Jerolm
 */
 
-#include "Backend_CLILogHistory.hpp"
+#include <gpcc/log/backends/Backend_CLILogHistory.hpp>
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/cli/CLIColors.hpp>
 #include <gpcc/cli/Command.hpp>

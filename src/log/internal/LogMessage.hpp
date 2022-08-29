@@ -11,7 +11,7 @@
 #ifndef LOGMESSAGE_HPP_201701061501
 #define LOGMESSAGE_HPP_201701061501
 
-#include "gpcc/src/log/log_levels.hpp"
+#include <gpcc/log/log_levels.hpp>
 #include <gpcc/string/SharedString.hpp>
 #include <string>
 #include <cstdint>

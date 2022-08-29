@@ -10,7 +10,7 @@
 
 #include "TestILogFacility.hpp"
 #include "TestILogFacilityCtrl.hpp"
-#include "gpcc/src/log/logfacilities/ThreadedLogFacility.hpp"
+#include <gpcc/log/logfacilities/ThreadedLogFacility.hpp>
 #include "gtest/gtest.h"
 #include <stdexcept>
 

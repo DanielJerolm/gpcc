@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "log_tools.hpp"
+#include <gpcc/log/log_tools.hpp>
 #include "gpcc/src/file_systems/IFileStorage.hpp"
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/string/tools.hpp>

@@ -8,11 +8,11 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "commands.hpp"
+#include <gpcc/log/cli/commands.hpp>
 #include <gpcc/cli/CLI.hpp>
 #include "gpcc/src/file_systems/IFileStorage.hpp"
-#include "gpcc/src/log/logfacilities/ILogFacilityCtrl.hpp"
-#include "gpcc/src/log/log_tools.hpp"
+#include <gpcc/log/logfacilities/ILogFacilityCtrl.hpp>
+#include <gpcc/log/log_tools.hpp>
 #include <gpcc/string/tools.hpp>
 #include <algorithm>
 #include <stdexcept>

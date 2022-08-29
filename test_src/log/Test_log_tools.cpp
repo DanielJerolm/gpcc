@@ -14,8 +14,8 @@
 #include "gpcc/src/file_systems/linux_fs/FileStorage.hpp"
 #include "gpcc/src/file_systems/linux_fs/internal/tools.hpp"
 #include "gpcc/src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
-#include "gpcc/src/log/logfacilities/ILogFacilityCtrl.hpp"
-#include "gpcc/src/log/log_tools.hpp"
+#include <gpcc/log/logfacilities/ILogFacilityCtrl.hpp>
+#include <gpcc/log/log_tools.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gtest/gtest.h"
 #include <memory>

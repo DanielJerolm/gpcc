@@ -9,9 +9,9 @@
 */
 
 #include "logfacilities/FakeBackend.hpp"
-#include "gpcc/src/log/logfacilities/ThreadedLogFacility.hpp"
-#include "gpcc/src/log/Logger.hpp"
-#include "gpcc/src/log/log_levels.hpp"
+#include <gpcc/log/logfacilities/ThreadedLogFacility.hpp>
+#include <gpcc/log/Logger.hpp>
+#include <gpcc/log/log_levels.hpp>
 #include "gpcc/src/osal/Panic.hpp"
 #include <gpcc/raii/scope_guard.hpp>
 #include "gtest/gtest.h"

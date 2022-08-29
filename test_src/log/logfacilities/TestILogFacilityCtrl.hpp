@@ -12,10 +12,10 @@
 #define TESTILOGFACILITYCTRL_HPP_201701061629
 
 #include "FakeBackend.hpp"
-#include "gpcc/src/log/logfacilities/ILogFacility.hpp"
-#include "gpcc/src/log/logfacilities/ILogFacilityCtrl.hpp"
-#include "gpcc/src/log/Logger.hpp"
-#include "gpcc/src/log/log_levels.hpp"
+#include <gpcc/log/logfacilities/ILogFacility.hpp>
+#include <gpcc/log/logfacilities/ILogFacilityCtrl.hpp>
+#include <gpcc/log/Logger.hpp>
+#include <gpcc/log/log_levels.hpp>
 #include "gpcc/src/osal/Panic.hpp"
 #include "gpcc/src/osal/Thread.hpp"
 #include <gpcc/raii/scope_guard.hpp>

@@ -13,11 +13,11 @@
 #include "gpcc/src/file_systems/linux_fs/FileStorage.hpp"
 #include "gpcc/src/file_systems/linux_fs/internal/tools.hpp"
 #include "gpcc/src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
-#include "gpcc/src/log/backends/Backend_CLI.hpp"
-#include "gpcc/src/log/cli/commands.hpp"
-#include "gpcc/src/log/logfacilities/ThreadedLogFacility.hpp"
-#include "gpcc/src/log/log_levels.hpp"
-#include "gpcc/src/log/Logger.hpp"
+#include <gpcc/log/backends/Backend_CLI.hpp>
+#include <gpcc/log/cli/commands.hpp>
+#include <gpcc/log/logfacilities/ThreadedLogFacility.hpp>
+#include <gpcc/log/log_levels.hpp>
+#include <gpcc/log/Logger.hpp>
 #include "gpcc/src/osal/Panic.hpp"
 #include "gpcc/src/osal/Thread.hpp"
 #include <gpcc/raii/scope_guard.hpp>

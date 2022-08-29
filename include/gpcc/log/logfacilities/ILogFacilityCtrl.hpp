@@ -11,7 +11,7 @@
 #ifndef ILOGFACILITYCTRL_HPP_201701061537
 #define ILOGFACILITYCTRL_HPP_201701061537
 
-#include "gpcc/src/log/log_levels.hpp"
+#include <gpcc/log/log_levels.hpp>
 #include <string>
 #include <tuple>
 #include <vector>

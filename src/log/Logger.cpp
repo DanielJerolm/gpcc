@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "Logger.hpp"
+#include <gpcc/log/Logger.hpp>
 #include "internal/CStringLogMessage.hpp"
 #include "internal/CStringLogMessageTS.hpp"
 #include "internal/RomConstExceptionLogMessage.hpp"
@@ -19,7 +19,7 @@
 #include "internal/StringExceptionLogMessageTS.hpp"
 #include "internal/StringLogMessage.hpp"
 #include "internal/StringLogMessageTS.hpp"
-#include "logfacilities/ILogFacility.hpp"
+#include <gpcc/log/logfacilities/ILogFacility.hpp>
 #include "gpcc/src/osal/Panic.hpp"
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/string/tools.hpp>

@@ -9,7 +9,7 @@
 */
 
 #include "ThreadBasedRemoteAccessServer.hpp"
-#include "gpcc/src/log/Logger.hpp"
+#include <gpcc/log/Logger.hpp>
 #include "gpcc/src/osal/MutexLocker.hpp"
 #include "gpcc/src/osal/Panic.hpp"
 #include <functional>

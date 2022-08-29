@@ -11,7 +11,7 @@
 #ifndef LOG_TOOLS_HPP_201612150930
 #define LOG_TOOLS_HPP_201612150930
 
-#include "logfacilities/ILogFacilityCtrl.hpp"
+#include <gpcc/log/logfacilities/ILogFacilityCtrl.hpp>
 #include <stdexcept>
 
 namespace gpcc {

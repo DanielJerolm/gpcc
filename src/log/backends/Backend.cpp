@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "Backend.hpp"
+#include <gpcc/log/backends/Backend.hpp>
 
 namespace gpcc {
 namespace log  {

@@ -9,7 +9,7 @@
 */
 
 #include "WorkQueueBasedRemoteAccessServer.hpp"
-#include "gpcc/src/log/Logger.hpp"
+#include <gpcc/log/Logger.hpp>
 #include "gpcc/src/osal/MutexLocker.hpp"
 #include "gpcc/src/osal/Panic.hpp"
 #include "gpcc/src/time/TimeSpan.hpp"

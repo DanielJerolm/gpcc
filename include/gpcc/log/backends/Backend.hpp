@@ -11,7 +11,7 @@
 #ifndef BACKEND_HPP_201701052121
 #define BACKEND_HPP_201701052121
 
-#include "gpcc/src/log/log_levels.hpp"
+#include <gpcc/log/log_levels.hpp>
 #include <atomic>
 #include <string>
 

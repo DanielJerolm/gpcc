@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "Backend_CLI.hpp"
+#include <gpcc/log/backends/Backend_CLI.hpp>
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/cli/CLIColors.hpp>
 

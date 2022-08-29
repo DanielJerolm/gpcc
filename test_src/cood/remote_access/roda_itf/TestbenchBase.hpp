@@ -17,8 +17,8 @@
 #include "gpcc/src/cood/ObjectRECORD.hpp"
 #include "gpcc/src/cood/ObjectDictionary.hpp"
 #include "gpcc/src/cood/sdo_abort_codes.hpp"
-#include "gpcc/src/log/logfacilities/ThreadedLogFacility.hpp"
-#include "gpcc/src/log/Logger.hpp"
+#include <gpcc/log/logfacilities/ThreadedLogFacility.hpp>
+#include <gpcc/log/Logger.hpp>
 #include "gpcc/src/osal/Mutex.hpp"
 #include "gpcc/test_src/log/backends/Backend_Recorder.hpp"
 #include <cstddef>

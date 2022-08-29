@@ -8,7 +8,7 @@
     Copyright (C) 2020 Daniel Jerolm
 */
 
-#include "gpcc/src/log/log_levels.hpp"
+#include <gpcc/log/log_levels.hpp>
 #include "gtest/gtest.h"
 
 using namespace gpcc::log;

@@ -9,8 +9,8 @@
 */
 
 #include <gpcc/cli/CLI.hpp>
-#include "gpcc/src/log/backends/Backend_CLILogHistory.hpp"
-#include "gpcc/src/log/log_levels.hpp"
+#include <gpcc/log/backends/Backend_CLILogHistory.hpp>
+#include <gpcc/log/log_levels.hpp>
 #include "gpcc/src/osal/Thread.hpp"
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/Stream/MemStreamWriter.hpp"

@@ -11,7 +11,7 @@
 #include "RODAN_Listener.hpp"
 #include "gpcc/src/cood/remote_access/requests_and_responses/ResponseBase.hpp"
 #include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp"
-#include "gpcc/src/log/Logger.hpp"
+#include <gpcc/log/Logger.hpp>
 #include "gpcc/src/osal/MutexLocker.hpp"
 #include "gpcc/src/osal/Panic.hpp"
 #include "gpcc/src/osal/Thread.hpp"
