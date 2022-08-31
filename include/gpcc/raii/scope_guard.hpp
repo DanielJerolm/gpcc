@@ -11,7 +11,7 @@
 #ifndef SCOPE_GUARD_HPP_201612311341
 #define SCOPE_GUARD_HPP_201612311341
 
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 
 namespace gpcc {
 namespace raii {

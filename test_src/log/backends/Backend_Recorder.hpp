@@ -12,7 +12,7 @@
 #define BACKEND_RECORDER_HPP_201702152052
 
 #include <gpcc/log/backends/Backend.hpp>
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/Mutex.hpp>
 #include <vector>
 #include <cstddef>
 

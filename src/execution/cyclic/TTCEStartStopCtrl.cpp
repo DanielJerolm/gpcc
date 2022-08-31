@@ -11,7 +11,7 @@
 #include "TTCEStartStopCtrl.hpp"
 #include "gpcc/src/execution/async/IWorkQueue.hpp"
 #include "gpcc/src/execution/async/WorkPackage.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
+#include <gpcc/osal/MutexLocker.hpp>
 #include <stdexcept>
 
 namespace gpcc {

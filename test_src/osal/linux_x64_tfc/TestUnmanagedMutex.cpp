@@ -12,7 +12,7 @@
 
 #include "gpcc/src/osal/os/linux_x64_tfc/internal/UnmanagedMutex.hpp"
 #include "gpcc/src/osal/os/linux_x64_tfc/internal/UnmanagedMutexLocker.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/time/TimePoint.hpp"
 #include "gpcc/src/time/TimeSpan.hpp"

@@ -9,7 +9,7 @@
 */
 
 #include <gpcc/string/SharedString.hpp>
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include <limits>
 #include <memory>
 #include <stdexcept>

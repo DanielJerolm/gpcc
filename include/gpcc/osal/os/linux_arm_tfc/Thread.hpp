@@ -8,29 +8,41 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#ifdef OS_LINUX_X64
+#ifdef OS_LINUX_ARM_TFC
 
-#ifndef THREAD_HPP_201701291628
-#define THREAD_HPP_201701291628
+#ifndef THREAD_HPP_201904071053
+#define THREAD_HPP_201904071053
 
-#include "ConditionVariable.hpp"
-#include "Mutex.hpp"
 #include <gpcc/compiler/definitions.hpp>
-#include "gpcc/src/osal/ThreadRegistry.hpp"
+#include <gpcc/osal/ThreadRegistry.hpp>
 #include <atomic>
 #include <functional>
 #include <string>
-#include <climits>
 #include <cstddef>
 #include <cstdint>
+#include <climits>
 #include <pthread.h>
+#include <memory>
 
 namespace gpcc {
 namespace osal {
 
+namespace internal {
+class UnmanagedConditionVariable;
+class UnmanagedMutex;
+class TFCCore;
+}
+
 /**
  * \ingroup GPCC_OSAL_THREADING
  * \brief A class used to create and manage a thread.
+ *
+ * __Note:__\n
+ * __This thread is managed by GPCC's TFC feature.__\n
+ * __The managed thread will always be scheduled using the Linux scheduling policy "OTHER",__\n
+ * __regardless of the parameters passed to void Start(...).__\n
+ * __This is not a problem, because TFC pretends that the software is executed on a machine with__
+ * __infinite speed and an infinite number of CPU cores.__
  *
  * # Features
  * - Management of a single thread per @ref Thread class instance.
@@ -371,17 +383,22 @@ class Thread final
     };
 
 
+    /// Pointer to the @ref internal::TFCCore instance.
+    /** This is setup by the constructor and not changed afterwards. */
+    internal::TFCCore* const pTFCCore;
+
+
     /// Name of the thread.
     std::string const name;
 
 
     /// Mutex protecting access to object's internals.
     /** Locking order: @ref joinMutex -> @ref mutex */
-    Mutex mutable mutex;
+    std::unique_ptr<internal::UnmanagedMutex> mutable spMutex;
 
     /// Mutex used to make @ref Join() thread-safe and to prevent any race between @ref Start() and @ref Join().
     /** Locking order: @ref joinMutex -> @ref mutex */
-    Mutex joinMutex;
+    std::unique_ptr<internal::UnmanagedMutex> spJoinMutex;
 
 
     /// Functor referencing the thread entry function.
@@ -395,12 +412,16 @@ class Thread final
 
     /// Condition variable signaled when @ref threadState is set to @ref ThreadState::running.
     /** This is to be used in conjunction with @ref mutex. */
-    ConditionVariable threadStateRunningCondVar;
+    std::unique_ptr<internal::UnmanagedConditionVariable> spThreadStateRunningCondVar;
 
     /// pthread-handle referencing the thread managed by this object.
     /** @ref mutex is required.\n
         This only contains a valid value if @ref threadState does not equal @ref ThreadState::noThreadOrJoined. */
     pthread_t thread_id;
+
+    /// Flag indicating if a thread is waiting for joining with the managed thread.
+    /** @ref mutex is required. */
+    bool threadWaitingForJoin;
 
     /// Flag controlling if thread cancellation is currently enabled or disabled.
     /** No mutex required: This is only accessed by the thread managed by this object and before thread start.\n
@@ -418,8 +439,6 @@ class Thread final
 
     static void* InternalThreadEntry1(void* arg);
     void* InternalThreadEntry2(void);
-
-    int UniversalPrioToSystemPrio(priority_t const priority, SchedPolicy const schedpolicy) const;
 };
 
 /**
@@ -511,5 +530,5 @@ inline bool Thread::IsCancellationPending(void) const
 } // namespace osal
 } // namespace gpcc
 
-#endif // #ifndef THREAD_HPP_201701291628
-#endif // #ifdef OS_LINUX_X64
+#endif // #ifndef THREAD_HPP_201904071053
+#endif // #ifdef OS_LINUX_ARM_TFC

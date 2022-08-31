@@ -9,11 +9,11 @@
 */
 
 #include "gpcc/src/ResourceManagement/semaphores/NonBlockingSemaphore.hpp"
-#include "gpcc/src/osal/ConditionVariable.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/osal/ConditionVariable.hpp>
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/osal/Thread.hpp>
 #include "gpcc/src/execution/async/DeferredWorkQueue.hpp"
 #include "gpcc/src/execution/async/DeferredWorkPackage.hpp"
 #include "gpcc/src/time/TimePoint.hpp"

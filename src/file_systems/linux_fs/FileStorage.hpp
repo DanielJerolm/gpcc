@@ -14,7 +14,7 @@
 #define FILESTORAGE_HPP_201805102328
 
 #include "gpcc/src/file_systems/IFileAndDirectoryStorage.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/Mutex.hpp>
 #include "gpcc/src/ResourceManagement/Objects/HierarchicNamedRWLock.hpp"
 
 namespace gpcc         {

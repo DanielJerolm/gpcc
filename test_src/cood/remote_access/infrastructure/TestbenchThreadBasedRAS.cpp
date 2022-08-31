@@ -12,8 +12,8 @@
 
 #include "TestbenchThreadBasedRAS.hpp"
 #include "gpcc/src/cood/remote_access/infrastructure/ThreadBasedRemoteAccessServer.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/string/tools.hpp>
 #include <algorithm>

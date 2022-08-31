@@ -13,8 +13,8 @@
 #ifndef ADVANCEDMUTEXLOCKER_HPP_201701271629
 #define ADVANCEDMUTEXLOCKER_HPP_201701271629
 
-#include "../Mutex.hpp"
-#include "MutexLocker.hpp"
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
 
 namespace gpcc {
 namespace osal {

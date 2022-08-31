@@ -10,7 +10,7 @@
 
 #include "gpcc/src/cood/ObjectARRAY_wicb.hpp"
 #include "gpcc/src/cood/exceptions.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/Mutex.hpp>
 #include "gpcc/src/Stream/MemStreamReader.hpp"
 #include "gpcc/src/Stream/MemStreamWriter.hpp"
 #include "gpcc/src/Stream/StreamErrors.hpp"

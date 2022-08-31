@@ -14,7 +14,7 @@
 #include "PingResponse.hpp"
 #include "ReadRequestResponse.hpp"
 #include "WriteRequestResponse.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include "gpcc/src/Stream/IStreamReader.hpp"
 #include "gpcc/src/Stream/IStreamWriter.hpp"
 #include <stdexcept>

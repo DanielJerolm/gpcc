@@ -12,8 +12,8 @@
 
 #include "UnitTestDirProvider.hpp"
 #include "tools.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/osal/Thread.hpp>
 #include <stdexcept>
 #include <system_error>
 #include <sys/types.h>

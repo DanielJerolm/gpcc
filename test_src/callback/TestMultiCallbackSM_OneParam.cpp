@@ -11,9 +11,9 @@
 #include "gpcc/src/callback/MultiCallbackSM.hpp"
 #include "gpcc/src/execution/async/WorkPackage.hpp"
 #include "gpcc/src/execution/async/WorkQueue.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Thread.hpp>
 #include "gtest/gtest.h"
 #include <stdexcept>
 #include <vector>

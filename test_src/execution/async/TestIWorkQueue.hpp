@@ -15,8 +15,8 @@
 #include "gpcc/src/execution/async/DeferredWorkPackage.hpp"
 #include "gpcc/src/execution/async/WorkQueue.hpp"
 #include "gpcc/src/execution/async/DeferredWorkQueue.hpp"
-#include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/osal/Semaphore.hpp"
+#include <gpcc/osal/Thread.hpp>
+#include <gpcc/osal/Semaphore.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/time/TimePoint.hpp"
 #include "gpcc/src/time/TimeSpan.hpp"

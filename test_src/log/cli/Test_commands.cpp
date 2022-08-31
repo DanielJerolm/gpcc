@@ -18,8 +18,8 @@
 #include <gpcc/log/logfacilities/ThreadedLogFacility.hpp>
 #include <gpcc/log/log_levels.hpp>
 #include <gpcc/log/Logger.hpp>
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/string/tools.hpp>
 #include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"

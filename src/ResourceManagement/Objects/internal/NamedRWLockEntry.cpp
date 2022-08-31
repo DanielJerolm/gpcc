@@ -9,7 +9,7 @@
 */
 
 #include "NamedRWLockEntry.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include <limits>
 #include <stdexcept>
 

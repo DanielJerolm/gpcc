@@ -11,8 +11,8 @@
 #ifndef TRIGGEREDTHREADEDCYCLICEXEC_HPP_201612301706
 #define TRIGGEREDTHREADEDCYCLICEXEC_HPP_201612301706
 
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/Thread.hpp>
 #include "gpcc/src/time/TimeSpan.hpp"
 #include <functional>
 #include <cstdint>

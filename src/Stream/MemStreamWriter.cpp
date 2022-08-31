@@ -10,7 +10,7 @@
 
 #include "MemStreamWriter.hpp"
 #include "StreamErrors.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include "cstring"
 
 namespace gpcc

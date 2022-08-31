@@ -12,7 +12,7 @@
 #define RAMBLOCK_HPP_201806202217
 
 #include "gpcc/src/StdIf/IRandomAccessStorage.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/Mutex.hpp>
 #include <vector>
 
 namespace gpcc      {

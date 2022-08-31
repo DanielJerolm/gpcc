@@ -12,7 +12,7 @@
 
 #include "UnmanagedConditionVariable.hpp"
 #include "UnmanagedMutex.hpp"
-#include "../Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include <system_error>
 
 namespace gpcc {

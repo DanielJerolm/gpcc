@@ -12,8 +12,8 @@
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/cli/CLIColors.hpp>
 #include <gpcc/cli/Command.hpp>
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/Stream/IStreamWriter.hpp"
 #include <gpcc/string/tools.hpp>

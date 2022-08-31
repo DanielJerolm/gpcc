@@ -12,7 +12,7 @@
 #define UUT_TRIGGEREDTHREADEDCYCLICEXEC_HPP_201612302049
 
 #include "gpcc/src/execution/cyclic/TriggeredThreadedCyclicExec.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/Mutex.hpp>
 
 namespace gpcc
 {

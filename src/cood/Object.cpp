@@ -10,7 +10,7 @@
 
 #include "Object.hpp"
 #include "exceptions.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include "gpcc/src/Stream/IStreamReader.hpp"
 #include "gpcc/src/Stream/IStreamWriter.hpp"
 #include <cstring>

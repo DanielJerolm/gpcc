@@ -11,10 +11,10 @@
 #include "gtest/gtest.h"
 #include "gpcc/src/execution/async/WorkQueue.hpp"
 #include "gpcc/src/execution/async/WorkPackage.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/Thread.hpp>
 #include "gpcc/src/ResourceManagement/Memory/HeapManagerSPTS.hpp"
 #include "gpcc/src/ResourceManagement/Memory/HeapManagerStatistics.hpp"
 #include "gpcc/src/ResourceManagement/Memory/MemoryDescriptorSPTS.hpp"

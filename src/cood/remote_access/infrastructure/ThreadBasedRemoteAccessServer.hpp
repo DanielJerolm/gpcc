@@ -12,9 +12,9 @@
 #define THREADBASEDREMOTEACCESSSERVER_HPP_202007041301
 
 #include "RemoteAccessServer.hpp"
-#include "gpcc/src/osal/ConditionVariable.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/osal/ConditionVariable.hpp>
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/Thread.hpp>
 #include <string>
 
 namespace gpcc {

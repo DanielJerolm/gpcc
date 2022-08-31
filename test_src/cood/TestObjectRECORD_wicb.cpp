@@ -10,8 +10,8 @@
 
 #include "gpcc/src/cood/ObjectRECORD_wicb.hpp"
 #include "gpcc/src/cood/exceptions.hpp"
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/Mutex.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/Stream/MemStreamReader.hpp"
 #include "gpcc/src/Stream/MemStreamWriter.hpp"

@@ -10,10 +10,10 @@
 
 #include "WorkQueue.hpp"
 #include "WorkPackage.hpp"
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Semaphore.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Semaphore.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <stdexcept>
 

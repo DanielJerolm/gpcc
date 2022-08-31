@@ -14,7 +14,7 @@
 #include "tools.hpp"
 #include "gpcc/src/file_systems/exceptions.hpp"
 #include "gpcc/src/file_systems/linux_fs/FileStorage.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/Stream/StreamErrors.hpp"
 #include <stdexcept>

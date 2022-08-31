@@ -10,7 +10,7 @@
 
 #include "TimeSpan.hpp"
 #include <gpcc/compiler/builtins.hpp>
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include <iomanip>
 #include <limits>
 #include <sstream>

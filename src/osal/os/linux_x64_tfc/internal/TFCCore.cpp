@@ -13,7 +13,7 @@
 #include "TFCCore.hpp"
 #include "TimeLimitedThreadBlocker.hpp"
 #include "UnmanagedMutexLocker.hpp"
-#include "../Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/compiler/builtins.hpp>
 #include "gpcc/src/time/TimePoint.hpp"
 #include "gpcc/src/time/TimeSpan.hpp"

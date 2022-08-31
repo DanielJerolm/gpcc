@@ -13,7 +13,7 @@
 #ifndef MUTEXLOCKER_HPP_201701271644
 #define MUTEXLOCKER_HPP_201701271644
 
-#include "../Mutex.hpp"
+#include <gpcc/osal/Mutex.hpp>
 
 namespace gpcc {
 namespace osal {

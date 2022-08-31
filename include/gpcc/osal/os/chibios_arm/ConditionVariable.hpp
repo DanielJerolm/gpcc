@@ -14,7 +14,7 @@
 #define CONDITIONVARIABLE_HPP_201701291128
 
 #include "Mutex.hpp"
-#include "ch.h"
+#include <ch.h>
 
 namespace gpcc {
 

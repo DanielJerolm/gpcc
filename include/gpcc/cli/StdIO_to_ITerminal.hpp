@@ -14,7 +14,7 @@
 #define STDIO_TO_ITERMINAL_HPP_201712292228
 
 #include <gpcc/cli/ITerminal.hpp>
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/Mutex.hpp>
 #include <termios.h>
 
 namespace gpcc {

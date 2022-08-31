@@ -12,7 +12,7 @@
 #define IOBJECTACCESS_HPP_201810042131
 
 #include "ObjectPtr.hpp"
-#include "gpcc/src/osal/RWLockReadLocker.hpp"
+#include <gpcc/osal/RWLockReadLocker.hpp>
 #include <vector>
 #include <cstdint>
 #include <cstddef>

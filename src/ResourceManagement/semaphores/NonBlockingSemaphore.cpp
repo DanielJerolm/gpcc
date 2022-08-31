@@ -9,8 +9,8 @@
 */
 
 #include "NonBlockingSemaphore.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include <stdexcept>
 
 namespace gpcc               {

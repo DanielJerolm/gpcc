@@ -10,7 +10,7 @@
 
 #include "MemoryDescriptorSPTS.hpp"
 #include "HeapManagerSPTS.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include <stdexcept>
 
 namespace gpcc

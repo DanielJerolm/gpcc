@@ -17,7 +17,7 @@
 #include "gpcc/src/cood/Object.hpp"
 #include "gpcc/src/cood/remote_access/requests_and_responses/WriteRequest.hpp"
 #include "gpcc/src/cood/remote_access/roda_itf/exceptions.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
+#include <gpcc/osal/MutexLocker.hpp>
 
 namespace gpcc_tests {
 namespace cood       {

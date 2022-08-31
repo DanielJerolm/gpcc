@@ -15,7 +15,7 @@
 
 #include "UnmanagedMutex.hpp"
 #include "UnmanagedMutexLocker.hpp"
-#include "../Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 
 namespace gpcc     {
 namespace osal     {

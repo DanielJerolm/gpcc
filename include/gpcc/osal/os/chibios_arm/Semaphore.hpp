@@ -13,7 +13,7 @@
 #ifndef SEMAPHORE_HPP_201701290858
 #define SEMAPHORE_HPP_201701290858
 
-#include "ch.h"
+#include <ch.h>
 #include <limits>
 
 namespace gpcc {

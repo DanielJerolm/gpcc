@@ -13,7 +13,7 @@
 
 #include "IObjectAccess.hpp"
 #include "IObjectRegistration.hpp"
-#include "gpcc/src/osal/RWLock.hpp"
+#include <gpcc/osal/RWLock.hpp>
 #include <map>
 
 namespace gpcc {

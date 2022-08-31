@@ -13,9 +13,9 @@
 
 #include "ILogFacility.hpp"
 #include "ILogFacilityCtrl.hpp"
-#include "gpcc/src/osal/ConditionVariable.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/osal/ConditionVariable.hpp>
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/Thread.hpp>
 #include <atomic>
 #include <cstdint>
 #include <cstddef>

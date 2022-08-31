@@ -13,8 +13,8 @@
 
 #include "gpcc/src/cood/Object.hpp"
 #include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiable.hpp"
-#include "gpcc/src/osal/ConditionVariable.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/ConditionVariable.hpp>
+#include <gpcc/osal/Mutex.hpp>
 #include <string>
 #include <vector>
 #include <cstddef>

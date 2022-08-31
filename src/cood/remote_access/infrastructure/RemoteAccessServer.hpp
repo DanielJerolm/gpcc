@@ -14,7 +14,7 @@
 #include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp"
 #include <gpcc/container/IntrusiveDList.hpp>
 #include "gpcc/src/cood/remote_access/requests_and_responses/ReturnStackItem.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/Mutex.hpp>
 #include <cstddef>
 #include <cstdint>
 #include <atomic>

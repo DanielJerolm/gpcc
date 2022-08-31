@@ -11,7 +11,7 @@
 #include "ObjectPtr.hpp"
 #include "Object.hpp"
 #include "ObjectDictionary.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 
 namespace gpcc {

@@ -11,8 +11,8 @@
 #ifndef TRIGGERPROVIDER_HPP_201612302045
 #define TRIGGERPROVIDER_HPP_201612302045
 
-#include "gpcc/src/osal/ConditionVariable.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/ConditionVariable.hpp>
+#include <gpcc/osal/Mutex.hpp>
 #include "gpcc/src/StdIf/IIRQ2ThreadWakeup.hpp"
 #include "gpcc/src/time/TimeSpan.hpp"
 #include <cstdint>

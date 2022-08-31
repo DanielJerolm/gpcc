@@ -26,8 +26,8 @@
 #include "gpcc/src/cood/IObjectAccess.hpp"
 #include "gpcc/src/cood/Object.hpp"
 #include <gpcc/log/Logger.hpp>
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/Stream/MemStreamReader.hpp"
 #include "gpcc/src/Stream/MemStreamWriter.hpp"

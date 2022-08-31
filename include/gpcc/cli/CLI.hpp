@@ -12,9 +12,9 @@
 #define CLI_HPP_201710051347
 
 #include <gpcc/cli/Command.hpp>
-#include "gpcc/src/osal/ConditionVariable.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/osal/ConditionVariable.hpp>
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/Thread.hpp>
 #include <memory>
 #include <stdexcept>
 #include <vector>

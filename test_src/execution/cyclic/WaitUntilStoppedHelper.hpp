@@ -11,9 +11,9 @@
 #ifndef WAITUNTILSTOPPEDHELPER_HPP_201612302047
 #define WAITUNTILSTOPPEDHELPER_HPP_201612302047
 
-#include "gpcc/src/osal/ConditionVariable.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/osal/ConditionVariable.hpp>
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/Thread.hpp>
 
 namespace gpcc
 {

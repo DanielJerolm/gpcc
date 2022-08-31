@@ -10,7 +10,7 @@
 
 #ifdef OS_LINUX_X64_TFC
 
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/osal/Thread.hpp>
 #include "gpcc/src/time/TimePoint.hpp"
 #include "gpcc/src/time/TimeSpan.hpp"
 #include "gtest/gtest.h"

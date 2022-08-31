@@ -10,7 +10,7 @@
 
 #ifdef OS_LINUX_ARM
 
-#include "Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include <atomic>
 #include <iostream>
 #include <string>

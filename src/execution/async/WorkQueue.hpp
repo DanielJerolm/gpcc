@@ -12,8 +12,8 @@
 #define WORKQUEUE_HPP_201612212309
 
 #include "IWorkQueue.hpp"
-#include "gpcc/src/osal/ConditionVariable.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/ConditionVariable.hpp>
+#include <gpcc/osal/Mutex.hpp>
 
 namespace gpcc {
 namespace execution {

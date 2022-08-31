@@ -10,9 +10,9 @@
 
 #ifdef OS_LINUX_X64
 
-#include "ConditionVariable.hpp"
-#include "Mutex.hpp"
-#include "Panic.hpp"
+#include <gpcc/osal/ConditionVariable.hpp>
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include "gpcc/src/time/TimePoint.hpp"
 #include <system_error>
 #include <ctime>

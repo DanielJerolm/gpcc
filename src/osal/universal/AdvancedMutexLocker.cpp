@@ -10,8 +10,8 @@
 
 #if (defined(OS_CHIBIOS_ARM) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC))
 
-#include "AdvancedMutexLocker.hpp"
-#include "../Panic.hpp"
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
 
 namespace gpcc {
 namespace osal {

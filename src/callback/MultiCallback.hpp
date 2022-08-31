@@ -12,7 +12,7 @@
 #define MULTICALLBACK_HPP_201702062036
 
 #include "MultiCallbackSM.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/Mutex.hpp>
 
 namespace gpcc {
 namespace callback {

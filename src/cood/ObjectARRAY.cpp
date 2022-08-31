@@ -11,8 +11,8 @@
 #include "ObjectARRAY.hpp"
 #include "IObjectNotifiable.hpp"
 #include "exceptions.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/Stream/IStreamReader.hpp"
 #include "gpcc/src/Stream/IStreamWriter.hpp"

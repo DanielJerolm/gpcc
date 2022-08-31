@@ -12,7 +12,7 @@
 #define BACKEND_CLILOGHISTORY_HPP_202001041425
 
 #include "Backend.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/Mutex.hpp>
 #include <list>
 #include <string>
 #include <utility>

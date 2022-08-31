@@ -14,8 +14,8 @@
 #include "gpcc/src/file_systems/exceptions.hpp"
 #include "internal/SectionReader.hpp"
 #include "internal/SectionWriter.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <limits>
 #include <stdexcept>

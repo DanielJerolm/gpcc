@@ -10,7 +10,7 @@
 
 #include "SmallDynamicNamedRWLock.hpp"
 #include "internal/NamedRWLockEntry.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include <stdexcept>
 
 namespace gpcc

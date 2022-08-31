@@ -10,8 +10,8 @@
 
 #if (defined(OS_CHIBIOS_ARM) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC))
 
-#include "RWLockReadLocker.hpp"
-#include "gpcc/src/osal/exceptions.hpp"
+#include <gpcc/osal/RWLockReadLocker.hpp>
+#include <gpcc/osal/exceptions.hpp>
 #include "gpcc/src/time/TimePoint.hpp"
 #include "gpcc/src/time/TimeSpan.hpp"
 

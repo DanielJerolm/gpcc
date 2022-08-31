@@ -19,7 +19,7 @@
 #include "gpcc/src/cood/sdo_abort_codes.hpp"
 #include <gpcc/log/logfacilities/ThreadedLogFacility.hpp>
 #include <gpcc/log/Logger.hpp>
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/Mutex.hpp>
 #include "gpcc/test_src/log/backends/Backend_Recorder.hpp"
 #include <cstddef>
 #include <cstdint>

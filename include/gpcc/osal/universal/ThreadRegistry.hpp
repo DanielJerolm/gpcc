@@ -14,7 +14,7 @@
 #define THREADREGISTRY_HPP_201701282133
 
 #include "IThreadRegistry.hpp"
-#include "../Mutex.hpp"
+#include <gpcc/osal/Mutex.hpp>
 
 namespace gpcc {
 namespace osal {

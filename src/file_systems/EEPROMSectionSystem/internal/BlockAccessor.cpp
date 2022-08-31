@@ -12,7 +12,7 @@
 #include <gpcc/crc/simple_crc.hpp>
 #include "gpcc/src/file_systems/EEPROMSectionSystem/Exceptions.hpp"
 #include <gpcc/compiler/definitions.hpp>
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/StdIf/IRandomAccessStorage.hpp"
 #include <limits>

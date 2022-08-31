@@ -12,9 +12,9 @@
 #define TTCESTARTSTOPCTRL_HPP_201612301751
 
 #include "TriggeredThreadedCyclicExec.hpp"
-#include "gpcc/src/osal/ConditionVariable.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/ConditionVariable.hpp>
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include <limits>
 
 namespace gpcc {

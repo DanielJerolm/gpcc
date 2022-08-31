@@ -18,8 +18,8 @@
 #include "gpcc/src/cood/sdo_abort_codes.hpp"
 #include "gpcc/src/execution/async/DeferredWorkPackage.hpp"
 #include "gpcc/src/execution/async/WorkPackage.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/test_src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessMock.hpp"
 #include "gpcc/test_src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiableMock.hpp"

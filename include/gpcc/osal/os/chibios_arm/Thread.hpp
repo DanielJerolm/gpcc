@@ -8,22 +8,21 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#ifdef OS_LINUX_ARM
+#ifdef OS_CHIBIOS_ARM
 
-#ifndef THREAD_HPP_201702042222
-#define THREAD_HPP_201702042222
+#ifndef THREAD_HPP_201702011718
+#define THREAD_HPP_201702011718
 
 #include "ConditionVariable.hpp"
 #include "Mutex.hpp"
 #include <gpcc/compiler/definitions.hpp>
-#include "gpcc/src/osal/ThreadRegistry.hpp"
+#include <gpcc/osal/ThreadRegistry.hpp>
+#include <ch.h>
 #include <atomic>
 #include <functional>
 #include <string>
-#include <climits>
 #include <cstddef>
 #include <cstdint>
-#include <pthread.h>
 
 namespace gpcc {
 namespace osal {
@@ -371,6 +370,11 @@ class Thread final
     };
 
 
+    static msg_t const TEC_Normal       = 1; ///<Internal thread exit code: Thread terminated by leaving the entry function.
+    static msg_t const TEC_TerminateNow = 2; ///<Internal thread exit code: Thread terminated by TerminateNow(...).
+    static msg_t const TEC_Cancelled    = 4; ///<Internal thread exit code: Thread was cancelled.
+
+
     /// Name of the thread.
     std::string const name;
 
@@ -397,10 +401,27 @@ class Thread final
     /** This is to be used in conjunction with @ref mutex. */
     ConditionVariable threadStateRunningCondVar;
 
-    /// pthread-handle referencing the thread managed by this object.
+    /// Memory allocated for the ChibiOS thread working area.
+    /** @ref mutex is required.\n
+        This only contains a valid value if @ref threadState does not equal @ref ThreadState::noThreadOrJoined. \n
+        This points to the storage allocated for the thread's working area. There may be leading padding bytes
+        to achieve proper alignment of the working area. */
+    uint8_t* pWA;
+
+    /// Pointer to the encapsulated ChibiOS-thread.
     /** @ref mutex is required.\n
         This only contains a valid value if @ref threadState does not equal @ref ThreadState::noThreadOrJoined. */
-    pthread_t thread_id;
+    thread_t* pThread;
+
+    /// Size of the stack in bytes, incl. potential extra bytes for interrupt handling etc.
+    /** @ref mutex is required.\n
+        This only contains a valid value if @ref threadState does not equal @ref ThreadState::noThreadOrJoined. */
+    size_t totalStackSize;
+
+    /// Thread return value.
+    /** This is used to pass the thread return value from @ref InternalThreadEntry2() to @ref Join(). \n
+        This is only valid, if @ref threadState is @ref ThreadState::terminated. */
+    void* pThreadReturnValue;
 
     /// Flag controlling if thread cancellation is currently enabled or disabled.
     /** No mutex required: This is only accessed by the thread managed by this object and before thread start.\n
@@ -416,10 +437,13 @@ class Thread final
 
     static ThreadRegistry& InternalGetThreadRegistry(void);
 
-    static void* InternalThreadEntry1(void* arg);
-    void* InternalThreadEntry2(void);
+    static void Internal_Sleep_ns(uint64_t const ns) noexcept;
 
-    int UniversalPrioToSystemPrio(priority_t const priority, SchedPolicy const schedpolicy) const;
+    static void InternalThreadEntry1(void* arg) noexcept;
+    msg_t InternalThreadEntry2(void) noexcept;
+
+    size_t InternalMeasureStack(void) const noexcept;
+    tprio_t UniversalPrioToChibiOSPrio(priority_t const priority, SchedPolicy const schedpolicy) const;
 };
 
 /**
@@ -511,5 +535,5 @@ inline bool Thread::IsCancellationPending(void) const
 } // namespace osal
 } // namespace gpcc
 
-#endif // #ifndef THREAD_HPP_201702042222
-#endif // #ifdef OS_LINUX_ARM
+#endif // #ifndef THREAD_HPP_201702011718
+#endif // #ifdef OS_CHIBIOS_ARM

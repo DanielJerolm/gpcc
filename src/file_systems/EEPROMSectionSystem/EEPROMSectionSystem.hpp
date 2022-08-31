@@ -15,7 +15,7 @@
 #include "internal/BlockAccessor.hpp"
 #include "internal/FreeBlockListBackup.hpp"
 #include "../IFileStorage.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/Mutex.hpp>
 #include "gpcc/src/ResourceManagement/Objects/SmallDynamicNamedRWLock.hpp"
 #include <list>
 #include <memory>

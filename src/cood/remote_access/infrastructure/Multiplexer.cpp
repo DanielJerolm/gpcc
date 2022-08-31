@@ -14,9 +14,9 @@
 #include "gpcc/src/cood/remote_access/requests_and_responses/ResponseBase.hpp"
 #include "gpcc/src/cood/remote_access/requests_and_responses/ReturnStackItem.hpp"
 #include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp"
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 
 #include <stdexcept>

@@ -10,8 +10,8 @@
 
 #include "HeapManagerSPTS.hpp"
 #include "MemoryDescriptorSPTS.hpp"
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
 
 namespace gpcc
 {

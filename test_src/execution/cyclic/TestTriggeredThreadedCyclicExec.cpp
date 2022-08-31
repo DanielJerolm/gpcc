@@ -11,7 +11,7 @@
 #include "Trace.hpp"
 #include "TriggerProvider.hpp"
 #include "UUT_TriggeredThreadedCyclicExec.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/time/TimeSpan.hpp"
 #include "gtest/gtest.h"

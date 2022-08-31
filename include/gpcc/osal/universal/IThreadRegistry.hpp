@@ -13,7 +13,7 @@
 #ifndef ITHREADREGISTRY_HPP_201701271713
 #define ITHREADREGISTRY_HPP_201701271713
 
-#include "../MutexLocker.hpp"
+#include <gpcc/osal/MutexLocker.hpp>
 #include <list>
 #include <cstddef>
 

@@ -10,8 +10,8 @@
 
 #include "ObjectDictionary.hpp"
 #include "Object.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/osal/RWLockWriteLocker.hpp"
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/osal/RWLockWriteLocker.hpp>
 #include <stdexcept>
 
 namespace gpcc {

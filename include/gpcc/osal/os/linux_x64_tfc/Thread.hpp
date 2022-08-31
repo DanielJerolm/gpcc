@@ -8,15 +8,13 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#ifdef OS_LINUX_ARM_TFC
+#ifdef OS_LINUX_X64_TFC
 
-#ifndef THREAD_HPP_201904071053
-#define THREAD_HPP_201904071053
+#ifndef THREAD_HPP_201703042059
+#define THREAD_HPP_201703042059
 
-#include "internal/UnmanagedConditionVariable.hpp"
-#include "internal/UnmanagedMutex.hpp"
 #include <gpcc/compiler/definitions.hpp>
-#include "gpcc/src/osal/ThreadRegistry.hpp"
+#include <gpcc/osal/ThreadRegistry.hpp>
 #include <atomic>
 #include <functional>
 #include <string>
@@ -24,11 +22,14 @@
 #include <cstdint>
 #include <climits>
 #include <pthread.h>
+#include <memory>
 
 namespace gpcc {
 namespace osal {
 
 namespace internal {
+class UnmanagedConditionVariable;
+class UnmanagedMutex;
 class TFCCore;
 }
 
@@ -393,11 +394,11 @@ class Thread final
 
     /// Mutex protecting access to object's internals.
     /** Locking order: @ref joinMutex -> @ref mutex */
-    internal::UnmanagedMutex mutable mutex;
+    std::unique_ptr<internal::UnmanagedMutex> mutable spMutex;
 
     /// Mutex used to make @ref Join() thread-safe and to prevent any race between @ref Start() and @ref Join().
     /** Locking order: @ref joinMutex -> @ref mutex */
-    internal::UnmanagedMutex joinMutex;
+    std::unique_ptr<internal::UnmanagedMutex> spJoinMutex;
 
 
     /// Functor referencing the thread entry function.
@@ -411,7 +412,7 @@ class Thread final
 
     /// Condition variable signaled when @ref threadState is set to @ref ThreadState::running.
     /** This is to be used in conjunction with @ref mutex. */
-    internal::UnmanagedConditionVariable threadStateRunningCondVar;
+    std::unique_ptr<internal::UnmanagedConditionVariable> spThreadStateRunningCondVar;
 
     /// pthread-handle referencing the thread managed by this object.
     /** @ref mutex is required.\n
@@ -529,5 +530,5 @@ inline bool Thread::IsCancellationPending(void) const
 } // namespace osal
 } // namespace gpcc
 
-#endif // #ifndef THREAD_HPP_201904071053
-#endif // #ifdef OS_LINUX_ARM_TFC
+#endif // #ifndef THREAD_HPP_201703042059
+#endif // #ifdef OS_LINUX_X64_TFC

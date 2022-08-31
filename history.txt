@@ -5,6 +5,10 @@ GPCC Implementation History and Current Activities
 Next to do:
 ===============================================================================
 
+- Header restrcturing
+  - [IP] Move public headers to include/gpcc
+  - [  ] Check order of includes
+
 - COOD remote access
   ==================
   - RequestBase already checks version of binary. Derived classes do not need to check again.

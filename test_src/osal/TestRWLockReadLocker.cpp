@@ -8,11 +8,11 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/osal/exceptions.hpp"
-#include "gpcc/src/osal/RWLock.hpp"
-#include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/osal/RWLockReadLocker.hpp"
-#include "gpcc/src/osal/RWLockWriteLocker.hpp"
+#include <gpcc/osal/exceptions.hpp>
+#include <gpcc/osal/RWLock.hpp>
+#include <gpcc/osal/Thread.hpp>
+#include <gpcc/osal/RWLockReadLocker.hpp>
+#include <gpcc/osal/RWLockWriteLocker.hpp>
 #include "gpcc/src/execution/async/DeferredWorkQueue.hpp"
 #include "gpcc/src/execution/async/WorkPackage.hpp"
 #include "gpcc/src/time/TimePoint.hpp"

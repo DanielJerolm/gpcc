@@ -12,8 +12,8 @@
 #include "EEPROMSectionSystemInternals.hpp"
 #include "../EEPROMSectionSystem.hpp"
 #include "gpcc/src/file_systems/EEPROMSectionSystem/Exceptions.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/Stream/StreamErrors.hpp"
 #include <exception>

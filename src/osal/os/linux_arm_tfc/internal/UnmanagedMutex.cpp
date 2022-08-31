@@ -11,7 +11,7 @@
 #ifdef OS_LINUX_ARM_TFC
 
 #include "UnmanagedMutex.hpp"
-#include "../Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include <system_error>
 #include <cerrno>
 

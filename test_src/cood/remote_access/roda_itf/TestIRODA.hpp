@@ -19,8 +19,8 @@
 #include "gpcc/src/cood/remote_access/requests_and_responses/RequestBase.hpp"
 #include "gpcc/src/cood/remote_access/requests_and_responses/ResponseBase.hpp"
 #include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/osal/Thread.hpp>
 #include <gpcc/string/tools.hpp>
 
 #include "gtest/gtest.h"

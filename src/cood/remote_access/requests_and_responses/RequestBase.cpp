@@ -15,7 +15,7 @@
 #include "ReadRequest.hpp"
 #include "ResponseBase.hpp"
 #include "WriteRequest.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include "gpcc/src/Stream/IStreamReader.hpp"
 #include "gpcc/src/Stream/IStreamWriter.hpp"
 #include <stdexcept>

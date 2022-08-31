@@ -9,7 +9,7 @@
 */
 
 #include "Backend_Recorder.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
+#include <gpcc/osal/MutexLocker.hpp>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>

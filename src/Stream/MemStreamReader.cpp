@@ -10,7 +10,7 @@
 
 #include "MemStreamReader.hpp"
 #include "StreamErrors.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <cstring>
 

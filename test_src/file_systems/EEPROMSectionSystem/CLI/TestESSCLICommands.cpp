@@ -13,7 +13,7 @@
 #include "../EEPROMSectionSystemTestFixture.hpp"
 #include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"
 #include "gpcc/src/file_systems/EEPROMSectionSystem/CLI/ESSCLICommands.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <functional>
 

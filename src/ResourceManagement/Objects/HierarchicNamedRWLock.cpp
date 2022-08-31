@@ -10,7 +10,7 @@
 
 #include "HierarchicNamedRWLock.hpp"
 #include "exceptions.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include <limits>
 
 namespace gpcc                {

@@ -13,8 +13,8 @@
 #include "TimeLimitedThreadBlocker.hpp"
 #include "TFCCore.hpp"
 #include "UnmanagedMutexLocker.hpp"
-#include "../Mutex.hpp"
-#include "../Panic.hpp"
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <stdexcept>
 

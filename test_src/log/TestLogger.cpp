@@ -12,7 +12,7 @@
 #include <gpcc/log/logfacilities/ThreadedLogFacility.hpp>
 #include <gpcc/log/Logger.hpp>
 #include <gpcc/log/log_levels.hpp>
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gtest/gtest.h"
 #include <exception>

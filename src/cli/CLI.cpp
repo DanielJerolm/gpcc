@@ -15,9 +15,9 @@
 #include <gpcc/cli/ICLINotifiable.hpp>
 #include "internal/ReturnKeyFilter.hpp"
 #include "internal/TerminalRxParser.hpp"
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/string/levenshtein_distance.hpp>
 #include <gpcc/string/tools.hpp>

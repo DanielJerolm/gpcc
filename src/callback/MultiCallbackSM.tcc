@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/osal/MutexLocker.hpp"
+#include <gpcc/osal/MutexLocker.hpp>
 #include <stdexcept>
 
 namespace gpcc {

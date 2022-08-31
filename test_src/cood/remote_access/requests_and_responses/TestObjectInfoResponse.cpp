@@ -15,7 +15,7 @@
 #include "gpcc/src/cood/ObjectARRAY.hpp"
 #include "gpcc/src/cood/ObjectRECORD.hpp"
 #include "gpcc/src/cood/ObjectVAR.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/Mutex.hpp>
 #include "gpcc/src/Stream/MemStreamReader.hpp"
 #include "gpcc/src/Stream/MemStreamWriter.hpp"
 #include <gpcc/string/tools.hpp>

@@ -8,21 +8,22 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#ifdef OS_LINUX_ARM_TFC
+#ifdef OS_LINUX_X64_TFC
 
-#ifndef SEMAPHORE_HPP_201904071052
-#define SEMAPHORE_HPP_201904071052
+#ifndef SEMAPHORE_HPP_201702252311
+#define SEMAPHORE_HPP_201702252311
 
-#include "internal/UnmanagedConditionVariable.hpp"
 #include <limits>
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 
 namespace gpcc {
 namespace osal {
 
 namespace internal {
 class TFCCore;
+class UnmanagedConditionVariable;
 }
 
 /**
@@ -90,7 +91,7 @@ class Semaphore final
 
     /// Condition variable used to signal when @ref threadsToBeReleased becomes larger than zero.
     /** This must be used in conjunction with TFCCore's big lock. */
-    internal::UnmanagedConditionVariable freeCV;
+    std::unique_ptr<internal::UnmanagedConditionVariable> spFreeCV;
 
     void Signal_freeCV(void) noexcept;
 };
@@ -98,5 +99,5 @@ class Semaphore final
 } // namespace osal
 } // namespace gpcc
 
-#endif // #ifndef SEMAPHORE_HPP_201904071052
-#endif // #ifdef OS_LINUX_ARM_TFC
+#endif // #ifndef SEMAPHORE_HPP_201702252311
+#endif // #ifdef OS_LINUX_X64_TFC

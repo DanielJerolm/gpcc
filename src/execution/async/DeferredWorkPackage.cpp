@@ -9,7 +9,7 @@
 */
 
 #include "DeferredWorkPackage.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include "gpcc/src/time/TimeSpan.hpp"
 #include <stdexcept>
 

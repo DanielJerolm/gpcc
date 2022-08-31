@@ -13,7 +13,7 @@
 #ifndef RWLOCKWRITELOCKER_HPP_201806301438
 #define RWLOCKWRITELOCKER_HPP_201806301438
 
-#include "gpcc/src/osal/RWLock.hpp"
+#include <gpcc/osal/RWLock.hpp>
 
 namespace gpcc {
 

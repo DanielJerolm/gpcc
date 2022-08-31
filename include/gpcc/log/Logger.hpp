@@ -12,8 +12,8 @@
 #define LOGGER_HPP_201701141240
 
 #include "log_levels.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/string/SharedString.hpp>
 #include <atomic>
 #include <exception>

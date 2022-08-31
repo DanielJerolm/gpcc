@@ -13,8 +13,8 @@
 #ifndef RWLOCK_HPP_201701280949
 #define RWLOCK_HPP_201701280949
 
-#include "gpcc/src/osal/ConditionVariable.hpp"
-#include "gpcc/src/osal//Mutex.hpp"
+#include <gpcc/osal/ConditionVariable.hpp>
+#include <gpcc/osal/Mutex.hpp>
 #include <cstdint>
 
 namespace gpcc {

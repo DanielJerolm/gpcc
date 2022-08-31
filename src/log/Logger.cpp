@@ -20,7 +20,7 @@
 #include "internal/StringLogMessage.hpp"
 #include "internal/StringLogMessageTS.hpp"
 #include <gpcc/log/logfacilities/ILogFacility.hpp>
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/string/tools.hpp>
 #include <memory>

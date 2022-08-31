@@ -11,7 +11,7 @@
 #ifndef NONBLOCKINGSEMAPHORE_HPP_202104021310
 #define NONBLOCKINGSEMAPHORE_HPP_202104021310
 
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/Mutex.hpp>
 #include <functional>
 #include <limits>
 #include <list>

@@ -9,7 +9,7 @@
 */
 
 #include <gpcc/container/IntrusiveDList.hpp>
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gtest/gtest.h"
 #include <cstdint>

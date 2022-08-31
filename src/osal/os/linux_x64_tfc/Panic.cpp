@@ -10,7 +10,7 @@
 
 #ifdef OS_LINUX_X64_TFC
 
-#include "Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include <atomic>
 #include <iostream>
 #include <string>

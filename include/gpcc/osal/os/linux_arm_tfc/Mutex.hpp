@@ -13,9 +13,9 @@
 #ifndef MUTEX_HPP_201904071051
 #define MUTEX_HPP_201904071051
 
-#include "internal/UnmanagedConditionVariable.hpp"
 #include <cstddef>
 #include <pthread.h>
+#include <memory>
 
 namespace gpcc {
 namespace osal {
@@ -24,6 +24,7 @@ namespace internal {
 class TFCCore;
 class ThreadBlocker;
 class TimeLimitedThreadBlocker;
+class UnmanagedConditionVariable;
 }
 
 /**
@@ -101,7 +102,7 @@ class Mutex final
 
     /// Condition variable used to signal when @ref locked is cleared.
     /** This must be used in conjunction with TFCCore's big lock. */
-    internal::UnmanagedConditionVariable unlockedCV;
+    std::unique_ptr<internal::UnmanagedConditionVariable> spUnlockedCV;
 
     void InternalLock(void);
     void InternalUnlock(void);

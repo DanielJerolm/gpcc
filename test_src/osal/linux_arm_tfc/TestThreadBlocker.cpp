@@ -14,10 +14,10 @@
 #include "gpcc/src/osal/os/linux_arm_tfc/internal/ThreadBlocker.hpp"
 #include "gpcc/src/osal/os/linux_arm_tfc/internal/UnmanagedMutex.hpp"
 #include "gpcc/src/osal/os/linux_arm_tfc/internal/UnmanagedMutexLocker.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gtest/gtest.h"
 #include <unistd.h>

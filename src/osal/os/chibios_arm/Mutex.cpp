@@ -10,8 +10,8 @@
 
 #ifdef OS_CHIBIOS_ARM
 
-#include "Mutex.hpp"
-#include "Panic.hpp"
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/Panic.hpp>
 
 namespace gpcc {
 namespace osal {

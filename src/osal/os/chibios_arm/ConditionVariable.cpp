@@ -10,10 +10,10 @@
 
 #ifdef OS_CHIBIOS_ARM
 
-#include "ConditionVariable.hpp"
+#include <gpcc/osal/ConditionVariable.hpp>
 #include "gpcc/src/time/TimePoint.hpp"
 #include "gpcc/src/time/TimeSpan.hpp"
-#include "Panic.hpp"
+#include <gpcc/osal/Panic.hpp>
 
 #define NS_PER_SEC      1000000000UL
 #define NS_PER_SYSTICK  (NS_PER_SEC / CH_CFG_ST_FREQUENCY)

@@ -28,7 +28,7 @@
 #include "gpcc/src/cood/remote_access/requests_and_responses/WriteRequest.hpp"
 #include "gpcc/src/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp"
 #include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
+#include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/time/TimePoint.hpp"
 #include "gpcc/src/time/TimeSpan.hpp"

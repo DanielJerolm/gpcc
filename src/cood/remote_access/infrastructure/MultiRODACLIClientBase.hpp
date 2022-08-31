@@ -13,7 +13,7 @@
 
 #include "IMultiRODACLIClient.hpp"
 #include "RODACLIClientBase.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/Mutex.hpp>
 #include <unordered_map>
 
 namespace gpcc {

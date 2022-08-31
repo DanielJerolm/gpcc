@@ -13,7 +13,7 @@
 
 #include "MultiplexerPort.hpp"
 #include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiable.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/osal/Mutex.hpp>
 #include <memory>
 #include <vector>
 #include <cstddef>

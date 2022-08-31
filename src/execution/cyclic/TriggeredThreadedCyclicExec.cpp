@@ -9,9 +9,9 @@
 */
 
 #include "TriggeredThreadedCyclicExec.hpp"
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include "gpcc/src/StdIf/IIRQ2ThreadWakeup.hpp"
 #include <stdexcept>
 
