@@ -105,7 +105,8 @@ function(SetRequiredCompilerOptionsAndFeatures target)
   target_compile_features(${target} PUBLIC cxx_std_17)
 
   if(CMAKE_COMPILER_IS_GNUCXX)
-    target_compile_options(${target} PUBLIC -fexceptions -frtti)
+    target_compile_options(${target} PUBLIC "$<$<COMPILE_LANGUAGE:CXX>:-fexceptions>")
+    target_compile_options(${target} PUBLIC "$<$<COMPILE_LANGUAGE:CXX>:-frtti>")
 
     # reduce length of file-names in debug messages contained in the libs
     target_compile_options(${target} PRIVATE -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=gpcc/)
