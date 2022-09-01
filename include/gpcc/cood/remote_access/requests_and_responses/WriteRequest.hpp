@@ -12,7 +12,7 @@
 #define WRITEREQUEST_HPP_202006251837
 
 #include "RequestBase.hpp"
-#include "gpcc/src/cood/Object.hpp"
+#include <gpcc/cood/Object.hpp>
 
 namespace gpcc {
 namespace cood {

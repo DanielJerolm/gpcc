@@ -15,10 +15,10 @@
 
 #include "TestIRODA.hpp"
 #include "IRemoteObjectDictionaryAccessNotifiableMock.hpp"
-#include "gpcc/src/cood/Object.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/WriteRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp"
-#include "gpcc/src/cood/remote_access/roda_itf/exceptions.hpp"
+#include <gpcc/cood/Object.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/WriteRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp>
+#include <gpcc/cood/remote_access/roda_itf/exceptions.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Thread.hpp>
 

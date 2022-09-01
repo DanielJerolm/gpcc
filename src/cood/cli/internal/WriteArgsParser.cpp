@@ -10,7 +10,7 @@
 
 #include "WriteArgsParser.hpp"
 #include <gpcc/cli/exceptions.hpp>
-#include "gpcc/src/cood/cli/string_conversion.hpp"
+#include <gpcc/cood/cli/string_conversion.hpp>
 #include "gpcc/src/Stream/MemStreamWriter.hpp"
 #include <gpcc/string/tools.hpp>
 #include <stdexcept>

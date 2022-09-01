@@ -12,7 +12,7 @@
 #define READREQUESTRESPONSE_HPP_202010101331
 
 #include "ResponseBase.hpp"
-#include "gpcc/src/cood/sdo_abort_codes.hpp"
+#include <gpcc/cood/sdo_abort_codes.hpp>
 
 namespace gpcc {
 namespace cood {

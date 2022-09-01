@@ -14,9 +14,9 @@
 #ifndef SKIP_TFC_BASED_TESTS
 
 #include "TestIRODA.hpp"
-#include "gpcc/src/cood/Object.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReadRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReadRequestResponse.hpp"
+#include <gpcc/cood/Object.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReadRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReadRequestResponse.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 
 namespace gpcc_tests {

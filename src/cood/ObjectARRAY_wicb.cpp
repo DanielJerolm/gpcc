@@ -8,7 +8,7 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "ObjectARRAY_wicb.hpp"
+#include <gpcc/cood/ObjectARRAY_wicb.hpp>
 
 namespace gpcc {
 namespace cood {

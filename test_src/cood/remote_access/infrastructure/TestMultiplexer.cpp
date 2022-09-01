@@ -8,14 +8,14 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "gpcc/src/cood/remote_access/infrastructure/Multiplexer.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/PingRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/PingResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp"
-#include "gpcc/src/cood/remote_access/roda_itf/exceptions.hpp"
-#include "gpcc/src/cood/sdo_abort_codes.hpp"
+#include <gpcc/cood/remote_access/infrastructure/Multiplexer.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/PingRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/PingResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp>
+#include <gpcc/cood/remote_access/roda_itf/exceptions.hpp>
+#include <gpcc/cood/sdo_abort_codes.hpp>
 #include "gpcc/src/execution/async/DeferredWorkPackage.hpp"
 #include "gpcc/src/execution/async/WorkPackage.hpp"
 #include <gpcc/osal/Panic.hpp>

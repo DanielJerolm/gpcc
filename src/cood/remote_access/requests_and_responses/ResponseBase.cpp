@@ -8,12 +8,12 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "ResponseBase.hpp"
-#include "ObjectEnumResponse.hpp"
-#include "ObjectInfoResponse.hpp"
-#include "PingResponse.hpp"
-#include "ReadRequestResponse.hpp"
-#include "WriteRequestResponse.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ResponseBase.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/PingResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReadRequestResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include "gpcc/src/Stream/IStreamReader.hpp"
 #include "gpcc/src/Stream/IStreamWriter.hpp"

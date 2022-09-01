@@ -8,7 +8,7 @@
     Copyright (C) 2019 Daniel Jerolm
 */
 
-#include "gpcc/src/cood/cli/CLIAdapterForCANOpen.hpp"
+#include <gpcc/cood/cli/CLIAdapterForCANOpen.hpp>
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>

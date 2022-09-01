@@ -8,7 +8,7 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "PingRequest.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/PingRequest.hpp>
 #include <stdexcept>
 
 namespace gpcc {

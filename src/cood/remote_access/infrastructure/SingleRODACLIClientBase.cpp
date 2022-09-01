@@ -8,7 +8,7 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "SingleRODACLIClientBase.hpp"
+#include <gpcc/cood/remote_access/infrastructure/SingleRODACLIClientBase.hpp>
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/cli/Command.hpp>
 #include <gpcc/cli/exceptions.hpp>

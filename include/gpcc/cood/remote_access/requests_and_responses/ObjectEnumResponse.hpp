@@ -12,7 +12,7 @@
 #define OBJECTENUMRESPONSE_HPP_202103042132
 
 #include "ResponseBase.hpp"
-#include "gpcc/src/cood/sdo_abort_codes.hpp"
+#include <gpcc/cood/sdo_abort_codes.hpp>
 
 namespace gpcc {
 namespace cood {

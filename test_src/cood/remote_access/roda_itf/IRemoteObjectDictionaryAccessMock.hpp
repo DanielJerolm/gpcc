@@ -11,8 +11,8 @@
 #ifndef IREMOTEOBJECTDICTIONARYACCESSMOCK_HPP_202106271051
 #define IREMOTEOBJECTDICTIONARYACCESSMOCK_HPP_202106271051
 
-#include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/RequestBase.hpp"
+#include <gpcc/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/RequestBase.hpp>
 #include "gmock/gmock.h"
 
 namespace gpcc_tests {

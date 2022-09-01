@@ -8,9 +8,9 @@
     Copyright (C) 2018 Daniel Jerolm
 */
 
-#include "ObjectARRAY.hpp"
-#include "IObjectNotifiable.hpp"
-#include "exceptions.hpp"
+#include <gpcc/cood/ObjectARRAY.hpp>
+#include <gpcc/cood/IObjectNotifiable.hpp>
+#include <gpcc/cood/exceptions.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>

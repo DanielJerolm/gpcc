@@ -8,12 +8,12 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "Multiplexer.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/PingResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/RequestBase.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ResponseBase.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReturnStackItem.hpp"
-#include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp"
+#include <gpcc/cood/remote_access/infrastructure/Multiplexer.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/PingResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/RequestBase.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ResponseBase.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReturnStackItem.hpp>
+#include <gpcc/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp>
 #include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>

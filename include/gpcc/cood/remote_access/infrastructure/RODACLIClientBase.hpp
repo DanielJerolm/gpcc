@@ -11,8 +11,8 @@
 #ifndef RODACLICLIENTBASE_HPP_202105221835
 #define RODACLICLIENTBASE_HPP_202105221835
 
-#include "gpcc/src/cood/Object.hpp"
-#include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiable.hpp"
+#include <gpcc/cood/Object.hpp>
+#include <gpcc/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiable.hpp>
 #include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <string>

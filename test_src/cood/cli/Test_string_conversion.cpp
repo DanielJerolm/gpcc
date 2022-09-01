@@ -8,7 +8,7 @@
     Copyright (C) 2019 Daniel Jerolm
 */
 
-#include "gpcc/src/cood/cli/string_conversion.hpp"
+#include <gpcc/cood/cli/string_conversion.hpp>
 #include "gtest/gtest.h"
 
 namespace gpcc_tests {

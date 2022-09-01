@@ -8,7 +8,7 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "MultiRODACLIClientBase.hpp"
+#include <gpcc/cood/remote_access/infrastructure/MultiRODACLIClientBase.hpp>
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/cli/Command.hpp>
 #include <gpcc/cli/exceptions.hpp>

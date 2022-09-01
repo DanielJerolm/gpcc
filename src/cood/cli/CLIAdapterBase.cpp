@@ -8,19 +8,19 @@
     Copyright (C) 2019 Daniel Jerolm
 */
 
-#include "CLIAdapterBase.hpp"
+#include <gpcc/cood/cli/CLIAdapterBase.hpp>
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/cli/Command.hpp>
 #include <gpcc/cli/exceptions.hpp>
-#include "string_conversion.hpp"
+#include <gpcc/cood/cli/string_conversion.hpp>
 #include "gpcc/src/cood/cli/internal/CAReadArgsParser.hpp"
 #include "gpcc/src/cood/cli/internal/CAWriteArgsParser.hpp"
 #include "gpcc/src/cood/cli/internal/EnumerateArgsParser.hpp"
 #include "gpcc/src/cood/cli/internal/InfoArgsParser.hpp"
 #include "gpcc/src/cood/cli/internal/ReadArgsParser.hpp"
 #include "gpcc/src/cood/cli/internal/WriteArgsParser.hpp"
-#include "gpcc/src/cood/IObjectAccess.hpp"
-#include "gpcc/src/cood/ObjectPtr.hpp"
+#include <gpcc/cood/IObjectAccess.hpp>
+#include <gpcc/cood/ObjectPtr.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>

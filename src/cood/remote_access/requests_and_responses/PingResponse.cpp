@@ -8,7 +8,7 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "PingResponse.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/PingResponse.hpp>
 #include "gpcc/src/Stream/IStreamReader.hpp"
 #include "gpcc/src/Stream/IStreamWriter.hpp"
 #include <stdexcept>

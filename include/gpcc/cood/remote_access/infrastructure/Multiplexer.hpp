@@ -12,7 +12,7 @@
 #define MULTIPLEXER_HPP_202106212050
 
 #include "MultiplexerPort.hpp"
-#include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiable.hpp"
+#include <gpcc/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiable.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <memory>
 #include <vector>

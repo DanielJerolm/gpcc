@@ -8,8 +8,8 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "ObjectInfoResponse.hpp"
-#include "gpcc/src/cood/exceptions.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoResponse.hpp>
+#include <gpcc/cood/exceptions.hpp>
 #include "gpcc/src/Stream/IStreamReader.hpp"
 #include "gpcc/src/Stream/IStreamWriter.hpp"
 #include <limits>

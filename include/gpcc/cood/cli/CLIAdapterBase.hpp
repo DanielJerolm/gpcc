@@ -11,7 +11,7 @@
 #ifndef CLIADAPTERBASE_HPP_201905062115
 #define CLIADAPTERBASE_HPP_201905062115
 
-#include "gpcc/src/cood/Object.hpp"
+#include <gpcc/cood/Object.hpp>
 #include <string>
 #include <vector>
 #include <cstdint>

@@ -8,8 +8,8 @@
     Copyright (C) 2018 Daniel Jerolm
 */
 
-#include "Object.hpp"
-#include "exceptions.hpp"
+#include <gpcc/cood/Object.hpp>
+#include <gpcc/cood/exceptions.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include "gpcc/src/Stream/IStreamReader.hpp"
 #include "gpcc/src/Stream/IStreamWriter.hpp"

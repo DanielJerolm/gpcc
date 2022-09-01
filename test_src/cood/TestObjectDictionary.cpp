@@ -8,9 +8,9 @@
     Copyright (C) 2018 Daniel Jerolm
 */
 
-#include "gpcc/src/cood/ObjectDictionary.hpp"
-#include "gpcc/src/cood/ObjectPtr.hpp"
-#include "gpcc/src/cood/ObjectVAR.hpp"
+#include <gpcc/cood/ObjectDictionary.hpp>
+#include <gpcc/cood/ObjectPtr.hpp>
+#include <gpcc/cood/ObjectVAR.hpp>
 #include <memory>
 #include "gtest/gtest.h"
 

@@ -8,7 +8,7 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "ObjectVAR_wicb.hpp"
+#include <gpcc/cood/ObjectVAR_wicb.hpp>
 
 namespace gpcc {
 namespace cood {

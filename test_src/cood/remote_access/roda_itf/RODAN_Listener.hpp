@@ -12,7 +12,7 @@
 #define RODANOTIFIABLELISTENER_HPP_202008172059
 
 #include <gpcc/container/IntrusiveDList.hpp>
-#include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiable.hpp"
+#include <gpcc/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiable.hpp>
 #include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <cstddef>

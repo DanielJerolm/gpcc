@@ -12,9 +12,9 @@
 #define OBJECTINFORESPONSE_HPP_202102132033
 
 #include "ResponseBase.hpp"
-#include "gpcc/src/cood/data_types.hpp"
-#include "gpcc/src/cood/Object.hpp"
-#include "gpcc/src/cood/sdo_abort_codes.hpp"
+#include <gpcc/cood/data_types.hpp>
+#include <gpcc/cood/Object.hpp>
+#include <gpcc/cood/sdo_abort_codes.hpp>
 
 namespace gpcc {
 namespace cood {

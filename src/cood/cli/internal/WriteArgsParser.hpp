@@ -11,7 +11,7 @@
 #ifndef WRITEARGSPARSER_HPP_202106042143
 #define WRITEARGSPARSER_HPP_202106042143
 
-#include "gpcc/src/cood/data_types.hpp"
+#include <gpcc/cood/data_types.hpp>
 #include "gpcc/src/Stream/IStreamWriter.hpp"
 #include <string>
 #include <vector>

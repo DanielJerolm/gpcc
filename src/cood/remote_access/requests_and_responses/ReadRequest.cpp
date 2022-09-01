@@ -8,8 +8,8 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "ReadRequest.hpp"
-#include "ReadRequestResponse.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ReadRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReadRequestResponse.hpp>
 #include "gpcc/src/Stream/IStreamReader.hpp"
 #include "gpcc/src/Stream/IStreamWriter.hpp"
 #include <gpcc/string/tools.hpp>

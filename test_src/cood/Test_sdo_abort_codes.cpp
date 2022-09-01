@@ -8,7 +8,7 @@
     Copyright (C) 2018 Daniel Jerolm
 */
 
-#include "gpcc/src/cood/sdo_abort_codes.hpp"
+#include <gpcc/cood/sdo_abort_codes.hpp>
 #include "gtest/gtest.h"
 
 namespace gpcc_tests {

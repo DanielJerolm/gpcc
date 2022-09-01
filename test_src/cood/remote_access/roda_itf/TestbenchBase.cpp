@@ -11,9 +11,9 @@
 #ifndef SKIP_TFC_BASED_TESTS
 
 #include "TestbenchBase.hpp"
-#include "gpcc/src/cood/ObjectARRAY.hpp"
-#include "gpcc/src/cood/ObjectVAR.hpp"
-#include "gpcc/src/cood/ObjectVAR_wicb.hpp"
+#include <gpcc/cood/ObjectARRAY.hpp>
+#include <gpcc/cood/ObjectVAR.hpp>
+#include <gpcc/cood/ObjectVAR_wicb.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/osal/Thread.hpp>

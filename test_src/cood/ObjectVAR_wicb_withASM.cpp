@@ -9,7 +9,7 @@
 */
 
 #include "ObjectVAR_wicb_withASM.hpp"
-#include "gpcc/src/cood/exceptions.hpp"
+#include <gpcc/cood/exceptions.hpp>
 
 namespace gpcc_tests {
 namespace cood       {

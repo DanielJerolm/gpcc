@@ -8,8 +8,8 @@
     Copyright (C) 2018 Daniel Jerolm
 */
 
-#include "gpcc/src/cood/data_types.hpp"
-#include "gpcc/src/cood/exceptions.hpp"
+#include <gpcc/cood/data_types.hpp>
+#include <gpcc/cood/exceptions.hpp>
 #include "gpcc/src/Stream/MemStreamReader.hpp"
 #include "gpcc/src/Stream/MemStreamWriter.hpp"
 #include <gpcc/string/tools.hpp>

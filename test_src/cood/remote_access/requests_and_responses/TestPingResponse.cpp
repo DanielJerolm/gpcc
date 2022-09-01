@@ -8,8 +8,8 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "gpcc/src/cood/remote_access/requests_and_responses/PingResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReturnStackItem.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/PingResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReturnStackItem.hpp>
 #include "gpcc/src/Stream/MemStreamReader.hpp"
 #include "gpcc/src/Stream/MemStreamWriter.hpp"
 #include "gtest/gtest.h"

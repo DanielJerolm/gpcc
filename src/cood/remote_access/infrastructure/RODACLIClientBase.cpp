@@ -8,26 +8,26 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "RODACLIClientBase.hpp"
+#include <gpcc/cood/remote_access/infrastructure/RODACLIClientBase.hpp>
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/cli/exceptions.hpp>
-#include "gpcc/src/cood/cli/string_conversion.hpp"
+#include <gpcc/cood/cli/string_conversion.hpp>
 #include "gpcc/src/cood/cli/internal/CAReadArgsParser.hpp"
 #include "gpcc/src/cood/cli/internal/CAWriteArgsParser.hpp"
 #include "gpcc/src/cood/cli/internal/EnumerateArgsParser.hpp"
 #include "gpcc/src/cood/cli/internal/InfoArgsParser.hpp"
 #include "gpcc/src/cood/cli/internal/ReadArgsParser.hpp"
 #include "gpcc/src/cood/cli/internal/WriteArgsParser.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectInfoRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectInfoResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReadRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReadRequestResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReturnStackItem.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/WriteRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp"
-#include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReadRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReadRequestResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReturnStackItem.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/WriteRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp>
+#include <gpcc/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/time/TimePoint.hpp"

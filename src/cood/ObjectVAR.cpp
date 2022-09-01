@@ -8,9 +8,9 @@
     Copyright (C) 2018 Daniel Jerolm
 */
 
-#include "ObjectVAR.hpp"
-#include "IObjectNotifiable.hpp"
-#include "exceptions.hpp"
+#include <gpcc/cood/ObjectVAR.hpp>
+#include <gpcc/cood/IObjectNotifiable.hpp>
+#include <gpcc/cood/exceptions.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>

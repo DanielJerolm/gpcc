@@ -9,7 +9,7 @@
 */
 
 #include "ObjectVARwithASM.hpp"
-#include "gpcc/src/cood/exceptions.hpp"
+#include <gpcc/cood/exceptions.hpp>
 
 namespace gpcc_tests {
 namespace cood       {

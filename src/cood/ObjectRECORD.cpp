@@ -8,9 +8,9 @@
     Copyright (C) 2019 Daniel Jerolm
 */
 
-#include "ObjectRECORD.hpp"
-#include "IObjectNotifiable.hpp"
-#include "exceptions.hpp"
+#include <gpcc/cood/ObjectRECORD.hpp>
+#include <gpcc/cood/IObjectNotifiable.hpp>
+#include <gpcc/cood/exceptions.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>

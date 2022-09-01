@@ -8,7 +8,7 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "gpcc/src/cood/remote_access/infrastructure/SingleRODACLIClient.hpp"
+#include <gpcc/cood/remote_access/infrastructure/SingleRODACLIClient.hpp>
 #include "TestbenchThreadBasedRAS.hpp"
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/osal/MutexLocker.hpp>

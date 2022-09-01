@@ -14,8 +14,8 @@
 #ifndef SKIP_TFC_BASED_TESTS
 
 #include "TestIRODA.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/PingRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/PingResponse.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/PingRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/PingResponse.hpp>
 
 namespace gpcc_tests {
 namespace cood       {

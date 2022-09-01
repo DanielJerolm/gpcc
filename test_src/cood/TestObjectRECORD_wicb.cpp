@@ -8,8 +8,8 @@
     Copyright (C) 2018 Daniel Jerolm
 */
 
-#include "gpcc/src/cood/ObjectRECORD_wicb.hpp"
-#include "gpcc/src/cood/exceptions.hpp"
+#include <gpcc/cood/ObjectRECORD_wicb.hpp>
+#include <gpcc/cood/exceptions.hpp>
 #include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/raii/scope_guard.hpp>

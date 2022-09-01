@@ -8,13 +8,13 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectInfoResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/RequestBase.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReturnStackItem.hpp"
-#include "gpcc/src/cood/exceptions.hpp"
-#include "gpcc/src/cood/ObjectARRAY.hpp"
-#include "gpcc/src/cood/ObjectRECORD.hpp"
-#include "gpcc/src/cood/ObjectVAR.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/RequestBase.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReturnStackItem.hpp>
+#include <gpcc/cood/exceptions.hpp>
+#include <gpcc/cood/ObjectARRAY.hpp>
+#include <gpcc/cood/ObjectRECORD.hpp>
+#include <gpcc/cood/ObjectVAR.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include "gpcc/src/Stream/MemStreamReader.hpp"
 #include "gpcc/src/Stream/MemStreamWriter.hpp"

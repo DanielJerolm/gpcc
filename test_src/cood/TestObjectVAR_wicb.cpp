@@ -8,8 +8,8 @@
     Copyright (C) 2018 Daniel Jerolm
 */
 
-#include "gpcc/src/cood/ObjectVAR_wicb.hpp"
-#include "gpcc/src/cood/exceptions.hpp"
+#include <gpcc/cood/ObjectVAR_wicb.hpp>
+#include <gpcc/cood/exceptions.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include "gpcc/src/Stream/MemStreamReader.hpp"
 #include "gpcc/src/Stream/MemStreamWriter.hpp"

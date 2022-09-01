@@ -9,7 +9,7 @@
 */
 
 #include "TestbenchThreadBasedRAS.hpp"
-#include "gpcc/src/cood/remote_access/infrastructure/ThreadBasedRemoteAccessServer.hpp"
+#include <gpcc/cood/remote_access/infrastructure/ThreadBasedRemoteAccessServer.hpp>
 #include "gpcc/test_src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiableMock.hpp"
 #include "gpcc/test_src/cood/remote_access/roda_itf/TestIRODA_LoanExecutionContext.hpp"
 #include "gpcc/test_src/cood/remote_access/roda_itf/TestIRODA_ObjectEnum.hpp"

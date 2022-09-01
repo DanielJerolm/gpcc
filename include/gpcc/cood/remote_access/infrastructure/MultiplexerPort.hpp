@@ -11,7 +11,7 @@
 #ifndef MULTIPLEXERPORT_HPP_202106212102
 #define MULTIPLEXERPORT_HPP_202106212102
 
-#include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp"
+#include <gpcc/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp>
 #include <cstddef>
 #include <cstdint>
 

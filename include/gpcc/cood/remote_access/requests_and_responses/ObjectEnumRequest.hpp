@@ -11,7 +11,7 @@
 #ifndef OBJECTENUMREQUEST_HPP_202103022210
 
 #include "RequestBase.hpp"
-#include "gpcc/src/cood/Object.hpp"
+#include <gpcc/cood/Object.hpp>
 
 namespace gpcc {
 namespace cood {

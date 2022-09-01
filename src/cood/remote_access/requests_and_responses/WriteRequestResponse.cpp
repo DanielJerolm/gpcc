@@ -8,7 +8,7 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "WriteRequestResponse.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp>
 #include "gpcc/src/Stream/IStreamReader.hpp"
 #include "gpcc/src/Stream/IStreamWriter.hpp"
 #include <exception>

@@ -12,7 +12,7 @@
 #define READREQUEST_HPP_202010091707
 
 #include "RequestBase.hpp"
-#include "gpcc/src/cood/Object.hpp"
+#include <gpcc/cood/Object.hpp>
 
 namespace gpcc {
 namespace cood {

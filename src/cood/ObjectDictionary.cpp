@@ -8,8 +8,8 @@
     Copyright (C) 2018 Daniel Jerolm
 */
 
-#include "ObjectDictionary.hpp"
-#include "Object.hpp"
+#include <gpcc/cood/ObjectDictionary.hpp>
+#include <gpcc/cood/Object.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/osal/RWLockWriteLocker.hpp>
 #include <stdexcept>
