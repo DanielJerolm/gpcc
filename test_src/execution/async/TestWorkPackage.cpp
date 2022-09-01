@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/execution/async/WorkPackage.hpp"
+#include <gpcc/execution/async/WorkPackage.hpp>
 #include "gtest/gtest.h"
 
 namespace gpcc_tests {

@@ -10,7 +10,7 @@
 
 #include "UUT_TriggeredThreadedCyclicExec.hpp"
 #include "Trace.hpp"
-#include "gpcc/src/execution/cyclic/TTCEStartStopCtrl.hpp"
+#include <gpcc/execution/cyclic/TTCEStartStopCtrl.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include "gpcc/src/time/TimeSpan.hpp"
 #include <functional>

@@ -9,7 +9,7 @@
 */
 
 #include "WaitUntilStoppedHelper.hpp"
-#include "gpcc/src/execution/cyclic/TTCEStartStopCtrl.hpp"
+#include <gpcc/execution/cyclic/TTCEStartStopCtrl.hpp>
 #include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include "gpcc/src/time/TimePoint.hpp"

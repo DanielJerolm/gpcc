@@ -8,8 +8,8 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "WorkQueue.hpp"
-#include "WorkPackage.hpp"
+#include <gpcc/execution/async/WorkQueue.hpp>
+#include <gpcc/execution/async/WorkPackage.hpp>
 #include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Semaphore.hpp>

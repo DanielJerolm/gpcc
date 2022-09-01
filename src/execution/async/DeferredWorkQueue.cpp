@@ -8,9 +8,9 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "DeferredWorkQueue.hpp"
-#include "DeferredWorkPackage.hpp"
-#include "WorkPackage.hpp"
+#include <gpcc/execution/async/DeferredWorkQueue.hpp>
+#include <gpcc/execution/async/DeferredWorkPackage.hpp>
+#include <gpcc/execution/async/WorkPackage.hpp>
 #include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Semaphore.hpp>

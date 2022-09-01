@@ -12,9 +12,9 @@
 #define WORKQUEUEBASEDREMOTEACCESSSERVER_HPP_202105170848
 
 #include "RemoteAccessServer.hpp"
-#include "gpcc/src/execution/async/DeferredWorkPackage.hpp"
-#include "gpcc/src/execution/async/IDeferredWorkQueue.hpp"
-#include "gpcc/src/execution/async/WorkPackage.hpp"
+#include <gpcc/execution/async/DeferredWorkPackage.hpp>
+#include <gpcc/execution/async/IDeferredWorkQueue.hpp>
+#include <gpcc/execution/async/WorkPackage.hpp>
 #include <gpcc/osal/Mutex.hpp>
 
 namespace gpcc {

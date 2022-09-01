@@ -13,8 +13,8 @@
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/osal/RWLockReadLocker.hpp>
 #include <gpcc/osal/RWLockWriteLocker.hpp>
-#include "gpcc/src/execution/async/DeferredWorkQueue.hpp"
-#include "gpcc/src/execution/async/WorkPackage.hpp"
+#include <gpcc/execution/async/DeferredWorkQueue.hpp>
+#include <gpcc/execution/async/WorkPackage.hpp>
 #include "gpcc/src/time/TimePoint.hpp"
 #include "gpcc/src/time/TimeSpan.hpp"
 #include "gtest/gtest.h"

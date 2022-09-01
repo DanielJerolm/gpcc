@@ -13,8 +13,8 @@
 #include "UUT_TriggeredThreadedCyclicExec.hpp"
 #include "UUT_TTCEStartStopCtrl.hpp"
 #include "WaitUntilStoppedHelper.hpp"
-#include "gpcc/src/execution/async/WorkPackage.hpp"
-#include "gpcc/src/execution/async/WorkQueue.hpp"
+#include <gpcc/execution/async/WorkPackage.hpp>
+#include <gpcc/execution/async/WorkQueue.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>

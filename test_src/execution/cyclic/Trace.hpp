@@ -11,7 +11,7 @@
 #ifndef TRACE_HPP_201612302043
 #define TRACE_HPP_201612302043
 
-#include "gpcc/src/execution/cyclic/TriggeredThreadedCyclicExec.hpp"
+#include <gpcc/execution/cyclic/TriggeredThreadedCyclicExec.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <vector>

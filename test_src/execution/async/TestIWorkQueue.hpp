@@ -11,10 +11,10 @@
 #ifndef TESTIWORKQUEUE_HPP_201701061557
 #define TESTIWORKQUEUE_HPP_201701061557
 
-#include "gpcc/src/execution/async/WorkPackage.hpp"
-#include "gpcc/src/execution/async/DeferredWorkPackage.hpp"
-#include "gpcc/src/execution/async/WorkQueue.hpp"
-#include "gpcc/src/execution/async/DeferredWorkQueue.hpp"
+#include <gpcc/execution/async/WorkPackage.hpp>
+#include <gpcc/execution/async/DeferredWorkPackage.hpp>
+#include <gpcc/execution/async/WorkQueue.hpp>
+#include <gpcc/execution/async/DeferredWorkQueue.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/osal/Semaphore.hpp>
 #include <gpcc/raii/scope_guard.hpp>

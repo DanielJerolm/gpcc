@@ -14,8 +14,8 @@
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/osal/Thread.hpp>
-#include "gpcc/src/execution/async/DeferredWorkQueue.hpp"
-#include "gpcc/src/execution/async/DeferredWorkPackage.hpp"
+#include <gpcc/execution/async/DeferredWorkQueue.hpp>
+#include <gpcc/execution/async/DeferredWorkPackage.hpp>
 #include "gpcc/src/time/TimePoint.hpp"
 #include "gpcc/src/time/TimeSpan.hpp"
 #include <memory>

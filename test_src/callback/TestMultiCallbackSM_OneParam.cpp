@@ -9,8 +9,8 @@
 */
 
 #include "gpcc/src/callback/MultiCallbackSM.hpp"
-#include "gpcc/src/execution/async/WorkPackage.hpp"
-#include "gpcc/src/execution/async/WorkQueue.hpp"
+#include <gpcc/execution/async/WorkPackage.hpp>
+#include <gpcc/execution/async/WorkQueue.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Thread.hpp>

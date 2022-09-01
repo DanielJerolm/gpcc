@@ -16,8 +16,8 @@
 #include <gpcc/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp>
 #include <gpcc/cood/remote_access/roda_itf/exceptions.hpp>
 #include <gpcc/cood/sdo_abort_codes.hpp>
-#include "gpcc/src/execution/async/DeferredWorkPackage.hpp"
-#include "gpcc/src/execution/async/WorkPackage.hpp"
+#include <gpcc/execution/async/DeferredWorkPackage.hpp>
+#include <gpcc/execution/async/WorkPackage.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>

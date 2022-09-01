@@ -11,8 +11,8 @@
 #ifndef UUT_TTCESTARTSTOPCTRL_HPP_201612302050
 #define UUT_TTCESTARTSTOPCTRL_HPP_201612302050
 
-#include "gpcc/src/execution/cyclic/TriggeredThreadedCyclicExec.hpp"
-#include "gpcc/src/execution/cyclic/TTCEStartStopCtrl.hpp"
+#include <gpcc/execution/cyclic/TriggeredThreadedCyclicExec.hpp>
+#include <gpcc/execution/cyclic/TTCEStartStopCtrl.hpp>
 #include <cstdint>
 
 namespace gpcc

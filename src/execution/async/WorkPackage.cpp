@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "WorkPackage.hpp"
+#include <gpcc/execution/async/WorkPackage.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <stdexcept>
 
