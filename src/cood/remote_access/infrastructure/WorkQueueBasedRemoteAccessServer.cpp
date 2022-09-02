@@ -12,7 +12,7 @@
 #include <gpcc/log/Logger.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <gpcc/time/TimeSpan.hpp>
 #include <functional>
 #include <stdexcept>
 

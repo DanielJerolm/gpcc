@@ -11,7 +11,7 @@
 #ifndef DEFERREDWORKPACKAGE_HPP_201612212229
 #define DEFERREDWORKPACKAGE_HPP_201612212229
 
-#include "gpcc/src/time/TimePoint.hpp"
+#include <gpcc/time/TimePoint.hpp>
 #include <atomic>
 #include <functional>
 #include <memory>

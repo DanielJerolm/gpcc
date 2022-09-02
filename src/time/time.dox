@@ -13,4 +13,8 @@
  * @defgroup GPCC_TIME Time
  *
  * \brief Portable time representations.
+ *
+ * The time representations in this group also allow for emulation by
+ * [GPCC's Time Flow Control (TFC)](@ref GPCC_TIME_FLOW_CONTROL). If you want to use TFC in your unit tests, then you
+ * have to use GPCC's time representations instead of those from `std::chrono` and `std::time`.
  */

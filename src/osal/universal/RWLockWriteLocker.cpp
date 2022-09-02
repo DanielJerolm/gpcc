@@ -12,8 +12,8 @@
 
 #include <gpcc/osal/RWLockWriteLocker.hpp>
 #include <gpcc/osal/exceptions.hpp>
-#include "gpcc/src/time/TimePoint.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <gpcc/time/TimePoint.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 
 namespace gpcc {
 namespace osal {

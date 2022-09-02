@@ -18,7 +18,7 @@
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <gpcc/time/TimeSpan.hpp>
 #include "gtest/gtest.h"
 #include <stdexcept>
 #include <cstdint>

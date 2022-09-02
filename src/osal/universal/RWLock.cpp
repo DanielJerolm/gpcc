@@ -14,7 +14,7 @@
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include "gpcc/src/time/TimePoint.hpp"
+#include <gpcc/time/TimePoint.hpp>
 #include <limits>
 #include <stdexcept>
 

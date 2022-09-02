@@ -11,8 +11,8 @@
 #ifdef OS_CHIBIOS_ARM
 
 #include <gpcc/osal/ConditionVariable.hpp>
-#include "gpcc/src/time/TimePoint.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <gpcc/time/TimePoint.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 #include <gpcc/osal/Panic.hpp>
 
 #define NS_PER_SEC      1000000000UL

@@ -12,7 +12,7 @@
 #include "Trace.hpp"
 #include <gpcc/execution/cyclic/TTCEStartStopCtrl.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <gpcc/time/TimeSpan.hpp>
 #include <functional>
 
 namespace gpcc_tests {

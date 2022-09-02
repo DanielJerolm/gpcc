@@ -11,8 +11,8 @@
 #ifdef OS_LINUX_ARM_TFC
 
 #include <gpcc/osal/Thread.hpp>
-#include "gpcc/src/time/TimePoint.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <gpcc/time/TimePoint.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 #include "gtest/gtest.h"
 
 namespace gpcc_tests {

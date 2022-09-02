@@ -16,8 +16,8 @@
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/execution/async/DeferredWorkQueue.hpp>
 #include <gpcc/execution/async/DeferredWorkPackage.hpp>
-#include "gpcc/src/time/TimePoint.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <gpcc/time/TimePoint.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 #include <memory>
 #include "gtest/gtest.h"
 

@@ -15,7 +15,7 @@
 
 #include "ThreadBlockerBase.hpp"
 #include "UnmanagedConditionVariable.hpp"
-#include "gpcc/src/time/TimePoint.hpp"
+#include <gpcc/time/TimePoint.hpp>
 
 namespace gpcc {
 namespace osal {

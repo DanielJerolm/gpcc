@@ -10,7 +10,7 @@
 
 #include <gpcc/execution/async/DeferredWorkPackage.hpp>
 #include <gpcc/osal/Panic.hpp>
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <gpcc/time/TimeSpan.hpp>
 #include <stdexcept>
 
 namespace gpcc {

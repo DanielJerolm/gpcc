@@ -8,8 +8,8 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "TimePoint.hpp"
-#include "TimeSpan.hpp"
+#include <gpcc/time/TimePoint.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 #include <gpcc/compiler/builtins.hpp>
 #include <limits>
 #include <stdexcept>

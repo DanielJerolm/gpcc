@@ -15,8 +15,8 @@
 #include "UnmanagedMutexLocker.hpp"
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/compiler/builtins.hpp>
-#include "gpcc/src/time/TimePoint.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <gpcc/time/TimePoint.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 #include <algorithm>
 #include <limits>
 #include <stdexcept>

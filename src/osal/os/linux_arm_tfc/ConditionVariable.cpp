@@ -18,7 +18,7 @@
 #include "internal/TimeLimitedThreadBlocker.hpp"
 #include "internal/UnmanagedMutexLocker.hpp"
 #include <gpcc/raii/scope_guard.hpp>
-#include "gpcc/src/time/TimePoint.hpp"
+#include <gpcc/time/TimePoint.hpp>
 #include <algorithm>
 #include <stdexcept>
 

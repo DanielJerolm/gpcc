@@ -9,8 +9,8 @@
 */
 
 #include <gpcc/raii/scope_guard.hpp>
-#include "gpcc/src/time/TimePoint.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <gpcc/time/TimePoint.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 #include "gtest/gtest.h"
 #include <iostream>
 #include <iomanip>

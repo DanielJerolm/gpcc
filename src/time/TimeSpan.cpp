@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "TimeSpan.hpp"
+#include <gpcc/time/TimeSpan.hpp>
 #include <gpcc/compiler/builtins.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <iomanip>

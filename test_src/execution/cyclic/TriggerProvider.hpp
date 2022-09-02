@@ -14,7 +14,7 @@
 #include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include "gpcc/src/StdIf/IIRQ2ThreadWakeup.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <gpcc/time/TimeSpan.hpp>
 #include <cstdint>
 
 namespace gpcc_tests {
