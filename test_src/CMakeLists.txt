@@ -138,13 +138,13 @@ target_sources(${PROJECT_NAME}_testcases
                osal/TestThread.cpp
                osal/TestThreadRegistry.cpp
                raii/Test_scope_guard.cpp
-               ResourceManagement/Memory/TestHeapManager.cpp
-               ResourceManagement/Memory/TestHeapManagerSPTS.cpp
-               ResourceManagement/Objects/internal/TestNamedRWLockEntry.cpp
-               ResourceManagement/Objects/TestHierarchicNamedRWLock.cpp
-               ResourceManagement/Objects/TestLargeDynamicNamedRWLock.cpp
-               ResourceManagement/Objects/TestSmallDynamicNamedRWLock.cpp
-               ResourceManagement/semaphores/TestNonBlockingSemaphore.cpp
+               resource_management/memory/TestHeapManager.cpp
+               resource_management/memory/TestHeapManagerSPTS.cpp
+               resource_management/objects/internal/TestNamedRWLockEntry.cpp
+               resource_management/objects/TestHierarchicNamedRWLock.cpp
+               resource_management/objects/TestLargeDynamicNamedRWLock.cpp
+               resource_management/objects/TestSmallDynamicNamedRWLock.cpp
+               resource_management/semaphores/TestNonBlockingSemaphore.cpp
                StdIf/I2C/TestII2C_Tools.cpp
                StdIf/TestIRandomAccessStorageCLI.cpp
                Stream/TestIStreamReader.cpp

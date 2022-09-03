@@ -15,7 +15,7 @@
 
 #include "gpcc/src/file_systems/IFileAndDirectoryStorage.hpp"
 #include <gpcc/osal/Mutex.hpp>
-#include "gpcc/src/ResourceManagement/Objects/HierarchicNamedRWLock.hpp"
+#include <gpcc/resource_management/objects/HierarchicNamedRWLock.hpp>
 
 namespace gpcc         {
 namespace file_systems {
