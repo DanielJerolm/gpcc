@@ -15,9 +15,9 @@
 
 namespace gpcc
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Memory
+namespace memory
 {
 
 MemoryDescriptorSPTS::MemoryDescriptorSPTS(std::shared_ptr<HeapManagerSPTS> const & _spHM, MemoryDescriptor* const _pMD, MemoryDescriptorSPTSKey)
@@ -76,6 +76,6 @@ MemoryDescriptorSPTS::~MemoryDescriptorSPTS(void)
   spHM->Release(pMD);
 }
 
-} // namespace Memory
-} // namespace ResourceManagement
+} // namespace memory
+} // namespace resource_management
 } // namespace gpcc

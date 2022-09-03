@@ -13,9 +13,9 @@
 
 namespace gpcc
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Memory
+namespace memory
 {
 namespace internal
 {
@@ -127,6 +127,6 @@ void MemoryDescriptorPool::Recycle(MemoryDescriptor* const pDescr) noexcept
 }
 
 } // namespace internal
-} // namespace Memory
-} // namespace ResourceManagement
+} // namespace memory
+} // namespace resource_management
 } // namespace gpcc

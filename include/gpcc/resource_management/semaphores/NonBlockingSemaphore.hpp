@@ -19,9 +19,9 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace gpcc               {
-namespace ResourceManagement {
-namespace semaphores         {
+namespace gpcc                {
+namespace resource_management {
+namespace semaphores          {
 
 /**
  * \ingroup GPCC_RESOURCEMANAGEMENT_SEMAPHORES
@@ -101,7 +101,7 @@ class NonBlockingSemaphore final
 };
 
 } // namespace semaphores
-} // namespace ResourceManagement
+} // namespace resource_management
 } // namespace gpcc
 
 #endif // NONBLOCKINGSEMAPHORE_HPP_202104021310

@@ -14,9 +14,9 @@
 #include <stdexcept>
 #include <string>
 
-namespace gpcc               {
-namespace ResourceManagement {
-namespace Objects            {
+namespace gpcc                {
+namespace resource_management {
+namespace objects             {
 
 /**
  * \ingroup GPCC_RESOURCEMANAGEMENT_OBJECTS_EXCEPTIONS
@@ -34,8 +34,8 @@ class NotLockedError : public std::logic_error
     virtual ~NotLockedError(void) noexcept = default;
 };
 
-} // namespace Objects
-} // namespace ResourceManagement
+} // namespace objects
+} // namespace resource_management
 } // namespace gpcc
 
 #endif // EXCEPTIONS_HPP_201808232142

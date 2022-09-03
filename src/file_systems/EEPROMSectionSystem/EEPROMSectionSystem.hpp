@@ -305,7 +305,7 @@ class EEPROMSectionSystem: public IFileStorage
         requires acquisition of write-locks on all involved sections before the operation starts.\n
         Any non-modifying operation on @ref storage (open sections for reading) requires acquisition
         of a read-lock for the section before the operation starts. */
-    mutable ResourceManagement::Objects::SmallDynamicNamedRWLock sectionLockManager;
+    mutable resource_management::objects::SmallDynamicNamedRWLock sectionLockManager;
 
     /// Block-level access to the storage the @ref EEPROMSectionSystem is working on.
     /** @ref mutex is required for reading and writing blocks.\n

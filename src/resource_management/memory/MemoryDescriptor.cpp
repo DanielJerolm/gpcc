@@ -12,9 +12,9 @@
 
 namespace gpcc
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Memory
+namespace memory
 {
 
 MemoryDescriptor::MemoryDescriptor(uint32_t const _startAddress, size_t const _size, bool const _free) noexcept
@@ -138,6 +138,6 @@ void MemoryDescriptor::RemoveFromManagementList(void) noexcept
   pNextInList = nullptr;
 }
 
-} // namespace Memory
-} // namespace ResourceManagement
+} // namespace memory
+} // namespace resource_management
 } // namespace gpcc

@@ -16,8 +16,8 @@
 #include <cstring>
 
 namespace gpcc                {
-namespace ResourceManagement  {
-namespace Objects             {
+namespace resource_management {
+namespace objects             {
 namespace internal            {
 
 /**
@@ -877,6 +877,6 @@ void HierarchicNamedRWLockNode::DecLocksInChilds(void) noexcept
 }
 
 } // namespace internal
-} // namespace Objects
-} // namespace ResourceManagement
+} // namespace objects
+} // namespace resource_management
 } // namespace gpcc

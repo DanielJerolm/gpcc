@@ -16,9 +16,9 @@
 
 namespace gpcc
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Memory
+namespace memory
 {
 
 class HeapManagerSPTS;
@@ -125,8 +125,8 @@ class MemoryDescriptorSPTS
  * The value is valid until the @ref MemoryDescriptorSPTS instance is released.
  */
 
-} // namespace Memory
-} // namespace ResourceManagement
+} // namespace memory
+} // namespace resource_management
 } // namespace gpcc
 
 #endif // SRC_GPCC_RESOURCEMANAGEMENT_MEMORY_MEMORYDESCRIPTORSPTS_HPP_

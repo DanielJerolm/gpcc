@@ -12,9 +12,9 @@
 
 namespace gpcc
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Memory
+namespace memory
 {
 
 HeapManagerStatistics::HeapManagerStatistics(size_t const _nbOfFreeBlocks, size_t const _totalFreeSpace) noexcept
@@ -50,6 +50,6 @@ HeapManagerStatistics::HeapManagerStatistics(size_t const _nbOfFreeBlocks, size_
 {
 }
 
-} // namespace Memory
-} // namespace ResourceManagement
+} // namespace memory
+} // namespace resource_management
 } // namespace gpcc

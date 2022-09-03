@@ -15,9 +15,9 @@
 
 namespace gpcc
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Objects
+namespace objects
 {
 
 using namespace internal;
@@ -407,6 +407,6 @@ void SmallDynamicNamedRWLock::CreateEntry(std::string const & resourceName, bool
   pList = new NamedRWLockEntry(pList, resourceName, writeLockNotReadLock);
 }
 
-} // namespace Objects
-} // namespace ResourceManagement
+} // namespace objects
+} // namespace resource_management
 } // namespace gpcc

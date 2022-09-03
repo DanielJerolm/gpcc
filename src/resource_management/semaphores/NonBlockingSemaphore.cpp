@@ -13,9 +13,9 @@
 #include <gpcc/osal/Panic.hpp>
 #include <stdexcept>
 
-namespace gpcc               {
-namespace ResourceManagement {
-namespace semaphores         {
+namespace gpcc                {
+namespace resource_management {
+namespace semaphores          {
 
 size_t const NonBlockingSemaphore::MAX;
 
@@ -168,5 +168,5 @@ bool NonBlockingSemaphore::Wait(tSemAcquiredCallback const & cb)
 }
 
 } // namespace semaphores
-} // namespace ResourceManagement
+} // namespace resource_management
 } // namespace gpcc

@@ -14,15 +14,15 @@
 
 namespace gpcc_tests
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Objects
+namespace objects
 {
 namespace internal
 {
 
 using namespace testing;
-using gpcc::ResourceManagement::Objects::internal::NamedRWLockEntry;
+using gpcc::resource_management::objects::internal::NamedRWLockEntry;
 
 TEST(GPCC_ResourceManagement_Objects_internal_NamedRWLockEntry_Tests, CreateUnlocked)
 {
@@ -202,6 +202,6 @@ TEST(GPCC_ResourceManagement_Objects_internal_NamedRWLockEntry_DeathTests, Write
 }
 
 } // namespace internal
-} // namespace Objects
-} // namespace ResourceManagement
+} // namespace objects
+} // namespace resource_management
 } // namespace gpcc_tests

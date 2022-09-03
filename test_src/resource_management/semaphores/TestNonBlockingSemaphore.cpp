@@ -21,11 +21,11 @@
 #include <memory>
 #include "gtest/gtest.h"
 
-namespace gpcc_tests         {
-namespace ResourceManagement {
-namespace semaphores         {
+namespace gpcc_tests          {
+namespace resource_management {
+namespace semaphores          {
 
-using gpcc::ResourceManagement::semaphores::NonBlockingSemaphore;
+using gpcc::resource_management::semaphores::NonBlockingSemaphore;
 using gpcc::execution::async::DeferredWorkPackage;
 using namespace testing;
 
@@ -397,5 +397,5 @@ TEST_F(gpcc_resource_management_semaphores_NonBlockingSemaphore_TestsF, DeadLock
 #endif
 
 } // namespace semaphores
-} // namespace ResourceManagement
+} // namespace resource_management
 } // namespace gpcc_tests

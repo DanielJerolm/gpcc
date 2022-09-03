@@ -142,7 +142,7 @@ class FileStorage final: public IFileAndDirectoryStorage
         Class HierarchicNamedRWLock requires a special separating character in the lock names. Here we use '/'
         as the separating character. This means, that a '/' must be appended to the names of directories and even
         files in order to use them as lock-names. */
-    ResourceManagement::Objects::HierarchicNamedRWLock mutable fileLockManager;
+    resource_management::objects::HierarchicNamedRWLock mutable fileLockManager;
 
 
     void ReleaseReadLock(std::string const & unlockID);

@@ -19,12 +19,12 @@
 
 namespace gpcc_tests
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Memory
+namespace memory
 {
 
-using namespace gpcc::ResourceManagement::Memory;
+using namespace gpcc::resource_management::memory;
 using namespace testing;
 
 class GPCC_ResourceManagement_Memory_HeapManager_Tests: public Test
@@ -630,6 +630,6 @@ TEST_F(GPCC_ResourceManagement_Memory_HeapManager_Tests, Recombination)
   ASSERT_EQ(0U,    stat.totalUsedSpace);
 }
 
-} // namespace Memory
-} // namespace ResourceManagement
+} // namespace memory
+} // namespace resource_management
 } // namespace gpcc_tests

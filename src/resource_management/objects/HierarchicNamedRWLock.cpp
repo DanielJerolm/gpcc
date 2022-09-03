@@ -15,8 +15,8 @@
 #include <limits>
 
 namespace gpcc                {
-namespace ResourceManagement  {
-namespace Objects             {
+namespace resource_management {
+namespace objects             {
 
 /**
  * \brief Constructor.
@@ -404,6 +404,6 @@ void HierarchicNamedRWLock::CleanupAfterUnlock(internal::HierarchicNamedRWLockNo
   }
 }
 
-} // namespace Objects
-} // namespace ResourceManagement
+} // namespace objects
+} // namespace resource_management
 } // namespace gpcc

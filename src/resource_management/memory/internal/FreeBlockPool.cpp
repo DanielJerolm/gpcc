@@ -15,9 +15,9 @@
 
 namespace gpcc
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Memory
+namespace memory
 {
 namespace internal
 {
@@ -304,6 +304,6 @@ void FreeBlockPool::ReleaseAllDescriptorsInBucket(MemoryDescriptor* pHead) noexc
 }
 
 } // namespace internal
-} // namespace Memory
-} // namespace ResourceManagement
+} // namespace memory
+} // namespace resource_management
 } // namespace gpcc

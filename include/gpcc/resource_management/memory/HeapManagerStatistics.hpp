@@ -15,9 +15,9 @@
 
 namespace gpcc
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Memory
+namespace memory
 {
 
 /**
@@ -50,8 +50,8 @@ class HeapManagerStatistics
  * @}
  */
 
-} // namespace Memory
-} // namespace ResourceManagement
+} // namespace memory
+} // namespace resource_management
 } // namespace gpcc
 
 #endif // SRC_GPCC_RESOURCEMANAGEMENT_MEMORY_HEAPMANAGERSTATISTICS_HPP_

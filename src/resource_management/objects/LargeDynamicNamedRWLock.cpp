@@ -15,9 +15,9 @@
 
 namespace gpcc
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Objects
+namespace objects
 {
 
 LargeDynamicNamedRWLock::~LargeDynamicNamedRWLock(void)
@@ -305,6 +305,6 @@ bool LargeDynamicNamedRWLock::AnyLocks(void) const noexcept
   return (!locks.empty());
 }
 
-} // namespace Objects
-} // namespace ResourceManagement
+} // namespace objects
+} // namespace resource_management
 } // namespace gpcc

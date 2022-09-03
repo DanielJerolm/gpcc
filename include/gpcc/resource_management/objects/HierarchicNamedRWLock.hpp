@@ -15,15 +15,15 @@
 #include <string>
 
 namespace gpcc                {
-namespace ResourceManagement  {
-namespace Objects             {
+namespace resource_management {
+namespace objects             {
 namespace internal            {
   class HierarchicNamedRWLockNode;
 }}}}
 
 namespace gpcc                {
-namespace ResourceManagement  {
-namespace Objects             {
+namespace resource_management {
+namespace objects             {
 
 /**
  * \ingroup GPCC_RESOURCEMANAGEMENT_OBJECTS
@@ -139,8 +139,8 @@ class HierarchicNamedRWLock final
     static void CleanupAfterUnlock(internal::HierarchicNamedRWLockNode* const pNode) noexcept;
 };
 
-} // namespace Objects
-} // namespace ResourceManagement
+} // namespace objects
+} // namespace resource_management
 } // namespace gpcc
 
 #endif // HIERARCHICNAMEDRWLOCK_HPP_201808192204

@@ -15,9 +15,9 @@
 
 namespace gpcc
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Objects
+namespace objects
 {
 namespace internal
 {
@@ -288,6 +288,6 @@ bool NamedRWLockEntry::IsLocked(void) const noexcept
 }
 
 } // namespace internal
-} // namespace Objects
-} // namespace ResourceManagement
+} // namespace objects
+} // namespace resource_management
 } // namespace gpcc

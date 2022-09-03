@@ -19,9 +19,9 @@
 
 namespace gpcc
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Memory
+namespace memory
 {
 
 HeapManager::HeapManager(uint16_t const _minimumAlignment,
@@ -346,6 +346,6 @@ void HeapManager::Release(MemoryDescriptor* const pDescr)
  spFreeBlocks->Add(pDescr);
 }
 
-} // namespace Memory
-} // namespace ResourceManagement
+} // namespace memory
+} // namespace resource_management
 } // namespace gpcc

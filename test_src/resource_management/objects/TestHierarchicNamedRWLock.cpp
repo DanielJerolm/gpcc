@@ -15,12 +15,12 @@
 #include <stdexcept>
 
 namespace gpcc_tests          {
-namespace ResourceManagement  {
-namespace Objects             {
+namespace resource_management {
+namespace objects             {
 
 using namespace testing;
-using gpcc::ResourceManagement::Objects::HierarchicNamedRWLock;
-using gpcc::ResourceManagement::Objects::NotLockedError;
+using gpcc::resource_management::objects::HierarchicNamedRWLock;
+using gpcc::resource_management::objects::NotLockedError;
 
 // Test fixture for class HierarchicNamedRWLock.
 // Provides the UUT and prevents a Panic in ~HierarchicNamedRWLock() if a test case did
@@ -587,6 +587,6 @@ TEST(gpcc_ResourceManagement_Objects_HierarchicNamedRWLock_DeathTests, DestroyWi
   spUUT->ReleaseWriteLock("Test");
 }
 
-} // namespace Objects
-} // namespace ResourceManagement
+} // namespace objects
+} // namespace resource_management
 } // namespace gpcc

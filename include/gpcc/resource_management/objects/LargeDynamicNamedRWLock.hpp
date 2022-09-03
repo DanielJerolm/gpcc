@@ -16,9 +16,9 @@
 
 namespace gpcc
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Objects
+namespace objects
 {
 
 /**
@@ -83,8 +83,8 @@ class LargeDynamicNamedRWLock
     std::unordered_map<std::string, int> locks;
 };
 
-} // namespace Objects
-} // namespace ResourceManagement
+} // namespace objects
+} // namespace resource_management
 } // namespace gpcc
 
 #endif // SRC_GPCC_RESOURCEMANAGEMENT_OBJECTS_LARGEDYNAMICNAMEDRWLOCK_HPP_

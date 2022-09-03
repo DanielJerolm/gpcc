@@ -15,9 +15,9 @@
 
 namespace gpcc
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Memory
+namespace memory
 {
 
 std::shared_ptr<HeapManagerSPTS> HeapManagerSPTS::Create(uint16_t const _minimumAlignment,
@@ -310,6 +310,6 @@ void HeapManagerSPTS::Release(MemoryDescriptor* const pDescr)
   hm.Release(pDescr);
 }
 
-} // namespace Memory
-} // namespace ResourceManagement
+} // namespace memory
+} // namespace resource_management
 } // namespace gpcc

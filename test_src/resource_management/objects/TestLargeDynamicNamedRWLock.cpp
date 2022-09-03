@@ -15,13 +15,13 @@
 
 namespace gpcc_tests
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Objects
+namespace objects
 {
 
 using namespace testing;
-using gpcc::ResourceManagement::Objects::LargeDynamicNamedRWLock;
+using gpcc::resource_management::objects::LargeDynamicNamedRWLock;
 
 TEST(GPCC_ResourceManagement_Objects_LargeDynamicNamedRWLock_Tests, CreateAndRelease)
 {
@@ -273,6 +273,6 @@ TEST(GPCC_ResourceManagement_Objects_LargeDynamicNamedRWLock_DeathTests, Release
   delete pUUT;
 }
 
-} // namespace Objects
-} // namespace ResourceManagement
+} // namespace objects
+} // namespace resource_management
 } // namespace gpcc_tests

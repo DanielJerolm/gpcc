@@ -16,9 +16,9 @@
 
 namespace gpcc
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Memory
+namespace memory
 {
 
 class MemoryDescriptor;
@@ -80,8 +80,8 @@ class MemoryDescriptorPool
  */
 
 } // namespace internal
-} // namespace Memory
-} // namespace ResourceManagement
+} // namespace memory
+} // namespace resource_management
 } // namespace gpcc
 
 #endif // SRC_GPCC_RESOURCEMANAGEMENT_MEMORY_INTERNAL_MEMORYDESCRIPTORPOOL_HPP_

@@ -15,9 +15,9 @@
 
 namespace gpcc
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Objects
+namespace objects
 {
 namespace internal
 {
@@ -95,8 +95,8 @@ class NamedRWLockEntry
 };
 
 } // namespace internal
-} // namespace Objects
-} // namespace ResourceManagement
+} // namespace objects
+} // namespace resource_management
 } // namespace gpcc
 
 #endif // SRC_GPCC_RESOURCEMANAGEMENT_OBJECTS_INTERNAL_NAMEDRWLOCKENTRY_HPP_

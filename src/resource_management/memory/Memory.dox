@@ -15,14 +15,14 @@
  * \brief Classes for managing memory and memory-like resources.
  *
  * Currently two classes for managing any type of memory in a heap-like-style are available:\n
- * [HeapManager](@ref gpcc::ResourceManagement::Memory::HeapManager) and
- * [HeapManagerSPTS](@ref gpcc::ResourceManagement::Memory::HeapManagerSPTS)\n
+ * [HeapManager](@ref gpcc::resource_management::memory::HeapManager) and
+ * [HeapManagerSPTS](@ref gpcc::resource_management::memory::HeapManagerSPTS)\n
  * Both classes offer a heap-style management for any kind of memory purely based on addresses and sizes
  * only. This means that the managed memory does not even need to exist. Both classes only work with numbers
  * that represent the memories' addresses and sizes and both will never attempt to access the managed memory.
  * This makes the two classes especially suitable for managing dedicated memory in hardware peripherals.\n
- * [HeapManagerSPTS](@ref gpcc::ResourceManagement::Memory::HeapManagerSPTS) uses RAII memory descriptors and
+ * [HeapManagerSPTS](@ref gpcc::resource_management::memory::HeapManagerSPTS) uses RAII memory descriptors and
  * provides build-in thread safety. It is simple to use.\n
- * [HeapManager](@ref gpcc::ResourceManagement::Memory::HeapManager) does not offer RAII memory descriptors and
+ * [HeapManager](@ref gpcc::resource_management::memory::HeapManager) does not offer RAII memory descriptors and
  * has no build-in thread-safety. It is recommended if speed and small memory footprint matters.
  */

@@ -17,9 +17,9 @@
 
 namespace gpcc
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Memory
+namespace memory
 {
 
 class MemoryDescriptorSPTS;
@@ -134,8 +134,8 @@ class HeapManagerSPTS: public std::enable_shared_from_this<HeapManagerSPTS>
  * @}
  */
 
-} // namespace Memory
-} // namespace ResourceManagement
+} // namespace memory
+} // namespace resource_management
 } // namespace gpcc
 
 #endif // SRC_GPCC_RESOURCEMANAGEMENT_MEMORY_HEAPMANAGERSPTS_HPP_

@@ -15,9 +15,9 @@
 
 namespace gpcc
 {
-namespace ResourceManagement
+namespace resource_management
 {
-namespace Objects
+namespace objects
 {
 
 namespace internal
@@ -96,8 +96,8 @@ class SmallDynamicNamedRWLock
     void CreateEntry(std::string const & resourceName, bool const writeLockNotReadLock);
 };
 
-} // namespace Objects
-} // namespace ResourceManagement
+} // namespace objects
+} // namespace resource_management
 } // namespace gpcc
 
 #endif // SRC_GPCC_RESOURCEMANAGEMENT_OBJECTS_SMALLDYNAMICNAMEDRWLOCK_HPP_
