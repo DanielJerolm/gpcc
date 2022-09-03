@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/callback/MultiCallbackSM.hpp"
+#include <gpcc/callback/MultiCallbackSM.hpp>
 #include <gpcc/execution/async/WorkPackage.hpp>
 #include <gpcc/execution/async/WorkQueue.hpp>
 #include <gpcc/osal/Mutex.hpp>

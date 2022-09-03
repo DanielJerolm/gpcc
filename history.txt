@@ -5,7 +5,7 @@ GPCC Implementation History and Current Activities
 Next to do:
 ===============================================================================
 
-- Header restrcturing
+- Header restructuring
   - [IP] Move public headers to include/gpcc
   - [  ] Check order of includes
 
@@ -103,6 +103,10 @@ Next to do:
   [  ] IPC-Adapter
 
 - cleanup osal/universal
+
+- cleanup resource_management
+  - Coding & doc style
+  - Some internals are referenced by unique_ptr and are not a part. Stay with this or make parts?
 
 - Review text messages passed to exception's ctors
   (grep -n -r "throw .*\(.*\);")
