@@ -8,6 +8,8 @@ Next to do:
 - Header restructuring
   - [IP] Move public headers to include/gpcc
   - [  ] Check order of includes
+  - [  ] Simplify TestBlockAccessor (long namespaces)
+  - [  ] Simplify TestEEPROMSectionSystem (long namespaces)
 
 - COOD remote access
   ==================

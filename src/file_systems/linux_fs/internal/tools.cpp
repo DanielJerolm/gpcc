@@ -11,7 +11,7 @@
 #if defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(__DOXYGEN__)
 
 #include "tools.hpp"
-#include "gpcc/src/file_systems/exceptions.hpp"
+#include <gpcc/file_systems/exceptions.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/string/tools.hpp>
 #include <sys/stat.h>

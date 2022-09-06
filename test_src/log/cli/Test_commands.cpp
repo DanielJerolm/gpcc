@@ -10,7 +10,7 @@
 
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/cli/Command.hpp>
-#include "gpcc/src/file_systems/linux_fs/FileStorage.hpp"
+#include <gpcc/file_systems/linux_fs/FileStorage.hpp>
 #include "gpcc/src/file_systems/linux_fs/internal/tools.hpp"
 #include "gpcc/src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
 #include <gpcc/log/backends/Backend_CLI.hpp>

@@ -13,7 +13,7 @@
 #ifndef FILESTORAGE_HPP_201805102328
 #define FILESTORAGE_HPP_201805102328
 
-#include "gpcc/src/file_systems/IFileAndDirectoryStorage.hpp"
+#include <gpcc/file_systems/IFileAndDirectoryStorage.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/resource_management/objects/HierarchicNamedRWLock.hpp>
 

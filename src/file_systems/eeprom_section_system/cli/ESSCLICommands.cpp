@@ -8,9 +8,9 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "ESSCLICommands.hpp"
+#include <gpcc/file_systems/eeprom_section_system/cli/ESSCLICommands.hpp>
 #include <gpcc/cli/CLI.hpp>
-#include "gpcc/src/file_systems/EEPROMSectionSystem/EEPROMSectionSystem.hpp"
+#include <gpcc/file_systems/eeprom_section_system/EEPROMSectionSystem.hpp>
 
 namespace gpcc
 {

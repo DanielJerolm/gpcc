@@ -11,10 +11,7 @@
 #ifndef SRC_GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_EEPROMSECTIONSYSTEM_HPP_
 #define SRC_GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_EEPROMSECTIONSYSTEM_HPP_
 
-#include "internal/EEPROMSectionSystemInternals.hpp"
-#include "internal/BlockAccessor.hpp"
-#include "internal/FreeBlockListBackup.hpp"
-#include "../IFileStorage.hpp"
+#include <gpcc/file_systems/IFileStorage.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/resource_management/objects/SmallDynamicNamedRWLock.hpp>
 #include <list>
@@ -49,6 +46,8 @@ namespace EEPROMSectionSystem
 
 namespace internal
 {
+  class BlockAccessor;
+  class FreeBlockListBackup;
   class SectionReader;
   class SectionWriter;
 }
@@ -223,16 +222,16 @@ class EEPROMSectionSystem: public IFileStorage
 
   public:
     /// Minimum supported block size of the underlying storage in bytes.
-    static size_t const MinimumBlockSize = internal::MinimumBlockSize;
+    static size_t const MinimumBlockSize = 32U;
 
     /// Maximum supported block size of the underlying storage in bytes.
-    static size_t const MaximumBlockSize = internal::MaximumBlockSize;
+    static size_t const MaximumBlockSize = 4096U;
 
     /// Minimum required number of blocks in the underlying storage.
-    static size_t const MinimumNbOfBlocks = internal::MinimumNbOfBlocks;
+    static size_t const MinimumNbOfBlocks = 3U;
 
     /// Maximum supported number of blocks in the underlying storage.
-    static size_t const MaximumNbOfBlocks = internal::MaximumNbOfBlocks;
+    static size_t const MaximumNbOfBlocks = 65535U;
 
     /// Version of the Section System (not version of the implementation).
     static uint16_t const Version = 0x0002U;
@@ -311,7 +310,7 @@ class EEPROMSectionSystem: public IFileStorage
     /** @ref mutex is required for reading and writing blocks.\n
         Blocksize is only allowed to be changed during mount or formatting when the Section System is in
         state @ref States::not_mounted. */
-    internal::BlockAccessor storage;
+    std::unique_ptr<internal::BlockAccessor> spStorage;
 
     /// Number of free blocks in @ref storage.
     /** @ref mutex is required. */

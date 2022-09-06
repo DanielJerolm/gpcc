@@ -10,7 +10,7 @@
 
 #include <gpcc/log/cli/commands.hpp>
 #include <gpcc/cli/CLI.hpp>
-#include "gpcc/src/file_systems/IFileStorage.hpp"
+#include <gpcc/file_systems/IFileStorage.hpp>
 #include <gpcc/log/logfacilities/ILogFacilityCtrl.hpp>
 #include <gpcc/log/log_tools.hpp>
 #include <gpcc/string/tools.hpp>

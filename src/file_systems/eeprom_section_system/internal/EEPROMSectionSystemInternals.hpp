@@ -29,18 +29,6 @@ namespace internal
  * @{
  */
 
-/// Minimum supported block size of the underlying storage in bytes.
-static size_t const MinimumBlockSize = 32U;
-
-/// Maximum supported block size of the underlying storage in bytes.
-static size_t const MaximumBlockSize = 4096U; // Limited by hamming-distance of CRC-CCITT16
-
-/// Minimum required number of blocks in the underlying storage.
-static size_t const MinimumNbOfBlocks = 3U;
-
-/// Maximum supported number of blocks in the underlying storage.
-static size_t const MaximumNbOfBlocks = 65535U;
-
 /// Block index referencing to no block.
 static uint16_t const NOBLOCK = 0xFFFFU;
 

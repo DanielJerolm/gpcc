@@ -10,6 +10,7 @@
 */
 
 #include "EEPROMSectionSystemTestFixture.hpp"
+#include "gpcc/src/file_systems/eeprom_section_system/internal/EEPROMSectionSystemInternals.hpp"
 #include <gpcc/crc/simple_crc.hpp>
 #include <list>
 #include <memory>

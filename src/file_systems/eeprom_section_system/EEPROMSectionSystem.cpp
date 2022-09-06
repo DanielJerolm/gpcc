@@ -8,10 +8,13 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "EEPROMSectionSystem.hpp"
-#include "Exceptions.hpp"
+#include <gpcc/file_systems/eeprom_section_system/EEPROMSectionSystem.hpp>
+#include <gpcc/file_systems/eeprom_section_system/exceptions.hpp>
 #include <gpcc/container/BitField.hpp>
-#include "gpcc/src/file_systems/exceptions.hpp"
+#include <gpcc/file_systems/exceptions.hpp>
+#include "internal/EEPROMSectionSystemInternals.hpp"
+#include "internal/FreeBlockListBackup.hpp"
+#include "internal/BlockAccessor.hpp"
 #include "internal/SectionReader.hpp"
 #include "internal/SectionWriter.hpp"
 #include <gpcc/osal/MutexLocker.hpp>
@@ -43,7 +46,7 @@ EEPROMSectionSystem::EEPROMSectionSystem(StdIf::IRandomAccessStorage& _storage, 
 : mutex()
 , state(States::not_mounted)
 , sectionLockManager()
-, storage(_storage, _startAddressInStorage, _sizeInStorage)
+, spStorage(std::make_unique<internal::BlockAccessor>(_storage, _startAddressInStorage, _sizeInStorage))
 , nFreeBlocks(0)
 , freeBlockListHeadIdx(NOBLOCK)
 , freeBlockListEndIdx(NOBLOCK)
@@ -214,9 +217,9 @@ void EEPROMSectionSystem::Format(uint16_t const desiredBlockSize)
     throw InsufficientStateError("EEPROMSectionSystem::Format", state);
 
   // reconfigure block-level access (this includes complete check of parameter "desiredBlockSize")
-  storage.SetBlockSize(desiredBlockSize);
-  uint16_t const blocksize = storage.GetBlockSize();
-  uint16_t const nBlocks   = storage.GetnBlocks();
+  spStorage->SetBlockSize(desiredBlockSize);
+  uint16_t const blocksize = spStorage->GetBlockSize();
+  uint16_t const nBlocks   = spStorage->GetnBlocks();
 
   std::unique_ptr<char[]> spMainBuf(new char[blocksize]);
   std::unique_ptr<char[]> spAuxBuf(new char[blocksize]);
@@ -246,7 +249,7 @@ void EEPROMSectionSystem::Format(uint16_t const desiredBlockSize)
     else
       pFreeBlock->nextBlock = NOBLOCK;
 
-    storage.StoreBlock(i, spMainBuf.get(), spAuxBuf.get(), true);
+    spStorage->StoreBlock(i, spMainBuf.get(), spAuxBuf.get(), true);
   }
 
   // -------------------------------------------
@@ -264,7 +267,7 @@ void EEPROMSectionSystem::Format(uint16_t const desiredBlockSize)
   pInfoBlock->blockSize             = blocksize;
   pInfoBlock->nBlocks               = nBlocks;
 
-  storage.StoreBlock(0, spMainBuf.get(), spAuxBuf.get(), false);
+  spStorage->StoreBlock(0, spMainBuf.get(), spAuxBuf.get(), false);
 
   // --------
   // FINISHED
@@ -309,8 +312,8 @@ void EEPROMSectionSystem::MountStep1(void)
   // of the storage device.
 
   // query properties of storage
-  size_t const storageSize     = storage.GetSizeInStorage();
-  size_t const storagePageSize = storage.GetPageSize();
+  size_t const storageSize     = spStorage->GetSizeInStorage();
+  size_t const storagePageSize = spStorage->GetPageSize();
 
   if (storagePageSize != 0U)
   {
@@ -358,7 +361,7 @@ void EEPROMSectionSystem::MountStep1(void)
   if (blockSize == 0U)
     throw std::logic_error("EEPROMSectionSystem::MountStep1: Cannot figure out suitable initial block size");
 
-  storage.SetBlockSize(blockSize);
+  spStorage->SetBlockSize(blockSize);
 
   // Allocate memory for loading the Section System Info Block and setup a pointer for accessing it.
   std::unique_ptr<char[]> spMem(new char[blockSize]);
@@ -372,11 +375,11 @@ void EEPROMSectionSystem::MountStep1(void)
   {
     // reconfigure block-level access (this includes complete check of block size value)
     blockSize = pSSIB->blockSize;
-    storage.SetBlockSize(blockSize);
+    spStorage->SetBlockSize(blockSize);
   }
 
   // get number of blocks and cross-check with Section System Info Block
-   uint16_t const nBlocks = storage.GetnBlocks();
+   uint16_t const nBlocks = spStorage->GetnBlocks();
    if (nBlocks != pSSIB->nBlocks)
       throw StorageSizeMismatchError();
 
@@ -437,12 +440,12 @@ void EEPROMSectionSystem::MountStep2(void)
   freeBlockListEndIdx   = NOBLOCK;
 
   // get storage properties
-  uint16_t const nBlocks = storage.GetnBlocks();
-  uint16_t const blockSize = storage.GetBlockSize();
+  uint16_t const nBlocks = spStorage->GetnBlocks();
+  uint16_t const blockSize = spStorage->GetBlockSize();
 
   // allocate memory for one storage block and for a section name
   std::unique_ptr<char[]> spMem(new char[blockSize]);
-  std::unique_ptr<char[]> spSecName(new char[storage.GetMaxSectionNameLength() + 1U]);
+  std::unique_ptr<char[]> spSecName(new char[spStorage->GetMaxSectionNameLength() + 1U]);
 
   // setup a pointer to access the common head of a block stored in spMem
   CommonBlockHead_t const * const pCommonHead  = static_cast<CommonBlockHead_t*>(static_cast<void*>(spMem.get()));
@@ -474,14 +477,14 @@ void EEPROMSectionSystem::MountStep2(void)
       continue;
 
     // load type-field
-    BlockTypes const typeField = static_cast<BlockTypes>(storage.LoadField_type(currIndex));
+    BlockTypes const typeField = static_cast<BlockTypes>(spStorage->LoadField_type(currIndex));
 
     // load the complete block if it is a free block or a section head
     if ((typeField == BlockTypes::freeBlock) || (typeField == BlockTypes::sectionHead))
     {
       try
       {
-        storage.LoadBlock(currIndex, spMem.get(), blockSize);
+        spStorage->LoadBlock(currIndex, spMem.get(), blockSize);
       }
       catch (DataIntegrityError const &)
       {
@@ -627,7 +630,7 @@ std::unique_ptr<Stream::IStreamReader> EEPROMSectionSystem::Open(std::string con
   };
 
   // allocate memory for reading storage blocks
-  uint16_t const blockSize = storage.GetBlockSize();
+  uint16_t const blockSize = spStorage->GetBlockSize();
   std::unique_ptr<unsigned char[]> spMem(new unsigned char[blockSize]);
 
   // load the section head into spMem
@@ -643,7 +646,7 @@ std::unique_ptr<Stream::IStreamReader> EEPROMSectionSystem::Open(std::string con
     // other section heads with same name, then we have to check for section heads with different
     // name but same "nextBlock" attribute.
 
-    uint16_t const nBlocks = storage.GetnBlocks();
+    uint16_t const nBlocks = spStorage->GetnBlocks();
     uint16_t sectionHeadIdx;
     uint16_t firstDataBlockIdx;
     uint16_t version;
@@ -711,7 +714,7 @@ std::unique_ptr<Stream::IStreamReader> EEPROMSectionSystem::Open(std::string con
     }
 
     // finally load the located section head back into spMem
-    storage.LoadBlock(sectionHeadIdx, spMem.get(), blockSize);
+    spStorage->LoadBlock(sectionHeadIdx, spMem.get(), blockSize);
     if (static_cast<BlockTypes>(pHead->head.type) != BlockTypes::sectionHead)
       throw VolatileStorageError(sectionHeadIdx);
   }
@@ -771,7 +774,7 @@ std::unique_ptr<Stream::IStreamWriter> EEPROMSectionSystem::Create(std::string c
   };
 
   // allocate memory for reading and writing storage blocks
-  uint16_t const blockSize = storage.GetBlockSize();
+  uint16_t const blockSize = spStorage->GetBlockSize();
   std::unique_ptr<char[]> spMem(new char[blockSize]);
 
   // section already existing?
@@ -857,7 +860,7 @@ void EEPROMSectionSystem::Delete(std::string const & name)
     throw FileAlreadyAccessedError(name);
 
   // allocate memory for reading and writing storage blocks
-  uint16_t const blockSize = storage.GetBlockSize();
+  uint16_t const blockSize = spStorage->GetBlockSize();
   std::unique_ptr<char[]> spMem(new char[blockSize]);
 
   // load section head
@@ -919,7 +922,7 @@ void EEPROMSectionSystem::Rename(std::string const & currName, std::string const
     throw FileAlreadyAccessedError(newName);
 
   // allocate memory for reading and writing storage blocks
-  uint16_t const blockSize = storage.GetBlockSize();
+  uint16_t const blockSize = spStorage->GetBlockSize();
   std::unique_ptr<char[]> spMem(new char[blockSize]);
 
   // check whether a section with the new name is already existing
@@ -952,7 +955,7 @@ void EEPROMSectionSystem::Rename(std::string const & currName, std::string const
 
   ON_SCOPE_EXIT(switchToDefect) { state = States::defect; };
 
-  storage.StoreBlock(newSectionHeadIdx, spMem.get(), nullptr, false);
+  spStorage->StoreBlock(newSectionHeadIdx, spMem.get(), nullptr, false);
 
   AddBlockToListOfFreeBlocks(sectionHeadIdx, &totalNbOfWritesOldSectionHead, true);
 
@@ -985,12 +988,12 @@ std::list<std::string> EEPROMSectionSystem::Enumerate(void) const
     throw InsufficientStateError("EEPROMSectionSystem::Enumerate", state, States::mounted);
 
   // allocate memory for reading and writing storage blocks
-  uint16_t const blockSize = storage.GetBlockSize();
+  uint16_t const blockSize = spStorage->GetBlockSize();
   std::unique_ptr<char[]> spMem(new char[blockSize]);
 
   // enumerate all section heads in "list"
   std::list<std::string> list;
-  uint16_t const nBlocks = storage.GetnBlocks();
+  uint16_t const nBlocks = spStorage->GetnBlocks();
   uint16_t idx = 0;
   while (idx != nBlocks - 1U)
   {
@@ -1048,7 +1051,7 @@ size_t EEPROMSectionSystem::DetermineSize(std::string const & name, size_t * con
   };
 
   // allocate memory for reading and writing storage blocks
-  uint16_t const blockSize = storage.GetBlockSize();
+  uint16_t const blockSize = spStorage->GetBlockSize();
   std::unique_ptr<char[]> spMem(new char[blockSize]);
 
   uint16_t currIdx = FindSectionHead(1U, name.c_str(), CalcHash(name.c_str()), spMem.get());
@@ -1059,7 +1062,7 @@ size_t EEPROMSectionSystem::DetermineSize(std::string const & name, size_t * con
   size_t totalSize = blockSize;
 
   // walk through all blocks of data
-  uint16_t maxCycles = storage.GetnBlocks() - 1U;
+  uint16_t maxCycles = spStorage->GetnBlocks() - 1U;
   while (1)
   {
     // endless loop?
@@ -1107,7 +1110,7 @@ size_t EEPROMSectionSystem::GetFreeSpace(void) const
   if (nFreeBlocks <= 1U)
     return 0;
   else
-    return static_cast<size_t>(nFreeBlocks - 1U) * (storage.GetBlockSize() - (sizeof(DataBlock_t) + sizeof(uint16_t)));
+    return static_cast<size_t>(nFreeBlocks - 1U) * (spStorage->GetBlockSize() - (sizeof(DataBlock_t) + sizeof(uint16_t)));
 }
 
 void EEPROMSectionSystem::Mount_LoadAndCheckSecSysInfoBlock(void* const pMem) const
@@ -1141,7 +1144,7 @@ void EEPROMSectionSystem::Mount_LoadAndCheckSecSysInfoBlock(void* const pMem) co
   // load section system info block
   try
   {
-    storage.LoadBlock(0, pMem, storage.GetBlockSize());
+    spStorage->LoadBlock(0, pMem, spStorage->GetBlockSize());
   }
   catch (DataIntegrityError const &)
   {
@@ -1155,7 +1158,7 @@ void EEPROMSectionSystem::Mount_LoadAndCheckSecSysInfoBlock(void* const pMem) co
   if (static_cast<BlockTypes>(pSSIB->head.type) != BlockTypes::sectionSystemInfo)
     throw BadSectionSystemInfoBlockError();
 
-  // checks already done by storage.LoadBlock on common header:
+  // checks already done by spStorage->LoadBlock on common header:
   // - sectionNameHash
   // - nBytes
   // - nextBlock
@@ -1333,12 +1336,12 @@ void EEPROMSectionSystem::Mount_ProcessSectionHead(uint16_t currIndex, void* con
 {
   SectionHeadBlock_t const * const pHead = static_cast<SectionHeadBlock_t*>(pMem);
 
-  uint16_t const nBlocks = storage.GetnBlocks();
+  uint16_t const nBlocks = spStorage->GetnBlocks();
 
   // --------------------------------------------------
   // Extract section name, hash and nextBlock-attribute
   // --------------------------------------------------
-  // Note: storage.LoadBlock() called in MountStep2() has checked that the null-terminator is present
+  // Note: spStorage->LoadBlock() called in MountStep2() has checked that the null-terminator is present
   // and that pHead->head.nBytes is OK.
   memcpy(pSecName,
          static_cast<char const*>(pMem) + sizeof(SectionHeadBlock_t),
@@ -1488,7 +1491,7 @@ void EEPROMSectionSystem::Mount_ProcessSectionHead(uint16_t currIndex, void* con
   // reload section
   try
   {
-    storage.LoadBlock(currIndex, pMem, storage.GetBlockSize());
+    spStorage->LoadBlock(currIndex, pMem, spStorage->GetBlockSize());
   }
   catch (DataIntegrityError const &)
   {
@@ -1588,7 +1591,7 @@ void EEPROMSectionSystem::Mount_CheckLastFreeBlock(void* const pMem)
   if (nFreeBlocks != 0)
   {
     // load last block in the chain of free blocks
-    storage.LoadBlock(freeBlockListEndIdx, pMem, storage.GetBlockSize());
+    spStorage->LoadBlock(freeBlockListEndIdx, pMem, spStorage->GetBlockSize());
     CommonBlockHead_t* const pCommonHead = static_cast<CommonBlockHead_t*>(pMem);
 
     if (static_cast<BlockTypes>(pCommonHead->type) != BlockTypes::freeBlock)
@@ -1600,7 +1603,7 @@ void EEPROMSectionSystem::Mount_CheckLastFreeBlock(void* const pMem)
     {
       ON_SCOPE_EXIT(markDefect) { state = States::defect; };
       pCommonHead->nextBlock = NOBLOCK;
-      storage.StoreBlock(freeBlockListEndIdx, pMem, nullptr, false);
+      spStorage->StoreBlock(freeBlockListEndIdx, pMem, nullptr, false);
       ON_SCOPE_EXIT_DISMISS(markDefect);
     }
   }
@@ -1644,7 +1647,7 @@ void EEPROMSectionSystem::Mount_CollectGarbageBlocks(void* const pMem, container
 {
   // recycle pMem as garbage list
   uint16_t* const pGarbageList = static_cast<uint16_t*>(pMem);
-  size_t const garbageListSize = storage.GetBlockSize() / sizeof(uint16_t);
+  size_t const garbageListSize = spStorage->GetBlockSize() / sizeof(uint16_t);
   size_t nbOfCollectedGarbageBlocks = 0;
 
   ON_SCOPE_EXIT(markDefect) { state = States::defect; };
@@ -1792,7 +1795,7 @@ bool EEPROMSectionSystem::CheckSectionName(std::string const & s) const
     throw InsufficientStateError("EEPROMSectionSystem::CheckSectionName", state, States::ro_mount);
 
   // too short / too long?
-  if ((s.length() == 0) || (s.length() > storage.GetMaxSectionNameLength()))
+  if ((s.length() == 0) || (s.length() > spStorage->GetMaxSectionNameLength()))
     return false;
 
   // any leading or trailing spaces?
@@ -1860,7 +1863,7 @@ uint16_t EEPROMSectionSystem::LoadNextBlockOfSection(void* const pMem) const
   uint16_t const nextBlockIndex = pCommonHead->nextBlock;
   if (nextBlockIndex != NOBLOCK)
   {
-    storage.LoadBlock(nextBlockIndex, pMem, storage.GetBlockSize());
+    spStorage->LoadBlock(nextBlockIndex, pMem, spStorage->GetBlockSize());
 
     if (static_cast<BlockTypes>(pCommonHead->type) != BlockTypes::sectionData)
       throw BlockLinkageError("EEPROMSectionSystem::LoadNextBlockOfSection: Block type should have been \"sectionData\"", nextBlockIndex);
@@ -1906,7 +1909,7 @@ uint16_t EEPROMSectionSystem::FindAnySectionHead(uint16_t const startBlockIndex,
   if ((state == States::not_mounted) || (state == States::defect))
     throw InsufficientStateError("EEPROMSectionSystem::FindAnySectionHead", state, States::ro_mount);
 
-  uint16_t const nBlocks = storage.GetnBlocks();
+  uint16_t const nBlocks = spStorage->GetnBlocks();
 
   if (startBlockIndex >= nBlocks)
     throw std::invalid_argument("EEPROMSectionSystem::FindAnySectionHead: startBlockIndex invalid");
@@ -1915,11 +1918,11 @@ uint16_t EEPROMSectionSystem::FindAnySectionHead(uint16_t const startBlockIndex,
   for (uint16_t blockIndex = startBlockIndex; blockIndex < nBlocks; blockIndex++)
   {
     // load type-field and check for section head
-    uint8_t const type = storage.LoadField_type(blockIndex);
+    uint8_t const type = spStorage->LoadField_type(blockIndex);
     if (static_cast<BlockTypes>(type) == BlockTypes::sectionHead)
     {
       // load block, double check type and finish
-      storage.LoadBlock(blockIndex, pMem, storage.GetBlockSize());
+      spStorage->LoadBlock(blockIndex, pMem, spStorage->GetBlockSize());
       if (static_cast<BlockTypes>(pHead->head.type) != BlockTypes::sectionHead)
         throw VolatileStorageError(blockIndex);
 
@@ -1970,7 +1973,7 @@ uint16_t EEPROMSectionSystem::FindSectionHead(uint16_t const startBlockIndex, ch
   if ((state == States::not_mounted) || (state == States::defect))
     throw InsufficientStateError("EEPROMSectionSystem::FindSectionHead", state, States::ro_mount);
 
-  uint16_t const nBlocks = storage.GetnBlocks();
+  uint16_t const nBlocks = spStorage->GetnBlocks();
 
   if (startBlockIndex >= nBlocks)
     throw std::invalid_argument("EEPROMSectionSystem::FindSectionHead: startBlockIndex invalid");
@@ -1989,7 +1992,7 @@ uint16_t EEPROMSectionSystem::FindSectionHead(uint16_t const startBlockIndex, ch
       return NOBLOCK;
 
     // load complete block and check for match by name
-    storage.LoadBlock(blockIndex, pMem, storage.GetBlockSize());
+    spStorage->LoadBlock(blockIndex, pMem, spStorage->GetBlockSize());
 
     if (static_cast<BlockTypes>(pHead->head.type) != BlockTypes::sectionHead)
       throw VolatileStorageError(blockIndex);
@@ -2038,7 +2041,7 @@ uint16_t EEPROMSectionSystem::FindSectionHeadByHash(uint16_t const startBlockInd
   if ((state == States::not_mounted) || (state == States::defect))
     throw InsufficientStateError("EEPROMSectionSystem::FindSectionHeadByHash", state, States::ro_mount);
 
-  uint16_t const nBlocks = storage.GetnBlocks();
+  uint16_t const nBlocks = spStorage->GetnBlocks();
 
   if (startBlockIndex >= nBlocks)
     throw std::invalid_argument("EEPROMSectionSystem::FindSectionHeadByHash: startBlockIndex invalid");
@@ -2046,7 +2049,7 @@ uint16_t EEPROMSectionSystem::FindSectionHeadByHash(uint16_t const startBlockInd
   uint16_t const searchValue = static_cast<uint16_t>(BlockTypes::sectionHead) | (static_cast<uint16_t>(hash) << 8U);
   for (uint16_t blockIndex = startBlockIndex; blockIndex < nBlocks; blockIndex++)
   {
-    if (storage.LoadFields_type_sectionNameHash(blockIndex) == searchValue)
+    if (spStorage->LoadFields_type_sectionNameHash(blockIndex) == searchValue)
       return blockIndex;
   }
 
@@ -2091,7 +2094,7 @@ uint16_t EEPROMSectionSystem::FindSectionHeadByNextBlock(uint16_t const startBlo
   if ((state == States::not_mounted) || (state == States::defect))
     throw InsufficientStateError("EEPROMSectionSystem::FindSectionHeadByNextBlock", state, States::ro_mount);
 
-  uint16_t const nBlocks = storage.GetnBlocks();
+  uint16_t const nBlocks = spStorage->GetnBlocks();
 
   if (startBlockIndex >= nBlocks)
     throw std::invalid_argument("EEPROMSectionSystem::FindSectionHeadByNextBlock: startBlockIndex invalid");
@@ -2099,10 +2102,10 @@ uint16_t EEPROMSectionSystem::FindSectionHeadByNextBlock(uint16_t const startBlo
   CommonBlockHead_t const * const pHead = static_cast<CommonBlockHead_t*>(pMem);
   for (uint16_t blockIndex = startBlockIndex; blockIndex < nBlocks; blockIndex++)
   {
-    if (storage.LoadField_nextBlock(blockIndex) == nextBlock)
+    if (spStorage->LoadField_nextBlock(blockIndex) == nextBlock)
     {
       // load the whole block, double check nextBlock, and finish if type is BlockTypes::sectionHead
-      storage.LoadBlock(blockIndex, pMem, storage.GetBlockSize());
+      spStorage->LoadBlock(blockIndex, pMem, spStorage->GetBlockSize());
       if (pHead->nextBlock != nextBlock)
         throw VolatileStorageError(blockIndex);
 
@@ -2239,7 +2242,7 @@ uint16_t EEPROMSectionSystem::LoadNextFreeBlock(void* const pMem) const
 
   // load next block
   uint16_t const nextBlockIndex = pCommonHead->nextBlock;
-  storage.LoadBlock(nextBlockIndex, pMem, storage.GetBlockSize());
+  spStorage->LoadBlock(nextBlockIndex, pMem, spStorage->GetBlockSize());
 
   // check block type
   if (static_cast<BlockTypes>(pCommonHead->type) != BlockTypes::freeBlock)
@@ -2319,7 +2322,7 @@ void EEPROMSectionSystem::AddChainOfBlocksToListOfFreeBlocks(uint16_t const star
   bool first = true;
   uint16_t seqNb = 0;
   uint16_t currIndex = startIndex;
-  uint16_t maxCycles = storage.GetnBlocks() - 1U;
+  uint16_t maxCycles = spStorage->GetnBlocks() - 1U;
 
   // loop until the end of the chain of blocks is reached
   while (currIndex != NOBLOCK)
@@ -2329,7 +2332,7 @@ void EEPROMSectionSystem::AddChainOfBlocksToListOfFreeBlocks(uint16_t const star
       throw BlockLinkageError("EEPROMSectionSystem::AddChainOfBlocksToListOfFreeBlocks: Loop limit", currIndex);
 
     // load block
-    storage.LoadBlock(currIndex, pMem, storage.GetBlockSize());
+    spStorage->LoadBlock(currIndex, pMem, spStorage->GetBlockSize());
     CommonBlockHead_t const * const pHead = static_cast<CommonBlockHead_t*>(pMem);
 
     // check block type
@@ -2432,7 +2435,7 @@ void EEPROMSectionSystem::AddBlockToListOfFreeBlocks(uint16_t const blockIndex, 
     throw InsufficientStateError("EEPROMSectionSystem::AddBlockToListOfFreeBlocks", state, States::checking);
 
   // cannot have more free blocks than existing in the whole storage (minus Section System Info Block)
-  if (nFreeBlocks >= storage.GetnBlocks() - 1U)
+  if (nFreeBlocks >= spStorage->GetnBlocks() - 1U)
     throw std::logic_error("EEPROMSectionSystem::AddBlockToListOfFreeBlocks: Free blocks would exceed number of blocks");
 
   // determine the total number of writes already done to the block that shall be deleted
@@ -2443,7 +2446,7 @@ void EEPROMSectionSystem::AddBlockToListOfFreeBlocks(uint16_t const blockIndex, 
   {
     // Load the value of the field "totalNbOfWrites" from the storage.
     // This includes check of parameter "blockIndex".
-    nWrites = storage.LoadField_totalNbOfWrites(blockIndex);
+    nWrites = spStorage->LoadField_totalNbOfWrites(blockIndex);
   }
 
   // allocate memory for a common header and a CRC from the stack
@@ -2460,7 +2463,7 @@ void EEPROMSectionSystem::AddBlockToListOfFreeBlocks(uint16_t const blockIndex, 
 
   // Write the just created header into the storage block that shall be added to the end of the
   // list of free blocks. This includes check of parameter "blockIndex".
-  storage.StoreBlock(blockIndex, memFromStack, auxMemFromStack, false);
+  spStorage->StoreBlock(blockIndex, memFromStack, auxMemFromStack, false);
 
   // update stuff for tracking free blocks
   if (nFreeBlocks == 0)
@@ -2472,7 +2475,7 @@ void EEPROMSectionSystem::AddBlockToListOfFreeBlocks(uint16_t const blockIndex, 
     // load the common header of the current last block in the list of free blocks and check it
     try
     {
-      storage.LoadBlock(freeBlockListEndIdx, memFromStack, sizeof(memFromStack));
+      spStorage->LoadBlock(freeBlockListEndIdx, memFromStack, sizeof(memFromStack));
 
       if (static_cast<BlockTypes>(pHead->type) != BlockTypes::freeBlock)
         throw BlockLinkageError("EEPROMSectionSystem::AddBlockToListOfFreeBlocks: Last free block has unexpected type", freeBlockListEndIdx);
@@ -2489,7 +2492,7 @@ void EEPROMSectionSystem::AddBlockToListOfFreeBlocks(uint16_t const blockIndex, 
     // update header and store the block back to the storage
     pHead->nextBlock = blockIndex;
     ON_SCOPE_EXIT(markDefect) { state = States::defect; };
-    storage.StoreBlock(freeBlockListEndIdx, memFromStack, auxMemFromStack, false);
+    spStorage->StoreBlock(freeBlockListEndIdx, memFromStack, auxMemFromStack, false);
     ON_SCOPE_EXIT_DISMISS(markDefect);
   }
 
@@ -2542,7 +2545,7 @@ void EEPROMSectionSystem::AddBlocksToListOfFreeBlocks(uint16_t const * const pBl
     throw InsufficientStateError("EEPROMSectionSystem::AddChainOfBlocksToListOfFreeBlocks", state, States::checking);
 
   // cannot have more blocks than existing (minus Section System Info Block) in the list of free blocks
-  if (static_cast<uint32_t>(nFreeBlocks) + n >= storage.GetnBlocks())
+  if (static_cast<uint32_t>(nFreeBlocks) + n >= spStorage->GetnBlocks())
     throw std::logic_error("EEPROMSectionSystem::AddBlocksToListOfFreeBlocks: Free blocks would exceed number of blocks");
 
   // allocate memory from stack
@@ -2560,7 +2563,7 @@ void EEPROMSectionSystem::AddBlocksToListOfFreeBlocks(uint16_t const * const pBl
   {
     // Load the value of the field "totalNbOfWrites" from storage. This
     // also checks pBlockIndexList[i].
-    uint32_t const nWrites = storage.LoadField_totalNbOfWrites(pBlockIndexList[i]);
+    uint32_t const nWrites = spStorage->LoadField_totalNbOfWrites(pBlockIndexList[i]);
 
     // complete the prepared header for the free block
     pHead->totalNbOfWrites = nWrites;
@@ -2570,7 +2573,7 @@ void EEPROMSectionSystem::AddBlocksToListOfFreeBlocks(uint16_t const * const pBl
       pHead->nextBlock = NOBLOCK;
 
     // write the header into the storage
-    storage.StoreBlock(pBlockIndexList[i], memFromStack, auxMemFromStack, true);
+    spStorage->StoreBlock(pBlockIndexList[i], memFromStack, auxMemFromStack, true);
   }
 
   // update stuff for management of free blocks
@@ -2581,7 +2584,7 @@ void EEPROMSectionSystem::AddBlocksToListOfFreeBlocks(uint16_t const * const pBl
     // load the common header of the current last block in the list of free blocks and check it
     try
     {
-      storage.LoadBlock(freeBlockListEndIdx, memFromStack, sizeof(memFromStack));
+      spStorage->LoadBlock(freeBlockListEndIdx, memFromStack, sizeof(memFromStack));
 
       if (static_cast<BlockTypes>(pHead->type) != BlockTypes::freeBlock)
         throw BlockLinkageError("EEPROMSectionSystem::AddBlocksToListOfFreeBlocks: Last free block has unexpected type", freeBlockListEndIdx);
@@ -2598,7 +2601,7 @@ void EEPROMSectionSystem::AddBlocksToListOfFreeBlocks(uint16_t const * const pBl
     // update header and store the block back to the storage
     pHead->nextBlock = pBlockIndexList[0];
     ON_SCOPE_EXIT(markDefect) { state = States::defect; };
-    storage.StoreBlock(freeBlockListEndIdx, memFromStack, auxMemFromStack, false);
+    spStorage->StoreBlock(freeBlockListEndIdx, memFromStack, auxMemFromStack, false);
     ON_SCOPE_EXIT_DISMISS(markDefect);
   }
 
@@ -2659,7 +2662,7 @@ uint16_t EEPROMSectionSystem::GetBlockFromListOfFreeBlocks(uint32_t* const pTota
   // load the first block from the list of free blocks and check its type
   try
   {
-    storage.LoadBlock(freeBlockListHeadIdx, memFromStack, sizeof(memFromStack));
+    spStorage->LoadBlock(freeBlockListHeadIdx, memFromStack, sizeof(memFromStack));
     if (static_cast<BlockTypes>(pHead->type) != BlockTypes::freeBlock)
       throw BlockLinkageError("EEPROMSectionSystem::GetBlockFromListOfFreeBlocks: First free block has unexpected type", freeBlockListHeadIdx);
 
@@ -2760,7 +2763,7 @@ bool EEPROMSectionSystem::GetBlocksFromListOfFreeBlocks(uint16_t* pBlockIndexLis
 
     try
     {
-      storage.LoadBlock(currIdx, memFromStack, sizeof(memFromStack));
+      spStorage->LoadBlock(currIdx, memFromStack, sizeof(memFromStack));
       if (static_cast<BlockTypes>(pHead->type) != BlockTypes::freeBlock)
         throw BlockLinkageError("EEPROMSectionSystem::GetBlocksFromListOfFreeBlocks: Free block has unexpected type", currIdx);
     }
@@ -2837,7 +2840,7 @@ void EEPROMSectionSystem::StoreBlock(uint16_t const blockIndex, void* const pMem
     throw InsufficientStateError("EEPROMSectionSystem::StoreBlock", state, States::mounted);
 
   ON_SCOPE_EXIT(markDefect) { state = States::defect; };
-  storage.StoreBlock(blockIndex, pMem, nullptr, false);
+  spStorage->StoreBlock(blockIndex, pMem, nullptr, false);
   ON_SCOPE_EXIT_DISMISS(markDefect);
 }
 

@@ -12,7 +12,7 @@
 
 #include "gpcc/src/file_systems/linux_fs/internal/tools.hpp"
 #include "gpcc/src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
-#include "gpcc/src/file_systems/exceptions.hpp"
+#include <gpcc/file_systems/exceptions.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gtest/gtest.h"
 #include <sys/types.h>

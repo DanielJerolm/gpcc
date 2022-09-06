@@ -9,7 +9,7 @@
 */
 
 #include "FakeEEPROM.hpp"
-#include "gpcc/src/file_systems/EEPROMSectionSystem/EEPROMSectionSystem.hpp"
+#include <gpcc/file_systems/eeprom_section_system/EEPROMSectionSystem.hpp>
 #include "gtest/gtest.h"
 #include <cstdint>
 #include <cstddef>

@@ -9,8 +9,9 @@
 */
 
 #include "BlockAccessor.hpp"
+#include <gpcc/file_systems/eeprom_section_system/EEPROMSectionSystem.hpp>
 #include <gpcc/crc/simple_crc.hpp>
-#include "gpcc/src/file_systems/EEPROMSectionSystem/Exceptions.hpp"
+#include <gpcc/file_systems/eeprom_section_system/exceptions.hpp>
 #include <gpcc/compiler/definitions.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
@@ -83,7 +84,7 @@ BlockAccessor::BlockAccessor(StdIf::IRandomAccessStorage & _storage, uint32_t co
   }
 
   // _sizeInStorage invalid?
-  if (sizeInStorage < MinimumBlockSize * MinimumNbOfBlocks)
+  if (sizeInStorage < EEPROMSectionSystem::MinimumBlockSize * EEPROMSectionSystem::MinimumNbOfBlocks)
     throw std::invalid_argument("BlockAccessor::BlockAccessor: _sizeInStorage too small");
 
   // Specified memory block out of bounds? Accessible via 32-bit addresses?
@@ -171,8 +172,8 @@ void BlockAccessor::SetBlockSize(uint16_t const _blockSize)
   size_t const pageSize = storage.GetPageSize();
 
   // check _blockSize
-  if ((_blockSize < MinimumBlockSize) ||
-      (_blockSize > MaximumBlockSize))
+  if ((_blockSize < EEPROMSectionSystem::MinimumBlockSize) ||
+      (_blockSize > EEPROMSectionSystem::MaximumBlockSize))
     throw std::invalid_argument("BlockAccessor::SetBlockSize: _blockSize");
 
   // page-alignment required?
@@ -188,8 +189,8 @@ void BlockAccessor::SetBlockSize(uint16_t const _blockSize)
   // calculate resulting number of blocks and check it
   size_t const _nBlocks = sizeInStorage / _blockSize;
 
-  if ((_nBlocks < MinimumNbOfBlocks) ||
-      (_nBlocks > MaximumNbOfBlocks))
+  if ((_nBlocks < EEPROMSectionSystem::MinimumNbOfBlocks) ||
+      (_nBlocks > EEPROMSectionSystem::MaximumNbOfBlocks))
     throw std::invalid_argument("BlockAccessor::SetBlockSize: Invalid number of blocks");
 
   // OK, adopt the new settings

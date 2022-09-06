@@ -13,7 +13,7 @@
 #include "../EEPROMSectionSystem/EEPROMSectionSystemTestFixture.hpp"
 #include "../EEPROMSectionSystem/RandomData.hpp"
 #include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"
-#include "gpcc/src/file_systems/CLI/ISFCLICommands.hpp"
+#include <gpcc/file_systems/cli/ISFCLICommands.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>

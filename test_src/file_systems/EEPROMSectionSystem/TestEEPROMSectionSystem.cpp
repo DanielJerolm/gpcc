@@ -9,9 +9,10 @@
 */
 
 #include "EEPROMSectionSystemTestFixture.hpp"
+#include "gpcc/src/file_systems/eeprom_section_system/internal/EEPROMSectionSystemInternals.hpp"
 #include "RandomData.hpp"
-#include "gpcc/src/file_systems/EEPROMSectionSystem/Exceptions.hpp"
-#include "gpcc/src/file_systems/exceptions.hpp"
+#include <gpcc/file_systems/eeprom_section_system/exceptions.hpp>
+#include <gpcc/file_systems/exceptions.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/Stream/IStreamReader.hpp"
 #include "gpcc/src/Stream/IStreamWriter.hpp"
@@ -164,7 +165,7 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Construction_StartAddress)
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Construction_Size)
 {
-  FakeEEPROM fakeStorageMBS(1024, EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize);
+  FakeEEPROM fakeStorageMBS(1024, gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize);
   FakeEEPROM fakeStorage64(1024, 64);
 
   std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT;
@@ -180,9 +181,9 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Construction_Size)
   ASSERT_THROW(spUUT.reset(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage64, 0, 1000)), std::invalid_argument);
 
   // minimum number of blocks
-  ASSERT_THROW(spUUT.reset(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorageMBS, 0, 2 * EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize)), std::invalid_argument);
-  ASSERT_NO_THROW(spUUT.reset(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorageMBS, 0, 3 * EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize)));
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize, 1));
+  ASSERT_THROW(spUUT.reset(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorageMBS, 0, 2 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize)), std::invalid_argument);
+  ASSERT_NO_THROW(spUUT.reset(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorageMBS, 0, 3 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize)));
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize, 1));
 
   // out-of-bounds
   ASSERT_THROW(spUUT.reset(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage64, 64, 1024)), std::invalid_argument);
@@ -195,7 +196,7 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_DeathTestsF, Destruction_BadState)
 
   std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage64, 0, 960));
   spUUT->Format(64);
-  EXPECT_DEATH(spUUT.reset(), ".*gpcc/src/file_systems/EEPROMSectionSystem/EEPROMSectionSystem.cpp.*");
+  EXPECT_DEATH(spUUT.reset(), ".*gpcc/src/file_systems/eeprom_section_system/EEPROMSectionSystem.cpp.*");
 
   spUUT->Unmount();
 }
@@ -343,14 +344,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_BadBlockSize
   UpdateCRC(0);
   ASSERT_THROW(uut.MountStep1(), std::invalid_argument);
 
-  pBuffer[0] = MinimumBlockSize;
+  pBuffer[0] = gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize;
   pBuffer[1] = 0;
   fakeStorage.Write(offsetof(SectionSystemInfoBlock_t, blockSize), 2, pBuffer);
   UpdateCRC(0);
   ASSERT_THROW(uut.MountStep1(), EEPROMSectionSystem::StorageSizeMismatchError);
 
-  pBuffer[0] = (2 * MaximumBlockSize) & 0xFFU;
-  pBuffer[1] = (2 * MaximumBlockSize) >> 8U;
+  pBuffer[0] = (2 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize) & 0xFFU;
+  pBuffer[1] = (2 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize) >> 8U;
   fakeStorage.Write(offsetof(SectionSystemInfoBlock_t, blockSize), 2, pBuffer);
   UpdateCRC(0);
   ASSERT_THROW(uut.MountStep1(), EEPROMSectionSystem::InvalidHeaderError);
@@ -399,15 +400,15 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_BlockSizeTooSmall)
   FakeEEPROM fakeStorage(1024, 0);
   std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, 1024));
 
-  ASSERT_THROW(spUUT->Format(MinimumBlockSize-1), std::invalid_argument);
+  ASSERT_THROW(spUUT->Format(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize-1), std::invalid_argument);
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_MinimumBlockSize)
 {
   FakeEEPROM fakeStorage(1024, 0);
   std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, 1024));
 
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), MinimumBlockSize, 1));
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), MinimumBlockSize + 1, 1));
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize, 1));
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize + 1, 1));
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_BlockSizeTooLarge)
 {
@@ -415,7 +416,7 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_BlockSizeTooLarge)
   FakeEEPROM fakeStorage(size, 0);
   std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
 
-  ASSERT_THROW(spUUT->Format(MaximumBlockSize+1), std::invalid_argument);
+  ASSERT_THROW(spUUT->Format(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize+1), std::invalid_argument);
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_MaximumBlockSize)
 {
@@ -423,27 +424,27 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_MaximumBlockSize)
   FakeEEPROM fakeStorage(size, 0);
   std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
 
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), MaximumBlockSize, 1));
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), MaximumBlockSize-1, 1));
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize, 1));
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize-1, 1));
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_BlockSizeLargerThanPageSize)
 {
   size_t const size = 2*1024;
-  FakeEEPROM fakeStorage(size, MinimumBlockSize);
+  FakeEEPROM fakeStorage(size, gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize);
   std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
 
-  ASSERT_THROW(spUUT->Format(MinimumBlockSize+1), std::invalid_argument);
+  ASSERT_THROW(spUUT->Format(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize+1), std::invalid_argument);
 
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), MinimumBlockSize, 1));
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize, 1));
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_PageSizeNotDividedByBlockSize)
 {
   size_t const size = 2*1024;
-  FakeEEPROM fakeStorage(size, 2 * MinimumBlockSize);
+  FakeEEPROM fakeStorage(size, 2 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize);
   std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
 
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), MinimumBlockSize, 0));
-  ASSERT_THROW(spUUT->Format(MinimumBlockSize+1), std::invalid_argument);
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize, 0));
+  ASSERT_THROW(spUUT->Format(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize+1), std::invalid_argument);
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_StorageHasNoPageSize)
 {
@@ -451,26 +452,26 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_StorageHasNoPageSize)
   FakeEEPROM fakeStorage(size, 0);
   std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
 
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), MinimumBlockSize+1, 1));
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize+1, 1));
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_ResultingNbOfBlocksTooSmall)
 {
-  FakeEEPROM fakeStorage(3 * MinimumBlockSize, 0);
+  FakeEEPROM fakeStorage(3 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize, 0);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, 3 * MinimumBlockSize));
+  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, 3 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize));
 
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), MinimumBlockSize, 1));
-  ASSERT_THROW(BasicTest_FormatWriteRead(spUUT.get(), MinimumBlockSize + 1, 0), std::invalid_argument);
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize, 1));
+  ASSERT_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize + 1, 0), std::invalid_argument);
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_ResultingNbOfBlocksTooLarge)
 {
-  size_t const size = 2 * MaximumNbOfBlocks * MinimumBlockSize;
+  size_t const size = 2 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumNbOfBlocks * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize;
   FakeEEPROM fakeStorage(size, 0);
 
   std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
 
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), MinimumBlockSize * 2, 0));
-  ASSERT_THROW(BasicTest_FormatWriteRead(spUUT.get(), MinimumBlockSize, 0), std::invalid_argument);
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize * 2, 0));
+  ASSERT_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize, 0), std::invalid_argument);
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_TypicalEEPROM64kB)
 {

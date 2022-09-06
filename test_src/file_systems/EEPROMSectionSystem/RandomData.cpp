@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/file_systems/EEPROMSectionSystem/EEPROMSectionSystem.hpp"
+#include <gpcc/file_systems/eeprom_section_system/EEPROMSectionSystem.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gpcc/src/Stream/IStreamReader.hpp"
 #include "gpcc/src/Stream/IStreamWriter.hpp"

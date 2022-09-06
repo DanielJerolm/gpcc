@@ -8,10 +8,10 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "ISFCLICommands.hpp"
+#include <gpcc/file_systems/cli/ISFCLICommands.hpp>
 #include <gpcc/cli/CLI.hpp>
-#include "gpcc/src/file_systems/IFileStorage.hpp"
-#include "gpcc/src/file_systems/exceptions.hpp"
+#include <gpcc/file_systems/IFileStorage.hpp>
+#include <gpcc/file_systems/exceptions.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/string/tools.hpp>
 #include <cstddef>

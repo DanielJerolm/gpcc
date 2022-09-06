@@ -10,8 +10,10 @@
 
 #include "SectionWriter.hpp"
 #include "EEPROMSectionSystemInternals.hpp"
-#include "../EEPROMSectionSystem.hpp"
-#include "gpcc/src/file_systems/EEPROMSectionSystem/Exceptions.hpp"
+#include "FreeBlockListBackup.hpp"
+#include "BlockAccessor.hpp"
+#include <gpcc/file_systems/eeprom_section_system/EEPROMSectionSystem.hpp>
+#include <gpcc/file_systems/eeprom_section_system/exceptions.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
@@ -49,7 +51,7 @@ SectionWriter::SectionWriter(EEPROMSectionSystem & _ESS,
 , wrPtr(spMem.get() + sizeof(DataBlock_t))
 , nbOfBitsWritten(0)
 , bitData(0)
-, remainingBytesInCurrentBlock(_ESS.storage.GetBlockSize() - (sizeof(DataBlock_t) + sizeof(uint16_t)))
+, remainingBytesInCurrentBlock(_ESS.spStorage->GetBlockSize() - (sizeof(DataBlock_t) + sizeof(uint16_t)))
 /**
  * \brief Constructor.
  *
@@ -90,7 +92,7 @@ SectionWriter::SectionWriter(EEPROMSectionSystem & _ESS,
   if (!spMem)
     throw std::invalid_argument("SectionWriter::SectionWriter: !_spMem");
 
-  pESS->storage.LoadBlock(nextBlockIndex, spMem.get(), pESS->storage.GetBlockSize());
+  pESS->spStorage->LoadBlock(nextBlockIndex, spMem.get(), pESS->spStorage->GetBlockSize());
 }
 SectionWriter::SectionWriter(SectionWriter && other) noexcept
 : gpcc::Stream::StreamWriterBase(std::move(other))
@@ -510,7 +512,7 @@ void SectionWriter::StoreCurrentBlockAndReserveNextBlock(void)
     osal::MutexLocker mutexLocker(pESS->mutex);
 
     // get storage properties
-    uint16_t const blockSize = pESS->storage.GetBlockSize();
+    uint16_t const blockSize = pESS->spStorage->GetBlockSize();
 
     // allocate next free block
     auto const fbl_backup = pESS->GetFreeBlockListBackup();
@@ -620,13 +622,13 @@ void SectionWriter::CloseAnOpenSectionWriter(void)
     if (nbOfBitsWritten != 0)
       PushBitsPlusGap();
 
-    uint16_t const blockSize = pESS->storage.GetBlockSize();
+    uint16_t const blockSize = pESS->spStorage->GetBlockSize();
 
     // store currently written block
     StoreCurrentBlock(blockSize, NOBLOCK);
 
     // load the block that is foreseen to become the new section head
-    pESS->storage.LoadBlock(sectionHeadIndex, spMem.get(), blockSize);
+    pESS->spStorage->LoadBlock(sectionHeadIndex, spMem.get(), blockSize);
 
     // create a new section head
     SectionHeadBlock_t* const pHead = static_cast<SectionHeadBlock_t*>(static_cast<void*>(spMem.get()));

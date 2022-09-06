@@ -9,9 +9,10 @@
 */
 
 #include <gpcc/crc/simple_crc.hpp>
-#include "gpcc/src/file_systems/EEPROMSectionSystem/internal/BlockAccessor.hpp"
-#include "gpcc/src/file_systems/EEPROMSectionSystem/internal/EEPROMSectionSystemInternals.hpp"
-#include "gpcc/src/file_systems/EEPROMSectionSystem/Exceptions.hpp"
+#include "gpcc/src/file_systems/eeprom_section_system/internal/BlockAccessor.hpp"
+#include "gpcc/src/file_systems/eeprom_section_system/internal/EEPROMSectionSystemInternals.hpp"
+#include <gpcc/file_systems/eeprom_section_system/EEPROMSectionSystem.hpp>
+#include <gpcc/file_systems/eeprom_section_system/exceptions.hpp>
 #include "../FakeEEPROM.hpp"
 #include "gtest/gtest.h"
 #include <limits>
@@ -173,8 +174,8 @@ GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_TestFixture::GPCC_Fi
 }
 void GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_TestFixture::SetUp(void)
 {
-  ASSERT_TRUE(MinimumBlockSize <= 64);
-  ASSERT_TRUE(MaximumBlockSize >= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize >= 64);
   uut.SetBlockSize(64);
 
   eeprom.Write(0,   sizeof(testBlock_SectionSystemInfo), testBlock_SectionSystemInfo);
@@ -257,7 +258,7 @@ bool GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_TestFixture::Ve
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, Creation1)
 {
   // test creation with standard parameters
-  ASSERT_TRUE(MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
 
   FakeEEPROM eeprom(1024, 64);
   BlockAccessor uut1(eeprom, 0, 512);
@@ -267,7 +268,7 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, Creation
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, Creation2)
 {
   // test creation with no page size specified for underlying storage
-  ASSERT_TRUE(MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
 
   FakeEEPROM eeprom(1024, 0);
   BlockAccessor uut1(eeprom, 0, 512);
@@ -278,7 +279,7 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, Creation
 {
   // check bad page alignment of start address in storage
 
-  ASSERT_TRUE(MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
 
   FakeEEPROM eeprom(1024, 64);
 
@@ -289,7 +290,7 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, Creation
 {
   // check bad page alignment of size in storage
 
-  ASSERT_TRUE(MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
 
   FakeEEPROM eeprom(1024, 64);
 
@@ -298,7 +299,7 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, Creation
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, Creation_PageAlignmentDontCare)
 {
   // check behaviour if no page size specified for underlying storage
-  ASSERT_TRUE(MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
 
   FakeEEPROM eeprom(1024, 0);
 
@@ -311,17 +312,17 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, Creation
 
   FakeEEPROM eeprom(1024, 0);
 
-  EXPECT_THROW(BlockAccessor uut(eeprom, 0, MinimumBlockSize * MinimumNbOfBlocks - 1U), std::invalid_argument);
-  EXPECT_NO_THROW(BlockAccessor uut(eeprom, 0, MinimumBlockSize * MinimumNbOfBlocks));
+  EXPECT_THROW(BlockAccessor uut(eeprom, 0, gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumNbOfBlocks - 1U), std::invalid_argument);
+  EXPECT_NO_THROW(BlockAccessor uut(eeprom, 0, gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumNbOfBlocks));
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, Creation_MemRangeOutOf32Bit)
 {
   // check behaviour if memory range occupied in storage exceeds 32bit address space
-  ASSERT_TRUE(MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
 
   FakeEEPROM eeprom(1024, 64);
 
-  EXPECT_THROW(BlockAccessor uut(eeprom, std::numeric_limits<uint32_t>::max() - MinimumBlockSize * MinimumNbOfBlocks + 1, MinimumBlockSize * MinimumNbOfBlocks), std::invalid_argument);
+  EXPECT_THROW(BlockAccessor uut(eeprom, std::numeric_limits<uint32_t>::max() - gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumNbOfBlocks + 1, gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumNbOfBlocks), std::invalid_argument);
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, Creation_MemRangeOutOfStorage)
 {
@@ -329,13 +330,13 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, Creation
 
   FakeEEPROM eeprom(1024, 0);
 
-  EXPECT_THROW(BlockAccessor uut(eeprom, 1024 - MinimumBlockSize * MinimumNbOfBlocks + 1, MinimumBlockSize * MinimumNbOfBlocks), std::invalid_argument);
-  EXPECT_NO_THROW(BlockAccessor uut(eeprom, 1024 - MinimumBlockSize * MinimumNbOfBlocks, MinimumBlockSize * MinimumNbOfBlocks));
+  EXPECT_THROW(BlockAccessor uut(eeprom, 1024 - gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumNbOfBlocks + 1, gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumNbOfBlocks), std::invalid_argument);
+  EXPECT_NO_THROW(BlockAccessor uut(eeprom, 1024 - gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumNbOfBlocks, gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumNbOfBlocks));
 }
 
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, GetSizeInStorage)
 {
-  ASSERT_TRUE(MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
 
   FakeEEPROM eeprom(1024,64);
   BlockAccessor uut(eeprom, 0, 512);
@@ -344,7 +345,7 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, GetSizeI
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, GetPageSize)
 {
-  ASSERT_TRUE(MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
 
   FakeEEPROM eeprom(1024,64);
   BlockAccessor uut(eeprom, 0, 512);
@@ -357,14 +358,14 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, SetBlock
   FakeEEPROM eeprom(1024, 0);
   BlockAccessor uut(eeprom, 0, 1024);
 
-  ASSERT_THROW(uut.SetBlockSize(MinimumBlockSize - 1U), std::invalid_argument);
-  ASSERT_NO_THROW(uut.SetBlockSize(MinimumBlockSize));
+  ASSERT_THROW(uut.SetBlockSize(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize - 1U), std::invalid_argument);
+  ASSERT_NO_THROW(uut.SetBlockSize(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize));
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, SetBlockSize_BetweenMinMax)
 {
   // check: set block size between minimum and maximum
-  ASSERT_TRUE(MinimumBlockSize < 64);
-  ASSERT_TRUE(MaximumBlockSize > 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize < 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize > 64);
 
   FakeEEPROM eeprom(1024, 128);
   BlockAccessor uut(eeprom, 0, 1024);
@@ -374,8 +375,8 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, SetBlock
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, SetBlockSize_GreaterThanPageSize)
 {
   // check: block size larger than page size of the underlying storage
-  ASSERT_TRUE(MinimumBlockSize <= 64);
-  ASSERT_TRUE(MaximumBlockSize > 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize > 64);
 
   FakeEEPROM eeprom(1024, 64);
   BlockAccessor uut(eeprom, 0, 1024);
@@ -387,20 +388,20 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, SetBlock
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, SetBlockSize_Max)
 {
   // check: block size larger than page size of the underlying storage
-  ASSERT_TRUE(MinimumBlockSize <= 64);
-  ASSERT_TRUE(MaximumBlockSize > 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize > 64);
 
-  FakeEEPROM eeprom(2 * MaximumBlockSize * MinimumNbOfBlocks, 0);
-  BlockAccessor uut(eeprom, 0, 2 * MaximumBlockSize * MinimumNbOfBlocks);
+  FakeEEPROM eeprom(2 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumNbOfBlocks, 0);
+  BlockAccessor uut(eeprom, 0, 2 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumNbOfBlocks);
 
-  ASSERT_THROW(uut.SetBlockSize(MaximumBlockSize + 1), std::invalid_argument);
-  ASSERT_NO_THROW(uut.SetBlockSize(MaximumBlockSize));
+  ASSERT_THROW(uut.SetBlockSize(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize + 1), std::invalid_argument);
+  ASSERT_NO_THROW(uut.SetBlockSize(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize));
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, SetBlockSize_Alignment)
 {
   // check: block size violates page size of underlying storage
-  ASSERT_TRUE(MinimumBlockSize <= 64);
-  ASSERT_TRUE(MaximumBlockSize >= 128);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize >= 128);
 
   FakeEEPROM eeprom(1024, 128);
   BlockAccessor uut(eeprom, 0, 1024);
@@ -412,8 +413,8 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, SetBlock
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, SetBlockSize_NoAlignmentRequired)
 {
   // check: block size set and no page size specified by underlying storage
-  ASSERT_TRUE(MinimumBlockSize <= 64);
-  ASSERT_TRUE(MaximumBlockSize >= 70);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize >= 70);
 
   FakeEEPROM eeprom(1024, 0);
   BlockAccessor uut(eeprom, 0, 1024);
@@ -423,35 +424,35 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, SetBlock
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, SetBlockSize_MinNbOfBlocks)
 {
   // check: resulting number of blocks too small
-  ASSERT_TRUE(MinimumBlockSize <= 64);
-  ASSERT_TRUE(2*MinimumBlockSize <= MaximumBlockSize);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
+  ASSERT_TRUE(2*gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize);
 
-  FakeEEPROM eeprom(2 * MinimumBlockSize * MinimumNbOfBlocks, 0);
+  FakeEEPROM eeprom(2 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumNbOfBlocks, 0);
 
-  BlockAccessor uut1(eeprom, 0, MinimumBlockSize * MinimumNbOfBlocks);
-  ASSERT_NO_THROW(uut1.SetBlockSize(MinimumBlockSize));
+  BlockAccessor uut1(eeprom, 0, gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumNbOfBlocks);
+  ASSERT_NO_THROW(uut1.SetBlockSize(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize));
 
-  BlockAccessor uut2(eeprom, 0, (2*MinimumBlockSize) * MinimumNbOfBlocks - 1);
-  ASSERT_THROW(uut2.SetBlockSize(2*MinimumBlockSize), std::invalid_argument);
+  BlockAccessor uut2(eeprom, 0, (2*gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize) * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumNbOfBlocks - 1);
+  ASSERT_THROW(uut2.SetBlockSize(2*gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize), std::invalid_argument);
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, SetBlockSize_MaxNbOfBlocks)
 {
   // check: resulting number of blocks too large
-  ASSERT_TRUE(MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
 
-  FakeEEPROM eeprom((MaximumNbOfBlocks + 1) * MinimumBlockSize, 0);
+  FakeEEPROM eeprom((gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumNbOfBlocks + 1) * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize, 0);
 
-  BlockAccessor uut1(eeprom, 0, MaximumNbOfBlocks * MinimumBlockSize);
-  ASSERT_NO_THROW(uut1.SetBlockSize(MinimumBlockSize));
+  BlockAccessor uut1(eeprom, 0, gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumNbOfBlocks * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize);
+  ASSERT_NO_THROW(uut1.SetBlockSize(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize));
 
-  BlockAccessor uut2(eeprom, 0, (MaximumNbOfBlocks + 1) * MinimumBlockSize);
-  ASSERT_THROW(uut2.SetBlockSize(MinimumBlockSize), std::invalid_argument);
+  BlockAccessor uut2(eeprom, 0, (gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumNbOfBlocks + 1) * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize);
+  ASSERT_THROW(uut2.SetBlockSize(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize), std::invalid_argument);
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, SetBlockSize_NoUpdateInCaseOfError)
 {
   // check: block size is not altered in case of an error
-  ASSERT_TRUE(MinimumBlockSize <= 64);
-  ASSERT_TRUE(MaximumBlockSize >= 128);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize >= 128);
 
   FakeEEPROM eeprom(1024, 0);
   BlockAccessor uut(eeprom, 0, 1024);
@@ -476,8 +477,8 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, GetBlock
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, GetBlockSize)
 {
-  ASSERT_TRUE(MinimumBlockSize <= 64);
-  ASSERT_TRUE(MaximumBlockSize >= 128);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize >= 128);
 
   FakeEEPROM eeprom(1024, 0);
   BlockAccessor uut(eeprom, 0, 1024);
@@ -496,8 +497,8 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, GetnBloc
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, GetnBlocks)
 {
-  ASSERT_TRUE(MinimumBlockSize <= 64);
-  ASSERT_TRUE(MaximumBlockSize >= 128);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize >= 128);
 
   FakeEEPROM eeprom(1024, 0);
   BlockAccessor uut(eeprom, 0, 1024);
@@ -516,8 +517,8 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, GetMaxSe
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, GetMaxSectionNameLength)
 {
-  ASSERT_TRUE(MinimumBlockSize <= 64);
-  ASSERT_TRUE(MaximumBlockSize >= 128);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize >= 128);
 
   FakeEEPROM eeprom(1024, 0);
   BlockAccessor uut(eeprom, 0, 1024);
@@ -528,8 +529,8 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, GetMaxSe
 
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, LoadFieldFuncs_NotConfigured)
 {
-  ASSERT_TRUE(MinimumBlockSize <= 64);
-  ASSERT_TRUE(MaximumBlockSize >= 128);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize >= 128);
 
   FakeEEPROM eeprom(1024, 0);
   BlockAccessor uut(eeprom, 0, 1024);
@@ -544,8 +545,8 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, LoadFiel
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, LoadFieldFuncs)
 {
-  ASSERT_TRUE(MinimumBlockSize <= 64);
-  ASSERT_TRUE(MaximumBlockSize >= 128);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize >= 128);
 
   FakeEEPROM eeprom(1024, 0);
   BlockAccessor uut(eeprom, 0, 1024);
@@ -560,8 +561,8 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, LoadFiel
 
 TEST(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_Tests, LoadBlock_NotConfigured)
 {
-  ASSERT_TRUE(MinimumBlockSize <= 64);
-  ASSERT_TRUE(MaximumBlockSize >= 128);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize >= 128);
 
   FakeEEPROM eeprom(1024, 0);
   BlockAccessor uut(eeprom, 0, 1024);
@@ -979,8 +980,8 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_TestFixture, 
 
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_internal_BlockAccessor_TestFixture, StoreBlock_NotConfigured)
 {
-  ASSERT_TRUE(MinimumBlockSize <= 64);
-  ASSERT_TRUE(MaximumBlockSize >= 128);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize <= 64);
+  ASSERT_TRUE(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize >= 128);
 
   FakeEEPROM _eeprom(1024, 0);
   BlockAccessor _uut(_eeprom, 0, 1024);
