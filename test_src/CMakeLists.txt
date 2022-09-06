@@ -76,15 +76,15 @@ target_sources(${PROJECT_NAME}_testcases
                execution/cyclic/UUT_TTCEStartStopCtrl.cpp
                execution/cyclic/WaitUntilStoppedHelper.cpp
                fakes/cli/FakeTerminal.cpp
-               file_systems/CLI/TestISFCLICommands.cpp
-               file_systems/EEPROMSectionSystem/CLI/TestESSCLICommands.cpp
-               file_systems/EEPROMSectionSystem/EEPROMSectionSystemTestFixture.cpp
-               file_systems/EEPROMSectionSystem/FakeEEPROM.cpp
-               file_systems/EEPROMSectionSystem/FakeEEPROMUndo.cpp
-               file_systems/EEPROMSectionSystem/internal/TestBlockAccessor.cpp
-               file_systems/EEPROMSectionSystem/RandomData.cpp
-               file_systems/EEPROMSectionSystem/TestEEPROMSectionSystem.cpp
-               file_systems/EEPROMSectionSystem/TestFakeEEPROM.cpp
+               file_systems/cli/TestIFSCLICommands.cpp
+               file_systems/eeprom_section_system/cli/TestESSCLICommands.cpp
+               file_systems/eeprom_section_system/EEPROMSectionSystemTestFixture.cpp
+               file_systems/eeprom_section_system/FakeEEPROM.cpp
+               file_systems/eeprom_section_system/FakeEEPROMUndo.cpp
+               file_systems/eeprom_section_system/internal/TestBlockAccessor.cpp
+               file_systems/eeprom_section_system/RandomData.cpp
+               file_systems/eeprom_section_system/TestEEPROMSectionSystem.cpp
+               file_systems/eeprom_section_system/TestFakeEEPROM.cpp
                file_systems/linux_fs/TestFileStorage.cpp
                file_systems/linux_fs/Test_tools.cpp
                file_systems/linux_fs/TestUnitTestDirProvider.cpp

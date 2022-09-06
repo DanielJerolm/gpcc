@@ -10,7 +10,7 @@
 
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/cli/Command.hpp>
-#include "gpcc/test_src/file_systems/EEPROMSectionSystem/FakeEEPROM.hpp"
+#include "gpcc/test_src/file_systems/eeprom_section_system/FakeEEPROM.hpp"
 #include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>

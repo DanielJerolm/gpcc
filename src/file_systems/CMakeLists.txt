@@ -3,7 +3,7 @@
 # -------------------------------------
 target_sources(${PROJECT_NAME}
                PRIVATE
-               cli/ISFCLICommands.cpp
+               cli/IFSCLICommands.cpp
                eeprom_section_system/cli/ESSCLICommands.cpp
                eeprom_section_system/EEPROMSectionSystem.cpp
                eeprom_section_system/internal/BlockAccessor.cpp

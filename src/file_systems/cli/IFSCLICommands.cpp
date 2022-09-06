@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include <gpcc/file_systems/cli/ISFCLICommands.hpp>
+#include <gpcc/file_systems/cli/IFSCLICommands.hpp>
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/file_systems/IFileStorage.hpp>
 #include <gpcc/file_systems/exceptions.hpp>
