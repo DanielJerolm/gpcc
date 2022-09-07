@@ -11,7 +11,7 @@
 #ifndef RAMBLOCK_HPP_201806202217
 #define RAMBLOCK_HPP_201806202217
 
-#include "gpcc/src/StdIf/IRandomAccessStorage.hpp"
+#include <gpcc/stdif/storage/IRandomAccessStorage.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <vector>
 

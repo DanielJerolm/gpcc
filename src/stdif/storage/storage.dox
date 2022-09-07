@@ -5,12 +5,12 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2019 Daniel Jerolm
+    Copyright (C) 2022 Daniel Jerolm
 */
 
 /**
  * @ingroup GPCC_STDIF
- * @defgroup GPCC_STDIF_SERIAL Serial IO
+ * @defgroup GPCC_STDIF_STORAGE Storage
  *
- * \brief Common interfaces related to serial IO operations (e.g. UART devices).
+ * \brief Interfaces and CLI commands related to storage devices.
  */

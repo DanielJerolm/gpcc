@@ -14,10 +14,11 @@
 #include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include "gpcc/src/StdIf/IRandomAccessStorage.hpp"
-#include "gpcc/src/StdIf/IRandomAccessStorageCLI.hpp"
+#include <gpcc/stdif/storage/IRandomAccessStorage.hpp>
+#include <gpcc/stdif/storage/IRandomAccessStorageCLI.hpp>
 #include "gtest/gtest.h"
 #include <functional>
+#include <iostream>
 #include <cstdint>
 #include <cstddef>
 
@@ -29,8 +30,8 @@ namespace StdIf
 class GPCC_StdIf_IRandomAccessStorageCLI_Tests: public testing::Test
 {
   public:
-    static const size_t storageSize     = 4*1024;
-    static const size_t storagePageSize = 32;
+    static const size_t storageSize     = 4U * 1024UL;
+    static const size_t storagePageSize = 32U;
 
     GPCC_StdIf_IRandomAccessStorageCLI_Tests(void);
     virtual ~GPCC_StdIf_IRandomAccessStorageCLI_Tests(void);
@@ -50,11 +51,12 @@ class GPCC_StdIf_IRandomAccessStorageCLI_Tests: public testing::Test
 GPCC_StdIf_IRandomAccessStorageCLI_Tests::GPCC_StdIf_IRandomAccessStorageCLI_Tests(void)
 : Test()
 , fakeStorage(storageSize, storagePageSize)
-, terminal(80, 8)
-, cli(terminal, 80, 8, "CLI", nullptr)
+, terminal(80U, 8U)
+, cli(terminal, 80U, 8U, "CLI", nullptr)
 , cliNeedsStop(false)
 {
 }
+
 GPCC_StdIf_IRandomAccessStorageCLI_Tests::~GPCC_StdIf_IRandomAccessStorageCLI_Tests(void)
 {
 }
@@ -77,10 +79,19 @@ void GPCC_StdIf_IRandomAccessStorageCLI_Tests::SetUp(void)
                                                       std::placeholders::_2,
                                                       &fakeStorage)));
 }
+
 void GPCC_StdIf_IRandomAccessStorageCLI_Tests::TearDown(void)
 {
   if (cliNeedsStop)
     cli.Stop();
+
+  if (HasFailure())
+  {
+    std::cout << "*****************************************************" << std::endl
+              << "Content of fake terminal's screen" << std::endl
+              << "*****************************************************" << std::endl;
+    std::cout << terminal.GetScreenContent() << std::endl;
+  }
 }
 
 void GPCC_StdIf_IRandomAccessStorageCLI_Tests::Login(void)
@@ -120,11 +131,11 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_WrongNbOfParams0)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS",
-   "Error: 2 parameters expected!",
-   "Try 'rdeeprom help'",
-   ">",
    "",
-   ""
+   "Invalid arguments. Try 'ReadRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   ">"
   };
 
   terminal.Input("login");
@@ -142,11 +153,11 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_WrongNbOfParams1)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0x0",
-   "Error: 2 parameters expected!",
-   "Try 'rdeeprom help'",
-   ">",
    "",
-   ""
+   "Invalid arguments. Try 'ReadRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   ">"
   };
 
   terminal.Input("login");
@@ -164,11 +175,11 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_WrongNbOfParams3)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0x0 0 0",
-   "Error: 2 parameters expected!",
-   "Try 'rdeeprom help'",
-   ">",
    "",
-   ""
+   "Invalid arguments. Try 'ReadRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   ">"
   };
 
   terminal.Input("login");
@@ -186,11 +197,11 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_AddressNotHex)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0 0",
-   "Error: Invalid parameter(s)",
-   ">",
    "",
-   "",
-   ""
+   "Invalid arguments. Try 'ReadRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   ">"
   };
 
   terminal.Input("login");
@@ -205,14 +216,14 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_AddressBadChars)
 {
   char const * expected[8] =
   {
-   "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0xXYZ 0",
-   "Error: Invalid parameter(s)",
-   ">",
    "",
-   "",
-   ""
+   "Invalid arguments. Try 'ReadRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   "1: stoll",
+   ">"
   };
 
   terminal.Input("login");
@@ -230,11 +241,11 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_NbOfBytesNegative)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0x0 -1",
-   "Error: Invalid parameter(s)",
-   ">",
    "",
-   "",
-   ""
+   "Invalid arguments. Try 'ReadRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   ">"
   };
 
   terminal.Input("login");
@@ -249,14 +260,14 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_NbOfBytesBadChars)
 {
   char const * expected[8] =
   {
-   "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0x0 XYZ",
-   "Error: Invalid parameter(s)",
-   ">",
    "",
-   "",
-   ""
+   "Invalid arguments. Try 'ReadRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   "1: stoll",
+   ">"
   };
 
   terminal.Input("login");
@@ -274,11 +285,11 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_NbOfBytesTooLarge)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0x0 1025",
-   "Error: Invalid parameter(s)",
-   ">",
    "",
-   "",
-   ""
+   "Invalid arguments. Try 'ReadRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   ">"
   };
 
   terminal.Input("login");
@@ -296,10 +307,10 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_AddressOutOf32Bit)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0xFFFFFFF0 17",
-   "Error: Invalid parameter(s)",
+   "",
+   "Invalid arguments. Try 'ReadRAS help'.",
+   "Address out of bounds",
    ">",
-   "",
-   "",
    ""
   };
 
@@ -318,10 +329,10 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_AddressIn32BitButOutOfBoun
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0xFFFFFFF0 16",
-   "Error: Attempt to read out of bounds",
+   "",
+   "Invalid arguments. Try 'ReadRAS help'.",
+   "Address out of bounds",
    ">",
-   "",
-   "",
    ""
   };
 
@@ -490,10 +501,10 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_BeyondEndOfStorage1)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0xFFF 2",
-   "Error: Attempt to read out of bounds",
+   "",
+   "Invalid arguments. Try 'ReadRAS help'.",
+   "Address out of bounds",
    ">",
-   "",
-   "",
    ""
   };
 
@@ -515,10 +526,10 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_BeyondEndOfStorage2)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0x1000 1",
-   "Error: Attempt to read out of bounds",
+   "",
+   "Invalid arguments. Try 'ReadRAS help'.",
+   "Address out of bounds",
    ">",
-   "",
-   "",
    ""
   };
 
@@ -541,11 +552,11 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_WrongNbOfParams0)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">WriteRAS",
-   "Error: At least 2 parameters expected!",
-   "Try 'wreeprom help'",
-   ">",
    "",
-   ""
+   "Invalid arguments. Try 'WriteRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   ">"
   };
 
   terminal.Input("login");
@@ -565,11 +576,11 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_WrongNbOfParams1)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">WriteRAS 0x0",
-   "Error: At least 2 parameters expected!",
-   "Try 'wreeprom help'",
-   ">",
    "",
-   ""
+   "Invalid arguments. Try 'WriteRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   ">"
   };
 
   terminal.Input("login");
@@ -589,11 +600,11 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_AddressNotHex)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">WriteRAS 0 0",
-   "Error: Invalid parameter(s)",
-   ">",
    "",
-   "",
-   ""
+   "Invalid arguments. Try 'WriteRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   ">"
   };
 
   terminal.Input("login");
@@ -610,14 +621,14 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_AddressBadChars)
 {
   char const * expected[8] =
   {
-   "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">WriteRAS 0xXYZ 0",
-   "Error: Invalid parameter(s)",
-   ">",
    "",
-   "",
-   ""
+   "Invalid arguments. Try 'WriteRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   "1: stoll",
+   ">"
   };
 
   terminal.Input("login");
@@ -637,10 +648,10 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_AddressOutOf32Bit)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">WriteRAS 0xFFFFFFFF 0 0",
-   "Error: Invalid parameter(s)",
+   "",
+   "Invalid arguments. Try 'WriteRAS help'.",
+   "Address out of bounds",
    ">",
-   "",
-   "",
    ""
   };
 
@@ -661,10 +672,10 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_AddressIn32BitButOutOfBou
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">WriteRAS 0xFFFFFFFF 0",
-   "Error: Attempt to write out of bounds",
+   "",
+   "Invalid arguments. Try 'WriteRAS help'.",
+   "Address out of bounds",
    ">",
-   "",
-   "",
    ""
   };
 
@@ -835,10 +846,10 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BeyondEndOfStorage1)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">WriteRAS 0xFFF 5 6",
-   "Error: Attempt to write out of bounds",
+   "",
+   "Invalid arguments. Try 'WriteRAS help'.",
+   "Address out of bounds",
    ">",
-   "",
-   "",
    ""
   };
 
@@ -859,10 +870,10 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BeyondEndOfStorage2)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">WriteRAS 0x1000 5",
-   "Error: Attempt to write out of bounds",
+   "",
+   "Invalid arguments. Try 'WriteRAS help'.",
+   "Address out of bounds",
    ">",
-   "",
-   "",
    ""
   };
 
@@ -880,14 +891,14 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat1)
 {
   char const * expected[8] =
   {
-   "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">WriteRAS 0x100 -5",
-   "Error: Invalid parameter(s)",
-   ">",
    "",
-   "",
-   ""
+   "Invalid arguments. Try 'WriteRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   "1: AnyStringToU8",
+   ">"
   };
 
   terminal.Input("login");
@@ -904,14 +915,14 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat2)
 {
   char const * expected[8] =
   {
-   "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">WriteRAS 0x100 -0x05",
-   "Error: Invalid parameter(s)",
-   ">",
    "",
-   "",
-   ""
+   "Invalid arguments. Try 'WriteRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   "1: AnyStringToU8",
+   ">"
   };
 
   terminal.Input("login");
@@ -928,14 +939,14 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat3)
 {
   char const * expected[8] =
   {
-   "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">WriteRAS 0x100 0xABCD",
-   "Error: Invalid parameter(s)",
-   ">",
    "",
-   "",
-   ""
+   "Invalid arguments. Try 'WriteRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   "1: AnyStringToU8",
+   ">"
   };
 
   terminal.Input("login");
@@ -952,14 +963,14 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat4)
 {
   char const * expected[8] =
   {
-   "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">WriteRAS 0x100 257",
-   "Error: Invalid parameter(s)",
-   ">",
    "",
-   "",
-   ""
+   "Invalid arguments. Try 'WriteRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   "1: AnyStringToU8",
+   ">"
   };
 
   terminal.Input("login");
@@ -976,14 +987,14 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat5)
 {
   char const * expected[8] =
   {
-   "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">WriteRAS 0x100 'AB'",
-   "Error: Invalid parameter(s)",
-   ">",
    "",
-   "",
-   ""
+   "Invalid arguments. Try 'WriteRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   "1: AnyStringToU8",
+   ">"
   };
 
   terminal.Input("login");
@@ -1000,14 +1011,14 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat6)
 {
   char const * expected[8] =
   {
-   "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">WriteRAS 0x100 A",
-   "Error: Invalid parameter(s)",
-   ">",
    "",
-   "",
-   ""
+   "Invalid arguments. Try 'WriteRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   "1: stol",
+   ">"
   };
 
   terminal.Input("login");
@@ -1024,14 +1035,14 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat7)
 {
   char const * expected[8] =
   {
-   "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">WriteRAS 0x100 \"A\"",
-   "Error: Invalid parameter(s)",
-   ">",
    "",
-   "",
-   ""
+   "Invalid arguments. Try 'WriteRAS help'.",
+   "Details:",
+   "0: User entered invalid arguments.",
+   "1: stol",
+   ">"
   };
 
   terminal.Input("login");

@@ -946,7 +946,7 @@ void StringToCANOpenEncodedData(std::string const & s, size_t const sizeInBit, D
       case DataType::bit7:
       case DataType::bit8:
       {
-        uint8_t const bits = gpcc::string::AnyStringToU8(s);
+        uint8_t const bits = gpcc::string::AnyNumberToU8(s);
         if (bits > ((1UL << sizeInBit) - 1U))
           throw std::invalid_argument("Value too large");
 

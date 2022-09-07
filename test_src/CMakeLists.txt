@@ -145,8 +145,8 @@ target_sources(${PROJECT_NAME}_testcases
                resource_management/objects/TestLargeDynamicNamedRWLock.cpp
                resource_management/objects/TestSmallDynamicNamedRWLock.cpp
                resource_management/semaphores/TestNonBlockingSemaphore.cpp
-               StdIf/I2C/TestII2C_Tools.cpp
-               StdIf/TestIRandomAccessStorageCLI.cpp
+               stdif/i2c/Test_tools.cpp
+               stdif/storage/TestIRandomAccessStorageCLI.cpp
                Stream/TestIStreamReader.cpp
                Stream/TestIStreamWriter.cpp
                Stream/TestMemStreamReader.cpp

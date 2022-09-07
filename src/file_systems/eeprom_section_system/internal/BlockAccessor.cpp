@@ -15,7 +15,7 @@
 #include <gpcc/compiler/definitions.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include "gpcc/src/StdIf/IRandomAccessStorage.hpp"
+#include <gpcc/stdif/storage/IRandomAccessStorage.hpp>
 #include <limits>
 #include <stdexcept>
 #include <cstddef>

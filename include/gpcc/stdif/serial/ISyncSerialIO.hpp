@@ -19,7 +19,7 @@ namespace StdIf {
 
 /**
  * \ingroup GPCC_STDIF_SERIAL
- * \brief Interface for device drivers offering simple synchronous serial IO, e.g. UART devices.
+ * \brief Interface for device drivers offering simple synchronous serial I/O, e.g. UART peripherals.
  *
  * - - -
  *
@@ -35,7 +35,12 @@ class ISyncSerialIO
 
   protected:
     ISyncSerialIO(void) = default;
+    ISyncSerialIO(ISyncSerialIO const &) = delete;
+    ISyncSerialIO(ISyncSerialIO &&) = default;
     virtual ~ISyncSerialIO(void) = default;
+
+    ISyncSerialIO& operator=(ISyncSerialIO const &) = delete;
+    ISyncSerialIO& operator=(ISyncSerialIO &&) = delete;
 };
 
 /**
@@ -51,16 +56,17 @@ class ISyncSerialIO
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - Transmission may be incomplete (not all `size` bytes may have been transmitted)
+ * - Transmission may be incomplete (not all `size` bytes may have been transmitted).
  *
  * __Thread cancellation safety:__\n
  * Basic guarantee:
- * - Transmission may be incomplete (not all `size` bytes may have been transmitted)
+ * - Transmission may be incomplete (not all `size` bytes may have been transmitted).
  *
  * - - -
  *
  * \param pData
  * Pointer to a buffer containing the data that shall be transmitted.
+ *
  * \param size
  * Number of bytes that shall be transmitted.\n
  * Zero is allowed.
@@ -79,24 +85,27 @@ class ISyncSerialIO
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - An undefined number of bytes might have been read from the UART and written into the buffer referenced by `pData`.
+ * - An undefined number of bytes may have been read from the device and written into the buffer referenced by `pData`.
  *
  * __Thread cancellation safety:__\n
  * Basic guarantee:
- * - An undefined number of bytes might have been read from the UART and written into the buffer referenced by `pData`.
+ * - An undefined number of bytes may have been read from the device and written into the buffer referenced by `pData`.
  *
  * - - -
  *
  * \param pData
  * Pointer to a buffer into which the received data shall be written.
+ *
  * \param size
  * Maximum number of bytes that shall be received.\n
  * The size of the block of memory referenced by `pData` must be equal to this or larger than this.\n
  * If this is zero, then this method returns immediately returning zero.
+ *
  * \param pOverflow
- * Pointer to a boolean that will be set to true if an overflow occurred in the receiving path
- * of the UART hardware or inside the driver since the last call to this method.\n
+ * Pointer to a boolean that will be set to true if an overflow occurred in the receiving path of the hardware or inside
+ * the driver since the last call to this method.\n
  * This may be nullptr if this information is not interesting.
+ *
  * \param timeout_ms
  * Timeout in milliseconds.\n
  * This method either returns after reception of `size` bytes or after `timeout_ms` milliseconds have passed.\n
@@ -105,13 +114,14 @@ class ISyncSerialIO
  * _Special values:_\n
  * 0  = no timeout (check for available data, then return immediately)\n
  * -1 = infinite timeout
+ *
  * \return
  * Number of bytes received.
  */
 
 /**
  * \fn virtual void ISyncSerialIO::FlushRxBuffer
- * \brief Flushes all buffers in the receive path.
+ * \brief Flushes all buffers in the receive path of the hardware and the driver.
  *
  * - - -
  *
@@ -120,11 +130,11 @@ class ISyncSerialIO
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - Flush may be incomplete
+ * - Flush may be incomplete.
  *
  * __Thread cancellation safety:__\n
  * Basic guarantee:
- * - Flush may be incomplete
+ * - Flush may be incomplete.
  */
 
 } // namespace StdIf

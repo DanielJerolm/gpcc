@@ -8,8 +8,8 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/StdIf/I2C/II2C_Master_Driver.hpp"
-#include "gpcc/src/StdIf/I2C/II2C_Tools.hpp"
+#include <gpcc/stdif/i2c/II2C_Master.hpp>
+#include <gpcc/stdif/i2c/tools.hpp>
 #include "gtest/gtest.h"
 #include <cstring>
 
@@ -32,17 +32,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, InvalidAddress1)
   uint8_t data1[4];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2;
   d1.address = 0x81;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = false;
 
   d2.address = 0x11;
   d2.writeNotRead = true;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -55,17 +55,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, InvalidAddress2)
   uint8_t data1[4];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = false;
 
   d2.address = 0x81;
   d2.writeNotRead = true;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -78,17 +78,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, ReadGCA1)
   uint8_t data1[4];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2;
   d1.address = 0x0;
   d1.writeNotRead = false;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = false;
 
   d2.address = 0x11;
   d2.writeNotRead = true;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -101,17 +101,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, ReadGCA2)
   uint8_t data1[4];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = false;
 
   d2.address = 0x0;
   d2.writeNotRead = false;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -124,17 +124,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, DataNullptr1)
   uint8_t data1[4];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = nullptr;
+  d1.pData = nullptr;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = false;
 
   d2.address = 0x11;
   d2.writeNotRead = true;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -147,17 +147,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, DataNullptr2)
   uint8_t data1[4];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = false;
 
   d2.address = 0x11;
   d2.writeNotRead = true;
-  d2.data = nullptr;
+  d2.pData = nullptr;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -170,17 +170,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, ZeroBytes1)
   uint8_t data1[4];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = 0;
   d1.pNext = &d2;
   d1.scattered = false;
 
   d2.address = 0x11;
   d2.writeNotRead = true;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -193,17 +193,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, ZeroBytes2)
   uint8_t data1[4];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = false;
 
   d2.address = 0x11;
   d2.writeNotRead = true;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = 0;
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -216,17 +216,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, TooManyBytes1)
   uint8_t data1[8];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = false;
 
   d2.address = 0x11;
   d2.writeNotRead = true;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -239,17 +239,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, TooManyBytes2)
   uint8_t data1[4];
   uint8_t data2[8];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = false;
 
   d2.address = 0x11;
   d2.writeNotRead = true;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -261,10 +261,10 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, pNextToSelf1)
   // this test checks proper behavior if the next-pointer in the first descriptor references to itself
   uint8_t data1[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1;
+  II2C_Master::stI2CTransferDescriptor_t d1;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d1;
   d1.scattered = false;
@@ -277,17 +277,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, pNextToSelf2)
   uint8_t data1[4];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = false;
 
   d2.address = 0x11;
   d2.writeNotRead = true;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = &d2;
   d2.scattered = false;
@@ -300,17 +300,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, ScatteredTransferAddressChanges)
   uint8_t data1[4];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = true;
 
   d2.address = 0x12;
   d2.writeNotRead = true;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -323,17 +323,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, ScatteredTransferRWChanges)
   uint8_t data1[4];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = true;
 
   d2.address = 0x11;
   d2.writeNotRead = false;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -344,10 +344,10 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_SingleRead)
 {
   uint8_t data1[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1;
+  II2C_Master::stI2CTransferDescriptor_t d1;
   d1.address = 0x11;
   d1.writeNotRead = false;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = nullptr;
   d1.scattered = false;
@@ -358,10 +358,10 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_SingleWrite)
 {
   uint8_t data1[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1;
+  II2C_Master::stI2CTransferDescriptor_t d1;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = nullptr;
   d1.scattered = false;
@@ -373,17 +373,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_ScatteredSingleRead)
   uint8_t data1[4];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1,d2;
+  II2C_Master::stI2CTransferDescriptor_t d1,d2;
   d1.address = 0x11;
   d1.writeNotRead = false;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = true;
 
   d2.address = 0x11;
   d2.writeNotRead = false;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -395,17 +395,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_ScatteredSingleWrite)
   uint8_t data1[4];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1,d2;
+  II2C_Master::stI2CTransferDescriptor_t d1,d2;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = true;
 
   d2.address = 0x11;
   d2.writeNotRead = true;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -417,17 +417,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_DoubleRead)
   uint8_t data1[4];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1,d2;
+  II2C_Master::stI2CTransferDescriptor_t d1,d2;
   d1.address = 0x11;
   d1.writeNotRead = false;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = false;
 
   d2.address = 0x12;
   d2.writeNotRead = false;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -439,17 +439,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_DoubleWrite)
   uint8_t data1[4];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1,d2;
+  II2C_Master::stI2CTransferDescriptor_t d1,d2;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = false;
 
   d2.address = 0x12;
   d2.writeNotRead = true;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -461,17 +461,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_MixedNonScatteredRW1)
   uint8_t data1[4];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1,d2;
+  II2C_Master::stI2CTransferDescriptor_t d1,d2;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = false;
 
   d2.address = 0x12;
   d2.writeNotRead = false;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -483,17 +483,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_MixedNonScatteredRW2)
   uint8_t data1[4];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1,d2;
+  II2C_Master::stI2CTransferDescriptor_t d1,d2;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = false;
 
   d2.address = 0x11;
   d2.writeNotRead = false;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -508,38 +508,38 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_MixedRW)
   uint8_t data4[4];
   uint8_t data5[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1,d2,d3,d4,d5;
+  II2C_Master::stI2CTransferDescriptor_t d1,d2,d3,d4,d5;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = false;
 
   d2.address = 0x11;
   d2.writeNotRead = false;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = &d3;
   d2.scattered = true;
 
   d3.address = 0x11;
   d3.writeNotRead = false;
-  d3.data = data3;
+  d3.pData = data3;
   d3.nBytes = sizeof(data3);
   d3.pNext = &d4;
   d3.scattered = false;
 
   d4.address = 0x12;
   d4.writeNotRead = true;
-  d4.data = data4;
+  d4.pData = data4;
   d4.nBytes = sizeof(data4);
   d4.pNext = &d5;
   d4.scattered = false;
 
   d5.address = 0x13;
   d5.writeNotRead = false;
-  d5.data = data5;
+  d5.pData = data5;
   d5.nBytes = sizeof(data5);
   d5.pNext = nullptr;
   d5.scattered = false;
@@ -552,17 +552,17 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_WriteGCA)
   uint8_t data1[4];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2;
   d1.address = 0x0;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = false;
 
   d2.address = 0x0;
   d2.writeNotRead = true;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -575,17 +575,17 @@ TEST(GPCC_StdIf_I2CTools_DetermineTotalTransferSize_Tests, MaxSizeExceeded1)
   uint8_t data1[8];
   uint8_t data2[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = true;
 
   d2.address = 0x11;
   d2.writeNotRead = true;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -597,17 +597,17 @@ TEST(GPCC_StdIf_I2CTools_DetermineTotalTransferSize_Tests, MaxSizeExceeded2)
   uint8_t data1[4];
   uint8_t data2[8];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = true;
 
   d2.address = 0x11;
   d2.writeNotRead = true;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = nullptr;
   d2.scattered = false;
@@ -618,10 +618,10 @@ TEST(GPCC_StdIf_I2CTools_DetermineTotalTransferSize_Tests, OK_SingleTransfer)
 {
   uint8_t data1[4];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1;
+  II2C_Master::stI2CTransferDescriptor_t d1;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = nullptr;
   d1.scattered = false;
@@ -634,24 +634,24 @@ TEST(GPCC_StdIf_I2CTools_DetermineTotalTransferSize_Tests, OK_SingleScatteredTra
   uint8_t data2[12];
   uint8_t data3[8];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2, d3;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2, d3;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = true;
 
   d2.address = 0x11;
   d2.writeNotRead = true;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = &d3;
   d2.scattered = true;
 
   d3.address = 0x11;
   d3.writeNotRead = true;
-  d3.data = data3;
+  d3.pData = data3;
   d3.nBytes = sizeof(data3);
   d3.pNext = nullptr;
   d3.scattered = false;
@@ -664,24 +664,24 @@ TEST(GPCC_StdIf_I2CTools_DetermineTotalTransferSize_Tests, OK_MultiTransfers)
   uint8_t data2[8];
   uint8_t data3[6];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2, d3;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2, d3;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = false;
 
   d2.address = 0x11;
   d2.writeNotRead = true;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = &d3;
   d2.scattered = false;
 
   d3.address = 0x11;
   d3.writeNotRead = true;
-  d3.data = data3;
+  d3.pData = data3;
   d3.nBytes = sizeof(data3);
   d3.pNext = nullptr;
   d3.scattered = false;
@@ -694,24 +694,24 @@ TEST(GPCC_StdIf_I2CTools_DetermineTotalTransferSize_Tests, OK_MultiTransfersFirs
   uint8_t data2[8];
   uint8_t data3[6];
 
-  II2C_Master_Driver::stI2CTransferDescriptor_t d1, d2, d3;
+  II2C_Master::stI2CTransferDescriptor_t d1, d2, d3;
   d1.address = 0x11;
   d1.writeNotRead = true;
-  d1.data = data1;
+  d1.pData = data1;
   d1.nBytes = sizeof(data1);
   d1.pNext = &d2;
   d1.scattered = true;
 
   d2.address = 0x11;
   d2.writeNotRead = true;
-  d2.data = data2;
+  d2.pData = data2;
   d2.nBytes = sizeof(data2);
   d2.pNext = &d3;
   d2.scattered = false;
 
   d3.address = 0x11;
   d3.writeNotRead = true;
-  d3.data = data3;
+  d3.pData = data3;
   d3.nBytes = sizeof(data3);
   d3.pNext = nullptr;
   d3.scattered = false;

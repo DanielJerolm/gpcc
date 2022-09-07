@@ -8,16 +8,13 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#ifndef SRC_GPCC_STDIF_I2C_II2C_MASTER_DRIVER_EXCEPTIONS_HPP_
-#define SRC_GPCC_STDIF_I2C_II2C_MASTER_DRIVER_EXCEPTIONS_HPP_
+#ifndef EXCEPTIONS_HPP_202209062103
+#define EXCEPTIONS_HPP_202209062103
 
 #include <stdexcept>
 
-namespace gpcc
-{
-
-namespace StdIf
-{
+namespace gpcc  {
+namespace StdIf {
 
 /**
  * \ingroup GPCC_STDIF_I2C
@@ -44,7 +41,7 @@ class I2CBusTimeout : public I2CBusError
 
 /**
  * \ingroup GPCC_STDIF_I2C
- * \brief Exception thrown if an (single) I2C bus master looses arbitration.
+ * \brief Exception thrown if a (single) I2C bus master looses arbitration.
  */
 class I2CBusArbitrationLost : public I2CBusError
 {
@@ -67,4 +64,4 @@ class I2CBusGeneralError : public I2CBusError
 } // namespace StdIf
 } // namespace gpcc
 
-#endif // SRC_GPCC_STDIF_I2C_II2C_MASTER_DRIVER_EXCEPTIONS_HPP_
+#endif // EXCEPTIONS_HPP_202209062103

@@ -74,13 +74,15 @@ void TriggerProvider::Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result const _desi
 }
 
 // --> gpcc::StdIf::IIRQ2ThreadWakeup
-void TriggerProvider::SignalFromISR(void) noexcept
+bool TriggerProvider::SignalFromISR(void) noexcept
 {
   gpcc::osal::Panic("Unexpected call to TriggerProvider::SignalFromISR");
+  return false;
 }
-void TriggerProvider::SignalFromThread(void)
+bool TriggerProvider::SignalFromThread(void)
 {
   gpcc::osal::Panic("Unexpected call to TriggerProvider::SignalFromThread");
+  return false;
 }
 
 gpcc::StdIf::IIRQ2ThreadWakeup::Result TriggerProvider::Wait(void)

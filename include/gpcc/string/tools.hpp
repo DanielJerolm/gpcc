@@ -54,6 +54,7 @@ std::string ToDecAndHex(uint32_t const value, uint8_t const width);
 uint8_t DecimalToU8(std::string const & s);
 uint32_t DecimalToU32(std::string const & s);
 int32_t DecimalToI32(std::string const & s);
+uint8_t AnyNumberToU8(std::string const & s);
 uint8_t AnyStringToU8(std::string const & s);
 uint32_t AnyStringToU32(std::string const & s);
 char AnyStringToChar(std::string const & s);

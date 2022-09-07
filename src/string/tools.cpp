@@ -1560,6 +1560,85 @@ int32_t DecimalToI32(std::string const & s)
  * This function is intended to be used in function interpreting user input. It provides
  * maximum flexibility to the user when a `uint8_t` shall be entered.
  *
+ * If single ASCII characters shall be accepted, consider using @ref AnyStringToU8().
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::out_of_range       Result does not fit into `uint8_t`.
+ *
+ * \throws std::invalid_argument   `s` is invalid.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String that shall be converted to an `uint8_t`.
+ * \return
+ * `uint8_t` value.
+ */
+uint8_t AnyNumberToU8(std::string const & s)
+{
+  long value;
+  size_t n;
+  if (StartsWith(s, " "))
+  {
+    throw std::invalid_argument("AnyNumberToU8");
+  }
+  else if (StartsWith(s, "0x"))
+  {
+    value = std::stol(s, &n, 16);
+
+    if (n != s.size())
+      throw std::invalid_argument("AnyNumberToU8");
+  }
+  else if (StartsWith(s, "0b"))
+  {
+    value = std::stol(s.substr(2), &n, 2);
+
+    if (n != s.size() - 2U)
+      throw std::invalid_argument("AnyNumberToU8");
+  }
+  else if (StartsWith(s, "-"))
+  {
+    throw std::invalid_argument("AnyNumberToU8");
+  }
+  else
+  {
+    value = std::stol(s, &n, 10);
+
+    if (n != s.size())
+      throw std::invalid_argument("AnyNumberToU8");
+  }
+
+  if ((value < std::numeric_limits<uint8_t>::min()) || (value > std::numeric_limits<uint8_t>::max()))
+    throw std::out_of_range("AnyNumberToU8");
+
+  return static_cast<uint8_t>(value);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing any valid number representation (incl. single ASCII characters) into a value of
+ *        type `uint8_t`.
+ *
+ * The function accepts the following textual representations of data of type `uint8_t`:
+ * - Hex values: 0x12, 0xAB, 0xab; Range: 0x00..0xFF
+ * - Binary values: 0b00001000; Range: 0b00000000..0b11111111
+ * - Integer numbers: 1, 3, 5; Range: 0..255
+ * - Single ASCII characters in '': 'a', 'b', ''' -> '
+ * - Leading and trailing space characters are not allowed
+ *
+ * This function is intended to be used in function interpreting user input. It provides
+ * maximum flexibility to the user when a `uint8_t` shall be entered.
+ *
  * - - -
  *
  * __Thread safety:__\n
@@ -1607,6 +1686,13 @@ uint8_t AnyStringToU8(std::string const & s)
   else if (StartsWith(s, "-"))
   {
     throw std::invalid_argument("AnyStringToU8");
+  }
+  else if (StartsWith(s, "'"))
+  {
+    if ((s.length() != 3U) || (s[2] != '\''))
+      throw std::invalid_argument("AnyStringToU8");
+
+    return s[1];
   }
   else
   {

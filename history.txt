@@ -7,9 +7,19 @@ Next to do:
 
 - Header restructuring
   - [IP] Move public headers to include/gpcc
+  - [  ] Rename gpcc::StdIf
   - [  ] Check order of includes
+
+- Bugfix: AnyStringToU32 should be AnyNumberToU32
+
+- Options for enhancements identified during header restructuring:
   - [  ] Simplify TestBlockAccessor (long namespaces)
   - [  ] Simplify TestEEPROMSectionSystem (long namespaces)
+  - [  ] IRandomAccessStorageCLI.cpp
+         Provide more String2X functions and use them in CliCmdReadIRandomAccessStorage() and
+         CliCmdWriteIRandomAccessStorage()
+  - [  ] Unify doxygen (e.g. /fn at interface documentation)
+
 
 - COOD remote access
   ==================

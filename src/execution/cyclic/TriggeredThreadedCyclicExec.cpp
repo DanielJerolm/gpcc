@@ -12,7 +12,7 @@
 #include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
-#include "gpcc/src/StdIf/IIRQ2ThreadWakeup.hpp"
+#include <gpcc/stdif/notify/IIRQ2ThreadWakeup.hpp>
 #include <stdexcept>
 
 namespace gpcc {

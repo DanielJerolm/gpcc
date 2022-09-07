@@ -12,7 +12,7 @@
 #define ISYNCSERIALIO_TO_ITERMINAL_HPP_201712292136
 
 #include <gpcc/cli/ITerminal.hpp>
-#include "gpcc/src/StdIf/serial/ISyncSerialIO.hpp"
+#include <gpcc/stdif/serial/ISyncSerialIO.hpp>
 
 namespace gpcc {
 namespace cli  {

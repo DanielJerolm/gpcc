@@ -11,7 +11,7 @@
 #ifndef SRC_TESTS_FILESYSTEMS_EEPROMSECTIONSYSTEM_FAKEEEPROM_HPP_
 #define SRC_TESTS_FILESYSTEMS_EEPROMSECTIONSYSTEM_FAKEEEPROM_HPP_
 
-#include "gpcc/src/StdIf/IRandomAccessStorage.hpp"
+#include <gpcc/stdif/storage/IRandomAccessStorage.hpp>
 #include "FakeEEPROMUndo.hpp"
 #include <list>
 #include <memory>

@@ -13,7 +13,7 @@
 
 #include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/Mutex.hpp>
-#include "gpcc/src/StdIf/IIRQ2ThreadWakeup.hpp"
+#include <gpcc/stdif/notify/IIRQ2ThreadWakeup.hpp>
 #include <gpcc/time/TimeSpan.hpp>
 #include <cstdint>
 
@@ -63,8 +63,8 @@ class TriggerProvider final : public gpcc::StdIf::IIRQ2ThreadWakeup
 
 
     // --> gpcc::StdIf::IIRQ2ThreadWakeup
-    void SignalFromISR(void) noexcept override;
-    void SignalFromThread(void) override;
+    bool SignalFromISR(void) noexcept override;
+    bool SignalFromThread(void) override;
 
     gpcc::StdIf::IIRQ2ThreadWakeup::Result Wait(void) override;
     gpcc::StdIf::IIRQ2ThreadWakeup::Result WaitWithTimeout(gpcc::time::TimeSpan const & timeout) override;

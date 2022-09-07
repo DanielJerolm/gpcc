@@ -8,67 +8,65 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "IRandomAccessStorageCLI.hpp"
-#include "IRandomAccessStorage.hpp"
+#include <gpcc/stdif/storage/IRandomAccessStorageCLI.hpp>
+#include <gpcc/stdif/storage/IRandomAccessStorage.hpp>
 #include <gpcc/cli/CLI.hpp>
+#include <gpcc/cli/exceptions.hpp>
 #include <gpcc/string/tools.hpp>
 #include <limits>
 #include <vector>
 
-namespace gpcc
-{
-namespace StdIf
-{
+namespace gpcc  {
+namespace StdIf {
 
-void CliCmdReadIRandomAccessStorage(std::string const & restOfLine,
-                                    gpcc::cli::CLI & cli,
-                                    IRandomAccessStorage* const pRAS)
 /**
- * \ingroup GPCC_STDIF_CLI
+ * \ingroup GPCC_STDIF_STORAGE
  * \brief [CLI](@ref gpcc::cli::CLI) command for reading from an @ref IRandomAccessStorage interface.
  *
- * Usage example:
+ * Usage example for an EEPROM:
  * ~~~{.cpp}
  * using gpcc::cli::Command;
  * cli.AddCommand(Command::Create("rdeeprom", " 0xADDRESS n\n"\
- *                                             "Reads n bytes from EEPROM, starting at address 0xADDRESS and dumps\n"\
- *                                             "the data to the terminal.",
+ *                                             "Reads n (1..1024) bytes from EEPROM, starting at address 0xADDRESS\n"\
+ *                                             "and dumps the data to the terminal.",
  *                                std::bind(&gpcc::StdIf::CliCmdReadIRandomAccessStorage,
  *                                          std::placeholders::_1,
  *                                          std::placeholders::_2,
  *                                          pMyRASInterface)));
  * ~~~
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * This is thread-safe.
  *
  * __Exception safety:__\n
- * Basic exception safety:\n
+ * Basic guarantee:\n
  * - content of terminal's screen maybe incomplete
  *
  * __Thread cancellation safety:__\n
- * Deferred cancellation is safe, but:
+ * Basic guarantee:
  * - content of terminal's screen maybe incomplete
  *
- * ---
+ * - - -
  *
  * \param restOfLine
  * Arguments passed to the CLI command.
+ *
  * \param cli
  * `gpcc::cli::CLI` instance executing this.
+ *
  * \param pRAS
  * Pointer to the @ref IRandomAccessStorage interface accessed through this command handler.
  */
+void CliCmdReadIRandomAccessStorage(std::string const & restOfLine,
+                                    gpcc::cli::CLI & cli,
+                                    IRandomAccessStorage* const pRAS)
 {
   auto params = gpcc::string::Split(restOfLine, ' ', true);
 
-  if (params.size() != 2)
-  {
-    cli.WriteLine("Error: 2 parameters expected!\nTry 'rdeeprom help'");
-    return;
-  }
+  if (params.size() != 2U)
+    throw gpcc::cli::UserEnteredInvalidArgsError();
 
   // read parameters into "address" and "n"
   uint32_t address;
@@ -81,41 +79,41 @@ void CliCmdReadIRandomAccessStorage(std::string const & restOfLine,
 
     // address
     if (!gpcc::string::StartsWith(*it, "0x"))
-      throw std::exception();
+      throw gpcc::cli::UserEnteredInvalidArgsError();
 
     value = std::stoll((*it).substr(2), nullptr, 16);
     if ((value < 0) || (value > std::numeric_limits<uint32_t>::max()))
-      throw std::exception();
+      throw gpcc::cli::UserEnteredInvalidArgsError();
     address = value;
     ++it;
 
     // number of bytes
     value = std::stoll(*it);
-    if ((value < 0) || (value > 1024U))
-      throw std::exception();
+    if ((value < 0) || (value > 1024))
+      throw gpcc::cli::UserEnteredInvalidArgsError();
     n = value;
 
-    if (n == 0)
+    if (n == 0U)
       return;
 
     // check: address overflow?
     if (std::numeric_limits<uint32_t>::max() - address < n - 1U)
-      throw std::exception();
+      throw gpcc::cli::UserEnteredInvalidArgsError("Address out of bounds");
+  }
+  catch (gpcc::cli::UserEnteredInvalidArgsError const &)
+  {
+    throw;
   }
   catch (std::exception const &)
   {
-    cli.WriteLine("Error: Invalid parameter(s)");
-    return;
+    std::throw_with_nested(gpcc::cli::UserEnteredInvalidArgsError());
   }
 
   params.clear();
 
   // check "address" and "n" against properties of pRAS
   if (address + (n - 1U) >= pRAS->GetSize())
-  {
-    cli.WriteLine("Error: Attempt to read out of bounds");
-    return;
-  }
+    throw gpcc::cli::UserEnteredInvalidArgsError("Address out of bounds");
 
   // allocate buffer and read
   std::vector<uint8_t> buffer;
@@ -125,69 +123,70 @@ void CliCmdReadIRandomAccessStorage(std::string const & restOfLine,
   // print to CLI
   cli.WriteLine("Address     +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F 0123456789ABCDEF");
 
-  uint32_t offset = 0;
-  while (n != 0)
+  uint32_t offset = 0U;
+  while (n != 0U)
   {
     size_t bytes = n;
     if (bytes > 16U)
       bytes = 16U;
-    cli.WriteLine(gpcc::string::HexDump(address, buffer.data() + offset, bytes, 1, 16));
+    cli.WriteLine(gpcc::string::HexDump(address, buffer.data() + offset, bytes, 1U, 16U));
     n -= bytes;
     address += bytes;
     offset += bytes;
   }
 }
 
-void CliCmdWriteIRandomAccessStorage(std::string const & restOfLine,
-                                     gpcc::cli::CLI & cli,
-                                     IRandomAccessStorage* const pRAS)
 /**
- * \ingroup GPCC_STDIF_CLI
+ * \ingroup GPCC_STDIF_STORAGE
  * \brief [CLI](@ref gpcc::cli::CLI) command for writing to an @ref IRandomAccessStorage interface.
  *
- * Usage example:
+ * Usage example for an EEPROM:
  * ~~~{.cpp}
  * using gpcc::cli::Command;
  * cli.AddCommand(Command::Create("wreeprom", " 0xADDRESS [0x]Data1 [[0x]Data2 .. [0x]DataN]\n"\
- *                                            "Writes n bytes of data to the EEPROM, starting at address 0xADDRESS",
+ *                                            "Writes Data1..DataN to the EEPROM, starting at address 0xADDRESS",
  *                                std::bind(&gpcc::StdIf::CliCmdWriteIRandomAccessStorage,
  *                                          std::placeholders::_1,
  *                                          std::placeholders::_2,
  *                                          pMyRASInterface)));
  * ~~~
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * This is thread-safe.
  *
  * __Exception safety:__\n
- * Basic exception safety:\n
+ * Basic guarantee:\n
  * - content of terminal's screen maybe incomplete
- * - data written to @ref IRandomAccessStorage may be incomplete
+ * - incomplete data may be written to the underlying storage
  *
  * __Thread cancellation safety:__\n
- * Deferred cancellation is safe, but:
+ * Basic guarantee:
  * - content of terminal's screen maybe incomplete
- * - data written to @ref IRandomAccessStorage may be incomplete
+ * - incomplete data may be written to the underlying storage
  *
- * ---
+ * - - -
  *
  * \param restOfLine
  * Arguments passed to the CLI command.
+ *
  * \param cli
  * `gpcc::cli::CLI` instance executing this.
+ *
  * \param pRAS
  * Pointer to the @ref IRandomAccessStorage interface accessed through this command handler.
  */
+void CliCmdWriteIRandomAccessStorage(std::string const & restOfLine,
+                                     gpcc::cli::CLI & cli,
+                                     IRandomAccessStorage* const pRAS)
 {
+  (void)cli;
+
   auto params = gpcc::string::Split(restOfLine, ' ', true);
 
-  if (params.size() < 2)
-  {
-    cli.WriteLine("Error: At least 2 parameters expected!\nTry 'wreeprom help'");
-    return;
-  }
+  if (params.size() < 2U)
+    throw gpcc::cli::UserEnteredInvalidArgsError();
 
   // read parameters into "address" and "data".
   uint32_t address;
@@ -201,54 +200,39 @@ void CliCmdWriteIRandomAccessStorage(std::string const & restOfLine,
 
     // address
     if (!gpcc::string::StartsWith(*it, "0x"))
-      throw std::exception();
+      throw gpcc::cli::UserEnteredInvalidArgsError();
 
     value = std::stoll((*it).substr(2), nullptr, 16);
     if ((value < 0) || (value > std::numeric_limits<uint32_t>::max()))
-      throw std::exception();
+      throw gpcc::cli::UserEnteredInvalidArgsError();
     address = value;
     ++it;
 
     // read data
     while (it != params.end())
     {
-      if (gpcc::string::StartsWith(*it, "0x"))
-        value = std::stoll((*it).substr(2), nullptr, 16);
-      else if (gpcc::string::StartsWith(*it, "'"))
-      {
-        if (((*it).length() != 3) ||
-            ((*it)[2] != '\''))
-          throw std::exception();
-        data.push_back(static_cast<uint8_t>((*it)[1]));
-      }
-      else if (gpcc::string::StartsWith(*it, "-"))
-        throw std::exception();
-      else
-        value = std::stoll(*it);
-      if ((value < 0) || (value > std::numeric_limits<uint8_t>::max()))
-        throw std::exception();
-      data.push_back(static_cast<uint8_t>(value));
+      data.push_back(gpcc::string::AnyStringToU8(*it));
       ++it;
     }
 
     // check: address overflow?
     if (std::numeric_limits<uint32_t>::max() - address < data.size() - 1U)
-      throw std::exception();
+      throw gpcc::cli::UserEnteredInvalidArgsError("Address out of bounds");
+  }
+  catch (gpcc::cli::UserEnteredInvalidArgsError const &)
+  {
+    throw;
   }
   catch (std::exception const &)
   {
-    cli.WriteLine("Error: Invalid parameter(s)");
-    return;
+    std::throw_with_nested(gpcc::cli::UserEnteredInvalidArgsError());
   }
 
   params.clear();
 
   // check "address" and "n" against properties of pRAS
   if (address + (data.size() - 1U) >= pRAS->GetSize())
-  {
-    cli.WriteLine("Error: Attempt to write out of bounds");
-    return;
-  }
+    throw gpcc::cli::UserEnteredInvalidArgsError("Address out of bounds");
 
   // write
   pRAS->Write(address, data.size(), data.data());

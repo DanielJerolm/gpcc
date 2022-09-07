@@ -8,21 +8,23 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#ifndef SRC_GPCC_STDIF_IRANDOMACCESSSTORAGECLI_HPP_
-#define SRC_GPCC_STDIF_IRANDOMACCESSSTORAGECLI_HPP_
+#ifndef IRANDOMACCESSSTORAGECLI_HPP_202209072135
+#define IRANDOMACCESSSTORAGECLI_HPP_202209072135
 
 #include <string>
 
-namespace gpcc
-{
-namespace cli
-{
+namespace gpcc  {
+namespace cli   {
   class CLI;
 }
-namespace StdIf
-{
 
-class IRandomAccessStorage;
+namespace StdIf {
+  class IRandomAccessStorage;
+}}
+
+
+namespace gpcc  {
+namespace StdIf {
 
 void CliCmdReadIRandomAccessStorage(std::string const & restOfLine,
                                     gpcc::cli::CLI & cli,
@@ -34,5 +36,4 @@ void CliCmdWriteIRandomAccessStorage(std::string const & restOfLine,
 } // namespace StdIf
 } // namespace gpcc
 
-#endif // SRC_GPCC_STDIF_IRANDOMACCESSSTORAGECLI_HPP_
-
+#endif // IRANDOMACCESSSTORAGECLI_HPP_202209072135

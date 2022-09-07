@@ -9,15 +9,8 @@
 */
 
 /**
- * @ingroup GPCC
- * @defgroup GPCC_STDIF Standard/common interfaces.
- *
- * \brief Common interfaces for frequently used standard functionalities.
- */
-
-/**
  * @ingroup GPCC_STDIF
- * @defgroup GPCC_STDIF_CLI CLI commands.
+ * @defgroup GPCC_STDIF_SERIAL Serial IO
  *
- * \brief Collection of CLI commands useful to access some of the standard interfaces.
+ * \brief Interfaces related to serial IO operations (e.g. UART devices).
  */
