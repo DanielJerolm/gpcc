@@ -19,7 +19,7 @@ namespace cli  {
 
 /**
  * \ingroup GPCC_CLI
- * \brief Adapter providing an @ref ITerminal interface from an [ISyncSerialIO](@ref gpcc::StdIf::ISyncSerialIO) interface.
+ * \brief Adapter providing an @ref ITerminal interface from an [ISyncSerialIO](@ref gpcc::stdif::ISyncSerialIO) interface.
  *
  * This adapter is intended to be used to connect an @ref CLI component to a terminal via a serial connection,
  * e.g. a UART.
@@ -32,7 +32,7 @@ namespace cli  {
 class ISyncSerialIO_to_ITerminal final : public ITerminal
 {
   public:
-    explicit ISyncSerialIO_to_ITerminal(gpcc::StdIf::ISyncSerialIO & _ssio);
+    explicit ISyncSerialIO_to_ITerminal(gpcc::stdif::ISyncSerialIO & _ssio);
     ISyncSerialIO_to_ITerminal(ISyncSerialIO_to_ITerminal const &) = delete;
     ISyncSerialIO_to_ITerminal(ISyncSerialIO_to_ITerminal &&) = delete;
     ~ISyncSerialIO_to_ITerminal(void) = default;
@@ -42,7 +42,7 @@ class ISyncSerialIO_to_ITerminal final : public ITerminal
 
   private:
     /// Reference to the ISyncSerialIO interface.
-    gpcc::StdIf::ISyncSerialIO & ssio;
+    gpcc::stdif::ISyncSerialIO & ssio;
 
     // <-- ITerminal
     size_t Read(char * pBuffer, size_t bufferSize, uint16_t timeout_ms) override;

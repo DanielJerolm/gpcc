@@ -23,7 +23,7 @@
 namespace gpcc
 {
 
-namespace StdIf
+namespace stdif
 {
   class IRandomAccessStorage;
 }
@@ -77,13 +77,13 @@ namespace internal
  * # Storage Requirements
  * The content management system has originally been designed for EEPROM devices, but it can be used with
  * any other storage devices like serial FRAMs, flash, or even plain RAM too. Drivers for these devices
- * just have to provide the @ref StdIf::IRandomAccessStorage interface to offer access to the storage.
+ * just have to provide the @ref stdif::IRandomAccessStorage interface to offer access to the storage.
  *
  * If power-fail-safety is required, then the driver for accessing the storage and the storage itself must
  * fulfill the following requirements:
  *
  * Devices that write all data in a page-write in parallel (e.g. standard I2C EEPROM devices):
- * - All data written via the @ref StdIf::IRandomAccessStorage interface using page-write/block-write must be
+ * - All data written via the @ref stdif::IRandomAccessStorage interface using page-write/block-write must be
  *   either completely written, or no write to any memory cell shall occur.
  * - The write access must complete properly in order to guarantee sufficient data retention. For details on
  *   this topic please refer to AN2014 from ST Microelectronics.
@@ -91,7 +91,7 @@ namespace internal
  *   write access issued even just before power-fail to complete properly.
  *
  * Devices that write all data from a page-write sequentially byte by byte (e.g. I2C FRAM devices):
- * - All data written via the @ref StdIf::IRandomAccessStorage interface using page-write/block-write must be
+ * - All data written via the @ref stdif::IRandomAccessStorage interface using page-write/block-write must be
  *   written one by one into the storage. The order in which the writes occur must correspond to the addresses
  *   of the written memory cells in ascending order.
  * - The page-write/block-write access during which power fails does not need to complete, but the last
@@ -248,7 +248,7 @@ class EEPROMSectionSystem: public IFileStorage
     };
 
 
-    EEPROMSectionSystem(StdIf::IRandomAccessStorage& _storage, uint32_t const _startAddressInStorage, size_t const _sizeInStorage);
+    EEPROMSectionSystem(stdif::IRandomAccessStorage& _storage, uint32_t const _startAddressInStorage, size_t const _sizeInStorage);
     EEPROMSectionSystem(EEPROMSectionSystem const &) = delete;
     EEPROMSectionSystem(EEPROMSectionSystem &&) = delete;
     ~EEPROMSectionSystem(void);

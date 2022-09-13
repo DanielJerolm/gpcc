@@ -24,17 +24,17 @@
 
 namespace gpcc_tests
 {
-namespace StdIf
+namespace stdif
 {
 
-class GPCC_StdIf_IRandomAccessStorageCLI_Tests: public testing::Test
+class GPCC_stdif_IRandomAccessStorageCLI_Tests: public testing::Test
 {
   public:
     static const size_t storageSize     = 4U * 1024UL;
     static const size_t storagePageSize = 32U;
 
-    GPCC_StdIf_IRandomAccessStorageCLI_Tests(void);
-    virtual ~GPCC_StdIf_IRandomAccessStorageCLI_Tests(void);
+    GPCC_stdif_IRandomAccessStorageCLI_Tests(void);
+    virtual ~GPCC_stdif_IRandomAccessStorageCLI_Tests(void);
 
   protected:
     file_systems::EEPROMSectionSystem::FakeEEPROM fakeStorage;
@@ -48,7 +48,7 @@ class GPCC_StdIf_IRandomAccessStorageCLI_Tests: public testing::Test
     void Login(void);
 };
 
-GPCC_StdIf_IRandomAccessStorageCLI_Tests::GPCC_StdIf_IRandomAccessStorageCLI_Tests(void)
+GPCC_stdif_IRandomAccessStorageCLI_Tests::GPCC_stdif_IRandomAccessStorageCLI_Tests(void)
 : Test()
 , fakeStorage(storageSize, storagePageSize)
 , terminal(80U, 8U)
@@ -57,11 +57,11 @@ GPCC_StdIf_IRandomAccessStorageCLI_Tests::GPCC_StdIf_IRandomAccessStorageCLI_Tes
 {
 }
 
-GPCC_StdIf_IRandomAccessStorageCLI_Tests::~GPCC_StdIf_IRandomAccessStorageCLI_Tests(void)
+GPCC_stdif_IRandomAccessStorageCLI_Tests::~GPCC_stdif_IRandomAccessStorageCLI_Tests(void)
 {
 }
 
-void GPCC_StdIf_IRandomAccessStorageCLI_Tests::SetUp(void)
+void GPCC_stdif_IRandomAccessStorageCLI_Tests::SetUp(void)
 {
   cli.Start(gpcc::osal::Thread::SchedPolicy::Other, 0, gpcc::osal::Thread::GetDefaultStackSize());
   cliNeedsStop = true;
@@ -69,18 +69,18 @@ void GPCC_StdIf_IRandomAccessStorageCLI_Tests::SetUp(void)
   terminal.WaitForInputProcessed();
 
   cli.AddCommand(gpcc::cli::Command::Create("ReadRAS", "\nHelp text",
-                                            std::bind(&gpcc::StdIf::CliCmdReadIRandomAccessStorage,
+                                            std::bind(&gpcc::stdif::CliCmdReadIRandomAccessStorage,
                                                       std::placeholders::_1,
                                                       std::placeholders::_2,
                                                       &fakeStorage)));
   cli.AddCommand(gpcc::cli::Command::Create("WriteRAS", "\nHelp text",
-                                            std::bind(&gpcc::StdIf::CliCmdWriteIRandomAccessStorage,
+                                            std::bind(&gpcc::stdif::CliCmdWriteIRandomAccessStorage,
                                                       std::placeholders::_1,
                                                       std::placeholders::_2,
                                                       &fakeStorage)));
 }
 
-void GPCC_StdIf_IRandomAccessStorageCLI_Tests::TearDown(void)
+void GPCC_stdif_IRandomAccessStorageCLI_Tests::TearDown(void)
 {
   if (cliNeedsStop)
     cli.Stop();
@@ -94,7 +94,7 @@ void GPCC_StdIf_IRandomAccessStorageCLI_Tests::TearDown(void)
   }
 }
 
-void GPCC_StdIf_IRandomAccessStorageCLI_Tests::Login(void)
+void GPCC_stdif_IRandomAccessStorageCLI_Tests::Login(void)
 {
   terminal.Input("login");
 
@@ -105,7 +105,7 @@ void GPCC_StdIf_IRandomAccessStorageCLI_Tests::Login(void)
   }
 }
 
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, InstantiationAndLogin)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, InstantiationAndLogin)
 {
   char const * expected[8] =
   {
@@ -124,7 +124,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, InstantiationAndLogin)
   terminal.WaitForInputProcessed();
   ASSERT_TRUE(terminal.Compare(expected));
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_WrongNbOfParams0)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_WrongNbOfParams0)
 {
   char const * expected[8] =
   {
@@ -146,7 +146,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_WrongNbOfParams0)
   terminal.WaitForInputProcessed();
   ASSERT_TRUE(terminal.Compare(expected));
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_WrongNbOfParams1)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_WrongNbOfParams1)
 {
   char const * expected[8] =
   {
@@ -168,7 +168,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_WrongNbOfParams1)
   terminal.WaitForInputProcessed();
   ASSERT_TRUE(terminal.Compare(expected));
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_WrongNbOfParams3)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_WrongNbOfParams3)
 {
   char const * expected[8] =
   {
@@ -190,7 +190,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_WrongNbOfParams3)
   terminal.WaitForInputProcessed();
   ASSERT_TRUE(terminal.Compare(expected));
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_AddressNotHex)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_AddressNotHex)
 {
   char const * expected[8] =
   {
@@ -212,7 +212,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_AddressNotHex)
   terminal.WaitForInputProcessed();
   ASSERT_TRUE(terminal.Compare(expected));
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_AddressBadChars)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_AddressBadChars)
 {
   char const * expected[8] =
   {
@@ -234,7 +234,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_AddressBadChars)
   terminal.WaitForInputProcessed();
   ASSERT_TRUE(terminal.Compare(expected));
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_NbOfBytesNegative)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_NbOfBytesNegative)
 {
   char const * expected[8] =
   {
@@ -256,7 +256,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_NbOfBytesNegative)
   terminal.WaitForInputProcessed();
   ASSERT_TRUE(terminal.Compare(expected));
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_NbOfBytesBadChars)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_NbOfBytesBadChars)
 {
   char const * expected[8] =
   {
@@ -278,7 +278,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_NbOfBytesBadChars)
   terminal.WaitForInputProcessed();
   ASSERT_TRUE(terminal.Compare(expected));
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_NbOfBytesTooLarge)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_NbOfBytesTooLarge)
 {
   char const * expected[8] =
   {
@@ -300,7 +300,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_NbOfBytesTooLarge)
   terminal.WaitForInputProcessed();
   ASSERT_TRUE(terminal.Compare(expected));
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_AddressOutOf32Bit)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_AddressOutOf32Bit)
 {
   char const * expected[8] =
   {
@@ -322,7 +322,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_AddressOutOf32Bit)
   terminal.WaitForInputProcessed();
   ASSERT_TRUE(terminal.Compare(expected));
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_AddressIn32BitButOutOfBounds)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_AddressIn32BitButOutOfBounds)
 {
   char const * expected[8] =
   {
@@ -344,7 +344,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_AddressIn32BitButOutOfBoun
   terminal.WaitForInputProcessed();
   ASSERT_TRUE(terminal.Compare(expected));
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_ZeroBytes)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_ZeroBytes)
 {
   char const * expected[8] =
   {
@@ -369,7 +369,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_ZeroBytes)
   terminal.WaitForInputProcessed();
   ASSERT_TRUE(terminal.Compare(expected));
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_OneByte)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_OneByte)
 {
   char const * expected[8] =
   {
@@ -394,7 +394,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_OneByte)
   terminal.WaitForInputProcessed();
   ASSERT_TRUE(terminal.Compare(expected));
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_12Byte)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_12Byte)
 {
   char const * expected[8] =
   {
@@ -419,7 +419,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_12Byte)
   terminal.WaitForInputProcessed();
   ASSERT_TRUE(terminal.Compare(expected));
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_17Byte)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_17Byte)
 {
   char const * expected[8] =
   {
@@ -444,7 +444,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_17Byte)
   terminal.WaitForInputProcessed();
   ASSERT_TRUE(terminal.Compare(expected));
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_UnalignedAddress17Bytes)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_UnalignedAddress17Bytes)
 {
   char const * expected[8] =
   {
@@ -469,7 +469,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_UnalignedAddress17Bytes)
   terminal.WaitForInputProcessed();
   ASSERT_TRUE(terminal.Compare(expected));
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_LastByteOfStorage)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_LastByteOfStorage)
 {
   char const * expected[8] =
   {
@@ -494,7 +494,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_LastByteOfStorage)
   terminal.WaitForInputProcessed();
   ASSERT_TRUE(terminal.Compare(expected));
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_BeyondEndOfStorage1)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_BeyondEndOfStorage1)
 {
   char const * expected[8] =
   {
@@ -519,7 +519,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_BeyondEndOfStorage1)
   terminal.WaitForInputProcessed();
   ASSERT_TRUE(terminal.Compare(expected));
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_BeyondEndOfStorage2)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_BeyondEndOfStorage2)
 {
   char const * expected[8] =
   {
@@ -545,7 +545,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Read_BeyondEndOfStorage2)
   ASSERT_TRUE(terminal.Compare(expected));
 }
 
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_WrongNbOfParams0)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_WrongNbOfParams0)
 {
   char const * expected[8] =
   {
@@ -569,7 +569,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_WrongNbOfParams0)
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_WrongNbOfParams1)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_WrongNbOfParams1)
 {
   char const * expected[8] =
   {
@@ -593,7 +593,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_WrongNbOfParams1)
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_AddressNotHex)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_AddressNotHex)
 {
   char const * expected[8] =
   {
@@ -617,7 +617,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_AddressNotHex)
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_AddressBadChars)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_AddressBadChars)
 {
   char const * expected[8] =
   {
@@ -641,7 +641,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_AddressBadChars)
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_AddressOutOf32Bit)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_AddressOutOf32Bit)
 {
   char const * expected[8] =
   {
@@ -665,7 +665,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_AddressOutOf32Bit)
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_AddressIn32BitButOutOfBounds)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_AddressIn32BitButOutOfBounds)
 {
   char const * expected[8] =
   {
@@ -689,7 +689,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_AddressIn32BitButOutOfBou
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_OneByte)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_OneByte)
 {
   char const * expected[8] =
   {
@@ -719,7 +719,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_OneByte)
 
   ASSERT_TRUE(memcmp(data, expectedData, sizeof(data)) == 0);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_10Byte)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_10Byte)
 {
   char const * expected[8] =
   {
@@ -749,7 +749,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_10Byte)
 
   ASSERT_TRUE(memcmp(data, expectedData, sizeof(data)) == 0);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_DifferentNumberFormats)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_DifferentNumberFormats)
 {
   char const * expected[8] =
   {
@@ -779,7 +779,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_DifferentNumberFormats)
 
   ASSERT_TRUE(memcmp(data, expectedData, sizeof(data)) == 0);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_UnalignedAddress)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_UnalignedAddress)
 {
   char const * expected[8] =
   {
@@ -809,7 +809,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_UnalignedAddress)
 
   ASSERT_TRUE(memcmp(data, expectedData, sizeof(data)) == 0);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_LastByte)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_LastByte)
 {
   char const * expected[8] =
   {
@@ -839,7 +839,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_LastByte)
 
   ASSERT_TRUE(memcmp(data, expectedData, sizeof(data)) == 0);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BeyondEndOfStorage1)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BeyondEndOfStorage1)
 {
   char const * expected[8] =
   {
@@ -863,7 +863,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BeyondEndOfStorage1)
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BeyondEndOfStorage2)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BeyondEndOfStorage2)
 {
   char const * expected[8] =
   {
@@ -887,7 +887,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BeyondEndOfStorage2)
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat1)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat1)
 {
   char const * expected[8] =
   {
@@ -911,7 +911,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat1)
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat2)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat2)
 {
   char const * expected[8] =
   {
@@ -935,7 +935,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat2)
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat3)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat3)
 {
   char const * expected[8] =
   {
@@ -959,7 +959,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat3)
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat4)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat4)
 {
   char const * expected[8] =
   {
@@ -983,7 +983,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat4)
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat5)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat5)
 {
   char const * expected[8] =
   {
@@ -1007,7 +1007,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat5)
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat6)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat6)
 {
   char const * expected[8] =
   {
@@ -1031,7 +1031,7 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat6)
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
 }
-TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat7)
+TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat7)
 {
   char const * expected[8] =
   {
@@ -1056,5 +1056,5 @@ TEST_F(GPCC_StdIf_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat7)
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
 }
 
-} // namespace StdIf
+} // namespace stdif
 } // namespace gpcc_tests

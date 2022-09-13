@@ -27,14 +27,14 @@ namespace container {
 /**
  * \ingroup GPCC_CONTAINER
  * \brief Class providing a piece of random accessible memory that can be used to store binary data and for
- *        emulation of storage devices whose drivers provide the @ref gpcc::StdIf::IRandomAccessStorage interface.
+ *        emulation of storage devices whose drivers provide the @ref gpcc::stdif::IRandomAccessStorage interface.
  *
  * - - -
  *
  * __Thread safety:__\n
  * Thread-safe.
  */
-class RAMBlock final : public gpcc::StdIf::IRandomAccessStorage
+class RAMBlock final : public gpcc::stdif::IRandomAccessStorage
 {
   public:
     explicit RAMBlock(size_t const size);
@@ -57,14 +57,14 @@ class RAMBlock final : public gpcc::StdIf::IRandomAccessStorage
     std::vector<uint8_t> GetDataAndClearDirtyFlag(void);
     void WriteToStreamAndClearDirtyFlag(gpcc::Stream::IStreamWriter& sw);
 
-    // <-- gpcc::StdIf::IRandomAccessStorage
+    // <-- gpcc::stdif::IRandomAccessStorage
     size_t GetSize(void) const override;
     size_t GetPageSize(void) const override;
 
     void Read(uint32_t address, size_t n, void* pBuffer) const override;
     void Write(uint32_t address, size_t n, void const * pBuffer) override;
     bool WriteAndCheck(uint32_t address, size_t n, void const * pBuffer, void* pAuxBuffer) override;
-    // --> gpcc::StdIf::IRandomAccessStorage
+    // --> gpcc::stdif::IRandomAccessStorage
 
   private:
     /// Mutex used to make the API thread safe.

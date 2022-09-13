@@ -24,7 +24,7 @@ namespace EEPROMSectionSystem
 {
 
 // Fake EEPROM, used as storage in EEPROMSectionSystem tests.
-// Access via gpcc::StdIf::IRandomAccessStorage.
+// Access via gpcc::stdif::IRandomAccessStorage.
 // There is an undo-functionality that can be enabled and disabled via SetEnableUndo(...).
 // If enabled, each write is recorded, and the last X writes can be undone via Undo(X) later.
 // If the undo-functionality is disabled, then the undo-history is cleared.
@@ -32,7 +32,7 @@ namespace EEPROMSectionSystem
 // "writeAccessCnt" and "readAccessCnt" can be used to check the number of read- and write accesses.
 // "writeAccessesTillThrow", "writeAndCheckAccessTillFailure", and "readAccessesTillThrow" can be
 // used to schedule failure of an specific read- or write-access.
-class FakeEEPROM: public gpcc::StdIf::IRandomAccessStorage
+class FakeEEPROM: public gpcc::stdif::IRandomAccessStorage
 {
   public:
     // Counter for write accesses. This counts each attempt to write, even if an exception is thrown.
@@ -57,14 +57,14 @@ class FakeEEPROM: public gpcc::StdIf::IRandomAccessStorage
     FakeEEPROM& operator=(FakeEEPROM && other);
 
 
-    // --> gpcc::StdIf::IRandomAccessStorage
+    // --> gpcc::stdif::IRandomAccessStorage
     size_t GetSize(void) const;
     size_t GetPageSize(void) const;
 
     void Read(uint32_t address, size_t n, void* pBuffer) const;
     void Write(uint32_t address, size_t n, void const * pBuffer);
     bool WriteAndCheck(uint32_t address, size_t n, void const * pBuffer, void* pAuxBuffer);
-    // <-- gpcc::StdIf::IRandomAccessStorage
+    // <-- gpcc::stdif::IRandomAccessStorage
 
     void SetEnableUndo(bool const onOff);
     void ClearUndo(void);

@@ -17,7 +17,7 @@ namespace time {
 }}
 
 namespace gpcc  {
-namespace StdIf {
+namespace stdif {
 
 /**
  * \ingroup GPCC_STDIF_NOTIFY
@@ -184,7 +184,7 @@ class IIRQ2ThreadWakeup
  * \retval Result::AlreadySignalled  Thread was not blocked because wake-up flag was already set.
  */
 
-} // namespace StdIf
+} // namespace stdif
 } // namespace gpcc
 
 #endif // IIRQ2THREADWAKEUP_HPP_202209101537

@@ -21,10 +21,10 @@ namespace gpcc_tests {
 namespace execution {
 namespace cyclic {
 
-// This class provides a trigger via gpcc::StdIf::IIRQ2ThreadWakeup. Trigger generation is under
+// This class provides a trigger via gpcc::stdif::IIRQ2ThreadWakeup. Trigger generation is under
 // full manual control. The class is intended to be used in unit tests of classes
 // TriggeredThreadedCyclicExec and TTCEStartStopCtrl.
-class TriggerProvider final : public gpcc::StdIf::IIRQ2ThreadWakeup
+class TriggerProvider final : public gpcc::stdif::IIRQ2ThreadWakeup
 {
   public:
     TriggerProvider(gpcc::time::TimeSpan const _expectedWaitWithTimeoutValue,
@@ -37,7 +37,7 @@ class TriggerProvider final : public gpcc::StdIf::IIRQ2ThreadWakeup
     TriggerProvider& operator=(TriggerProvider &&) = delete;
 
     bool WaitForThread(uint32_t const timeout_ms);
-    void Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result const _desiredReturnValue, bool const permanent);
+    void Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result const _desiredReturnValue, bool const permanent);
 
   private:
     // Expected timeout when IIRQ2ThreadWakeup::WaitWithTimeout is invoked.
@@ -59,16 +59,16 @@ class TriggerProvider final : public gpcc::StdIf::IIRQ2ThreadWakeup
     gpcc::osal::ConditionVariable continueFlagSetConvar;
 
     // Desired return value for "WaitWithTimeout".
-    gpcc::StdIf::IIRQ2ThreadWakeup::Result desiredReturnValue;
+    gpcc::stdif::IIRQ2ThreadWakeup::Result desiredReturnValue;
 
 
-    // --> gpcc::StdIf::IIRQ2ThreadWakeup
+    // --> gpcc::stdif::IIRQ2ThreadWakeup
     bool SignalFromISR(void) noexcept override;
     bool SignalFromThread(void) override;
 
-    gpcc::StdIf::IIRQ2ThreadWakeup::Result Wait(void) override;
-    gpcc::StdIf::IIRQ2ThreadWakeup::Result WaitWithTimeout(gpcc::time::TimeSpan const & timeout) override;
-    // <-- gpcc::StdIf::IIRQ2ThreadWakeup
+    gpcc::stdif::IIRQ2ThreadWakeup::Result Wait(void) override;
+    gpcc::stdif::IIRQ2ThreadWakeup::Result WaitWithTimeout(gpcc::time::TimeSpan const & timeout) override;
+    // <-- gpcc::stdif::IIRQ2ThreadWakeup
 };
 
 } // namespace cyclic

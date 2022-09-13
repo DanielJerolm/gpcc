@@ -14,7 +14,7 @@
 #include <stdexcept>
 
 namespace gpcc  {
-namespace StdIf {
+namespace stdif {
 
 /**
  * \ingroup GPCC_STDIF_I2C
@@ -61,7 +61,7 @@ class I2CBusGeneralError : public I2CBusError
     virtual ~I2CBusGeneralError(void) noexcept = default;
 };
 
-} // namespace StdIf
+} // namespace stdif
 } // namespace gpcc
 
 #endif // EXCEPTIONS_HPP_202209062103

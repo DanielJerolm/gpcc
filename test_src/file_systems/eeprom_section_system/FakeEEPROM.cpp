@@ -20,7 +20,7 @@ namespace EEPROMSectionSystem
 {
 
 FakeEEPROM::FakeEEPROM(size_t const _size, size_t const _pageSize)
-: gpcc::StdIf::IRandomAccessStorage()
+: gpcc::stdif::IRandomAccessStorage()
 , writeAccessCnt(0)
 , readAccessCnt(0)
 , writeAccessesTillThrow(0)
@@ -39,7 +39,7 @@ FakeEEPROM::FakeEEPROM(size_t const _size, size_t const _pageSize)
   memset(spMem.get(), 0x00, size);
 }
 FakeEEPROM::FakeEEPROM(FakeEEPROM const & other)
-: gpcc::StdIf::IRandomAccessStorage(other)
+: gpcc::stdif::IRandomAccessStorage(other)
 , writeAccessCnt(other.writeAccessCnt)
 , readAccessCnt(other.readAccessCnt)
 , writeAccessesTillThrow(other.writeAccessesTillThrow)
@@ -54,7 +54,7 @@ FakeEEPROM::FakeEEPROM(FakeEEPROM const & other)
   memcpy(spMem.get(), other.spMem.get(), size);
 }
 FakeEEPROM::FakeEEPROM(FakeEEPROM && other)
-: gpcc::StdIf::IRandomAccessStorage(std::move(other))
+: gpcc::stdif::IRandomAccessStorage(std::move(other))
 , writeAccessCnt(other.writeAccessCnt)
 , readAccessCnt(other.readAccessCnt)
 , writeAccessesTillThrow(other.writeAccessesTillThrow)
@@ -88,7 +88,7 @@ FakeEEPROM& FakeEEPROM::operator=(FakeEEPROM const & other)
     enableUndo = other.enableUndo;
     undoList = other.undoList;
 
-    gpcc::StdIf::IRandomAccessStorage::operator =(other);
+    gpcc::stdif::IRandomAccessStorage::operator =(other);
   }
 
   return *this;
@@ -97,7 +97,7 @@ FakeEEPROM& FakeEEPROM::operator=(FakeEEPROM && other)
 {
   if (this != &other)
   {
-    gpcc::StdIf::IRandomAccessStorage::operator =(std::move(other));
+    gpcc::stdif::IRandomAccessStorage::operator =(std::move(other));
 
     writeAccessCnt = other.writeAccessCnt;
     readAccessCnt = other.readAccessCnt;
@@ -116,7 +116,7 @@ FakeEEPROM& FakeEEPROM::operator=(FakeEEPROM && other)
   return *this;
 }
 
-// --> gpcc::StdIf::IRandomAccessStorage
+// --> gpcc::stdif::IRandomAccessStorage
 size_t FakeEEPROM::GetSize(void) const
 {
   return size;
@@ -179,7 +179,7 @@ bool FakeEEPROM::WriteAndCheck(uint32_t address, size_t n, void const * pBuffer,
 
   return true;
 }
-// <-- gpcc::StdIf::IRandomAccessStorage
+// <-- gpcc::stdif::IRandomAccessStorage
 
 void FakeEEPROM::SetEnableUndo(bool const onOff)
 {

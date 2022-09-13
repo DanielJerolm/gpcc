@@ -18,13 +18,13 @@ namespace cli   {
   class CLI;
 }
 
-namespace StdIf {
+namespace stdif {
   class IRandomAccessStorage;
 }}
 
 
 namespace gpcc  {
-namespace StdIf {
+namespace stdif {
 
 void CliCmdReadIRandomAccessStorage(std::string const & restOfLine,
                                     gpcc::cli::CLI & cli,
@@ -33,7 +33,7 @@ void CliCmdWriteIRandomAccessStorage(std::string const & restOfLine,
                                      gpcc::cli::CLI & cli,
                                      IRandomAccessStorage* const pRAS);
 
-} // namespace StdIf
+} // namespace stdif
 } // namespace gpcc
 
 #endif // IRANDOMACCESSSTORAGECLI_HPP_202209072135

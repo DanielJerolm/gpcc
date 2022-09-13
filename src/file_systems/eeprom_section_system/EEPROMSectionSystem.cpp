@@ -42,7 +42,7 @@ uint16_t const EEPROMSectionSystem::Version;
 
 using namespace internal;
 
-EEPROMSectionSystem::EEPROMSectionSystem(StdIf::IRandomAccessStorage& _storage, uint32_t const _startAddressInStorage, size_t const _sizeInStorage)
+EEPROMSectionSystem::EEPROMSectionSystem(stdif::IRandomAccessStorage& _storage, uint32_t const _startAddressInStorage, size_t const _sizeInStorage)
 : mutex()
 , state(States::not_mounted)
 , sectionLockManager()

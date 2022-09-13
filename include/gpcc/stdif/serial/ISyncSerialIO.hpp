@@ -15,7 +15,7 @@
 #include <cstddef>
 
 namespace gpcc  {
-namespace StdIf {
+namespace stdif {
 
 /**
  * \ingroup GPCC_STDIF_SERIAL
@@ -137,7 +137,7 @@ class ISyncSerialIO
  * - Flush may be incomplete.
  */
 
-} // namespace StdIf
+} // namespace stdif
 } // namespace gpcc
 
 #endif // ISYNCSERIALIO_HPP_201712292059

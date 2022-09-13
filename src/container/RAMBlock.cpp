@@ -393,7 +393,7 @@ RAMBlock& RAMBlock::operator=(std::vector<uint8_t> && rhv)
  * \brief Retrieves the dirty-state of the RAMBlock instance.
  *
  * The RAMBlock's dirty flag will be set on any write to the RAMBlock through the
- * [IRandomAccessStorage](@ref gpcc::StdIf::IRandomAccessStorage) interface.
+ * [IRandomAccessStorage](@ref gpcc::stdif::IRandomAccessStorage) interface.
  *
  * The dirty-flag can be cleared using any of the following methods:
  * - @ref ClearDirtyFlag()
@@ -531,21 +531,21 @@ void RAMBlock::WriteToStreamAndClearDirtyFlag(gpcc::Stream::IStreamWriter& sw)
   dirty = false;
 }
 
-// <-- gpcc::StdIf::IRandomAccessStorage
-/// \copydoc gpcc::StdIf::IRandomAccessStorage::GetSize
+// <-- gpcc::stdif::IRandomAccessStorage
+/// \copydoc gpcc::stdif::IRandomAccessStorage::GetSize
 size_t RAMBlock::GetSize(void) const
 {
   gpcc::osal::MutexLocker apiMutexLocker(apiMutex);
   return storage.size();
 }
 
-/// \copydoc gpcc::StdIf::IRandomAccessStorage::GetPageSize
+/// \copydoc gpcc::stdif::IRandomAccessStorage::GetPageSize
 size_t RAMBlock::GetPageSize(void) const
 {
   return 0;
 }
 
-/// \copydoc gpcc::StdIf::IRandomAccessStorage::Read
+/// \copydoc gpcc::stdif::IRandomAccessStorage::Read
 void RAMBlock::Read(uint32_t address, size_t n, void* pBuffer) const
 {
   if (pBuffer == nullptr)
@@ -557,7 +557,7 @@ void RAMBlock::Read(uint32_t address, size_t n, void* pBuffer) const
     memcpy(pBuffer, storage.data() + address, n);
 }
 
-/// \copydoc gpcc::StdIf::IRandomAccessStorage::Write
+/// \copydoc gpcc::stdif::IRandomAccessStorage::Write
 void RAMBlock::Write(uint32_t address, size_t n, void const * pBuffer)
 {
   if (pBuffer == nullptr)
@@ -572,14 +572,14 @@ void RAMBlock::Write(uint32_t address, size_t n, void const * pBuffer)
   }
 }
 
-/// \copydoc gpcc::StdIf::IRandomAccessStorage::WriteAndCheck
+/// \copydoc gpcc::stdif::IRandomAccessStorage::WriteAndCheck
 bool RAMBlock::WriteAndCheck(uint32_t address, size_t n, void const * pBuffer, void* pAuxBuffer)
 {
   (void)pAuxBuffer;
   Write(address, n, pBuffer);
   return true;
 }
-// --> gpcc::StdIf::IRandomAccessStorage
+// --> gpcc::stdif::IRandomAccessStorage
 
 /**
  * \brief Checks if a memory range specified by a given address and size is completely inside the memory range

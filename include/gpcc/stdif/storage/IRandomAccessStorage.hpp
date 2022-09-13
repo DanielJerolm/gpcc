@@ -15,7 +15,7 @@
 #include <cstddef>
 
 namespace gpcc  {
-namespace StdIf {
+namespace stdif {
 
 /**
  * \ingroup GPCC_STDIF_STORAGE
@@ -177,7 +177,7 @@ class IRandomAccessStorage
  * - prevent dropping special guarantees offered by some derived classes regarding power-fail during write-accesses
  * - minimize wearing of storage cells (depends on derived class and type of storage)
  *
- * For details, please refer to the documentation of [this interface](@ref gpcc::StdIf::IRandomAccessStorage).
+ * For details, please refer to the documentation of [this interface](@ref gpcc::stdif::IRandomAccessStorage).
  *
  * - - -
  *
@@ -222,7 +222,7 @@ class IRandomAccessStorage
  * - prevent dropping special guarantees offered by some derived classes regarding power-fail during write-accesses
  * - minimize wearing of storage cells (depends on derived class and type of storage)
  *
- * For details, please refer to the documentation of [this interface](@ref gpcc::StdIf::IRandomAccessStorage).
+ * For details, please refer to the documentation of [this interface](@ref gpcc::stdif::IRandomAccessStorage).
  *
  * - - -
  *
@@ -261,7 +261,7 @@ class IRandomAccessStorage
  * \retval false Data read back did not match.
  */
 
-} // namespace StdIf
+} // namespace stdif
 } // namespace gpcc
 
 #endif // IRANDOMACCESSSTORAGE_HPP_202209072134

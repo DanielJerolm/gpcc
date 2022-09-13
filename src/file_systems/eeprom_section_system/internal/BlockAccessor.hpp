@@ -18,7 +18,7 @@
 namespace gpcc
 {
 
-namespace StdIf
+namespace stdif
 {
   class IRandomAccessStorage;
 }
@@ -51,7 +51,7 @@ namespace internal
 class BlockAccessor
 {
   public:
-    BlockAccessor(StdIf::IRandomAccessStorage & _storage, uint32_t const _startAddressInStorage, size_t const _sizeInStorage);
+    BlockAccessor(stdif::IRandomAccessStorage & _storage, uint32_t const _startAddressInStorage, size_t const _sizeInStorage);
     BlockAccessor(BlockAccessor const &) = delete;
     BlockAccessor(BlockAccessor &&) = delete;
     ~BlockAccessor(void) = default;
@@ -77,7 +77,7 @@ class BlockAccessor
 
   private:
     /// Storage on which the @ref EEPROMSectionSystem is working.
-    StdIf::IRandomAccessStorage & storage;
+    stdif::IRandomAccessStorage & storage;
 
     /// Start address inside @ref storage where the @ref EEPROMSectionSystem resides.
     /** This is aligned to a page boundary of @ref storage. */

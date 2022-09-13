@@ -30,7 +30,7 @@ namespace EEPROMSectionSystem
 namespace internal
 {
 
-BlockAccessor::BlockAccessor(StdIf::IRandomAccessStorage & _storage, uint32_t const _startAddressInStorage, size_t const _sizeInStorage)
+BlockAccessor::BlockAccessor(stdif::IRandomAccessStorage & _storage, uint32_t const _startAddressInStorage, size_t const _sizeInStorage)
 : storage(_storage)
 , startAddressInStorage(_startAddressInStorage)
 , sizeInStorage(_sizeInStorage)

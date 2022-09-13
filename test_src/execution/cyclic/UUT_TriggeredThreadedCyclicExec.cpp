@@ -20,7 +20,7 @@ namespace execution {
 namespace cyclic {
 
 UUT_TriggeredThreadedCyclicExec::UUT_TriggeredThreadedCyclicExec(Trace & _trace,
-                                                                 gpcc::StdIf::IIRQ2ThreadWakeup & trigger,
+                                                                 gpcc::stdif::IIRQ2ThreadWakeup & trigger,
                                                                  gpcc::time::TimeSpan const & waitForTriggerTimeout)
 : TriggeredThreadedCyclicExec("UUT", trigger, waitForTriggerTimeout, std::bind(&UUT_TriggeredThreadedCyclicExec::IsPllRunning, this))
 , trace(_trace)

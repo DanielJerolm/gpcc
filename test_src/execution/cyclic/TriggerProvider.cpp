@@ -22,7 +22,7 @@ namespace cyclic {
 
 TriggerProvider::TriggerProvider(gpcc::time::TimeSpan const _expectedWaitWithTimeoutValue,
                                  uint32_t const _permanentTriggerSleep_ms)
-: gpcc::StdIf::IIRQ2ThreadWakeup()
+: gpcc::stdif::IIRQ2ThreadWakeup()
 , expectedWaitWithTimeoutValue(_expectedWaitWithTimeoutValue)
 , permanentTriggerSleep_ms(_permanentTriggerSleep_ms)
 , mutex()
@@ -31,7 +31,7 @@ TriggerProvider::TriggerProvider(gpcc::time::TimeSpan const _expectedWaitWithTim
 , continueFlag(false)
 , permanentContinue(false)
 , continueFlagSetConvar()
-, desiredReturnValue(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK)
+, desiredReturnValue(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK)
 {
 }
 
@@ -57,7 +57,7 @@ bool TriggerProvider::WaitForThread(uint32_t const timeout_ms)
 
   return threadInWaitWithTimeout;
 }
-void TriggerProvider::Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result const _desiredReturnValue, bool const permanent)
+void TriggerProvider::Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result const _desiredReturnValue, bool const permanent)
 {
   gpcc::osal::MutexLocker mutexLocker(mutex);
 
@@ -73,7 +73,7 @@ void TriggerProvider::Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result const _desi
   continueFlagSetConvar.Signal();
 }
 
-// --> gpcc::StdIf::IIRQ2ThreadWakeup
+// --> gpcc::stdif::IIRQ2ThreadWakeup
 bool TriggerProvider::SignalFromISR(void) noexcept
 {
   gpcc::osal::Panic("Unexpected call to TriggerProvider::SignalFromISR");
@@ -85,14 +85,14 @@ bool TriggerProvider::SignalFromThread(void)
   return false;
 }
 
-gpcc::StdIf::IIRQ2ThreadWakeup::Result TriggerProvider::Wait(void)
+gpcc::stdif::IIRQ2ThreadWakeup::Result TriggerProvider::Wait(void)
 {
   gpcc::osal::Panic("Unexpected call to TriggerProvider::Wait");
 
   // never reached, but makes compiler happy
-  return gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK;
+  return gpcc::stdif::IIRQ2ThreadWakeup::Result::OK;
 }
-gpcc::StdIf::IIRQ2ThreadWakeup::Result TriggerProvider::WaitWithTimeout(gpcc::time::TimeSpan const & timeout)
+gpcc::stdif::IIRQ2ThreadWakeup::Result TriggerProvider::WaitWithTimeout(gpcc::time::TimeSpan const & timeout)
 {
   if (timeout != expectedWaitWithTimeoutValue)
     gpcc::osal::Panic("TriggerProvider::WaitWithTimeout: UUT passed unexpected timeout value");
@@ -120,7 +120,7 @@ gpcc::StdIf::IIRQ2ThreadWakeup::Result TriggerProvider::WaitWithTimeout(gpcc::ti
   // leave WaitWithTimeout()
   return desiredReturnValue;
 }
-// <-- gpcc::StdIf::IIRQ2ThreadWakeup
+// <-- gpcc::stdif::IIRQ2ThreadWakeup
 
 } // namespace cyclic
 } // namespace execution

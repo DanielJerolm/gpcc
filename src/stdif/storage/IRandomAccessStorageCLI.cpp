@@ -17,7 +17,7 @@
 #include <vector>
 
 namespace gpcc  {
-namespace StdIf {
+namespace stdif {
 
 /**
  * \ingroup GPCC_STDIF_STORAGE
@@ -29,7 +29,7 @@ namespace StdIf {
  * cli.AddCommand(Command::Create("rdeeprom", " 0xADDRESS n\n"\
  *                                             "Reads n (1..1024) bytes from EEPROM, starting at address 0xADDRESS\n"\
  *                                             "and dumps the data to the terminal.",
- *                                std::bind(&gpcc::StdIf::CliCmdReadIRandomAccessStorage,
+ *                                std::bind(&gpcc::stdif::CliCmdReadIRandomAccessStorage,
  *                                          std::placeholders::_1,
  *                                          std::placeholders::_2,
  *                                          pMyRASInterface)));
@@ -145,7 +145,7 @@ void CliCmdReadIRandomAccessStorage(std::string const & restOfLine,
  * using gpcc::cli::Command;
  * cli.AddCommand(Command::Create("wreeprom", " 0xADDRESS [0x]Data1 [[0x]Data2 .. [0x]DataN]\n"\
  *                                            "Writes Data1..DataN to the EEPROM, starting at address 0xADDRESS",
- *                                std::bind(&gpcc::StdIf::CliCmdWriteIRandomAccessStorage,
+ *                                std::bind(&gpcc::stdif::CliCmdWriteIRandomAccessStorage,
  *                                          std::placeholders::_1,
  *                                          std::placeholders::_2,
  *                                          pMyRASInterface)));
@@ -238,5 +238,5 @@ void CliCmdWriteIRandomAccessStorage(std::string const & restOfLine,
   pRAS->Write(address, data.size(), data.data());
 }
 
-} // namespace StdIf
+} // namespace stdif
 } // namespace gpcc

@@ -17,16 +17,16 @@ using namespace testing;
 
 namespace gpcc_tests
 {
-namespace StdIf
+namespace stdif
 {
 
-using namespace gpcc::StdIf;
+using namespace gpcc::stdif;
 
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, Nullptr)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, Nullptr)
 {
   ASSERT_FALSE(CheckDescriptor(nullptr, 0));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, InvalidAddress1)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, InvalidAddress1)
 {
   // this test checks proper behavior if bit 7 of the address in the first descriptor is set
   uint8_t data1[4];
@@ -49,7 +49,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, InvalidAddress1)
 
   ASSERT_FALSE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, InvalidAddress2)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, InvalidAddress2)
 {
   // this test checks proper behavior if bit 7 of the address in the second descriptor is set
   uint8_t data1[4];
@@ -72,7 +72,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, InvalidAddress2)
 
   ASSERT_FALSE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, ReadGCA1)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, ReadGCA1)
 {
   // this test checks proper behavior if there is an attempt to read from the GC address in the first descriptor
   uint8_t data1[4];
@@ -95,7 +95,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, ReadGCA1)
 
   ASSERT_FALSE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, ReadGCA2)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, ReadGCA2)
 {
   // this test checks proper behavior if there is an attempt to read from the GC address in the second descriptor
   uint8_t data1[4];
@@ -118,7 +118,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, ReadGCA2)
 
   ASSERT_FALSE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, DataNullptr1)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, DataNullptr1)
 {
   // this test checks proper behavior if the data pointer in the first descriptor is a nullptr
   uint8_t data1[4];
@@ -141,7 +141,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, DataNullptr1)
 
   ASSERT_FALSE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, DataNullptr2)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, DataNullptr2)
 {
   // this test checks proper behavior if the data pointer in the second descriptor is a nullptr
   uint8_t data1[4];
@@ -164,7 +164,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, DataNullptr2)
 
   ASSERT_FALSE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, ZeroBytes1)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, ZeroBytes1)
 {
   // this test checks proper behavior if the size in the first descriptor is zero
   uint8_t data1[4];
@@ -187,7 +187,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, ZeroBytes1)
 
   ASSERT_FALSE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, ZeroBytes2)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, ZeroBytes2)
 {
   // this test checks proper behavior if the size in the second descriptor is zero
   uint8_t data1[4];
@@ -210,7 +210,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, ZeroBytes2)
 
   ASSERT_FALSE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, TooManyBytes1)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, TooManyBytes1)
 {
   // this test checks proper behavior if the size in the first descriptor exceeds the I2C driver's capability
   uint8_t data1[8];
@@ -233,7 +233,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, TooManyBytes1)
 
   ASSERT_FALSE(CheckDescriptor(&d1, 4));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, TooManyBytes2)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, TooManyBytes2)
 {
   // this test checks proper behavior if the size in the second descriptor exceeds the I2C driver's capability
   uint8_t data1[4];
@@ -256,7 +256,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, TooManyBytes2)
 
   ASSERT_FALSE(CheckDescriptor(&d1, 4));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, pNextToSelf1)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, pNextToSelf1)
 {
   // this test checks proper behavior if the next-pointer in the first descriptor references to itself
   uint8_t data1[4];
@@ -271,7 +271,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, pNextToSelf1)
 
   ASSERT_FALSE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, pNextToSelf2)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, pNextToSelf2)
 {
   // this test checks proper behavior if the next-pointer in the second descriptor references to itself
   uint8_t data1[4];
@@ -294,7 +294,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, pNextToSelf2)
 
   ASSERT_FALSE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, ScatteredTransferAddressChanges)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, ScatteredTransferAddressChanges)
 {
   // this test checks proper behavior if the address among a scattered transfer is not the same
   uint8_t data1[4];
@@ -317,7 +317,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, ScatteredTransferAddressChanges)
 
   ASSERT_FALSE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, ScatteredTransferRWChanges)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, ScatteredTransferRWChanges)
 {
   // this test checks proper behavior if the R/W-mode among a scattered transfer is not the same
   uint8_t data1[4];
@@ -340,7 +340,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, ScatteredTransferRWChanges)
 
   ASSERT_FALSE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_SingleRead)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, OK_SingleRead)
 {
   uint8_t data1[4];
 
@@ -354,7 +354,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_SingleRead)
 
   ASSERT_TRUE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_SingleWrite)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, OK_SingleWrite)
 {
   uint8_t data1[4];
 
@@ -368,7 +368,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_SingleWrite)
 
   ASSERT_TRUE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_ScatteredSingleRead)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, OK_ScatteredSingleRead)
 {
   uint8_t data1[4];
   uint8_t data2[4];
@@ -390,7 +390,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_ScatteredSingleRead)
 
   ASSERT_TRUE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_ScatteredSingleWrite)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, OK_ScatteredSingleWrite)
 {
   uint8_t data1[4];
   uint8_t data2[4];
@@ -412,7 +412,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_ScatteredSingleWrite)
 
   ASSERT_TRUE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_DoubleRead)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, OK_DoubleRead)
 {
   uint8_t data1[4];
   uint8_t data2[4];
@@ -434,7 +434,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_DoubleRead)
 
   ASSERT_TRUE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_DoubleWrite)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, OK_DoubleWrite)
 {
   uint8_t data1[4];
   uint8_t data2[4];
@@ -456,7 +456,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_DoubleWrite)
 
   ASSERT_TRUE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_MixedNonScatteredRW1)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, OK_MixedNonScatteredRW1)
 {
   uint8_t data1[4];
   uint8_t data2[4];
@@ -478,7 +478,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_MixedNonScatteredRW1)
 
   ASSERT_TRUE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_MixedNonScatteredRW2)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, OK_MixedNonScatteredRW2)
 {
   uint8_t data1[4];
   uint8_t data2[4];
@@ -500,7 +500,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_MixedNonScatteredRW2)
 
   ASSERT_TRUE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_MixedRW)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, OK_MixedRW)
 {
   uint8_t data1[4];
   uint8_t data2[4];
@@ -546,7 +546,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_MixedRW)
 
   ASSERT_TRUE(CheckDescriptor(&d1, 16));
 }
-TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_WriteGCA)
+TEST(GPCC_stdif_I2CTools_CheckDescriptor_Tests, OK_WriteGCA)
 {
   // this test checks proper behavior if the GC address shall be written
   uint8_t data1[4];
@@ -570,7 +570,7 @@ TEST(GPCC_StdIf_I2CTools_CheckDescriptor_Tests, OK_WriteGCA)
   ASSERT_TRUE(CheckDescriptor(&d1, 16));
 }
 
-TEST(GPCC_StdIf_I2CTools_DetermineTotalTransferSize_Tests, MaxSizeExceeded1)
+TEST(GPCC_stdif_I2CTools_DetermineTotalTransferSize_Tests, MaxSizeExceeded1)
 {
   uint8_t data1[8];
   uint8_t data2[4];
@@ -592,7 +592,7 @@ TEST(GPCC_StdIf_I2CTools_DetermineTotalTransferSize_Tests, MaxSizeExceeded1)
 
   ASSERT_EQ(5U, DetermineTotalTransferSize(&d1, 4U));
 }
-TEST(GPCC_StdIf_I2CTools_DetermineTotalTransferSize_Tests, MaxSizeExceeded2)
+TEST(GPCC_stdif_I2CTools_DetermineTotalTransferSize_Tests, MaxSizeExceeded2)
 {
   uint8_t data1[4];
   uint8_t data2[8];
@@ -614,7 +614,7 @@ TEST(GPCC_StdIf_I2CTools_DetermineTotalTransferSize_Tests, MaxSizeExceeded2)
 
   ASSERT_EQ(5U, DetermineTotalTransferSize(&d1, 4U));
 }
-TEST(GPCC_StdIf_I2CTools_DetermineTotalTransferSize_Tests, OK_SingleTransfer)
+TEST(GPCC_stdif_I2CTools_DetermineTotalTransferSize_Tests, OK_SingleTransfer)
 {
   uint8_t data1[4];
 
@@ -628,7 +628,7 @@ TEST(GPCC_StdIf_I2CTools_DetermineTotalTransferSize_Tests, OK_SingleTransfer)
 
   ASSERT_EQ(4U, DetermineTotalTransferSize(&d1, 128U));
 }
-TEST(GPCC_StdIf_I2CTools_DetermineTotalTransferSize_Tests, OK_SingleScatteredTransfer)
+TEST(GPCC_stdif_I2CTools_DetermineTotalTransferSize_Tests, OK_SingleScatteredTransfer)
 {
   uint8_t data1[4];
   uint8_t data2[12];
@@ -658,7 +658,7 @@ TEST(GPCC_StdIf_I2CTools_DetermineTotalTransferSize_Tests, OK_SingleScatteredTra
 
   ASSERT_EQ(24U, DetermineTotalTransferSize(&d1, 128U));
 }
-TEST(GPCC_StdIf_I2CTools_DetermineTotalTransferSize_Tests, OK_MultiTransfers)
+TEST(GPCC_stdif_I2CTools_DetermineTotalTransferSize_Tests, OK_MultiTransfers)
 {
   uint8_t data1[4];
   uint8_t data2[8];
@@ -688,7 +688,7 @@ TEST(GPCC_StdIf_I2CTools_DetermineTotalTransferSize_Tests, OK_MultiTransfers)
 
   ASSERT_EQ(4U, DetermineTotalTransferSize(&d1, 128U));
 }
-TEST(GPCC_StdIf_I2CTools_DetermineTotalTransferSize_Tests, OK_MultiTransfersFirstScattered)
+TEST(GPCC_stdif_I2CTools_DetermineTotalTransferSize_Tests, OK_MultiTransfersFirstScattered)
 {
   uint8_t data1[4];
   uint8_t data2[8];
@@ -719,5 +719,5 @@ TEST(GPCC_StdIf_I2CTools_DetermineTotalTransferSize_Tests, OK_MultiTransfersFirs
   ASSERT_EQ(12U, DetermineTotalTransferSize(&d1, 128U));
 }
 
-} // namespace StdIf
+} // namespace stdif
 } // namespace gpcc_tests

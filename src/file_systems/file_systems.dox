@@ -130,7 +130,7 @@
  * Class @ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem offers a 100% random-power-fail-safe
  * file system that can be placed on top of any EEPROM device and some flash devices with capacities in the range
  * of 32kB up to 512kB. It is designed for minimum memory foot-print and maximum data integrity. Almost any storage
- * device which is accessible via the [IRandomAccessStorage](@ref gpcc::StdIf::IRandomAccessStorage) interface can
+ * device which is accessible via the [IRandomAccessStorage](@ref gpcc::stdif::IRandomAccessStorage) interface can
  * be used. Directories are not supported. For details, please refer to class
  * [EEPROMSectionSystem](@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem).
  *

@@ -14,14 +14,14 @@
 #include "II2C_Master.hpp"
 
 namespace gpcc  {
-namespace StdIf {
+namespace stdif {
 
 bool CheckDescriptor(II2C_Master::stI2CTransferDescriptor_t const * pTD,
                      size_t const maxSingleTransferSize) noexcept;
 size_t DetermineTotalTransferSize(II2C_Master::stI2CTransferDescriptor_t const * pTD,
                                   size_t const maxTotalTransferSize) noexcept;
 
-} // namespace StdIf
+} // namespace stdif
 } // namespace gpcc
 
 #endif /* TOOLS_HPP_202209062108 */

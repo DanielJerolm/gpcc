@@ -16,7 +16,7 @@
 #include <cstdint>
 
 namespace gpcc  {
-namespace StdIf {
+namespace stdif {
 
 /**
  * \ingroup GPCC_STDIF_I2C
@@ -145,7 +145,7 @@ class II2C_Master
  *
  * __Thread safety:__\n
  * The I2C bus must be locked when this method is executed.\n
- * Use [LockBus()](@ref gpcc::StdIf::II2C_Master::LockBus()) to accomplish this.
+ * Use [LockBus()](@ref gpcc::stdif::II2C_Master::LockBus()) to accomplish this.
  *
  * __Exception safety:__\n
  * Strong guarantee.
@@ -178,14 +178,14 @@ class II2C_Master
  *
  * __Thread safety:__\n
  * The I2C bus must be locked when this method is executed.\n
- * Use [LockBus()](@ref gpcc::StdIf::II2C_Master::LockBus()) to accomplish this.
+ * Use [LockBus()](@ref gpcc::stdif::II2C_Master::LockBus()) to accomplish this.
  *
  * __Exception safety:__\n
  * Basic guarantee:
  * - The transfer may be incomplete.
  * - The I2C bus has been recovered if required.
  *
- * Be aware of [I2CBusError](@ref gpcc::StdIf::I2CBusError) and exceptions derived from that.
+ * Be aware of [I2CBusError](@ref gpcc::stdif::I2CBusError) and exceptions derived from that.
  *
  * __Thread cancellation safety:__\n
  * Basic guarantee:
@@ -220,7 +220,7 @@ class II2C_Master
  *
  * __Thread safety:__\n
  * The I2C bus must be locked when this method is executed.\n
- * Use [LockBus()](@ref gpcc::StdIf::II2C_Master::LockBus()) to accomplish this.
+ * Use [LockBus()](@ref gpcc::stdif::II2C_Master::LockBus()) to accomplish this.
  *
  * __Exception safety:__\n
  * Basic guarantee:
@@ -228,7 +228,7 @@ class II2C_Master
  * - The I2C bus has been recovered if required.
  * - Data may have been written to the memory location referenced by `pData`.
  *
- * Be aware of [I2CBusError](@ref gpcc::StdIf::I2CBusError) and exceptions derived from that.
+ * Be aware of [I2CBusError](@ref gpcc::stdif::I2CBusError) and exceptions derived from that.
  *
  * __Thread cancellation safety:__\n
  * Basic guarantee:
@@ -264,7 +264,7 @@ class II2C_Master
  *
  * __Thread safety:__\n
  * The I2C bus must be locked when this method is executed.\n
- * Use [LockBus()](@ref gpcc::StdIf::II2C_Master::LockBus()) to accomplish this.
+ * Use [LockBus()](@ref gpcc::stdif::II2C_Master::LockBus()) to accomplish this.
  *
  * __Exception safety:__\n
  * Basic guarantee:
@@ -273,7 +273,7 @@ class II2C_Master
  * - Data may have been written to the memory locations referenced by the transfer descriptors.
  * - The transfer descriptors may have been modified and __must not__ be reused.
  *
- * Be aware of [I2CBusError](@ref gpcc::StdIf::I2CBusError) and exceptions derived from that.
+ * Be aware of [I2CBusError](@ref gpcc::stdif::I2CBusError) and exceptions derived from that.
  *
  * __Thread cancellation safety:__\n
  * Basic guarantee:
@@ -297,7 +297,7 @@ class II2C_Master
  * \retval false No ACK on I2C bus received from slave.
  */
 
-} // namespace StdIf
+} // namespace stdif
 } // namespace gpcc
 
 #endif // II2C_MASTER_HPP_202209062105

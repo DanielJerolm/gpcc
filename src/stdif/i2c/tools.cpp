@@ -12,7 +12,7 @@
 
 
 namespace gpcc  {
-namespace StdIf {
+namespace stdif {
 
 /**
  * \ingroup GPCC_STDIF_I2C
@@ -138,5 +138,5 @@ size_t DetermineTotalTransferSize(II2C_Master::stI2CTransferDescriptor_t const *
   return maxTotalTransferSize + 1U;
 }
 
-} // namespace StdIf
+} // namespace stdif
 } // namespace gpcc
