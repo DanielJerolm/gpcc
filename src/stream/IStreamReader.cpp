@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "IStreamReader.hpp"
+#include <gpcc/stream/IStreamReader.hpp>
 #include <gpcc/compiler/definitions.hpp>
 
 namespace gpcc   {

@@ -14,7 +14,7 @@
 #include "gpcc/src/file_systems/linux_fs/internal/tools.hpp"
 #include "gpcc/src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
 #include <gpcc/file_systems/exceptions.hpp>
-#include "gpcc/src/Stream/StreamErrors.hpp"
+#include <gpcc/stream/StreamErrors.hpp>
 #include "gtest/gtest.h"
 #include <sys/stat.h>
 #include <sys/types.h>

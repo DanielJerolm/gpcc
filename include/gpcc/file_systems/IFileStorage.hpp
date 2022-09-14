@@ -11,8 +11,8 @@
 #ifndef IFILESTORAGE_HPP_201805041946
 #define IFILESTORAGE_HPP_201805041946
 
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
 #include <list>
 #include <memory>
 #include <string>

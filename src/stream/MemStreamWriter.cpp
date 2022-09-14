@@ -8,8 +8,8 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "MemStreamWriter.hpp"
-#include "StreamErrors.hpp"
+#include <gpcc/stream/MemStreamWriter.hpp>
+#include <gpcc/stream/StreamErrors.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include "cstring"
 

@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "IStreamWriter.hpp"
+#include <gpcc/stream/IStreamWriter.hpp>
 #include <gpcc/compiler/definitions.hpp>
 
 namespace gpcc   {

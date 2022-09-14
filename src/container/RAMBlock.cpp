@@ -10,8 +10,8 @@
 
 #include <gpcc/container/RAMBlock.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
 #include <stdexcept>
 #include <cstring>
 

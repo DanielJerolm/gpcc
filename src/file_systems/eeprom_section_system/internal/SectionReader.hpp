@@ -11,7 +11,7 @@
 #ifndef SRC_GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_INTERNAL_SECTIONREADER_HPP_
 #define SRC_GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_INTERNAL_SECTIONREADER_HPP_
 
-#include "gpcc/src/Stream/StreamReaderBase.hpp"
+#include <gpcc/stream/StreamReaderBase.hpp>
 #include <memory>
 
 namespace gpcc

@@ -9,8 +9,8 @@
 */
 
 #include <gpcc/cood/remote_access/requests_and_responses/ReturnStackItem.hpp>
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
 
 namespace gpcc {
 namespace cood {

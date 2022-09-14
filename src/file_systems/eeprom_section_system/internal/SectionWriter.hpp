@@ -11,7 +11,7 @@
 #ifndef SRC_GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_INTERNAL_SECTIONWRITER_HPP_
 #define SRC_GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_INTERNAL_SECTIONWRITER_HPP_
 
-#include "gpcc/src/Stream/StreamWriterBase.hpp"
+#include <gpcc/stream/StreamWriterBase.hpp>
 #include <memory>
 
 namespace gpcc

@@ -9,8 +9,8 @@
 */
 
 #include <gpcc/container/RAMBlock.hpp>
-#include "gpcc/src/Stream/MemStreamReader.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
+#include <gpcc/stream/MemStreamReader.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
 #include "gtest/gtest.h"
 #include <iostream>
 #include <memory>

@@ -14,7 +14,7 @@
 #include "data_types.hpp"
 #include "sdo_abort_codes.hpp"
 #include <gpcc/osal/MutexLocker.hpp>
-#include "gpcc/src/Stream/IStreamReader.hpp"
+#include <gpcc/stream/IStreamReader.hpp>
 #include <functional>
 #include <string>
 #include <vector>

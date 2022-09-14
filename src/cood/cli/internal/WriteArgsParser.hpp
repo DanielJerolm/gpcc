@@ -12,7 +12,7 @@
 #define WRITEARGSPARSER_HPP_202106042143
 
 #include <gpcc/cood/data_types.hpp>
-#include "gpcc/src/Stream/IStreamWriter.hpp"
+#include <gpcc/stream/IStreamWriter.hpp>
 #include <string>
 #include <vector>
 #include <cstddef>

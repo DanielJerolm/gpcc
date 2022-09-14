@@ -16,8 +16,8 @@
 #include <gpcc/cood/remote_access/requests_and_responses/ResponseBase.hpp>
 #include <gpcc/cood/remote_access/requests_and_responses/WriteRequest.hpp>
 #include <gpcc/osal/Panic.hpp>
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
 #include <stdexcept>
 
 namespace gpcc {

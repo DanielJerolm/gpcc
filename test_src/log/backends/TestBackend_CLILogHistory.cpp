@@ -13,7 +13,7 @@
 #include <gpcc/log/log_levels.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
+#include <gpcc/stream/MemStreamWriter.hpp>
 #include <gpcc/string/tools.hpp>
 #include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"
 #include "gtest/gtest.h"

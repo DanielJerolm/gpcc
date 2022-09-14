@@ -14,8 +14,8 @@
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include "gpcc/src/Stream/StreamErrors.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
+#include <gpcc/stream/StreamErrors.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
 #include <cstring>
 #include <stdexcept>
 

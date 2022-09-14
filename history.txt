@@ -7,7 +7,6 @@ Next to do:
 
 - Header restructuring
   - [IP] Move public headers to include/gpcc
-  - [  ] Rename gpcc::StdIf
   - [  ] Check order of includes
 
 - Bugfix: AnyStringToU32 should be AnyNumberToU32

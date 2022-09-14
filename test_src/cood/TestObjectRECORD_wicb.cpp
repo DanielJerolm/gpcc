@@ -13,9 +13,9 @@
 #include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include "gpcc/src/Stream/MemStreamReader.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
-#include "gpcc/src/Stream/StreamErrors.hpp"
+#include <gpcc/stream/MemStreamReader.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
+#include <gpcc/stream/StreamErrors.hpp>
 #include "IObjectNotifiableMock.hpp"
 #include "gtest/gtest.h"
 #include <memory>

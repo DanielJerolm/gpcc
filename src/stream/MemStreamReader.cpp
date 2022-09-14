@@ -8,8 +8,8 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "MemStreamReader.hpp"
-#include "StreamErrors.hpp"
+#include <gpcc/stream/MemStreamReader.hpp>
+#include <gpcc/stream/StreamErrors.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <cstring>

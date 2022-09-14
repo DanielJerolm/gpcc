@@ -9,8 +9,8 @@
 */
 
 #include "gtest/gtest.h"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
-#include "gpcc/src/Stream/StreamErrors.hpp"
+#include <gpcc/stream/MemStreamWriter.hpp>
+#include <gpcc/stream/StreamErrors.hpp>
 #include <memory>
 #include <iostream>
 #include <cassert>

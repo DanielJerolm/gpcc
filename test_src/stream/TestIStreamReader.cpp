@@ -9,7 +9,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "gpcc/src/Stream/IStreamReader.hpp"
+#include <gpcc/stream/IStreamReader.hpp>
 
 namespace gpcc_tests {
 namespace Stream     {

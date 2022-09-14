@@ -15,7 +15,7 @@
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include "gpcc/src/Stream/IStreamWriter.hpp"
+#include <gpcc/stream/IStreamWriter.hpp>
 #include <gpcc/string/tools.hpp>
 #include <stdexcept>
 #include <vector>

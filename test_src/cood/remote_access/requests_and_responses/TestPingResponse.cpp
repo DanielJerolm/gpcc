@@ -10,8 +10,8 @@
 
 #include <gpcc/cood/remote_access/requests_and_responses/PingResponse.hpp>
 #include <gpcc/cood/remote_access/requests_and_responses/ReturnStackItem.hpp>
-#include "gpcc/src/Stream/MemStreamReader.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
+#include <gpcc/stream/MemStreamReader.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
 #include "gtest/gtest.h"
 
 namespace gpcc_tests {

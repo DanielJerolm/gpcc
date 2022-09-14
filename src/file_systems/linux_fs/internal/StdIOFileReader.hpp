@@ -13,7 +13,7 @@
 #ifndef STDIOFILEREADER_HPP_201805181928
 #define STDIOFILEREADER_HPP_201805181928
 
-#include "gpcc/src/Stream/StreamReaderBase.hpp"
+#include <gpcc/stream/StreamReaderBase.hpp>
 #include <cstdio>
 
 namespace gpcc         {

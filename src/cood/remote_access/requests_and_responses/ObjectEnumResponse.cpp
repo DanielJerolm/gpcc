@@ -10,8 +10,8 @@
 
 #include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
 #include <gpcc/string/tools.hpp>
 #include <exception>
 #include <sstream>

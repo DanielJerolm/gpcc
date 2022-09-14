@@ -11,8 +11,8 @@
 #include <gpcc/cood/Object.hpp>
 #include <gpcc/cood/exceptions.hpp>
 #include <gpcc/osal/Panic.hpp>
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
 #include <cstring>
 
 namespace gpcc {

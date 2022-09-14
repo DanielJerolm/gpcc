@@ -1,5 +1,5 @@
 # -------------------------------------
-# gpcc/src/Stream
+# gpcc/src/stream
 # -------------------------------------
 target_sources(${PROJECT_NAME}
                PRIVATE

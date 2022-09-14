@@ -11,9 +11,9 @@
 #include <gpcc/cood/ObjectVAR_wicb.hpp>
 #include <gpcc/cood/exceptions.hpp>
 #include <gpcc/osal/Mutex.hpp>
-#include "gpcc/src/Stream/MemStreamReader.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
-#include "gpcc/src/Stream/StreamErrors.hpp"
+#include <gpcc/stream/MemStreamReader.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
+#include <gpcc/stream/StreamErrors.hpp>
 #include "IObjectNotifiableMock.hpp"
 #include "gtest/gtest.h"
 #include <memory>

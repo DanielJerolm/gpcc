@@ -16,8 +16,8 @@
 #include <gpcc/cood/ObjectRECORD.hpp>
 #include <gpcc/cood/ObjectVAR.hpp>
 #include <gpcc/osal/Mutex.hpp>
-#include "gpcc/src/Stream/MemStreamReader.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
+#include <gpcc/stream/MemStreamReader.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
 #include <gpcc/string/tools.hpp>
 #include "gpcc/test_src/cood/ObjectVARwithASM.hpp"
 #include "gtest/gtest.h"

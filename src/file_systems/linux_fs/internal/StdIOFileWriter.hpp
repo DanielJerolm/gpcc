@@ -13,7 +13,7 @@
 #ifndef STDIOFILEWRITER_HPP_201805182120
 #define STDIOFILEWRITER_HPP_201805182120
 
-#include "gpcc/src/Stream/StreamWriterBase.hpp"
+#include <gpcc/stream/StreamWriterBase.hpp>
 #include <cstdio>
 
 namespace gpcc         {

@@ -147,10 +147,10 @@ target_sources(${PROJECT_NAME}_testcases
                resource_management/semaphores/TestNonBlockingSemaphore.cpp
                stdif/i2c/Test_tools.cpp
                stdif/storage/TestIRandomAccessStorageCLI.cpp
-               Stream/TestIStreamReader.cpp
-               Stream/TestIStreamWriter.cpp
-               Stream/TestMemStreamReader.cpp
-               Stream/TestMemStreamWriter.cpp
+               stream/TestIStreamReader.cpp
+               stream/TestIStreamWriter.cpp
+               stream/TestMemStreamReader.cpp
+               stream/TestMemStreamWriter.cpp
                string/Test_levenshtein_distance.cpp
                string/TestSharedString.cpp
                string/Test_tools.cpp

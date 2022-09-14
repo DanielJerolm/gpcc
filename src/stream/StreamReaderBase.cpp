@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "StreamReaderBase.hpp"
+#include <gpcc/stream/StreamReaderBase.hpp>
 
 namespace gpcc
 {
