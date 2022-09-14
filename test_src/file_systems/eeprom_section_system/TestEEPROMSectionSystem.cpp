@@ -16,7 +16,7 @@
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/stream/IStreamReader.hpp>
 #include <gpcc/stream/IStreamWriter.hpp>
-#include <gpcc/stream/StreamErrors.hpp>
+#include <gpcc/stream/stream_errors.hpp>
 #include <algorithm>
 #include <iostream>
 #include <list>

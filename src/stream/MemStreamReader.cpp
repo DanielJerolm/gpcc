@@ -9,7 +9,7 @@
 */
 
 #include <gpcc/stream/MemStreamReader.hpp>
-#include <gpcc/stream/StreamErrors.hpp>
+#include <gpcc/stream/stream_errors.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <cstring>

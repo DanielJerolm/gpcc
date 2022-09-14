@@ -13,7 +13,7 @@
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/stream/MemStreamReader.hpp>
 #include <gpcc/stream/MemStreamWriter.hpp>
-#include <gpcc/stream/StreamErrors.hpp>
+#include <gpcc/stream/stream_errors.hpp>
 #include "IObjectNotifiableMock.hpp"
 #include "gtest/gtest.h"
 #include <limits>

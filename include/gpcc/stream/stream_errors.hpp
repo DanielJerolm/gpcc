@@ -8,8 +8,8 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#ifndef SRC_GPCC_STREAM_STREAMERRORS_HPP_
-#define SRC_GPCC_STREAM_STREAMERRORS_HPP_
+#ifndef STREAM_ERRORS_HPP_202209141250
+#define STREAM_ERRORS_HPP_202209141250
 
 #include <stdexcept>
 #include <string>
@@ -103,4 +103,4 @@ class RemainingBitsError : public std::runtime_error
 } // namespace Stream
 } // namespace gpcc
 
-#endif /* SRC_GPCC_STREAM_STREAMERRORS_HPP_ */
+#endif /* STREAM_ERRORS_HPP_202209141250 */

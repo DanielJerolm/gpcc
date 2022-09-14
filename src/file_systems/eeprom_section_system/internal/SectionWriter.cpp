@@ -17,7 +17,7 @@
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include <gpcc/stream/StreamErrors.hpp>
+#include <gpcc/stream/stream_errors.hpp>
 #include <exception>
 #include <stdexcept>
 #include <cstring>

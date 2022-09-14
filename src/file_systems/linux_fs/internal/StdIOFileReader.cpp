@@ -15,7 +15,7 @@
 #include <gpcc/file_systems/linux_fs/FileStorage.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include <gpcc/stream/StreamErrors.hpp>
+#include <gpcc/stream/stream_errors.hpp>
 #include <limits>
 #include <stdexcept>
 #include <system_error>
