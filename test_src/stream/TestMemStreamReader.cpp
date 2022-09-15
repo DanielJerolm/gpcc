@@ -19,14 +19,14 @@
 
 namespace gpcc_tests
 {
-namespace Stream
+namespace stream
 {
 
-using namespace gpcc::Stream;
+using namespace gpcc::stream;
 
 using namespace testing;
 
-/// Test fixture for gpcc::Stream::MemStreamReader related tests.
+/// Test fixture for gpcc::stream::MemStreamReader related tests.
 class GPCC_Stream_MemStreamReader_Tests: public Test
 {
   public:
@@ -2929,7 +2929,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_OneByte_BitsLeftToBeRead)
   data = uut.Read_bits(8);
   EXPECT_EQ(data, 0x12U);
 
-  ASSERT_TRUE(uut.GetState() == gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_TRUE(uut.GetState() == gpcc::stream::IStreamReader::States::empty);
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_AllBytes_WithBitsLeft)
 {
@@ -2953,7 +2953,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_AllBytes_WithBitsLeft)
   data = uut.Read_bits(4);
   EXPECT_EQ(data, 0x0FU);
 
-  ASSERT_TRUE(uut.GetState() == gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_TRUE(uut.GetState() == gpcc::stream::IStreamReader::States::empty);
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_AllBytes_WithoutBitsLeft)
 {
@@ -3484,5 +3484,5 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, EnsureAllDataConsumed_ClosedState)
   EXPECT_THROW(uut.EnsureAllDataConsumed(IStreamReader::RemainingNbOfBits::any), ClosedError);
 }
 
-} // namespace Stream
+} // namespace stream
 } // namespace gpcc_tests

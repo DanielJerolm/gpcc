@@ -976,9 +976,9 @@ void RemoteAccessServer::ServeReadRequest(ReadRequest & request)
         {
           // create a container for the data and a MemStreamWriter
           std::vector<uint8_t> data(sizeInByte);
-          gpcc::Stream::MemStreamWriter msw(data.data(),
+          gpcc::stream::MemStreamWriter msw(data.data(),
                                             data.size(),
-                                            gpcc::Stream::MemStreamWriter::Endian::Little);
+                                            gpcc::stream::MemStreamWriter::Endian::Little);
 
           // do the actual read
           SDOAbortCode result;
@@ -1063,9 +1063,9 @@ void RemoteAccessServer::ServeWriteRequest(WriteRequest & request)
     auto spObject = od.GetObject(request.GetIndex());
     if (spObject)
     {
-      gpcc::Stream::MemStreamReader msr(request.GetData().data(),
+      gpcc::stream::MemStreamReader msr(request.GetData().data(),
                                         request.GetData().size(),
-                                        gpcc::Stream::MemStreamReader::Endian::Little);
+                                        gpcc::stream::MemStreamReader::Endian::Little);
 
       bool const completeAccess = (request.GetAccessType() != WriteRequest::AccessType::singleSubindex);
 
@@ -1083,7 +1083,7 @@ void RemoteAccessServer::ServeWriteRequest(WriteRequest & request)
         bool const si0_16bit = (request.GetAccessType() == WriteRequest::AccessType::completeAccess_SI0_16bit);
 
         result = spObject->CompleteWrite(inclSI0, si0_16bit, request.GetPermissions(),
-                                         msr, gpcc::Stream::IStreamReader::RemainingNbOfBits::sevenOrLess);
+                                         msr, gpcc::stream::IStreamReader::RemainingNbOfBits::sevenOrLess);
       }
 
       spResponse->SetResult(result);

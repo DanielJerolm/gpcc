@@ -70,7 +70,7 @@ class ObjectEnumRequest final : public RequestBase
                       gpcc::cood::Object::attr_t const _attrFilter,
                       size_t                     const _maxResponseSize);
 
-    ObjectEnumRequest(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectEnumRequestPassKey);
+    ObjectEnumRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectEnumRequestPassKey);
 
     ObjectEnumRequest(ObjectEnumRequest const &) = default;
     ObjectEnumRequest(ObjectEnumRequest &&) = default;
@@ -82,7 +82,7 @@ class ObjectEnumRequest final : public RequestBase
 
     // <-- RequestBase
     size_t GetBinarySize(void) const override;
-    void ToBinary(gpcc::Stream::IStreamWriter & sw) const override;
+    void ToBinary(gpcc::stream::IStreamWriter & sw) const override;
 
     std::string ToString(void) const override;
     // --> RequestBase

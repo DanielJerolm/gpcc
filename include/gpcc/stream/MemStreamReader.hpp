@@ -15,7 +15,7 @@
 
 namespace gpcc
 {
-namespace Stream
+namespace stream
 {
 
 /**
@@ -85,7 +85,7 @@ class MemStreamReader: public StreamReaderBase
  * @}
  */
 
-} // namespace Stream
+} // namespace stream
 } // namespace gpcc
 
 #endif /* SRC_GPCC_STREAM_MEMSTREAMREADER_HPP_ */

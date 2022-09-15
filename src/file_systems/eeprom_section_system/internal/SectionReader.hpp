@@ -28,13 +28,13 @@ namespace internal
 
 /**
  * \ingroup GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_INTERNAL
- * \brief Class used to read data from an existing section via @ref gpcc::Stream::IStreamReader.
+ * \brief Class used to read data from an existing section via @ref gpcc::stream::IStreamReader.
  *
  * An instance of this class is created by class @ref EEPROMSectionSystem if a section shall
- * be opened for reading. This class offers read access via @ref gpcc::Stream::IStreamReader and
+ * be opened for reading. This class offers read access via @ref gpcc::stream::IStreamReader and
  * manages loading of storage blocks and final unlocking of the read section at the @ref EEPROMSectionSystem.
  *
- * [IStreamReader::RemainingBytes()](@ref gpcc::Stream::IStreamReader::RemainingBytes()) is not supported.
+ * [IStreamReader::RemainingBytes()](@ref gpcc::stream::IStreamReader::RemainingBytes()) is not supported.
  *
  * # Internals
  * The constructor will load the first data block from the storage. It will be stored in `spMem` and
@@ -53,7 +53,7 @@ namespace internal
  * Finally the stream must be closed via `Close()`. `Close()` will release the section lock
  * at the @ref EEPROMSectionSystem instance. After closing, the @ref SectionReader can be released.
  */
-class SectionReader: public Stream::StreamReaderBase
+class SectionReader: public stream::StreamReaderBase
 {
   public:
     SectionReader(EEPROMSectionSystem & _ESS,

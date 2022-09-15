@@ -378,17 +378,17 @@ std::unique_ptr<ObjectInfoResponse> gpcc_cood_ObjectInfoResponse_TestsF::Seriali
   std::unique_ptr<uint8_t[]> spStorage = std::make_unique<uint8_t[]>(reqSize);
 
   // serialize
-  gpcc::Stream::MemStreamWriter msw(spStorage.get(), reqSize, gpcc::Stream::IStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(spStorage.get(), reqSize, gpcc::stream::IStreamWriter::Endian::Little);
   oir.ToBinary(msw);
   msw.AlignToByteBoundary(false);
-  if (msw.GetState() != gpcc::Stream::IStreamWriter::States::full)
+  if (msw.GetState() != gpcc::stream::IStreamWriter::States::full)
     throw std::logic_error("gpcc_cood_ObjectInfoResponse_TestsF::SerializeAndDeserialize: msw was not fully used.");
   msw.Close();
 
   // deserialize
-  gpcc::Stream::MemStreamReader msr(spStorage.get(), reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(spStorage.get(), reqSize, gpcc::stream::IStreamReader::Endian::Little);
   auto spUUT2Base = ResponseBase::FromBinary(msr);
-  if (msr.GetState() != gpcc::Stream::IStreamReader::States::empty)
+  if (msr.GetState() != gpcc::stream::IStreamReader::States::empty)
     throw std::logic_error("gpcc_cood_ObjectInfoResponse_TestsF::SerializeAndDeserialize: Stream was not completely consumed");
   msr.Close();
 
@@ -3205,10 +3205,10 @@ TEST_F(gpcc_cood_ObjectInfoResponse_TestsF, DeserializeInvalidBinaryData_MaxNbOf
 
   std::unique_ptr<uint8_t[]> spStorage = std::make_unique<uint8_t[]>(reqSize);
 
-  gpcc::Stream::MemStreamWriter msw(spStorage.get(), reqSize, gpcc::Stream::IStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(spStorage.get(), reqSize, gpcc::stream::IStreamWriter::Endian::Little);
   spUUT->ToBinary(msw);
   msw.AlignToByteBoundary(false);
-  ASSERT_TRUE(msw.GetState() == gpcc::Stream::IStreamWriter::States::full);
+  ASSERT_TRUE(msw.GetState() == gpcc::stream::IStreamWriter::States::full);
   msw.Close();
 
   // manipulate binary (maxNbOfSubindices = 0)
@@ -3216,7 +3216,7 @@ TEST_F(gpcc_cood_ObjectInfoResponse_TestsF, DeserializeInvalidBinaryData_MaxNbOf
   spStorage[offsetOfMaxNbOfSubindices + 1U] = 0U;
 
   // try to deserialize it
-  gpcc::Stream::MemStreamReader msr(spStorage.get(), reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(spStorage.get(), reqSize, gpcc::stream::IStreamReader::Endian::Little);
   ASSERT_THROW((void)ResponseBase::FromBinary(msr), std::runtime_error);
   msr.Close();
 
@@ -3225,7 +3225,7 @@ TEST_F(gpcc_cood_ObjectInfoResponse_TestsF, DeserializeInvalidBinaryData_MaxNbOf
   spStorage[offsetOfMaxNbOfSubindices + 1U] = 1U;
 
   // try to deserialize it
-  msr = gpcc::Stream::MemStreamReader(spStorage.get(), reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  msr = gpcc::stream::MemStreamReader(spStorage.get(), reqSize, gpcc::stream::IStreamReader::Endian::Little);
   ASSERT_THROW((void)ResponseBase::FromBinary(msr), std::runtime_error);
   msr.Close();
 }
@@ -3243,17 +3243,17 @@ TEST_F(gpcc_cood_ObjectInfoResponse_TestsF, DeserializeInvalidBinaryData_FirstSu
 
   std::unique_ptr<uint8_t[]> spStorage = std::make_unique<uint8_t[]>(reqSize);
 
-  gpcc::Stream::MemStreamWriter msw(spStorage.get(), reqSize, gpcc::Stream::IStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(spStorage.get(), reqSize, gpcc::stream::IStreamWriter::Endian::Little);
   spUUT->ToBinary(msw);
   msw.AlignToByteBoundary(false);
-  ASSERT_TRUE(msw.GetState() == gpcc::Stream::IStreamWriter::States::full);
+  ASSERT_TRUE(msw.GetState() == gpcc::stream::IStreamWriter::States::full);
   msw.Close();
 
   // manipulate binary (firstSubindex = 1)
   spStorage[offsetOfFirstSubindex] = 1U;
 
   // try to deserialize it
-  gpcc::Stream::MemStreamReader msr(spStorage.get(), reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(spStorage.get(), reqSize, gpcc::stream::IStreamReader::Endian::Little);
   ASSERT_THROW((void)ResponseBase::FromBinary(msr), std::runtime_error);
   msr.Close();
 
@@ -3261,7 +3261,7 @@ TEST_F(gpcc_cood_ObjectInfoResponse_TestsF, DeserializeInvalidBinaryData_FirstSu
   spStorage[offsetOfFirstSubindex] = 13U;
 
   // try to deserialize it
-  msr = gpcc::Stream::MemStreamReader(spStorage.get(), reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  msr = gpcc::stream::MemStreamReader(spStorage.get(), reqSize, gpcc::stream::IStreamReader::Endian::Little);
   ASSERT_THROW((void)ResponseBase::FromBinary(msr), std::runtime_error);
   msr.Close();
 }
@@ -3279,17 +3279,17 @@ TEST_F(gpcc_cood_ObjectInfoResponse_TestsF, DeserializeInvalidBinaryData_FirstSu
 
   std::unique_ptr<uint8_t[]> spStorage = std::make_unique<uint8_t[]>(reqSize);
 
-  gpcc::Stream::MemStreamWriter msw(spStorage.get(), reqSize, gpcc::Stream::IStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(spStorage.get(), reqSize, gpcc::stream::IStreamWriter::Endian::Little);
   spUUT->ToBinary(msw);
   msw.AlignToByteBoundary(false);
-  ASSERT_TRUE(msw.GetState() == gpcc::Stream::IStreamWriter::States::full);
+  ASSERT_TRUE(msw.GetState() == gpcc::stream::IStreamWriter::States::full);
   msw.Close();
 
   // manipulate binary (firstSubindex = 1)
   spStorage[offsetOfFirstSubindex] = 1U;
 
   // try to deserialize it
-  gpcc::Stream::MemStreamReader msr(spStorage.get(), reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(spStorage.get(), reqSize, gpcc::stream::IStreamReader::Endian::Little);
   ASSERT_THROW((void)ResponseBase::FromBinary(msr), std::runtime_error);
   msr.Close();
 
@@ -3297,7 +3297,7 @@ TEST_F(gpcc_cood_ObjectInfoResponse_TestsF, DeserializeInvalidBinaryData_FirstSu
   spStorage[offsetOfFirstSubindex] = 13U;
 
   // try to deserialize it
-  msr = gpcc::Stream::MemStreamReader(spStorage.get(), reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  msr = gpcc::stream::MemStreamReader(spStorage.get(), reqSize, gpcc::stream::IStreamReader::Endian::Little);
   ASSERT_THROW((void)ResponseBase::FromBinary(msr), std::runtime_error);
   msr.Close();
 }
@@ -3315,17 +3315,17 @@ TEST_F(gpcc_cood_ObjectInfoResponse_TestsF, DeserializeInvalidBinaryData_FirstSu
 
   std::unique_ptr<uint8_t[]> spStorage = std::make_unique<uint8_t[]>(reqSize);
 
-  gpcc::Stream::MemStreamWriter msw(spStorage.get(), reqSize, gpcc::Stream::IStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(spStorage.get(), reqSize, gpcc::stream::IStreamWriter::Endian::Little);
   spUUT->ToBinary(msw);
   msw.AlignToByteBoundary(false);
-  ASSERT_TRUE(msw.GetState() == gpcc::Stream::IStreamWriter::States::full);
+  ASSERT_TRUE(msw.GetState() == gpcc::stream::IStreamWriter::States::full);
   msw.Close();
 
   // manipulate binary (firstSubindex = 1)
   spStorage[offsetOfFirstSubindex] = 1U;
 
   // try to deserialize it
-  gpcc::Stream::MemStreamReader msr(spStorage.get(), reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(spStorage.get(), reqSize, gpcc::stream::IStreamReader::Endian::Little);
   ASSERT_THROW((void)ResponseBase::FromBinary(msr), std::runtime_error);
   msr.Close();
 
@@ -3333,7 +3333,7 @@ TEST_F(gpcc_cood_ObjectInfoResponse_TestsF, DeserializeInvalidBinaryData_FirstSu
   spStorage[offsetOfFirstSubindex] = 2U;
 
   // try to deserialize it
-  msr = gpcc::Stream::MemStreamReader(spStorage.get(), reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  msr = gpcc::stream::MemStreamReader(spStorage.get(), reqSize, gpcc::stream::IStreamReader::Endian::Little);
   ASSERT_THROW((void)ResponseBase::FromBinary(msr), std::runtime_error);
   msr.Close();
 }
@@ -3351,10 +3351,10 @@ TEST_F(gpcc_cood_ObjectInfoResponse_TestsF, DeserializeInvalidBinaryData_NumberO
 
   std::unique_ptr<uint8_t[]> spStorage = std::make_unique<uint8_t[]>(reqSize);
 
-  gpcc::Stream::MemStreamWriter msw(spStorage.get(), reqSize, gpcc::Stream::IStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(spStorage.get(), reqSize, gpcc::stream::IStreamWriter::Endian::Little);
   spUUT->ToBinary(msw);
   msw.AlignToByteBoundary(false);
-  ASSERT_TRUE(msw.GetState() == gpcc::Stream::IStreamWriter::States::full);
+  ASSERT_TRUE(msw.GetState() == gpcc::stream::IStreamWriter::States::full);
   msw.Close();
 
   // manipulate binary (number of included SIs = 0U)
@@ -3362,7 +3362,7 @@ TEST_F(gpcc_cood_ObjectInfoResponse_TestsF, DeserializeInvalidBinaryData_NumberO
   spStorage[offsetOfNbOfSI + 1U] = 0U;
 
   // try to deserialize it
-  gpcc::Stream::MemStreamReader msr(spStorage.get(), reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(spStorage.get(), reqSize, gpcc::stream::IStreamReader::Endian::Little);
   ASSERT_THROW((void)ResponseBase::FromBinary(msr), std::runtime_error);
   msr.Close();
 
@@ -3371,7 +3371,7 @@ TEST_F(gpcc_cood_ObjectInfoResponse_TestsF, DeserializeInvalidBinaryData_NumberO
   spStorage[offsetOfNbOfSI + 1U] = 1U;
 
   // try to deserialize it
-  msr = gpcc::Stream::MemStreamReader(spStorage.get(), reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  msr = gpcc::stream::MemStreamReader(spStorage.get(), reqSize, gpcc::stream::IStreamReader::Endian::Little);
   ASSERT_THROW((void)ResponseBase::FromBinary(msr), std::runtime_error);
   msr.Close();
 
@@ -3380,7 +3380,7 @@ TEST_F(gpcc_cood_ObjectInfoResponse_TestsF, DeserializeInvalidBinaryData_NumberO
   spStorage[offsetOfNbOfSI + 1U] = 0U;
 
   // try to deserialize it
-  msr = gpcc::Stream::MemStreamReader(spStorage.get(), reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  msr = gpcc::stream::MemStreamReader(spStorage.get(), reqSize, gpcc::stream::IStreamReader::Endian::Little);
   ASSERT_THROW((void)ResponseBase::FromBinary(msr), std::runtime_error);
   msr.Close();
 }
@@ -3398,10 +3398,10 @@ TEST_F(gpcc_cood_ObjectInfoResponse_TestsF, DeserializeInvalidBinaryData_NumberO
 
   std::unique_ptr<uint8_t[]> spStorage = std::make_unique<uint8_t[]>(reqSize);
 
-  gpcc::Stream::MemStreamWriter msw(spStorage.get(), reqSize, gpcc::Stream::IStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(spStorage.get(), reqSize, gpcc::stream::IStreamWriter::Endian::Little);
   spUUT->ToBinary(msw);
   msw.AlignToByteBoundary(false);
-  ASSERT_TRUE(msw.GetState() == gpcc::Stream::IStreamWriter::States::full);
+  ASSERT_TRUE(msw.GetState() == gpcc::stream::IStreamWriter::States::full);
   msw.Close();
 
   // manipulate binary (number of included SIs = 0U)
@@ -3409,7 +3409,7 @@ TEST_F(gpcc_cood_ObjectInfoResponse_TestsF, DeserializeInvalidBinaryData_NumberO
   spStorage[offsetOfNbOfSI + 1U] = 0U;
 
   // try to deserialize it
-  gpcc::Stream::MemStreamReader msr(spStorage.get(), reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(spStorage.get(), reqSize, gpcc::stream::IStreamReader::Endian::Little);
   ASSERT_THROW((void)ResponseBase::FromBinary(msr), std::runtime_error);
   msr.Close();
 
@@ -3418,7 +3418,7 @@ TEST_F(gpcc_cood_ObjectInfoResponse_TestsF, DeserializeInvalidBinaryData_NumberO
   spStorage[offsetOfNbOfSI + 1U] = 1U;
 
   // try to deserialize it
-  msr = gpcc::Stream::MemStreamReader(spStorage.get(), reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  msr = gpcc::stream::MemStreamReader(spStorage.get(), reqSize, gpcc::stream::IStreamReader::Endian::Little);
   ASSERT_THROW((void)ResponseBase::FromBinary(msr), std::runtime_error);
   msr.Close();
 
@@ -3427,7 +3427,7 @@ TEST_F(gpcc_cood_ObjectInfoResponse_TestsF, DeserializeInvalidBinaryData_NumberO
   spStorage[offsetOfNbOfSI + 1U] = 0U;
 
   // try to deserialize it
-  msr = gpcc::Stream::MemStreamReader(spStorage.get(), reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  msr = gpcc::stream::MemStreamReader(spStorage.get(), reqSize, gpcc::stream::IStreamReader::Endian::Little);
   ASSERT_THROW((void)ResponseBase::FromBinary(msr), std::runtime_error);
   msr.Close();
 }

@@ -560,7 +560,7 @@ void CLIAdapterBase::CLI_Read(std::string const & restOfLine)
     pData = new uint8_t[sizeInByte];
 
     // do the actual read
-    gpcc::Stream::MemStreamWriter msw(pData, sizeInByte, gpcc::Stream::IStreamWriter::nativeEndian);
+    gpcc::stream::MemStreamWriter msw(pData, sizeInByte, gpcc::stream::IStreamWriter::nativeEndian);
     result = objPtr->Read(subIdx, permissions, msw);
     msw.Close();
   }
@@ -575,7 +575,7 @@ void CLIAdapterBase::CLI_Read(std::string const & restOfLine)
   // ============================================
   // Print to CLI
   // ============================================
-  gpcc::Stream::MemStreamReader msr(pData, sizeInByte, gpcc::Stream::IStreamReader::nativeEndian);
+  gpcc::stream::MemStreamReader msr(pData, sizeInByte, gpcc::stream::IStreamReader::nativeEndian);
   auto str = CANopenEncodedDataToString(msr, sizeInBit, objPtr->GetSubIdxDataType(subIdx));
   msr.Close();
 
@@ -633,7 +633,7 @@ void CLIAdapterBase::CLI_Write(std::string const & restOfLine)
   // ============================================
   // Analyze args (second part: data)
   // ============================================
-  args.ExtractData(dataType, subIdxMaxSize, gpcc::Stream::IStreamWriter::nativeEndian);
+  args.ExtractData(dataType, subIdxMaxSize, gpcc::stream::IStreamWriter::nativeEndian);
 
   // ============================================
   // write to object
@@ -667,7 +667,7 @@ void CLIAdapterBase::CLI_Write(std::string const & restOfLine)
 
     // do the actual write
     auto const & data = args.GetData();
-    gpcc::Stream::MemStreamReader msr(data.data(), data.size(), gpcc::Stream::IStreamReader::nativeEndian);
+    gpcc::stream::MemStreamReader msr(data.data(), data.size(), gpcc::stream::IStreamReader::nativeEndian);
     result = objPtr->Write(subIdx, permissions, msr);
     msr.Close();
   }
@@ -746,7 +746,7 @@ void CLIAdapterBase::CLI_CARead(std::string const & restOfLine)
     pData = new uint8_t[sizeInByte];
 
     // do the actual read
-    gpcc::Stream::MemStreamWriter msw(pData, sizeInByte, gpcc::Stream::IStreamWriter::nativeEndian);
+    gpcc::stream::MemStreamWriter msw(pData, sizeInByte, gpcc::stream::IStreamWriter::nativeEndian);
     auto const result = objPtr->CompleteRead(true, false, permissions, msw);
     msw.Close();
 
@@ -760,7 +760,7 @@ void CLIAdapterBase::CLI_CARead(std::string const & restOfLine)
   // ============================================
   // Print to CLI
   // ============================================
-  gpcc::Stream::MemStreamReader msr(pData, sizeInByte, gpcc::Stream::IStreamReader::nativeEndian);
+  gpcc::stream::MemStreamReader msr(pData, sizeInByte, gpcc::stream::IStreamReader::nativeEndian);
 
   // extract value of SI0
   uint8_t const si0 = msr.Read_uint8();
@@ -890,7 +890,7 @@ void CLIAdapterBase::CLI_CAWrite(std::string const & restOfLine)
     auto locker = objPtr->LockData();
 
     // do the actual read
-    gpcc::Stream::MemStreamWriter msw(&currSI0, sizeof(currSI0), gpcc::Stream::IStreamWriter::nativeEndian);
+    gpcc::stream::MemStreamWriter msw(&currSI0, sizeof(currSI0), gpcc::stream::IStreamWriter::nativeEndian);
     auto const result = objPtr->Read(0U, permissions, msw);
     msw.Close();
 
@@ -944,7 +944,7 @@ void CLIAdapterBase::CLI_CAWrite(std::string const & restOfLine)
   // allocate memory
   size_t sizeInByte = (sizeInBit + 7U) / 8U;
   std::vector<uint8_t> data(sizeInByte);
-  gpcc::Stream::MemStreamWriter msw(data.data(), sizeInByte, gpcc::Stream::MemStreamWriter::nativeEndian);
+  gpcc::stream::MemStreamWriter msw(data.data(), sizeInByte, gpcc::stream::MemStreamWriter::nativeEndian);
 
   // ============================================
   // Fill buffer with write data entered by the user
@@ -1104,21 +1104,21 @@ void CLIAdapterBase::CLI_CAWrite(std::string const & restOfLine)
     auto locker = objPtr->LockData();
 
     // determine expected ernob
-    gpcc::Stream::MemStreamReader::RemainingNbOfBits ernob;
+    gpcc::stream::MemStreamReader::RemainingNbOfBits ernob;
     switch (sizeInBit % 8U)
     {
-      case 0U: ernob = gpcc::Stream::MemStreamReader::RemainingNbOfBits::zero; break;
-      case 1U: ernob = gpcc::Stream::MemStreamReader::RemainingNbOfBits::seven; break;
-      case 2U: ernob = gpcc::Stream::MemStreamReader::RemainingNbOfBits::six; break;
-      case 3U: ernob = gpcc::Stream::MemStreamReader::RemainingNbOfBits::five; break;
-      case 4U: ernob = gpcc::Stream::MemStreamReader::RemainingNbOfBits::four; break;
-      case 5U: ernob = gpcc::Stream::MemStreamReader::RemainingNbOfBits::three; break;
-      case 6U: ernob = gpcc::Stream::MemStreamReader::RemainingNbOfBits::two; break;
-      case 7U: ernob = gpcc::Stream::MemStreamReader::RemainingNbOfBits::one; break;
+      case 0U: ernob = gpcc::stream::MemStreamReader::RemainingNbOfBits::zero; break;
+      case 1U: ernob = gpcc::stream::MemStreamReader::RemainingNbOfBits::seven; break;
+      case 2U: ernob = gpcc::stream::MemStreamReader::RemainingNbOfBits::six; break;
+      case 3U: ernob = gpcc::stream::MemStreamReader::RemainingNbOfBits::five; break;
+      case 4U: ernob = gpcc::stream::MemStreamReader::RemainingNbOfBits::four; break;
+      case 5U: ernob = gpcc::stream::MemStreamReader::RemainingNbOfBits::three; break;
+      case 6U: ernob = gpcc::stream::MemStreamReader::RemainingNbOfBits::two; break;
+      case 7U: ernob = gpcc::stream::MemStreamReader::RemainingNbOfBits::one; break;
     }
 
     // do the actual write
-    gpcc::Stream::MemStreamReader msr(data.data(), sizeInByte, gpcc::Stream::IStreamReader::nativeEndian);
+    gpcc::stream::MemStreamReader msr(data.data(), sizeInByte, gpcc::stream::IStreamReader::nativeEndian);
     auto const result = objPtr->CompleteWrite(true, false, permissions, msr, ernob);
     msr.Close();
 

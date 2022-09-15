@@ -65,7 +65,7 @@ class WriteArgsParser final
 
     void ExtractData(DataType const dataType,
                      size_t const subIndexMaxSize,
-                     gpcc::Stream::IStreamWriter::Endian const endian);
+                     gpcc::stream::IStreamWriter::Endian const endian);
 
     uint16_t GetIndex(void) const noexcept;
     uint8_t GetSubIndex(void) const noexcept;

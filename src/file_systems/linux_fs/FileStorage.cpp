@@ -95,7 +95,7 @@ FileStorage::~FileStorage(void)
 }
 
 /// \copydoc IFileStorage::Open
-std::unique_ptr<Stream::IStreamReader> FileStorage::Open(std::string const & name)
+std::unique_ptr<stream::IStreamReader> FileStorage::Open(std::string const & name)
 {
   BasicCheckName(name);
 
@@ -115,7 +115,7 @@ std::unique_ptr<Stream::IStreamReader> FileStorage::Open(std::string const & nam
     fileLockManager.ReleaseReadLock(lockID);
   };
 
-  auto spISR = std::unique_ptr<Stream::IStreamReader>(new internal::StdIOFileReader(fullName, *this, lockID));
+  auto spISR = std::unique_ptr<stream::IStreamReader>(new internal::StdIOFileReader(fullName, *this, lockID));
 
   ON_SCOPE_EXIT_DISMISS();
 
@@ -123,7 +123,7 @@ std::unique_ptr<Stream::IStreamReader> FileStorage::Open(std::string const & nam
 }
 
 /// \copydoc IFileStorage::Create
-std::unique_ptr<Stream::IStreamWriter> FileStorage::Create(std::string const & name, bool const overwriteIfExisting)
+std::unique_ptr<stream::IStreamWriter> FileStorage::Create(std::string const & name, bool const overwriteIfExisting)
 {
   FullCheckFileName(name);
 
@@ -143,7 +143,7 @@ std::unique_ptr<Stream::IStreamWriter> FileStorage::Create(std::string const & n
     fileLockManager.ReleaseWriteLock(lockID);
   };
 
-  auto spISW = std::unique_ptr<Stream::IStreamWriter>(new internal::StdIOFileWriter(fullName, overwriteIfExisting, *this, lockID));
+  auto spISW = std::unique_ptr<stream::IStreamWriter>(new internal::StdIOFileWriter(fullName, overwriteIfExisting, *this, lockID));
 
   ON_SCOPE_EXIT_DISMISS();
 

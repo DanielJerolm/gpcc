@@ -15,7 +15,7 @@
 
 namespace gpcc
 {
-namespace Stream
+namespace stream
 {
 
 /**
@@ -120,19 +120,19 @@ class StreamReaderBase: public IStreamReader
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream cannot
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream cannot
  *   be recovered (e.g. undo a read)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [EmptyError](@ref gpcc::Stream::EmptyError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [EmptyError](@ref gpcc::stream::EmptyError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream cannot
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream cannot
  *   be recovered (e.g. undo a read)
  *
  * ---
@@ -155,20 +155,20 @@ class StreamReaderBase: public IStreamReader
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream cannot
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream cannot
  *   be recovered (e.g. undo a read)
  * - the memory referenced by parameter `p` may contain undefined data
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [EmptyError](@ref gpcc::Stream::EmptyError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [EmptyError](@ref gpcc::stream::EmptyError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream cannot
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream cannot
  *   be recovered (e.g. undo a read)
  * - the memory referenced by parameter `p` may contain undefined data
  *
@@ -190,19 +190,19 @@ class StreamReaderBase: public IStreamReader
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream cannot
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream cannot
  *   be recovered (e.g. undo a read)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [EmptyError](@ref gpcc::Stream::EmptyError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [EmptyError](@ref gpcc::stream::EmptyError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream cannot
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream cannot
  *   be recovered (e.g. undo a read)
  *
  * ---
@@ -217,7 +217,7 @@ class StreamReaderBase: public IStreamReader
  * @}
  */
 
-} // namespace Stream
+} // namespace stream
 } // namespace gpcc
 
 #endif /* SRC_GPCC_STREAM_STREAMREADERBASE_HPP_ */

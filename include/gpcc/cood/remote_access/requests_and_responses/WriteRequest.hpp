@@ -65,7 +65,7 @@ class WriteRequest final : public RequestBase
                  std::vector<uint8_t> &&    _data,
                  size_t               const _maxResponseSize);
 
-    WriteRequest(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, WriteRequestPassKey);
+    WriteRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, WriteRequestPassKey);
 
     WriteRequest(WriteRequest const &) = default;
     WriteRequest(WriteRequest &&) noexcept = default;
@@ -79,7 +79,7 @@ class WriteRequest final : public RequestBase
 
     // <-- RequestBase
     size_t GetBinarySize(void) const override;
-    void ToBinary(gpcc::Stream::IStreamWriter & sw) const override;
+    void ToBinary(gpcc::stream::IStreamWriter & sw) const override;
 
     std::string ToString(void) const override;
     // --> RequestBase

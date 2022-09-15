@@ -34,7 +34,7 @@ PingResponse::PingResponse(void)
 
 /**
  * \brief Constructor. Creates a @ref PingResponse object from data read from an
- *        [IStreamReader](@ref gpcc::Stream::IStreamReader) containing a serialized @ref PingResponse object.
+ *        [IStreamReader](@ref gpcc::stream::IStreamReader) containing a serialized @ref PingResponse object.
  *
  * This is intended to be invoked by @ref ResponseBase::FromBinary() only. In conjunction with
  * @ref ResponseBase::FromBinary(), this is the counterpart to @ref ResponseBase::ToBinary().
@@ -61,7 +61,7 @@ PingResponse::PingResponse(void)
  * \param versionOnHand
  * Version of serialized object read from `sr`.
  */
-PingResponse::PingResponse(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, PingResponsePassKey)
+PingResponse::PingResponse(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, PingResponsePassKey)
 : ResponseBase(ResponseTypes::pingResponse, sr, versionOnHand)
 {
 }
@@ -75,7 +75,7 @@ size_t PingResponse::GetBinarySize(void) const
 }
 
 /// \copydoc gpcc::cood::ResponseBase::ToBinary
-void PingResponse::ToBinary(gpcc::Stream::IStreamWriter & sw) const
+void PingResponse::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   ResponseBase::ToBinary(sw);
 }

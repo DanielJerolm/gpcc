@@ -106,7 +106,7 @@ WriteRequest::WriteRequest(AccessType           const _accessType,
 
 /**
  * \brief Constructor. Creates a @ref WriteRequest object from data read from an
- *        [IStreamReader](@ref gpcc::Stream::IStreamReader) containing a serialized @ref WriteRequest object.
+ *        [IStreamReader](@ref gpcc::stream::IStreamReader) containing a serialized @ref WriteRequest object.
  *
  * This is intended to be invoked by @ref RequestBase::FromBinary() only. In conjunction with
  * @ref RequestBase::FromBinary(), this is the counterpart to @ref RequestBase::ToBinary().
@@ -133,7 +133,7 @@ WriteRequest::WriteRequest(AccessType           const _accessType,
  * \param versionOnHand
  * Version of serialized object read from `sr`.
  */
-WriteRequest::WriteRequest(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, WriteRequestPassKey)
+WriteRequest::WriteRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, WriteRequestPassKey)
 : RequestBase(RequestTypes::writeRequest, sr, versionOnHand)
 , accessType(U8_to_AccessType(sr.Read_uint8()))
 , index(sr.Read_uint16())
@@ -235,7 +235,7 @@ size_t WriteRequest::GetBinarySize(void) const
 }
 
 /// \copydoc gpcc::cood::RequestBase::ToBinary
-void WriteRequest::ToBinary(gpcc::Stream::IStreamWriter & sw) const
+void WriteRequest::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   if (data.empty())
     throw std::logic_error("WriteRequest::ToBinary: Object empty. Was it involved in a move-operation?");

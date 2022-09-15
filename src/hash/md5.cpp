@@ -465,7 +465,7 @@ std::vector<uint8_t> MD5Sum(void const * const pData, size_t const s)
   while (state != States::done);
 
   // build result
-  gpcc::Stream::MemStreamWriter msw(result.data(), result.size(), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(result.data(), result.size(), gpcc::stream::MemStreamWriter::Endian::Little);
   msw.Write_uint32(A);
   msw.Write_uint32(B);
   msw.Write_uint32(C);

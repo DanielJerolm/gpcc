@@ -1281,7 +1281,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_BadNames)
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
 
   ASSERT_THROW(spISW = uut.Create("", false), std::invalid_argument);
   ASSERT_THROW(spISW = uut.Create(" Sec1", false), std::invalid_argument);
@@ -1300,7 +1300,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_WrongState)
   Format(128);
   uut.Unmount();
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
 
   // not_mounted
   ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
@@ -1328,8 +1328,8 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_SectionLocked)
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW1;
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW2;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW1;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW2;
 
   // locked by writer
   spISW1 = uut.Create("Sec1", false);
@@ -1347,8 +1347,8 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_SectionAlreadyExistin
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW1;
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW2;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW1;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW2;
 
   spISW1 = uut.Create("Sec1", false);
   spISW1->Close();
@@ -1366,7 +1366,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_NoFreeBlocks)
   RandomData data(n - 8U, n - 8U);
   data.Write("Section1", false, uut);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW1;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW1;
   ASSERT_THROW(spISW1 = uut.Create("Section2", false), gpcc::file_systems::InsufficientSpaceError);
 
   data.Compare("Section1", uut);
@@ -1383,7 +1383,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_OneFreeBlock)
   RandomData data(n - (8U + bytesPerBlock), n - (8U + bytesPerBlock));
   data.Write("Section1", false, uut);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW1;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW1;
   ASSERT_THROW(spISW1 = uut.Create("Section2", false), gpcc::file_systems::InsufficientSpaceError);
 
   data.Compare("Section1", uut);
@@ -1514,7 +1514,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_RemainingCapac
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
 
   ASSERT_FALSE(spISW->IsRemainingCapacitySupported());
@@ -1528,13 +1528,13 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_RemainingCapac
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
 
   EXPECT_THROW((void)spISW->RemainingCapacity(), std::logic_error);
 
   spISW->Close();
-  EXPECT_THROW((void)spISW->RemainingCapacity(), gpcc::Stream::ClosedError);
+  EXPECT_THROW((void)spISW->RemainingCapacity(), gpcc::stream::ClosedError);
 
   spISW.reset();
 
@@ -1583,7 +1583,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteStrings)
   auto spISR = uut.Open("Section1");
   uint8_t readData[13];
   spISR->Read_uint8(readData, sizeof(readData));
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -1881,9 +1881,9 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteMultipleB
   auto spISW = uut.Create("Section1", false);
 
   RandomData data(bytesPerBlock + 1U, bytesPerBlock + 1U);
-  EXPECT_THROW(spISW->Write_uint8(data.GetData(), bytesPerBlock + 1U), gpcc::Stream::FullError);
+  EXPECT_THROW(spISW->Write_uint8(data.GetData(), bytesPerBlock + 1U), gpcc::stream::FullError);
 
-  ASSERT_EQ(gpcc::Stream::IStreamWriter::States::error, spISW->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamWriter::States::error, spISW->GetState());
 
   spISW->Close();
   spISW.reset();
@@ -1892,7 +1892,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteMultipleB
 
   fillUp.Compare("FillUp", uut);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
   uut.Unmount();
@@ -1915,7 +1915,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBitsFullE
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
   ASSERT_EQ(0U, fakeStorage.readAccessCnt);
 
-  ASSERT_THROW(spISW->Write_Bits(0x1B, 6), gpcc::Stream::FullError);
+  ASSERT_THROW(spISW->Write_Bits(0x1B, 6), gpcc::stream::FullError);
 
   spISW->Close();
   spISW.reset();
@@ -1924,7 +1924,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBitsFullE
 
   fillUp.Compare("FillUp", uut);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
   uut.Unmount();
@@ -1949,7 +1949,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_Write2x6StoreA
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
   ASSERT_EQ(0U, fakeStorage.readAccessCnt);
 
-  ASSERT_THROW(spISW->Write_Bits(0x26, 6), gpcc::Stream::FullError);
+  ASSERT_THROW(spISW->Write_Bits(0x26, 6), gpcc::stream::FullError);
 
   spISW->Close();
   spISW.reset();
@@ -1958,7 +1958,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_Write2x6StoreA
 
   fillUp.Compare("FillUp", uut);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
   uut.Unmount();
@@ -1971,7 +1971,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_ProperCleanupU
   fillUp.Write("FillUp", false, uut);
 
   RandomData dataSec1(bytesPerBlock - 8U + 1U, bytesPerBlock - 8U + 1U);
-  ASSERT_THROW(dataSec1.Write("Section1", false, uut), gpcc::Stream::FullError);
+  ASSERT_THROW(dataSec1.Write("Section1", false, uut), gpcc::stream::FullError);
 
   // check free space
   ASSERT_EQ(bytesPerBlock, uut.GetFreeSpace());
@@ -1980,7 +1980,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_ProperCleanupU
   fillUp.Compare("FillUp", uut);
 
   // check: Section1 must not be existing
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
   // unmount/remount. Check: There must be no write access to storage
@@ -2015,9 +2015,9 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageErrorUp
 
   fakeStorage.writeAndCheckAccessTillFailure = 2;
 
-  ASSERT_THROW( for (size_t i = 0; i < 3U * bytesPerBlock; i++) { *spISW << static_cast<uint8_t>(i & 0xFFU); }, gpcc::Stream::IOError);
+  ASSERT_THROW( for (size_t i = 0; i < 3U * bytesPerBlock; i++) { *spISW << static_cast<uint8_t>(i & 0xFFU); }, gpcc::stream::IOError);
 
-  ASSERT_EQ(gpcc::Stream::IStreamWriter::States::error, spISW->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamWriter::States::error, spISW->GetState());
 
   EXPECT_ANY_THROW(spISW->Close());
   spISW.reset();
@@ -2033,7 +2033,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageErrorUp
 
   fillUp.Compare("FillUp", uut);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
@@ -2063,7 +2063,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageErrorUp
     *spISW << static_cast<uint8_t>(i & 0xFFU);
 
   fakeStorage.writeAndCheckAccessTillFailure = 1;
-  EXPECT_THROW(spISW->Close(), gpcc::Stream::IOError);
+  EXPECT_THROW(spISW->Close(), gpcc::stream::IOError);
   spISW.reset();
 
   ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
@@ -2077,7 +2077,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageErrorUp
 
   fillUp.Compare("FillUp", uut);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
@@ -2107,7 +2107,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageErrorUp
     *spISW << static_cast<uint8_t>(i & 0xFFU);
 
   fakeStorage.writeAndCheckAccessTillFailure = 2;
-  EXPECT_THROW(spISW->Close(), gpcc::Stream::IOError);
+  EXPECT_THROW(spISW->Close(), gpcc::stream::IOError);
   spISW.reset();
 
   ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
@@ -2121,7 +2121,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageErrorUp
 
   fillUp.Compare("FillUp", uut);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
@@ -2150,9 +2150,9 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageThrowsU
 
   fakeStorage.writeAccessesTillThrow = 2;
 
-  ASSERT_THROW( for (size_t i = 0; i < 3U * bytesPerBlock; i++) { *spISW << static_cast<uint8_t>(i & 0xFFU); }, gpcc::Stream::IOError);
+  ASSERT_THROW( for (size_t i = 0; i < 3U * bytesPerBlock; i++) { *spISW << static_cast<uint8_t>(i & 0xFFU); }, gpcc::stream::IOError);
 
-  ASSERT_EQ(gpcc::Stream::IStreamWriter::States::error, spISW->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamWriter::States::error, spISW->GetState());
 
   EXPECT_ANY_THROW(spISW->Close());
   spISW.reset();
@@ -2168,7 +2168,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageThrowsU
 
   fillUp.Compare("FillUp", uut);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
@@ -2198,7 +2198,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageThrowsU
     *spISW << static_cast<uint8_t>(i & 0xFFU);
 
   fakeStorage.writeAccessesTillThrow = 1;
-  EXPECT_THROW(spISW->Close(), gpcc::Stream::IOError);
+  EXPECT_THROW(spISW->Close(), gpcc::stream::IOError);
   spISW.reset();
 
   ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
@@ -2212,7 +2212,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageThrowsU
 
   fillUp.Compare("FillUp", uut);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
@@ -2242,7 +2242,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageThrowsU
     *spISW << static_cast<uint8_t>(i & 0xFFU);
 
   fakeStorage.writeAccessesTillThrow = 2;
-  EXPECT_THROW(spISW->Close(), gpcc::Stream::IOError);
+  EXPECT_THROW(spISW->Close(), gpcc::stream::IOError);
   spISW.reset();
 
   ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
@@ -2256,7 +2256,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageThrowsU
 
   fillUp.Compare("FillUp", uut);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
@@ -2296,7 +2296,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_PowerFailUponW
 
     uut.MountStep1();
 
-    std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+    std::unique_ptr<gpcc::stream::IStreamReader> spISR;
     ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
     uut.MountStep2();
@@ -2312,10 +2312,10 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_GetNbOfCachedB
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
 
-  ASSERT_EQ(gpcc::Stream::IStreamWriter::States::open, spISW->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamWriter::States::open, spISW->GetState());
 
   spISW->Write_uint8(0xAB);
   EXPECT_EQ(0U, spISW->GetNbOfCachedBits());
@@ -2338,8 +2338,8 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_GetNbOfCachedB
 
   spISW->Close();
 
-  ASSERT_EQ(gpcc::Stream::IStreamWriter::States::closed, spISW->GetState());
-  EXPECT_THROW(spISW->GetNbOfCachedBits(), gpcc::Stream::ClosedError);
+  ASSERT_EQ(gpcc::stream::IStreamWriter::States::closed, spISW->GetState());
+  EXPECT_THROW(spISW->GetNbOfCachedBits(), gpcc::stream::ClosedError);
 
   uut.Unmount();
 }
@@ -2347,8 +2347,8 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_BadNames)
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   ASSERT_THROW(spISR = uut.Open(""), std::invalid_argument);
   ASSERT_THROW(spISR = uut.Open(" Sec1"), std::invalid_argument);
   ASSERT_THROW(spISR = uut.Open("Sec2 "), std::invalid_argument);
@@ -2369,7 +2369,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionNotExisting)
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Sec1"), gpcc::file_systems::NoSuchFileError);
 
   uut.Unmount();
@@ -2381,7 +2381,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_WrongState)
   data.Write("Section1", false, uut);
   uut.Unmount();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
 
   // state is not_mounted
   ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
@@ -2418,8 +2418,8 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionLockedByReader)
   RandomData data(8,8);
   data.Write("Section1", false, uut);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR1;
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR2;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR1;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR2;
   ASSERT_NO_THROW(spISR1 = uut.Open("Section1"));
   ASSERT_NO_THROW(spISR2 = uut.Open("Section1"));
   spISR1.reset();
@@ -2431,10 +2431,10 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionLockedByWriter)
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::FileAlreadyAccessedError);
 
   spISW.reset();
@@ -2445,13 +2445,13 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_EmptySection)
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR.reset();
 
   uut.Unmount();
@@ -2460,13 +2460,13 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_DestroyReaderWithoutClo
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   spISW->Write_uint32(0x12345678U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
   spISR.reset();
 
@@ -2510,7 +2510,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_diffN
 
   // test
   uut.MountStep1();
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), BlockLinkageError);
 
   ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
@@ -2692,7 +2692,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_sameN
 
   // test
   uut.MountStep1();
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), BlockLinkageError);
 
   ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
@@ -2852,32 +2852,32 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_RemainingBytes
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   ASSERT_FALSE(spISR->IsRemainingBytesSupported());
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
   EXPECT_THROW((void)spISR->RemainingBytes(), std::logic_error);
 
   spISR->Skip(2U * 8U);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   EXPECT_THROW((void)spISR->RemainingBytes(), std::logic_error);
 
-  ASSERT_THROW(spISR->Skip(1U), gpcc::Stream::EmptyError);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
-  EXPECT_THROW((void)spISR->RemainingBytes(), gpcc::Stream::ErrorStateError);
+  ASSERT_THROW(spISR->Skip(1U), gpcc::stream::EmptyError);
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
+  EXPECT_THROW((void)spISR->RemainingBytes(), gpcc::stream::ErrorStateError);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
-  EXPECT_THROW((void)spISR->RemainingBytes(), gpcc::Stream::ClosedError);
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
+  EXPECT_THROW((void)spISR->RemainingBytes(), gpcc::stream::ClosedError);
 
   uut.Unmount();
 }
@@ -2885,16 +2885,16 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EmptySection)
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   uint8_t data;
-  ASSERT_THROW(*spISR >> data, gpcc::Stream::EmptyError);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  ASSERT_THROW(*spISR >> data, gpcc::stream::EmptyError);
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -2906,18 +2906,18 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadAndSection
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   spISW->Write_uint8(55);
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
   uint8_t data;
   *spISR >> data;
   ASSERT_EQ(55, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -2927,7 +2927,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadStrings)
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   *spISW << std::string("Str1");
   *spISW << std::string("Str2");
@@ -2936,7 +2936,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadStrings)
   spISW->Write_char("Str6\nStr7\n", 10);
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   std::string s;
@@ -2952,7 +2952,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadStrings)
   ASSERT_TRUE(s == "Str6");
   s = spISR->Read_line();
   ASSERT_TRUE(s == "Str7");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -2964,7 +2964,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Nul
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -2976,7 +2976,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Nul
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -2991,7 +2991,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Nul
   ASSERT_TRUE(s == "Str1");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3003,7 +3003,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Nul
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3012,7 +3012,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Nul
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   for (size_t i = 0; i < bytesPerBlock - 5U; i++)
@@ -3025,7 +3025,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Nul
   std::string s;
   *spISR >> s;
   ASSERT_TRUE(s == "Str1");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3037,7 +3037,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Str
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 3U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3046,7 +3046,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Str
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   for (size_t i = 0; i < bytesPerBlock - 3U; i++)
@@ -3059,7 +3059,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Str
   std::string s;
   *spISR >> s;
   ASSERT_TRUE(s == "Str1");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3071,7 +3071,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Str
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 3U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3081,7 +3081,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Str
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3096,7 +3096,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Str
   ASSERT_TRUE(s == "Str1");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3108,7 +3108,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Str
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3117,7 +3117,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Str
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   for (size_t i = 0; i < bytesPerBlock - 4U; i++)
@@ -3130,7 +3130,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Str
   std::string s;
   *spISR >> s;
   ASSERT_TRUE(s == "Str1");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3142,7 +3142,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Str
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3153,7 +3153,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Str
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3168,7 +3168,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Str
   ASSERT_TRUE(s == "Str1");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3180,19 +3180,19 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_NoN
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   spISW->Write_char("Str1", 4);
   spISW.reset();
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   std::string s;
-  ASSERT_THROW(*spISR >> s, gpcc::Stream::EmptyError);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  ASSERT_THROW(*spISR >> s, gpcc::stream::EmptyError);
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3208,7 +3208,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_NoN
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3217,7 +3217,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_NoN
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   for (size_t i = 0; i < bytesPerBlock - 4U; i++)
@@ -3228,8 +3228,8 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_NoN
   }
 
   std::string s;
-  ASSERT_THROW(*spISR >> s, gpcc::Stream::EmptyError);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  ASSERT_THROW(*spISR >> s, gpcc::stream::EmptyError);
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3245,7 +3245,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Diffe
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   spISW->Write_string("Line1\nLine2\rLine3\r\nLine4");
   *spISW << static_cast<uint8_t>(0x55);
@@ -3254,7 +3254,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Diffe
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3268,7 +3268,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Diffe
   ASSERT_TRUE(s == "Line4");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3280,7 +3280,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3292,7 +3292,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3306,7 +3306,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
   ASSERT_TRUE(s == "");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3318,7 +3318,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3330,7 +3330,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3344,7 +3344,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
   ASSERT_TRUE(s == "");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3356,7 +3356,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3368,7 +3368,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3382,7 +3382,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
   ASSERT_TRUE(s == "");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3394,7 +3394,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3407,7 +3407,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3421,7 +3421,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
   ASSERT_TRUE(s == "");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3433,7 +3433,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 2U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3446,7 +3446,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3460,7 +3460,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
   ASSERT_TRUE(s == "");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3472,7 +3472,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 2U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3482,7 +3482,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3494,7 +3494,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3506,7 +3506,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 2U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3516,7 +3516,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3528,7 +3528,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3540,7 +3540,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 2U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3550,7 +3550,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3562,7 +3562,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3574,7 +3574,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 3U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3585,7 +3585,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3597,7 +3597,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3609,7 +3609,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3619,7 +3619,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3631,7 +3631,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3643,7 +3643,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3653,7 +3653,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3665,7 +3665,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3677,7 +3677,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3687,7 +3687,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3699,7 +3699,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3711,7 +3711,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 2U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3722,7 +3722,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3734,7 +3734,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3746,7 +3746,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NUL_T
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3758,7 +3758,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NUL_T
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3772,7 +3772,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NUL_T
   ASSERT_TRUE(s == "ABC");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3784,7 +3784,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_LF_Te
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3796,7 +3796,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_LF_Te
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3810,7 +3810,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_LF_Te
   ASSERT_TRUE(s == "ABC");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3822,7 +3822,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CR_Te
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3834,7 +3834,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CR_Te
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3848,7 +3848,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CR_Te
   ASSERT_TRUE(s == "ABC");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3860,7 +3860,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3872,7 +3872,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3886,7 +3886,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_
   ASSERT_TRUE(s == "ABC");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3898,7 +3898,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3910,7 +3910,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3924,7 +3924,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_
   ASSERT_TRUE(s == "ABC");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3936,7 +3936,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NUL_E
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3946,7 +3946,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NUL_E
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3958,7 +3958,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NUL_E
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "ABC");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -3970,7 +3970,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_LF_EO
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -3980,7 +3980,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_LF_EO
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -3992,7 +3992,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_LF_EO
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "ABC");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -4004,7 +4004,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CR_EO
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4014,7 +4014,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CR_EO
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -4026,7 +4026,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CR_EO
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "ABC");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -4038,7 +4038,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 6U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4048,7 +4048,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -4060,7 +4060,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "ABC");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -4072,7 +4072,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NUL_E
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4082,7 +4082,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NUL_E
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -4094,7 +4094,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NUL_E
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "ABC");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -4106,7 +4106,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_LF_EO
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4116,7 +4116,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_LF_EO
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -4128,7 +4128,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_LF_EO
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "ABC");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -4140,7 +4140,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CR_EO
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4150,7 +4150,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CR_EO
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -4162,7 +4162,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CR_EO
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "ABC");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -4174,7 +4174,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4184,7 +4184,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -4196,7 +4196,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "ABC");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -4208,20 +4208,20 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NoTer
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   spISW->Write_char("Str1", 4);
   spISW.reset();
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   std::string s;
   s = spISR->Read_line();
   EXPECT_TRUE(s == "Str1");
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -4237,7 +4237,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NoTer
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4246,7 +4246,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NoTer
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   for (size_t i = 0; i < bytesPerBlock - 4U; i++)
@@ -4259,7 +4259,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NoTer
   std::string s;
   s = spISR->Read_line();
   EXPECT_TRUE(s == "Str1");
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -4275,7 +4275,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 3U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4284,7 +4284,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   for (size_t i = 0; i < bytesPerBlock - 3U; i++)
@@ -4296,7 +4296,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "Str1");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -4308,7 +4308,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 3U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4317,7 +4317,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   for (size_t i = 0; i < bytesPerBlock - 3U; i++)
@@ -4331,7 +4331,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
 
   std::string s;
   EXPECT_THROW(s = spISR->Read_line(), std::runtime_error);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -4343,7 +4343,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 3U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4353,7 +4353,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -4367,7 +4367,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
   ASSERT_TRUE(s == "Str1");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -4379,7 +4379,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4388,7 +4388,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   for (size_t i = 0; i < bytesPerBlock - 4U; i++)
@@ -4400,7 +4400,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "Str1");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -4412,7 +4412,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4425,7 +4425,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -4439,7 +4439,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
   ASSERT_TRUE(s == "Str1");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -4451,7 +4451,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadByte_LastB
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4460,7 +4460,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadByte_LastB
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -4471,12 +4471,12 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadByte_LastB
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
   }
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> data;
   ASSERT_EQ(0xEEU, data);
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
@@ -4489,7 +4489,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadByte_Error
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4498,7 +4498,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadByte_Error
 
   ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -4509,15 +4509,15 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadByte_Error
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
   }
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   spISR->Read_bits(&data, 4);
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
-  ASSERT_THROW(*spISR >> data, gpcc::Stream::EmptyError);
+  ASSERT_THROW(*spISR >> data, gpcc::stream::EmptyError);
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
@@ -4532,7 +4532,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadChunkOfByt
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < 2U * bytesPerBlock; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4540,7 +4540,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadChunkOfByt
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   std::vector<uint8_t> data;
@@ -4548,7 +4548,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadChunkOfByt
 
   spISR->Read_uint8(data.data(), 2U * bytesPerBlock);
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
@@ -4566,7 +4566,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadChunkOfByt
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < 2U * bytesPerBlock; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4574,15 +4574,15 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadChunkOfByt
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   std::vector<uint8_t> data;
   data.resize((2U * bytesPerBlock) + 2U);
 
-  ASSERT_THROW(spISR->Read_uint8(data.data(), (2U * bytesPerBlock) + 2U), gpcc::Stream::EmptyError);
+  ASSERT_THROW(spISR->Read_uint8(data.data(), (2U * bytesPerBlock) + 2U), gpcc::stream::EmptyError);
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
@@ -4595,13 +4595,13 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadBits_MoreT
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   spISW->Write_uint8(0x12U);
   spISW->Write_uint8(0x34U);
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -4612,7 +4612,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadBits_MoreT
   spISR->Read_bits(&data, 8);
   ASSERT_EQ(0x41U, data);
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
@@ -4623,12 +4623,12 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadBits_MoreT
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   spISW->Write_uint8(0x12U);
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -4636,11 +4636,11 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadBits_MoreT
   spISR->Read_bits(&data, 4);
   ASSERT_EQ(0x02U, data);
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
-  ASSERT_THROW(spISR->Read_bits(&data, 8), gpcc::Stream::EmptyError);
+  ASSERT_THROW(spISR->Read_bits(&data, 8), gpcc::stream::EmptyError);
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
@@ -4653,13 +4653,13 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadBits_LastB
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   spISW->Write_uint8(0x12U);
   spISW->Write_uint8(0x34U);
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -4670,25 +4670,25 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadBits_LastB
   spISR->Read_bits(&data, 8);
   ASSERT_EQ(0x41U, data);
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   bool bit;
 
   *spISR >> bit;
   ASSERT_TRUE(bit);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> bit;
   ASSERT_TRUE(bit);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> bit;
   ASSERT_FALSE(bit);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> bit;
   ASSERT_FALSE(bit);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
@@ -4699,47 +4699,47 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadBits_OneBy
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   spISW->Write_uint8(0x12U);
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   bool bit;
 
   *spISR >> bit;
   ASSERT_FALSE(bit);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> bit;
   ASSERT_TRUE(bit);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> bit;
   ASSERT_FALSE(bit);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> bit;
   ASSERT_FALSE(bit);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> bit;
   ASSERT_TRUE(bit);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> bit;
   ASSERT_FALSE(bit);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> bit;
   ASSERT_FALSE(bit);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> bit;
   ASSERT_FALSE(bit);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
@@ -4752,7 +4752,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, ReadWriteBits_ProperInsertio
 
   uint8_t data = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
 
   spISW->Write_uint8(0x12U);
@@ -4780,7 +4780,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, ReadWriteBits_ProperInsertio
 
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   bool bit;
@@ -4823,7 +4823,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, ReadWriteBits_ProperInsertio
   *spISR >> data;
   ASSERT_EQ(0xEFU, data);
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
@@ -4834,7 +4834,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_CRCErrorOnFirs
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   *spISW << std::string("Test");
   spISW.reset();
@@ -4842,7 +4842,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_CRCErrorOnFirs
   // invalid checksum of data block
   InvalidateCRC(2);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), DataIntegrityError);
 
   uut.Unmount();
@@ -4853,7 +4853,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_CRCErrorOnSeco
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock + 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4864,7 +4864,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_CRCErrorOnSeco
   // invalid checksum of 2nd data block
   InvalidateCRC(3);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -4874,8 +4874,8 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_CRCErrorOnSeco
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
   }
 
-  ASSERT_THROW(*spISR >> data, gpcc::Stream::IOError);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  ASSERT_THROW(*spISR >> data, gpcc::stream::IOError);
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -4885,13 +4885,13 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ThrowOnFirstDa
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   *spISW << std::string("Test");
   spISW.reset();
 
   fakeStorage.readAccessesTillThrow = 4; // Hash + Head(2) + Data(1 of 2)
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), std::exception);
 
   uut.Unmount();
@@ -4900,13 +4900,13 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ThrowOnFirstDa
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   *spISW << std::string("Test");
   spISW.reset();
 
   fakeStorage.readAccessesTillThrow = 5; // Hash + Head(2) + Data(2 of 2)
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), std::exception);
 
   uut.Unmount();
@@ -4917,7 +4917,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ThrowOnSecondD
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock + 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4925,7 +4925,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ThrowOnSecondD
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -4936,8 +4936,8 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ThrowOnSecondD
   }
 
   fakeStorage.readAccessesTillThrow = 1;
-  ASSERT_THROW(*spISR >> data, gpcc::Stream::IOError);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  ASSERT_THROW(*spISR >> data, gpcc::stream::IOError);
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -4949,7 +4949,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ThrowOnSecondD
 
   fakeStorage.writeAccessCnt = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   for (size_t i = 0; i < bytesPerBlock + 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
@@ -4957,7 +4957,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ThrowOnSecondD
 
   ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   uint8_t data;
@@ -4968,8 +4968,8 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ThrowOnSecondD
   }
 
   fakeStorage.readAccessesTillThrow = 2;
-  ASSERT_THROW(*spISR >> data, gpcc::Stream::IOError);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  ASSERT_THROW(*spISR >> data, gpcc::stream::IOError);
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
@@ -4977,11 +4977,11 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ThrowOnSecondD
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataConsumed_OK_1)
 {
-  using namespace gpcc::Stream;
+  using namespace gpcc::stream;
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Section1", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
@@ -4989,7 +4989,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataC
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Section1");
 
   // (3 bytes left) -------------------------------------------------------------------------------------------
@@ -5136,18 +5136,18 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataC
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataConsumed_OK_2)
 {
-  using namespace gpcc::Stream;
+  using namespace gpcc::stream;
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   // (2 bytes left) -------------------------------------------------------------------------------------------
@@ -5297,18 +5297,18 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataC
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataConsumed_ErrorState)
 {
-  using namespace gpcc::Stream;
+  using namespace gpcc::stream;
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   // create error condition
@@ -5332,18 +5332,18 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataC
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataConsumed_ClosedState)
 {
-  using namespace gpcc::Stream;
+  using namespace gpcc::stream;
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   // create pre-condition
@@ -5367,7 +5367,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, AlignToByteBoundary_OK)
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
 
   spISW->Write_Bit(true);
@@ -5382,7 +5382,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, AlignToByteBoundary_OK)
 
   spISW->Close();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   EXPECT_EQ(0x01U, spISR->Read_uint8());
@@ -5390,7 +5390,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, AlignToByteBoundary_OK)
   EXPECT_EQ(0xF0U, spISR->Read_uint8());
   EXPECT_EQ(0xDEU, spISR->Read_uint8());
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
@@ -5401,25 +5401,25 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, AlignToByteBoundary_StateClo
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
 
   spISW->Write_uint32(0xDEADBEEFUL);
 
   spISW->Close();
 
-  EXPECT_THROW((void)spISW->AlignToByteBoundary(false), gpcc::Stream::ClosedError);
+  EXPECT_THROW((void)spISW->AlignToByteBoundary(false), gpcc::stream::ClosedError);
 
-  EXPECT_EQ(gpcc::Stream::IStreamWriter::States::closed, spISW->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamWriter::States::closed, spISW->GetState());
 
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   EXPECT_EQ(0xDEADBEEFUL, spISR->Read_uint32());
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
@@ -5428,11 +5428,11 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, AlignToByteBoundary_StateClo
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, FillBitsAndBytes_OK)
 {
-  using namespace gpcc::Stream;
+  using namespace gpcc::stream;
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
 
   spISW->FillBits(1, true);
@@ -5448,7 +5448,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, FillBitsAndBytes_OK)
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   EXPECT_EQ(0x3DU, spISR->Read_uint8());
@@ -5458,7 +5458,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, FillBitsAndBytes_OK)
   EXPECT_EQ(0x00U, spISR->Read_uint8());
   EXPECT_EQ(0x00U, spISR->Read_uint8());
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
@@ -5467,30 +5467,30 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, FillBitsAndBytes_OK)
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, FillBitsAndBytes_StateClosed)
 {
-  using namespace gpcc::Stream;
+  using namespace gpcc::stream;
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
 
   spISW->Write_uint32(0xDEADBEEFUL);
 
   spISW->Close();
 
-  EXPECT_THROW(spISW->FillBits(1, true), gpcc::Stream::ClosedError);
-  EXPECT_THROW(spISW->FillBytes(1, 0x55U), gpcc::Stream::ClosedError);
+  EXPECT_THROW(spISW->FillBits(1, true), gpcc::stream::ClosedError);
+  EXPECT_THROW(spISW->FillBytes(1, 0x55U), gpcc::stream::ClosedError);
 
-  EXPECT_EQ(gpcc::Stream::IStreamWriter::States::closed, spISW->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamWriter::States::closed, spISW->GetState());
 
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   EXPECT_EQ(0xDEADBEEFUL, spISR->Read_uint32());
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
@@ -5501,14 +5501,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_ZeroBits)
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0x57U);
   spISW->Write_uint8(0xE9U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   uint8_t u8;
@@ -5524,10 +5524,10 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_ZeroBits)
   ASSERT_EQ(0xE9U, u8);
 
   spISR->Skip(0U);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -5537,28 +5537,28 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsLeft_SkipSomeBits)
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
   spISR->Skip(3U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_bits(1U), 0x01U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -5568,29 +5568,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndOneByteLeft_Skip
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
   spISR->Skip(4U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_uint8(), 0xDBU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -5600,25 +5600,25 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsLeft_SkipAll)
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
   spISR->Skip(4U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -5628,25 +5628,25 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsLeft_SkipAllPlusOne
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
-  ASSERT_THROW(spISR->Skip(5U), gpcc::Stream::EmptyError);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::error);
+  ASSERT_THROW(spISR->Skip(5U), gpcc::stream::EmptyError);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::error);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -5656,26 +5656,26 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndOneByteLeft_Skip
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
   spISR->Skip(12U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -5685,26 +5685,26 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndOneByteLeft_Skip
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
-  ASSERT_THROW(spISR->Skip(20U), gpcc::Stream::EmptyError);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::error);
+  ASSERT_THROW(spISR->Skip(20U), gpcc::stream::EmptyError);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::error);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -5714,26 +5714,26 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndOneByteLeft_Skip
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
-  ASSERT_THROW(spISR->Skip(13U), gpcc::Stream::EmptyError);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::error);
+  ASSERT_THROW(spISR->Skip(13U), gpcc::stream::EmptyError);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::error);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -5743,7 +5743,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndTwoByteLeft_Skip
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
@@ -5751,22 +5751,22 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndTwoByteLeft_Skip
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
   spISR->Skip(12U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_uint8(), 0x36U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -5776,7 +5776,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndTwoByteLeft_Skip
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
@@ -5784,22 +5784,22 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndTwoByteLeft_Skip
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
   spISR->Skip(13U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_bits(7U), 0x1BU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -5809,26 +5809,26 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_OneByteLeft_Skip8Bits)
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(8U), 0x8AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
   spISR->Skip(8U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -5838,29 +5838,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_OneByteLeft_Skip7Bits)
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0x80U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(8U), 0x8AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
   spISR->Skip(7U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_bit(), 0x01U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -5870,26 +5870,26 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_OneByteLeft_Skip9Bits)
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0x80U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(8U), 0x8AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
-  ASSERT_THROW(spISR->Skip(9U), gpcc::Stream::EmptyError);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::error);
+  ASSERT_THROW(spISR->Skip(9U), gpcc::stream::EmptyError);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::error);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -5899,26 +5899,26 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_TwoByteLeft_Skip8Bits)
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0x80U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   // - precondition established -
 
   spISR->Skip(8U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_uint8(), 0x80U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -5928,23 +5928,23 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_TwoByteLeft_Skip16Bits)
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0x80U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   // - precondition established -
 
   spISR->Skip(16U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -5954,26 +5954,26 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_TwoByteLeft_Skip9Bits)
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0x80U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   // - precondition established -
 
   spISR->Skip(9U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_bits(7U), 0x40U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -5983,26 +5983,26 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_LargerThanBlockSize)
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   for (uint_fast16_t i = 0; i < 256U; i++)
     spISW->Write_uint16(i);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   // - precondition established -
 
   spISR->Skip(255UL * 2U * 8U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_uint16(), 255U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -6012,7 +6012,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_LastBitInLastByteOfBloc
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   for (uint_fast16_t i = 0; i < bytesPerBlock; i++)
     spISW->Write_uint8(i & 0xFFU);
@@ -6020,7 +6020,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_LastBitInLastByteOfBloc
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   for (uint_fast16_t i = 0; i < bytesPerBlock-1U; i++)
@@ -6031,13 +6031,13 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_LastBitInLastByteOfBloc
   // - precondition established -
 
   spISR->Skip(1U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_uint32(), 0xDEADBEEFUL);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -6047,14 +6047,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_LastBitInLastByteOfBloc
 
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   for (uint_fast16_t i = 0; i < bytesPerBlock; i++)
     spISW->Write_uint8(i & 0xFFU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   for (uint_fast16_t i = 0; i < bytesPerBlock-1U; i++)
@@ -6065,10 +6065,10 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_LastBitInLastByteOfBloc
   // - precondition established -
 
   spISR->Skip(1U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -6076,28 +6076,28 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_EmptyStream)
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_uint8(), 0xFAU);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   ASSERT_EQ(spISR->Read_uint8(), 0x12U);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
-  ASSERT_THROW(spISR->Skip(1U), gpcc::Stream::EmptyError);
+  ASSERT_THROW(spISR->Skip(1U), gpcc::stream::EmptyError);
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -6105,19 +6105,19 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_ClosedStream)
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
   spISR->Close();
 
-  ASSERT_THROW(spISR->Skip(1U), gpcc::Stream::ClosedError);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_THROW(spISR->Skip(1U), gpcc::stream::ClosedError);
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -6125,28 +6125,28 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_StreamInErrorState)
 {
   Format(128);
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = uut.Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = uut.Open("Test.dat");
 
   uint8_t au8[3];
-  ASSERT_THROW(spISR->Read_uint8(au8, 3), gpcc::Stream::EmptyError);
+  ASSERT_THROW(spISR->Read_uint8(au8, 3), gpcc::stream::EmptyError);
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
-  ASSERT_THROW(spISR->Skip(1U), gpcc::Stream::ErrorStateError);
+  ASSERT_THROW(spISR->Skip(1U), gpcc::stream::ErrorStateError);
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
   spISR->Close();
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   uut.Unmount();
 }
@@ -6164,7 +6164,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Unmount_OK_DifferentStates)
   uut.MountStep2();
 
   fakeStorage.Invalidate(blockSize, blockSize);
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   ASSERT_THROW(spISW = uut.Create("Section1", false), DataIntegrityError);
   ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
 
@@ -6328,7 +6328,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Delete_Powerfail)
     uut.MountStep1();
     uut.MountStep2();
 
-    std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+    std::unique_ptr<gpcc::stream::IStreamReader> spISR;
     ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
     ASSERT_EQ(freeSpace, uut.GetFreeSpace());
 
@@ -6349,7 +6349,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Delete_OK)
   ASSERT_NO_THROW(uut.Delete("Section1"));
   ASSERT_EQ(freeSpace, uut.GetFreeSpace());
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
   BasicTest_WriteRead(&uut, blockSize, 1);
@@ -6370,7 +6370,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Delete_FromFullSectionSystem
   ASSERT_NO_THROW(uut.Delete("Section1"));
   ASSERT_EQ(bytesPerBlock, uut.GetFreeSpace());
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
   ASSERT_NO_THROW(uut.Delete("Section2"));
@@ -6396,7 +6396,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Delete_FromNonFullSectionSys
   ASSERT_NO_THROW(uut.Delete("Section1"));
   ASSERT_EQ(2U * bytesPerBlock, uut.GetFreeSpace());
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
   ASSERT_NO_THROW(uut.Delete("Section2"));
@@ -6683,7 +6683,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_Powerfail)
     uut.MountStep1();
     uut.MountStep2();
 
-    std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+    std::unique_ptr<gpcc::stream::IStreamReader> spISR;
     ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
     ASSERT_EQ(freeSpace, uut.GetFreeSpace());
 

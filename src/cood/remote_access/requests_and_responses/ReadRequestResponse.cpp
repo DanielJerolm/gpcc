@@ -53,7 +53,7 @@ ReadRequestResponse::ReadRequestResponse(SDOAbortCode const _result)
 
 /**
  * \brief Constructor. Creates a @ref ReadRequestResponse object from data read from an
- *        [IStreamReader](@ref gpcc::Stream::IStreamReader) containing a serialized @ref ReadRequestResponse object.
+ *        [IStreamReader](@ref gpcc::stream::IStreamReader) containing a serialized @ref ReadRequestResponse object.
  *
  * This is intended to be invoked by @ref ResponseBase::FromBinary() only. In conjunction with
  * @ref ResponseBase::FromBinary(), this is the counterpart to @ref ResponseBase::ToBinary().
@@ -80,7 +80,7 @@ ReadRequestResponse::ReadRequestResponse(SDOAbortCode const _result)
  * \param versionOnHand
  * Version of serialized object read from `sr`.
  */
-ReadRequestResponse::ReadRequestResponse(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, ReadRequestResponsePassKey)
+ReadRequestResponse::ReadRequestResponse(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ReadRequestResponsePassKey)
 : ResponseBase(ResponseTypes::readRequestResponse, sr, versionOnHand)
 , data()
 , sizeInBit(0U)
@@ -227,7 +227,7 @@ size_t ReadRequestResponse::GetBinarySize(void) const
 }
 
 /// \copydoc gpcc::cood::ResponseBase::ToBinary
-void ReadRequestResponse::ToBinary(gpcc::Stream::IStreamWriter & sw) const
+void ReadRequestResponse::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   ResponseBase::ToBinary(sw);
 

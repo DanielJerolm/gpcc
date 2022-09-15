@@ -50,7 +50,7 @@ class PingRequest final : public RequestBase
 
     PingRequest(size_t const _maxResponseSize);
 
-    PingRequest(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, PingRequestPassKey);
+    PingRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, PingRequestPassKey);
 
     PingRequest(PingRequest const &) = default;
     PingRequest(PingRequest &&) noexcept = default;
@@ -62,7 +62,7 @@ class PingRequest final : public RequestBase
 
     // <-- RequestBase
     size_t GetBinarySize(void) const override;
-    void ToBinary(gpcc::Stream::IStreamWriter & sw) const override;
+    void ToBinary(gpcc::stream::IStreamWriter & sw) const override;
 
     std::string ToString(void) const override;
     // --> RequestBase

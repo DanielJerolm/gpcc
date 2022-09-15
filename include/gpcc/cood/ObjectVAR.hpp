@@ -110,19 +110,19 @@ class ObjectVAR : public Object
 
     SDOAbortCode Read(uint8_t const subIdx,
                       attr_t const permissions,
-                      gpcc::Stream::IStreamWriter & isw) const override;
+                      gpcc::stream::IStreamWriter & isw) const override;
     SDOAbortCode Write(uint8_t const subIdx,
                        attr_t const permissions,
-                       gpcc::Stream::IStreamReader & isr) override;
+                       gpcc::stream::IStreamReader & isr) override;
     SDOAbortCode CompleteRead(bool const inclSI0,
                               bool const SI016Bits,
                               attr_t const permissions,
-                              gpcc::Stream::IStreamWriter & isw) const override;
+                              gpcc::stream::IStreamWriter & isw) const override;
     SDOAbortCode CompleteWrite(bool const inclSI0,
                                bool const SI016Bits,
                                attr_t const permissions,
-                               gpcc::Stream::IStreamReader & isr,
-                               gpcc::Stream::IStreamReader::RemainingNbOfBits const ernob) override;
+                               gpcc::stream::IStreamReader & isr,
+                               gpcc::stream::IStreamReader::RemainingNbOfBits const ernob) override;
     // --> base class Object
 
   private:

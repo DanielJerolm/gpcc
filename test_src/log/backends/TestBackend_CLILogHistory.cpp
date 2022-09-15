@@ -40,7 +40,7 @@ class gpcc_log_Backend_CLILogHistory_TestsF: public Test
     std::unique_ptr<Backend_CLILogHistory> spUUT;
 
     char buffer[1024];
-    gpcc::Stream::MemStreamWriter buffer_msw;
+    gpcc::stream::MemStreamWriter buffer_msw;
 
     void SetUp(void) override;
     void TearDown(void) override;
@@ -55,7 +55,7 @@ gpcc_log_Backend_CLILogHistory_TestsF::gpcc_log_Backend_CLILogHistory_TestsF(voi
 , cliRunning(false)
 , spUUT()
 , buffer()
-, buffer_msw(buffer, sizeof(buffer) - 1U, gpcc::Stream::MemStreamWriter::nativeEndian)
+, buffer_msw(buffer, sizeof(buffer) - 1U, gpcc::stream::MemStreamWriter::nativeEndian)
 {
 }
 

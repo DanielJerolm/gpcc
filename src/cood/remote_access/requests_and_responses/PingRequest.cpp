@@ -50,7 +50,7 @@ PingRequest::PingRequest(size_t const _maxResponseSize)
 
 /**
  * \brief Constructor. Creates a @ref PingRequest object from data read from an
- *        [IStreamReader](@ref gpcc::Stream::IStreamReader) containing a serialized @ref PingRequest object.
+ *        [IStreamReader](@ref gpcc::stream::IStreamReader) containing a serialized @ref PingRequest object.
  *
  * This is intended to be invoked by @ref RequestBase::FromBinary() only. In conjunction with
  * @ref RequestBase::FromBinary(), this is the counterpart to @ref RequestBase::ToBinary().
@@ -77,7 +77,7 @@ PingRequest::PingRequest(size_t const _maxResponseSize)
  * \param versionOnHand
  * Version of serialized object read from `sr`.
  */
-PingRequest::PingRequest(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, PingRequestPassKey)
+PingRequest::PingRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, PingRequestPassKey)
 : RequestBase(RequestTypes::pingRequest, sr, versionOnHand)
 {
   if (versionOnHand != version)
@@ -93,7 +93,7 @@ size_t PingRequest::GetBinarySize(void) const
 }
 
 /// \copydoc gpcc::cood::RequestBase::ToBinary
-void PingRequest::ToBinary(gpcc::Stream::IStreamWriter & sw) const
+void PingRequest::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   RequestBase::ToBinary(sw);
 }

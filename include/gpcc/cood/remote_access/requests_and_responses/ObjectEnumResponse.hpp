@@ -93,7 +93,7 @@ class ObjectEnumResponse final : public ResponseBase
 
     explicit ObjectEnumResponse(SDOAbortCode const _result);
 
-    ObjectEnumResponse(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectEnumResponsePassKey);
+    ObjectEnumResponse(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectEnumResponsePassKey);
 
     ObjectEnumResponse(ObjectEnumResponse const &) = default;
     ObjectEnumResponse(ObjectEnumResponse &&) = default;
@@ -107,7 +107,7 @@ class ObjectEnumResponse final : public ResponseBase
 
     // <-- ResponseBase
     size_t GetBinarySize(void) const override;
-    void ToBinary(gpcc::Stream::IStreamWriter & sw) const override;
+    void ToBinary(gpcc::stream::IStreamWriter & sw) const override;
 
     std::string ToString(void) const override;
     // --> ResponseBase

@@ -18,14 +18,14 @@
 
 namespace gpcc_tests
 {
-namespace Stream
+namespace stream
 {
 
-using namespace gpcc::Stream;
+using namespace gpcc::stream;
 
 using namespace testing;
 
-/// Test fixture for gpcc::Stream::MemStreamWriter related tests.
+/// Test fixture for gpcc::stream::MemStreamWriter related tests.
 class GPCC_Stream_MemStreamWriter_Tests: public Test
 {
   public:
@@ -1846,5 +1846,5 @@ TEST_F(GPCC_Stream_MemStreamWriter_Tests, CopyAssignment)
   EXPECT_EQ(sizeof(memory), uut2.RemainingCapacity());
 }
 
-} // namespace Stream
+} // namespace stream
 } // namespace gpcc_tests

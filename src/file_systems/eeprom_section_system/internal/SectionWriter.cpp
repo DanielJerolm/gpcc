@@ -38,7 +38,7 @@ SectionWriter::SectionWriter(EEPROMSectionSystem & _ESS,
                              uint16_t const _version,
                              uint16_t const _nextBlockIndex,
                              std::unique_ptr<char[]> _spMem)
-: gpcc::Stream::StreamWriterBase(States::open, Endian::Little)
+: gpcc::stream::StreamWriterBase(States::open, Endian::Little)
 , pESS(&_ESS)
 , sectionName(_sectionName)
 , oldSectionHeadIndex(_oldSectionHeadIndex)
@@ -95,7 +95,7 @@ SectionWriter::SectionWriter(EEPROMSectionSystem & _ESS,
   pESS->spStorage->LoadBlock(nextBlockIndex, spMem.get(), pESS->spStorage->GetBlockSize());
 }
 SectionWriter::SectionWriter(SectionWriter && other) noexcept
-: gpcc::Stream::StreamWriterBase(std::move(other))
+: gpcc::stream::StreamWriterBase(std::move(other))
 , pESS(other.pESS)
 , sectionName(std::move(other.sectionName))
 , oldSectionHeadIndex(other.oldSectionHeadIndex)
@@ -171,13 +171,13 @@ SectionWriter::~SectionWriter(void)
 }
 
 bool SectionWriter::IsRemainingCapacitySupported(void) const
-/// \copydoc gpcc::Stream::IStreamWriter::IsRemainingCapacitySupported
+/// \copydoc gpcc::stream::IStreamWriter::IsRemainingCapacitySupported
 {
   return false;
 }
 
 size_t SectionWriter::RemainingCapacity(void) const
-/// \copydoc gpcc::Stream::IStreamWriter::RemainingCapacity
+/// \copydoc gpcc::stream::IStreamWriter::RemainingCapacity
 {
   switch (state)
   {
@@ -189,16 +189,16 @@ size_t SectionWriter::RemainingCapacity(void) const
       throw std::logic_error("SectionWriter::RemainingCapacity: Unused state (States::full) encountered");
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   }
 
   PANIC();
 }
 uint_fast8_t SectionWriter::GetNbOfCachedBits(void) const
-/// \copydoc gpcc::Stream::IStreamWriter::GetNbOfCachedBits
+/// \copydoc gpcc::stream::IStreamWriter::GetNbOfCachedBits
 {
   switch (state)
   {
@@ -210,17 +210,17 @@ uint_fast8_t SectionWriter::GetNbOfCachedBits(void) const
       throw std::logic_error("SectionWriter::GetNbOfCachedBits: Unused state (States::full) encountered");
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   }
 
   PANIC();
 }
 
 void SectionWriter::Close(void)
-/// \copydoc gpcc::Stream::IStreamWriter::Close
+/// \copydoc gpcc::stream::IStreamWriter::Close
 {
   switch (state)
   {
@@ -244,7 +244,7 @@ void SectionWriter::Close(void)
 }
 
 void SectionWriter::Push(char c)
-/// \copydoc gpcc::Stream::StreamWriterBase::Push(char c)
+/// \copydoc gpcc::stream::StreamWriterBase::Push(char c)
 {
   if (nbOfBitsWritten != 0)
     PushBitsPlusGap();
@@ -270,14 +270,14 @@ void SectionWriter::Push(char c)
       throw std::logic_error("SectionWriter::Push: Unused state (States::full) encountered");
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 }
 void SectionWriter::Push(void const * pData, size_t n)
-/// \copydoc gpcc::Stream::StreamWriterBase::Push(void const * pData, size_t n)
+/// \copydoc gpcc::stream::StreamWriterBase::Push(void const * pData, size_t n)
 {
   if (n == 0)
     return;
@@ -321,14 +321,14 @@ void SectionWriter::Push(void const * pData, size_t n)
       throw std::logic_error("SectionWriter::Push: Unused state (States::full) encountered");
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 }
 void SectionWriter::PushBits(uint8_t bits, uint_fast8_t n)
-/// \copydoc gpcc::Stream::StreamWriterBase::PushBits(uint8_t bits, uint_fast8_t n)
+/// \copydoc gpcc::stream::StreamWriterBase::PushBits(uint8_t bits, uint_fast8_t n)
 {
   if (n == 0)
     return;
@@ -384,10 +384,10 @@ void SectionWriter::PushBits(uint8_t bits, uint_fast8_t n)
       throw std::logic_error("SectionWriter::PushBits: Unused state (States::full) encountered");
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 }
 
@@ -519,7 +519,7 @@ void SectionWriter::StoreCurrentBlockAndReserveNextBlock(void)
     uint32_t nextFreeBlockNbOfWrites;
     uint16_t const nextFreeBlock = pESS->GetBlockFromListOfFreeBlocks(&nextFreeBlockNbOfWrites, true);
     if (nextFreeBlock == NOBLOCK)
-      throw Stream::FullError();
+      throw stream::FullError();
     ON_SCOPE_EXIT(releaseAllocatedFreeBlock)
     {
       pESS->RewindFreeBlockLists(fbl_backup);
@@ -535,13 +535,13 @@ void SectionWriter::StoreCurrentBlockAndReserveNextBlock(void)
     wrPtr = spMem.get() + sizeof(DataBlock_t);
     remainingBytesInCurrentBlock = blockSize - (sizeof(DataBlock_t) + sizeof(uint16_t));
   }
-  catch (Stream::FullError const &)
+  catch (stream::FullError const &)
   {
     throw;
   }
   catch (std::exception const &)
   {
-    std::throw_with_nested(Stream::IOError("SectionWriter::StoreCurrentBlockAndReserveNextBlock: failed"));
+    std::throw_with_nested(stream::IOError("SectionWriter::StoreCurrentBlockAndReserveNextBlock: failed"));
   }
 
   ON_SCOPE_EXIT_DISMISS(SetErrorState);
@@ -656,7 +656,7 @@ void SectionWriter::CloseAnOpenSectionWriter(void)
   {
     state = States::error;
     pESS->state = EEPROMSectionSystem::States::defect;
-    std::throw_with_nested(Stream::IOError("SectionWriter::CloseAnOpenSectionWriter: failed"));
+    std::throw_with_nested(stream::IOError("SectionWriter::CloseAnOpenSectionWriter: failed"));
   }
   catch (...)
   {
@@ -703,7 +703,7 @@ void SectionWriter::CloseCrashedSectionWriter(void)
   catch (std::exception const &)
   {
     pESS->state = EEPROMSectionSystem::States::defect;
-    std::throw_with_nested(Stream::IOError("SectionWriter::CloseCrashedSectionWriter: failed"));
+    std::throw_with_nested(stream::IOError("SectionWriter::CloseCrashedSectionWriter: failed"));
   }
   catch (...)
   {

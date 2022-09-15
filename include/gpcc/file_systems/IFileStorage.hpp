@@ -66,8 +66,8 @@ namespace file_systems {
 class IFileStorage
 {
   public:
-    virtual std::unique_ptr<Stream::IStreamReader> Open(std::string const & name) = 0;
-    virtual std::unique_ptr<Stream::IStreamWriter> Create(std::string const & name, bool const overwriteIfExisting) = 0;
+    virtual std::unique_ptr<stream::IStreamReader> Open(std::string const & name) = 0;
+    virtual std::unique_ptr<stream::IStreamWriter> Create(std::string const & name, bool const overwriteIfExisting) = 0;
     virtual void Delete(std::string const & name) = 0;
     virtual void Rename(std::string const & currName, std::string const & newName) = 0;
 
@@ -107,7 +107,7 @@ class IFileStorage
  * \throws InvalidFileNameError       Filename violates rules of underlying file system
  *                                    ([details](@ref gpcc::file_systems::InvalidFileNameError)).
  *
- * \throws IOError                    Reading from the file has failed ([details](@ref gpcc::Stream::IOError)).
+ * \throws IOError                    Reading from the file has failed ([details](@ref gpcc::stream::IOError)).
  *
  * \throws NoSuchFileError            File is not existing ([details](@ref gpcc::file_systems::NoSuchFileError)).
  *
@@ -129,8 +129,8 @@ class IFileStorage
  * Links included in the path/filename will be dereferenced.
  *
  * \return
- * A std::unique_ptr to an @ref gpcc::Stream::IStreamReader interface for reading from the opened file.\n
- * The calling function must finally close the @ref gpcc::Stream::IStreamReader and release it.
+ * A std::unique_ptr to an @ref gpcc::stream::IStreamReader interface for reading from the opened file.\n
+ * The calling function must finally close the @ref gpcc::stream::IStreamReader and release it.
  */
 
 /**
@@ -183,8 +183,8 @@ class IFileStorage
  * The link itself will not be modified.
  *
  * \return
- * A std::unique_ptr to an @ref gpcc::Stream::IStreamWriter for writing to the new file.\n
- * The calling function must finally close the @ref gpcc::Stream::IStreamWriter and release it.
+ * A std::unique_ptr to an @ref gpcc::stream::IStreamWriter for writing to the new file.\n
+ * The calling function must finally close the @ref gpcc::stream::IStreamWriter and release it.
  */
 
 /**

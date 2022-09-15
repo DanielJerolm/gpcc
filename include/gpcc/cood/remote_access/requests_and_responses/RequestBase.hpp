@@ -21,7 +21,7 @@
 #include <cstdint>
 
 namespace gpcc   {
-namespace Stream {
+namespace stream {
   class IStreamReader;
   class IStreamWriter;
 }
@@ -53,7 +53,7 @@ namespace cood {
  * the @ref ReturnStackItem objects can be popped from the stack of the response object.
  *
  * ## Serialization and deserialization
- * Instances of this class can be serialized into an [IStreamWriter](@ref gpcc::Stream::IStreamWriter) via
+ * Instances of this class can be serialized into an [IStreamWriter](@ref gpcc::stream::IStreamWriter) via
  * @ref ToBinary(). The size of the serialized data can be determined in advance via @ref GetBinarySize().
  *
  * A remote access object serialized via @ref ToBinary() can be deserialized via @ref FromBinary().
@@ -101,9 +101,9 @@ class RequestBase
     virtual ~RequestBase(void);
 
     // serialization/deserialization
-    static std::unique_ptr<RequestBase> FromBinary(gpcc::Stream::IStreamReader & sr);
+    static std::unique_ptr<RequestBase> FromBinary(gpcc::stream::IStreamReader & sr);
     virtual size_t GetBinarySize(void) const;
-    virtual void ToBinary(gpcc::Stream::IStreamWriter & sw) const;
+    virtual void ToBinary(gpcc::stream::IStreamWriter & sw) const;
 
     // return stack
     void Push(ReturnStackItem const & rsi);
@@ -131,7 +131,7 @@ class RequestBase
 
 
     RequestBase(RequestTypes const _type, size_t const _maxResponseSize);
-    RequestBase(RequestTypes const _type, gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand);
+    RequestBase(RequestTypes const _type, gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand);
 
     RequestBase(RequestBase const & other);
     RequestBase(RequestBase && other) noexcept;

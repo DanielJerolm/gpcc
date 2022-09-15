@@ -17,7 +17,7 @@
 
 namespace gpcc
 {
-namespace Stream
+namespace stream
 {
 
 MemStreamReader::MemStreamReader(void const * const _pMem, size_t const _size, Endian const _endian)
@@ -250,8 +250,8 @@ MemStreamReader& MemStreamReader::operator=(MemStreamReader&& rhv) noexcept
  * \htmlonly <style>div.image img[src="stream/MemStreamReader_SubStream.png"]{width:60%;}</style> \endhtmlonly
  * \image html "stream/MemStreamReader_SubStream.png" "SubStream(): Before, after, and new stream"
  *
- * \pre   The stream must be in [States::open](@ref gpcc::Stream::IStreamReader::States::open) or
- *        [States::empty](@ref gpcc::Stream::IStreamReader::States::empty).
+ * \pre   The stream must be in [States::open](@ref gpcc::stream::IStreamReader::States::open) or
+ *        [States::empty](@ref gpcc::stream::IStreamReader::States::empty).
  *
  * - - -
  *
@@ -333,8 +333,8 @@ MemStreamReader MemStreamReader::SubStream(size_t const n)
  * \htmlonly <style>div.image img[src="stream/MemStreamReader_Shrink.png"]{width:60%;}</style> \endhtmlonly
  * \image html "stream/MemStreamReader_Shrink.png" "Shrink(): Before and after"
  *
- * \pre   The stream must be in [States::open](@ref gpcc::Stream::IStreamReader::States::open) or
- *        [States::empty](@ref gpcc::Stream::IStreamReader::States::empty).
+ * \pre   The stream must be in [States::open](@ref gpcc::stream::IStreamReader::States::open) or
+ *        [States::empty](@ref gpcc::stream::IStreamReader::States::empty).
  *
  * - - -
  *
@@ -1017,5 +1017,5 @@ uint8_t MemStreamReader::PopBits(uint_fast8_t n)
 }
 // <-- StreamReaderBase
 
-} // namespace Stream
+} // namespace stream
 } // namespace gpcc

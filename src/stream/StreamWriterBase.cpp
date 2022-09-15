@@ -12,7 +12,7 @@
 
 namespace gpcc
 {
-namespace Stream
+namespace stream
 {
 
 // --> IStreamWriter
@@ -295,5 +295,5 @@ StreamWriterBase::StreamWriterBase(States const _state, Endian const _endian) no
 {
 }
 
-} // namespace Stream
+} // namespace stream
 } // namespace gpcc

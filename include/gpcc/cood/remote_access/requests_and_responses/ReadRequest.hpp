@@ -64,7 +64,7 @@ class ReadRequest final : public RequestBase
                 Object::attr_t const _permissions,
                 size_t         const _maxResponseSize);
 
-    ReadRequest(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, ReadRequestPassKey);
+    ReadRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ReadRequestPassKey);
 
     ReadRequest(ReadRequest const &) = default;
     ReadRequest(ReadRequest &&) noexcept = default;
@@ -78,7 +78,7 @@ class ReadRequest final : public RequestBase
 
     // <-- RequestBase
     size_t GetBinarySize(void) const override;
-    void ToBinary(gpcc::Stream::IStreamWriter & sw) const override;
+    void ToBinary(gpcc::stream::IStreamWriter & sw) const override;
 
     std::string ToString(void) const override;
     // --> RequestBase

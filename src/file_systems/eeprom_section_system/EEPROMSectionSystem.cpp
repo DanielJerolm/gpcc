@@ -586,7 +586,7 @@ void EEPROMSectionSystem::Unmount(void)
   state = States::not_mounted;
 }
 
-std::unique_ptr<Stream::IStreamReader> EEPROMSectionSystem::Open(std::string const & name)
+std::unique_ptr<stream::IStreamReader> EEPROMSectionSystem::Open(std::string const & name)
 /**
  * \brief Opens a section for reading.
  *
@@ -609,8 +609,8 @@ std::unique_ptr<Stream::IStreamReader> EEPROMSectionSystem::Open(std::string con
  * \param name
  * Name of the section that shall be opened.
  * \return
- * A std::unique_ptr to an @ref Stream::IStreamReader for reading from the opened section.\n
- * The calling function must finally close the @ref Stream::IStreamReader and release it.
+ * A std::unique_ptr to an @ref stream::IStreamReader for reading from the opened section.\n
+ * The calling function must finally close the @ref stream::IStreamReader and release it.
  */
 {
   osal::MutexLocker mutexLocker(mutex);
@@ -720,13 +720,13 @@ std::unique_ptr<Stream::IStreamReader> EEPROMSectionSystem::Open(std::string con
   }
 
   // create SectionReader instance
-  std::unique_ptr<Stream::IStreamReader> spISR(new SectionReader(*this, name, std::move(spMem)));
+  std::unique_ptr<stream::IStreamReader> spISR(new SectionReader(*this, name, std::move(spMem)));
 
   ON_SCOPE_EXIT_DISMISS(releaseReadLock);
 
   return spISR;
 }
-std::unique_ptr<Stream::IStreamWriter> EEPROMSectionSystem::Create(std::string const & name, bool const overwriteIfExisting)
+std::unique_ptr<stream::IStreamWriter> EEPROMSectionSystem::Create(std::string const & name, bool const overwriteIfExisting)
 /**
  * \brief Creates a section or overwrites an existing section.
  *
@@ -754,8 +754,8 @@ std::unique_ptr<Stream::IStreamWriter> EEPROMSectionSystem::Create(std::string c
  * - `true` = overwrite
  * - `false` = do not overwrite (will throw @ref FileAlreadyExistingError)
  * \return
- * A std::unique_ptr to an @ref Stream::IStreamWriter for writing to the new section.\n
- * The calling function must finally close the @ref Stream::IStreamWriter and release it.
+ * A std::unique_ptr to an @ref stream::IStreamWriter for writing to the new section.\n
+ * The calling function must finally close the @ref stream::IStreamWriter and release it.
  */
 {
   osal::MutexLocker mutexLocker(mutex);
@@ -802,7 +802,7 @@ std::unique_ptr<Stream::IStreamWriter> EEPROMSectionSystem::Create(std::string c
     version = static_cast<SectionHeadBlock_t const *>(static_cast<void const *>(spMem.get()))->version + 1U;
 
   // create SectionWriter instance
-  std::unique_ptr<Stream::IStreamWriter> spISW(new SectionWriter(*this,
+  std::unique_ptr<stream::IStreamWriter> spISW(new SectionWriter(*this,
                                                                  name,
                                                                  oldSectionHeadIndex,
                                                                  freeBlocks[0],

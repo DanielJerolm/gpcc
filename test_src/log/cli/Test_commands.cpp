@@ -487,7 +487,7 @@ TEST_F(gpcc_log_cli_commands_TestsF, CLI_Cmd_WriteConfigToFile_OK)
   EXPECT_TRUE(e2 == "logger2");
   EXPECT_TRUE(l2 == LogLevel::WarningOrAbove);
 
-  EXPECT_TRUE(f->GetState() == gpcc::Stream::IStreamReader::States::empty);
+  EXPECT_TRUE(f->GetState() == gpcc::stream::IStreamReader::States::empty);
 
   // check terminal output
   ASSERT_TRUE(terminal.Compare(expected));
@@ -827,7 +827,7 @@ TEST_F(gpcc_log_cli_commands_TestsF, CLI_Cmd_WriteConfigToTextFile_OK)
 
   // read all lines from the file into a single string
   std::string allLines;
-  while (f->GetState() != gpcc::Stream::IStreamReader::States::empty)
+  while (f->GetState() != gpcc::stream::IStreamReader::States::empty)
   {
     allLines += f->Read_line();
     allLines += '\n';

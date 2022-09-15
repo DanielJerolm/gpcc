@@ -18,7 +18,7 @@
 
 namespace gpcc
 {
-namespace Stream
+namespace stream
 {
 
 /**
@@ -214,7 +214,7 @@ class IStreamWriter
  *
  * \brief Writes data to the stream.
  *
- * @pre The stream must be in state [States::open](@ref gpcc::Stream::IStreamWriter::States::open).
+ * @pre The stream must be in state [States::open](@ref gpcc::stream::IStreamWriter::States::open).
  *
  * ---
  *
@@ -223,19 +223,19 @@ class IStreamWriter
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [FullError](@ref gpcc::Stream::FullError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [FullError](@ref gpcc::stream::FullError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * ---
@@ -245,54 +245,54 @@ class IStreamWriter
  */
 /**
  * \fn IStreamWriter& IStreamWriter::operator<< (uint16_t const value)
- * \copydoc gpcc::Stream::IStreamWriter::operator<< (uint8_t const)
+ * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
  * \fn IStreamWriter& IStreamWriter::operator<< (uint32_t const value)
- * \copydoc gpcc::Stream::IStreamWriter::operator<< (uint8_t const)
+ * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
  * \fn IStreamWriter& IStreamWriter::operator<< (uint64_t const value)
- * \copydoc gpcc::Stream::IStreamWriter::operator<< (uint8_t const)
+ * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
  * \fn IStreamWriter& IStreamWriter::operator<< (int8_t const value)
- * \copydoc gpcc::Stream::IStreamWriter::operator<< (uint8_t const)
+ * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
  * \fn IStreamWriter& IStreamWriter::operator<< (int16_t const value)
- * \copydoc gpcc::Stream::IStreamWriter::operator<< (uint8_t const)
+ * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
  * \fn IStreamWriter& IStreamWriter::operator<< (int32_t const value)
- * \copydoc gpcc::Stream::IStreamWriter::operator<< (uint8_t const)
+ * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
  * \fn IStreamWriter& IStreamWriter::operator<< (int64_t const value)
- * \copydoc gpcc::Stream::IStreamWriter::operator<< (uint8_t const)
+ * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
  * \fn IStreamWriter& IStreamWriter::operator<< (float const value)
- * \copydoc gpcc::Stream::IStreamWriter::operator<< (uint8_t const)
+ * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
  * \fn IStreamWriter& IStreamWriter::operator<< (double const value)
- * \copydoc gpcc::Stream::IStreamWriter::operator<< (uint8_t const)
+ * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
  * \fn IStreamWriter& IStreamWriter::operator<< (bool const value)
- * \copydoc gpcc::Stream::IStreamWriter::operator<< (uint8_t const)
+ * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
  * \fn IStreamWriter& IStreamWriter::operator<< (char const value)
- * \copydoc gpcc::Stream::IStreamWriter::operator<< (uint8_t const)
+ * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
  * \fn IStreamWriter& IStreamWriter::operator<< (std::string const & value)
  *
  * \brief Writes a string to the stream (incl. null-terminator).
  *
- * @pre The stream must be in state [States::open](@ref gpcc::Stream::IStreamWriter::States::open).
+ * @pre The stream must be in state [States::open](@ref gpcc::stream::IStreamWriter::States::open).
  *
  * ---
  *
@@ -301,19 +301,19 @@ class IStreamWriter
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [FullError](@ref gpcc::Stream::FullError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [FullError](@ref gpcc::stream::FullError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * ---
@@ -392,8 +392,8 @@ class IStreamWriter
  * This operation is not supported by all implementations of this interface.\n
  * Use @ref IsRemainingCapacitySupported() to query if the method is supported.
  *
- * \pre   The stream must be in state [States::open](@ref gpcc::Stream::IStreamWriter::States::open) or
- *        [States::full](@ref gpcc::Stream::IStreamWriter::States::full).
+ * \pre   The stream must be in state [States::open](@ref gpcc::stream::IStreamWriter::States::open) or
+ *        [States::full](@ref gpcc::stream::IStreamWriter::States::full).
  *
  * ---
  *
@@ -404,8 +404,8 @@ class IStreamWriter
  * Strong exception safety:\n
  * Operations can fail, but failed operations are guaranteed to have no side effects, so all data retain their original values.
  *
- * \throws ClosedError       Stream is already closed ([details](@ref gpcc::Stream::ClosedError)).
- * \throws ErrorStateError   Stream is in error state ([details](@ref gpcc::Stream::ErrorStateError)).
+ * \throws ClosedError       Stream is already closed ([details](@ref gpcc::stream::ClosedError)).
+ * \throws ErrorStateError   Stream is in error state ([details](@ref gpcc::stream::ErrorStateError)).
  * \throws std::logic_error  Operation not supported.
  *
  * __Thread cancellation safety:__\n
@@ -425,8 +425,8 @@ class IStreamWriter
  * to the stream after at least eight bits have been accumulated or if byte-based data shall be written, or if the
  * stream shall be closed.
  *
- * \pre   The stream must be in state [States::open](@ref gpcc::Stream::IStreamWriter::States::open) or
- *        [States::full](@ref gpcc::Stream::IStreamWriter::States::full).
+ * \pre   The stream must be in state [States::open](@ref gpcc::stream::IStreamWriter::States::open) or
+ *        [States::full](@ref gpcc::stream::IStreamWriter::States::full).
  *
  * - - -
  *
@@ -436,8 +436,8 @@ class IStreamWriter
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws ClosedError       Stream is already closed ([details](@ref gpcc::Stream::ClosedError)).
- * \throws ErrorStateError   Stream is in error state ([details](@ref gpcc::Stream::ErrorStateError)).
+ * \throws ClosedError       Stream is already closed ([details](@ref gpcc::stream::ClosedError)).
+ * \throws ErrorStateError   Stream is in error state ([details](@ref gpcc::stream::ErrorStateError)).
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -457,8 +457,8 @@ class IStreamWriter
  * before the stream is closed. These operations may fail, so be aware that this
  * method may throw an exception.
  *
- * If the stream is in state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), or if the
- * close-operation fails, then the exact behavior of [Close](@ref gpcc::Stream::IStreamWriter::Close()) depends
+ * If the stream is in state [States::error](@ref gpcc::stream::IStreamWriter::States::error), or if the
+ * close-operation fails, then the exact behavior of [Close](@ref gpcc::stream::IStreamWriter::Close()) depends
  * on the underlying sub-class:
  * - if the target of the stream is plain memory, then the memory could contain undefined/incomplete data.
  * - if the target of the stream is a new file or a new EEPROM section, then the file/section could
@@ -472,7 +472,7 @@ class IStreamWriter
  * is usually not desired, so it is recommended to close the stream manually before
  * releasing the stream object.
  *
- * If the stream is already in state [States::closed](@ref gpcc::Stream::IStreamWriter::States::closed), then this
+ * If the stream is already in state [States::closed](@ref gpcc::stream::IStreamWriter::States::closed), then this
  * method has no effect and it will not throw any exception.
  *
  * ---
@@ -489,8 +489,8 @@ class IStreamWriter
  *   really anything more one can do in such a situation.
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [FullError](@ref gpcc::Stream::FullError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [FullError](@ref gpcc::stream::FullError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
@@ -503,7 +503,7 @@ class IStreamWriter
  *
  * This will have no effect, if the stream is already aligned to a byte boundary (= no cached bits).
  *
- * \pre   The stream must be in state [States::open](@ref gpcc::Stream::IStreamWriter::States::open).
+ * \pre   The stream must be in state [States::open](@ref gpcc::stream::IStreamWriter::States::open).
  *
  * \post  The number of cached bits will be zero.
  *
@@ -514,19 +514,19 @@ class IStreamWriter
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [FullError](@ref gpcc::Stream::FullError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [FullError](@ref gpcc::stream::FullError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Basic guarantee:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * - - -
@@ -543,7 +543,7 @@ class IStreamWriter
  * \fn void IStreamWriter::FillBits(size_t n, bool const oneNotZero)
  * \brief Writes a couple of bits (all ones or all zeros) to the stream.
  *
- * \pre   The stream must be in state [States::open](@ref gpcc::Stream::IStreamWriter::States::open).
+ * \pre   The stream must be in state [States::open](@ref gpcc::stream::IStreamWriter::States::open).
  *
  * - - -
  *
@@ -552,19 +552,19 @@ class IStreamWriter
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [FullError](@ref gpcc::Stream::FullError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [FullError](@ref gpcc::stream::FullError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Basic guarantee:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * - - -
@@ -581,7 +581,7 @@ class IStreamWriter
  * \fn void IStreamWriter::FillBytes(size_t n, uint8_t const value)
  * \brief Writes a couple of bytes (all with the same value) to the stream.
  *
- * \pre   The stream must be in state [States::open](@ref gpcc::Stream::IStreamWriter::States::open).
+ * \pre   The stream must be in state [States::open](@ref gpcc::stream::IStreamWriter::States::open).
  *
  * - - -
  *
@@ -590,19 +590,19 @@ class IStreamWriter
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [FullError](@ref gpcc::Stream::FullError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [FullError](@ref gpcc::stream::FullError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Basic guarantee:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * - - -
@@ -618,7 +618,7 @@ class IStreamWriter
  *
  * \brief Writes data to the stream.
  *
- * @pre The stream must be in state [States::open](@ref gpcc::Stream::IStreamWriter::States::open).
+ * @pre The stream must be in state [States::open](@ref gpcc::stream::IStreamWriter::States::open).
  *
  * Note: This method writes one element of data. There is an overloaded version
  * writing `n` elements of data.
@@ -630,19 +630,19 @@ class IStreamWriter
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [FullError](@ref gpcc::Stream::FullError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [FullError](@ref gpcc::stream::FullError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * ---
@@ -654,7 +654,7 @@ class IStreamWriter
  *
  * \brief Writes data to the stream.
  *
- * @pre The stream must be in state [States::open](@ref gpcc::Stream::IStreamWriter::States::open).
+ * @pre The stream must be in state [States::open](@ref gpcc::stream::IStreamWriter::States::open).
  *
  * Note: This method writes `n` elements of data. There is an overloaded version
  * writing one element of data.
@@ -666,19 +666,19 @@ class IStreamWriter
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [FullError](@ref gpcc::Stream::FullError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [FullError](@ref gpcc::stream::FullError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * ---
@@ -692,94 +692,94 @@ class IStreamWriter
  */
 /**
  * \fn void IStreamWriter::Write_uint16(uint16_t data)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t)
  */
 /**
  * \fn void IStreamWriter::Write_uint16(uint16_t const * pData, size_t n)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
  */
 /**
  * \fn void IStreamWriter::Write_uint32(uint32_t data)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t)
  */
 /**
  * \fn void IStreamWriter::Write_uint32(uint32_t const * pData, size_t n)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
  */
 /**
  * \fn void IStreamWriter::Write_uint64(uint64_t data)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t)
  */
 /**
  * \fn void IStreamWriter::Write_uint64(uint64_t const * pData, size_t n)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
  */
 /**
  * \fn void IStreamWriter::Write_int8(int8_t data)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t)
  */
 /**
  * \fn void IStreamWriter::Write_int8(int8_t const * pData, size_t n)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
  */
 /**
  * \fn void IStreamWriter::Write_int16(int16_t data)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t)
  */
 /**
  * \fn void IStreamWriter::Write_int16(int16_t const * pData, size_t n)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
  */
 /**
  * \fn void IStreamWriter::Write_int32(int32_t data)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t)
  */
 /**
  * \fn void IStreamWriter::Write_int32(int32_t const * pData, size_t n)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
  */
 /**
  * \fn void IStreamWriter::Write_int64(int64_t data)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t)
  */
 /**
  * \fn void IStreamWriter::Write_int64(int64_t const * pData, size_t n)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
  */
 /**
  * \fn void IStreamWriter::Write_float(float data)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t)
  */
 /**
  * \fn void IStreamWriter::Write_float(float const * pData, size_t n)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
  */
 /**
  * \fn void IStreamWriter::Write_double(double data)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t)
  */
 /**
  * \fn void IStreamWriter::Write_double(double const * pData, size_t n)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
  */
 /**
  * \fn void IStreamWriter::Write_bool(bool data)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t)
  */
 /**
  * \fn void IStreamWriter::Write_bool(bool const * pData, size_t n)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
  */
 /**
  * \fn void IStreamWriter::Write_Bit(bool data)
  *
  * \brief Writes one bit of data to the stream.
  *
- * @pre The stream must be in state [States::open](@ref gpcc::Stream::IStreamWriter::States::open).
+ * @pre The stream must be in state [States::open](@ref gpcc::stream::IStreamWriter::States::open).
  *
  * Note: This method writes one bit of data. There are methods
- * [Write_Bits(uint8_t bits, uint_fast8_t n)](@ref gpcc::Stream::IStreamWriter::Write_Bits(uint8_t bits, uint_fast8_t n))
- * and [Write_Bits(uint8_t const * pData, size_t n)](@ref gpcc::Stream::IStreamWriter::Write_Bits(uint8_t const * pData, size_t n))
+ * [Write_Bits(uint8_t bits, uint_fast8_t n)](@ref gpcc::stream::IStreamWriter::Write_Bits(uint8_t bits, uint_fast8_t n))
+ * and [Write_Bits(uint8_t const * pData, size_t n)](@ref gpcc::stream::IStreamWriter::Write_Bits(uint8_t const * pData, size_t n))
  * writing multiple bits of data to the stream.
  *
  * ---
@@ -789,19 +789,19 @@ class IStreamWriter
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [FullError](@ref gpcc::Stream::FullError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [FullError](@ref gpcc::stream::FullError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * ---
@@ -813,10 +813,10 @@ class IStreamWriter
  *
  * \brief Writes up to 8 bits of data to the stream.
  *
- * @pre The stream must be in state [States::open](@ref gpcc::Stream::IStreamWriter::States::open).
+ * @pre The stream must be in state [States::open](@ref gpcc::stream::IStreamWriter::States::open).
  *
- * Note: This method writes `n` (max 8) bits of data. There is a method [Write_Bit()](@ref gpcc::Stream::IStreamWriter::Write_Bit())
- * writing one bit of data and [Write_Bits(uint8_t const * pData, size_t n)](@ref gpcc::Stream::IStreamWriter::Write_Bits(uint8_t const * pData, size_t n))
+ * Note: This method writes `n` (max 8) bits of data. There is a method [Write_Bit()](@ref gpcc::stream::IStreamWriter::Write_Bit())
+ * writing one bit of data and [Write_Bits(uint8_t const * pData, size_t n)](@ref gpcc::stream::IStreamWriter::Write_Bits(uint8_t const * pData, size_t n))
  * writing multiple bits of data to the stream.
  *
  * ---
@@ -826,19 +826,19 @@ class IStreamWriter
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [FullError](@ref gpcc::Stream::FullError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [FullError](@ref gpcc::stream::FullError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * ---
@@ -854,10 +854,10 @@ class IStreamWriter
  *
  * \brief Writes multiple bits of data to the stream.
  *
- * @pre The stream must be in state [States::open](@ref gpcc::Stream::IStreamWriter::States::open).
+ * @pre The stream must be in state [States::open](@ref gpcc::stream::IStreamWriter::States::open).
  *
- * Note: This method writes `n` bits of data. There is a method [Write_Bit()](@ref gpcc::Stream::IStreamWriter::Write_Bit())
- * writing one bit of data and [Write_Bits(uint8_t bits, uint_fast8_t n)](@ref gpcc::Stream::IStreamWriter::Write_Bits(uint8_t bits, uint_fast8_t n))
+ * Note: This method writes `n` bits of data. There is a method [Write_Bit()](@ref gpcc::stream::IStreamWriter::Write_Bit())
+ * writing one bit of data and [Write_Bits(uint8_t bits, uint_fast8_t n)](@ref gpcc::stream::IStreamWriter::Write_Bits(uint8_t bits, uint_fast8_t n))
  * writing up to 8 bits of data to the stream.
  *
  * ---
@@ -867,19 +867,19 @@ class IStreamWriter
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [FullError](@ref gpcc::Stream::FullError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [FullError](@ref gpcc::stream::FullError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * ---
@@ -893,18 +893,18 @@ class IStreamWriter
  */
 /**
  * \fn void IStreamWriter::Write_char(char data)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t)
  */
 /**
  * \fn void IStreamWriter::Write_char(char const * pData, size_t n)
- * \copydoc gpcc::Stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
+ * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
  */
 /**
  * \fn bool IStreamWriter::Write_string(std::string const & str)
  *
  * \brief Writes a string to the stream (incl. null-terminator).
  *
- * @pre The stream must be in state [States::open](@ref gpcc::Stream::IStreamWriter::States::open).
+ * @pre The stream must be in state [States::open](@ref gpcc::stream::IStreamWriter::States::open).
  *
  * ---
  *
@@ -913,19 +913,19 @@ class IStreamWriter
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [FullError](@ref gpcc::Stream::FullError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [FullError](@ref gpcc::stream::FullError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * ---
@@ -940,7 +940,7 @@ class IStreamWriter
  * \brief Writes a line to the stream. Basically a string is written, but instead of
  * using a null-terminator, the string is terminated using '\\n'.
  *
- * @pre The stream must be in state [States::open](@ref gpcc::Stream::IStreamWriter::States::open).
+ * @pre The stream must be in state [States::open](@ref gpcc::stream::IStreamWriter::States::open).
  *
  * ---
  *
@@ -949,19 +949,19 @@ class IStreamWriter
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [FullError](@ref gpcc::Stream::FullError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [FullError](@ref gpcc::stream::FullError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream
  *   cannot be recovered (e.g. undo a write)
  *
  * ---
@@ -975,7 +975,7 @@ class IStreamWriter
  * @}
  */
 
-} // namespace Stream
+} // namespace stream
 } // namespace gpcc
 
 #endif /* SRC_GPCC_STREAM_ISTREAMWRITER_HPP_ */

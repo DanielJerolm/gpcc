@@ -89,7 +89,7 @@ ReadRequest::ReadRequest(AccessType     const _accessType,
 
 /**
  * \brief Constructor. Creates a @ref ReadRequest object from data read from an
- *        [IStreamReader](@ref gpcc::Stream::IStreamReader) containing a serialized @ref ReadRequest object.
+ *        [IStreamReader](@ref gpcc::stream::IStreamReader) containing a serialized @ref ReadRequest object.
  *
  * This is intended to be invoked by @ref RequestBase::FromBinary() only. In conjunction with
  * @ref RequestBase::FromBinary(), this is the counterpart to @ref RequestBase::ToBinary().
@@ -116,7 +116,7 @@ ReadRequest::ReadRequest(AccessType     const _accessType,
  * \param versionOnHand
  * Version of serialized object read from `sr`.
  */
-ReadRequest::ReadRequest(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, ReadRequestPassKey)
+ReadRequest::ReadRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ReadRequestPassKey)
 : RequestBase(RequestTypes::readRequest, sr, versionOnHand)
 , accessType(U8_to_AccessType(sr.Read_uint8()))
 , index(sr.Read_uint16())
@@ -184,7 +184,7 @@ size_t ReadRequest::GetBinarySize(void) const
 }
 
 /// \copydoc gpcc::cood::RequestBase::ToBinary
-void ReadRequest::ToBinary(gpcc::Stream::IStreamWriter & sw) const
+void ReadRequest::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   RequestBase::ToBinary(sw);
 

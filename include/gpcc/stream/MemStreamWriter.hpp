@@ -15,7 +15,7 @@
 
 namespace gpcc
 {
-namespace Stream
+namespace stream
 {
 
 /**
@@ -77,6 +77,6 @@ class MemStreamWriter: public StreamWriterBase
  * @}
  */
 
-} // namespace Stream
+} // namespace stream
 } // namespace gpcc
 #endif /* SRC_GPCC_STREAM_MEMSTREAMWRITER_HPP_ */

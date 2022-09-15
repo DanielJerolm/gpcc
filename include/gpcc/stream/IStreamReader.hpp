@@ -18,7 +18,7 @@
 
 namespace gpcc
 {
-namespace Stream
+namespace stream
 {
 
 /**
@@ -236,7 +236,7 @@ class IStreamReader
  *
  * \brief Reads one element of data from the stream.
  *
- * @pre The stream must be in state [States::open](@ref gpcc::Stream::IStreamReader::States::open).
+ * @pre The stream must be in state [States::open](@ref gpcc::stream::IStreamReader::States::open).
  *
  * ---
  *
@@ -245,20 +245,20 @@ class IStreamReader
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream
  *   cannot be recovered (e.g. undo a read)
  * - the memory referenced by parameter `value` may contain undefined data
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [EmptyError](@ref gpcc::Stream::EmptyError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [EmptyError](@ref gpcc::stream::EmptyError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream
  *   cannot be recovered (e.g. undo a read)
  * - the memory referenced by parameter `value` may contain undefined data
  *
@@ -269,54 +269,54 @@ class IStreamReader
  */
 /**
  * \fn IStreamReader& IStreamReader::operator>> (uint16_t & value)
- * \copydoc gpcc::Stream::IStreamReader::operator>> (uint8_t&)
+ * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
  * \fn IStreamReader& IStreamReader::operator>> (uint32_t & value)
- * \copydoc gpcc::Stream::IStreamReader::operator>> (uint8_t&)
+ * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
  * \fn IStreamReader& IStreamReader::operator>> (uint64_t & value)
- * \copydoc gpcc::Stream::IStreamReader::operator>> (uint8_t&)
+ * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
  * \fn IStreamReader& IStreamReader::operator>> (int8_t & value)
- * \copydoc gpcc::Stream::IStreamReader::operator>> (uint8_t&)
+ * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
  * \fn IStreamReader& IStreamReader::operator>> (int16_t & value)
- * \copydoc gpcc::Stream::IStreamReader::operator>> (uint8_t&)
+ * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
  * \fn IStreamReader& IStreamReader::operator>> (int32_t & value)
- * \copydoc gpcc::Stream::IStreamReader::operator>> (uint8_t&)
+ * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
  * \fn IStreamReader& IStreamReader::operator>> (int64_t & value)
- * \copydoc gpcc::Stream::IStreamReader::operator>> (uint8_t&)
+ * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
  * \fn IStreamReader& IStreamReader::operator>> (float & value)
- * \copydoc gpcc::Stream::IStreamReader::operator>> (uint8_t&)
+ * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
  * \fn IStreamReader& IStreamReader::operator>> (double & value)
- * \copydoc gpcc::Stream::IStreamReader::operator>> (uint8_t&)
+ * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
  * \fn IStreamReader& IStreamReader::operator>> (bool & value)
- * \copydoc gpcc::Stream::IStreamReader::operator>> (uint8_t&)
+ * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
  * \fn IStreamReader& IStreamReader::operator>> (char & value)
- * \copydoc gpcc::Stream::IStreamReader::operator>> (uint8_t&)
+ * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
  * \fn IStreamReader& IStreamReader::operator>> (std::string & value)
  *
  * \brief Reads a null-terminated string from the stream.
  *
- * @pre The stream must be in state [States::open](@ref gpcc::Stream::IStreamReader::States::open).
+ * @pre The stream must be in state [States::open](@ref gpcc::stream::IStreamReader::States::open).
  *
  * ---
  *
@@ -325,20 +325,20 @@ class IStreamReader
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream
  *   cannot be recovered (e.g. undo a read)
  * - the memory referenced by parameter `value` may contain undefined data
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [EmptyError](@ref gpcc::Stream::EmptyError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [EmptyError](@ref gpcc::stream::EmptyError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream
  *   cannot be recovered (e.g. undo a read)
  * - the memory referenced by parameter `value` may contain undefined data
  *
@@ -419,8 +419,8 @@ class IStreamReader
  * This operation is not supported by all implementations of this interface.\n
  * Use @ref IsRemainingBytesSupported() to query if the method is supported.
  *
- * \pre   The stream must be in state [States::open](@ref gpcc::Stream::IStreamReader::States::open) or
- *        [States::empty](@ref gpcc::Stream::IStreamReader::States::empty).
+ * \pre   The stream must be in state [States::open](@ref gpcc::stream::IStreamReader::States::open) or
+ *        [States::empty](@ref gpcc::stream::IStreamReader::States::empty).
  *
  * ---
  *
@@ -431,8 +431,8 @@ class IStreamReader
  * Strong exception safety:\n
  * Operations can fail, but failed operations are guaranteed to have no side effects, so all data retain their original values.
  *
- * \throws ClosedError       Stream is already closed ([details](@ref gpcc::Stream::ClosedError)).
- * \throws ErrorStateError   Stream is in error state ([details](@ref gpcc::Stream::ErrorStateError)).
+ * \throws ClosedError       Stream is already closed ([details](@ref gpcc::stream::ClosedError)).
+ * \throws ErrorStateError   Stream is in error state ([details](@ref gpcc::stream::ErrorStateError)).
  * \throws std::logic_error  Operation not supported.
  *
  * __Thread cancellation safety:__\n
@@ -444,9 +444,9 @@ class IStreamReader
  * Number of bytes that could be read from the stream until the stream or the storage behind it becomes empty.\n
  * __Note:__\n
  * If zero is returned, then up to 7 bits could still left to be read. Use
- * [GetState()](@ref gpcc::Stream::IStreamReader::GetState) to check for
- * [States::empty](@ref gpcc::Stream::IStreamReader::States::empty) or use
- * [EnsureAllDataConsumed()](@ref gpcc::Stream::IStreamReader::EnsureAllDataConsumed) to check the number of
+ * [GetState()](@ref gpcc::stream::IStreamReader::GetState) to check for
+ * [States::empty](@ref gpcc::stream::IStreamReader::States::empty) or use
+ * [EnsureAllDataConsumed()](@ref gpcc::stream::IStreamReader::EnsureAllDataConsumed) to check the number of
  * bits left.
  */
 
@@ -456,8 +456,8 @@ class IStreamReader
  *
  * This is intended to be used to check if the expected amounth of data has been read from the stream.
  *
- * \pre   The stream must be in state [States::open](@ref gpcc::Stream::IStreamReader::States::open) or
- *        [States::empty](@ref gpcc::Stream::IStreamReader::States::empty).
+ * \pre   The stream must be in state [States::open](@ref gpcc::stream::IStreamReader::States::open) or
+ *        [States::empty](@ref gpcc::stream::IStreamReader::States::empty).
  *
  * \post  The stream's state will explicitly not be modified.
  *
@@ -469,12 +469,12 @@ class IStreamReader
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws ClosedError          Stream is already closed ([details](@ref gpcc::Stream::ClosedError)).
+ * \throws ClosedError          Stream is already closed ([details](@ref gpcc::stream::ClosedError)).
  *
- * \throws ErrorStateError      Stream is in error state ([details](@ref gpcc::Stream::ErrorStateError)).
+ * \throws ErrorStateError      Stream is in error state ([details](@ref gpcc::stream::ErrorStateError)).
  *
  * \throws RemainingBitsError   The remaining number of bits in the stream does not match the expectation
- *                              ([details](@ref gpcc::Stream::RemainingBitsError)).
+ *                              ([details](@ref gpcc::stream::RemainingBitsError)).
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -501,7 +501,7 @@ class IStreamReader
  * is usually not desired, so it is recommended to close the stream manually before
  * releasing the stream object.
  *
- * If the stream is already in state [States::closed](@ref gpcc::Stream::IStreamReader::States::closed), then this
+ * If the stream is already in state [States::closed](@ref gpcc::stream::IStreamReader::States::closed), then this
  * method has no effect and it will not throw any exception.
  *
  * ---
@@ -518,7 +518,7 @@ class IStreamReader
  *   really anything more one can do in such a situation.
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
+ * - [IOError](@ref gpcc::stream::IOError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
@@ -529,10 +529,10 @@ class IStreamReader
  * \fn IStreamReader::Skip
  * \brief Skips a given number of bits in the stream.
  *
- * \pre The stream must be in state [States::open](@ref gpcc::Stream::IStreamReader::States::open).
+ * \pre The stream must be in state [States::open](@ref gpcc::stream::IStreamReader::States::open).
  *
- * The behaviour is the same as if using [Read_bit()](@ref gpcc::Stream::IStreamReader::Read_bit) or
- * [Read_bits()](@ref gpcc::Stream::IStreamReader::Read_bits) and discarding the read bits.\n
+ * The behaviour is the same as if using [Read_bit()](@ref gpcc::stream::IStreamReader::Read_bit) or
+ * [Read_bits()](@ref gpcc::stream::IStreamReader::Read_bits) and discarding the read bits.\n
  * However, this method usually provides a better performance and allows to skip one or more bytes.
  *
  * - - -
@@ -542,19 +542,19 @@ class IStreamReader
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream
  *   cannot be recovered (e.g. undo a skip)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [EmptyError](@ref gpcc::Stream::EmptyError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [EmptyError](@ref gpcc::stream::EmptyError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Basic guarantee:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream
  *   cannot be recovered (e.g. undo a skip)
  *
  * - - -
@@ -569,7 +569,7 @@ class IStreamReader
  *
  * \brief Reads one element of data from the stream.
  *
- * @pre The stream must be in state [States::open](@ref gpcc::Stream::IStreamReader::States::open).
+ * @pre The stream must be in state [States::open](@ref gpcc::stream::IStreamReader::States::open).
  *
  * ---
  *
@@ -578,19 +578,19 @@ class IStreamReader
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream
  *   cannot be recovered (e.g. undo a read)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [EmptyError](@ref gpcc::Stream::EmptyError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [EmptyError](@ref gpcc::stream::EmptyError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream
  *   cannot be recovered (e.g. undo a read)
  *
  * ---
@@ -599,54 +599,54 @@ class IStreamReader
  */
 /**
  * \fn uint16_t IStreamReader::Read_uint16(void)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(void)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(void)
  */
 /**
  * \fn uint32_t IStreamReader::Read_uint32(void)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(void)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(void)
  */
 /**
  * \fn uint64_t IStreamReader::Read_uint64(void)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(void)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(void)
  */
 /**
  * \fn int8_t IStreamReader::Read_int8(void)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(void)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(void)
  */
 /**
  * \fn int16_t IStreamReader::Read_int16(void)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(void)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(void)
  */
 /**
  * \fn int32_t IStreamReader::Read_int32(void)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(void)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(void)
  */
 /**
  * \fn int64_t IStreamReader::Read_int64(void)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(void)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(void)
  */
 /**
  * \fn float IStreamReader::Read_float(void)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(void)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(void)
  */
 /**
  * \fn double IStreamReader::Read_double(void)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(void)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(void)
  */
 /**
  * \fn bool IStreamReader::Read_bool(void)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(void)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(void)
  */
 /**
  * \fn bool IStreamReader::Read_bit(void)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(void)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(void)
  */
 /**
  * \fn uint8_t IStreamReader::Read_bits(uint_fast8_t n)
  *
  * \brief Reads up to 8 bits of data from the stream.
  *
- * @pre The stream must be in state [States::open](@ref gpcc::Stream::IStreamReader::States::open).
+ * @pre The stream must be in state [States::open](@ref gpcc::stream::IStreamReader::States::open).
  *
  * ---
  *
@@ -655,19 +655,19 @@ class IStreamReader
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream
  *   cannot be recovered (e.g. undo a read)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [EmptyError](@ref gpcc::Stream::EmptyError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [EmptyError](@ref gpcc::stream::EmptyError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream
  *   cannot be recovered (e.g. undo a read)
  *
  * ---
@@ -680,14 +680,14 @@ class IStreamReader
  */
 /**
  * \fn char IStreamReader::Read_char(void)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(void)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(void)
  */
 /**
  * \fn std::string IStreamReader::Read_string(void)
  *
  * \brief Reads a null-terminated string from the stream.
  *
- * @pre The stream must be in state [States::open](@ref gpcc::Stream::IStreamReader::States::open).
+ * @pre The stream must be in state [States::open](@ref gpcc::stream::IStreamReader::States::open).
  *
  * ---
  *
@@ -696,19 +696,19 @@ class IStreamReader
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream
  *   cannot be recovered (e.g. undo a read)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [EmptyError](@ref gpcc::Stream::EmptyError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [EmptyError](@ref gpcc::stream::EmptyError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream
  *   cannot be recovered (e.g. undo a read)
  *
  * ---
@@ -727,7 +727,7 @@ class IStreamReader
  * - NUL
  * - End of the stream
  *
- * @pre The stream must be in state [States::open](@ref gpcc::Stream::IStreamReader::States::open).
+ * @pre The stream must be in state [States::open](@ref gpcc::stream::IStreamReader::States::open).
  *
  * ---
  *
@@ -736,19 +736,19 @@ class IStreamReader
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream
  *   cannot be recovered (e.g. undo a read)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [EmptyError](@ref gpcc::Stream::EmptyError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [EmptyError](@ref gpcc::stream::EmptyError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream
  *   cannot be recovered (e.g. undo a read)
  *
  * ---
@@ -762,7 +762,7 @@ class IStreamReader
  *
  * \brief Reads data from the stream.
  *
- * @pre The stream must be in state [States::open](@ref gpcc::Stream::IStreamReader::States::open).
+ * @pre The stream must be in state [States::open](@ref gpcc::stream::IStreamReader::States::open).
  *
  * ---
  *
@@ -771,20 +771,20 @@ class IStreamReader
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream
  *   cannot be recovered (e.g. undo a read)
  * - the memory referenced by parameter `pDest` may contain undefined data
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [EmptyError](@ref gpcc::Stream::EmptyError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [EmptyError](@ref gpcc::stream::EmptyError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream
  *   cannot be recovered (e.g. undo a read)
  * - the memory referenced by parameter `pDest` may contain undefined data
  *
@@ -797,50 +797,50 @@ class IStreamReader
  */
 /**
  * \fn void IStreamReader::Read_uint16(uint16_t* pDest, size_t n)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(uint8_t*,size_t)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(uint8_t*,size_t)
  */
 /**
  * \fn void IStreamReader::Read_uint32(uint32_t* pDest, size_t n)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(uint8_t*,size_t)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(uint8_t*,size_t)
  */
 /**
  * \fn void IStreamReader::Read_uint64(uint64_t* pDest, size_t n)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(uint8_t*,size_t)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(uint8_t*,size_t)
  */
 /**
  * \fn void IStreamReader::Read_int8(int8_t* pDest, size_t n)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(uint8_t*,size_t)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(uint8_t*,size_t)
  */
 /**
  * \fn void IStreamReader::Read_int16(int16_t* pDest, size_t n)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(uint8_t*,size_t)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(uint8_t*,size_t)
  */
 /**
  * \fn void IStreamReader::Read_int32(int32_t* pDest, size_t n)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(uint8_t*,size_t)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(uint8_t*,size_t)
  */
 /**
  * \fn void IStreamReader::Read_int64(int64_t* pDest, size_t n)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(uint8_t*,size_t)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(uint8_t*,size_t)
  */
 /**
  * \fn void IStreamReader::Read_float(float* pDest, size_t n)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(uint8_t*,size_t)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(uint8_t*,size_t)
  */
 /**
  * \fn void IStreamReader::Read_double(double* pDest, size_t n)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(uint8_t*,size_t)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(uint8_t*,size_t)
  */
 /**
  * \fn void IStreamReader::Read_bool(bool* pDest, size_t n)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(uint8_t*,size_t)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(uint8_t*,size_t)
  */
 /**
  * \fn void IStreamReader::Read_bits(uint8_t* pDest, size_t n)
  *
  * \brief Reads multiple bits from the stream.
  *
- * @pre The stream must be in state [States::open](@ref gpcc::Stream::IStreamReader::States::open).
+ * @pre The stream must be in state [States::open](@ref gpcc::stream::IStreamReader::States::open).
  *
  * ---
  *
@@ -849,20 +849,20 @@ class IStreamReader
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream
  *   cannot be recovered (e.g. undo a read)
  * - the memory referenced by parameter `pDest` may contain undefined data
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [EmptyError](@ref gpcc::Stream::EmptyError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [EmptyError](@ref gpcc::stream::EmptyError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamReader::States::error), if the stream
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamReader::States::error), if the stream
  *   cannot be recovered (e.g. undo a read)
  * - the memory referenced by parameter `pDest` may contain undefined data
  *
@@ -877,14 +877,14 @@ class IStreamReader
  */
 /**
  * \fn void IStreamReader::Read_char(char* pDest, size_t n)
- * \copydoc gpcc::Stream::IStreamReader::Read_uint8(uint8_t*,size_t)
+ * \copydoc gpcc::stream::IStreamReader::Read_uint8(uint8_t*,size_t)
  */
 
 /**
  * @}
  */
 
-} // namespace Stream
+} // namespace stream
 } // namespace gpcc
 
 #endif /* SRC_GPCC_STREAM_ISTREAMREADER_HPP_ */

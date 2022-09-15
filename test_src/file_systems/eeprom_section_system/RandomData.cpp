@@ -90,7 +90,7 @@ void RandomData::Compare(std::string const & name, gpcc::file_systems::EEPROMSec
 
   reader->Read_uint8(readData.data(), readData.size());
 
-  if (reader->GetState() != gpcc::Stream::IStreamReader::States::empty)
+  if (reader->GetState() != gpcc::stream::IStreamReader::States::empty)
     throw std::runtime_error("RandomData::Compare: File should be empty, but it is not");
 
   ON_SCOPE_EXIT_DISMISS();

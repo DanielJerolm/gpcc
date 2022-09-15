@@ -66,7 +66,7 @@ class ReadRequestResponse final : public ResponseBase
 
     explicit ReadRequestResponse(SDOAbortCode const _result);
 
-    ReadRequestResponse(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, ReadRequestResponsePassKey);
+    ReadRequestResponse(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ReadRequestResponsePassKey);
 
     ReadRequestResponse(ReadRequestResponse const &) = default;
     ReadRequestResponse(ReadRequestResponse && other) noexcept;
@@ -80,7 +80,7 @@ class ReadRequestResponse final : public ResponseBase
 
     // <-- ResponseBase
     size_t GetBinarySize(void) const override;
-    void ToBinary(gpcc::Stream::IStreamWriter & sw) const override;
+    void ToBinary(gpcc::stream::IStreamWriter & sw) const override;
 
     std::string ToString(void) const override;
     // --> ResponseBase

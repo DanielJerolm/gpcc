@@ -278,7 +278,7 @@ TEST_F(gpcc_cood_ObjectInfoRequest_TestsF, SerializeAndDeserialize)
 
   uint8_t storage[64U];
 
-  gpcc::Stream::MemStreamWriter msw(storage, sizeof(storage), gpcc::Stream::IStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(storage, sizeof(storage), gpcc::stream::IStreamWriter::Endian::Little);
   spUUT1->ToBinary(msw);
   msw.AlignToByteBoundary(false);
   ASSERT_EQ(msw.RemainingCapacity(), sizeof(storage) - reqSize) << "Unexpected number of bytes written";
@@ -287,9 +287,9 @@ TEST_F(gpcc_cood_ObjectInfoRequest_TestsF, SerializeAndDeserialize)
   spUUT1.reset();
 
   // deserialize it
-  gpcc::Stream::MemStreamReader msr(storage, reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(storage, reqSize, gpcc::stream::IStreamReader::Endian::Little);
   auto spUUT2Base = RequestBase::FromBinary(msr);
-  ASSERT_TRUE(msr.GetState() == gpcc::Stream::IStreamReader::States::empty) << "Stream was not completely consumed";
+  ASSERT_TRUE(msr.GetState() == gpcc::stream::IStreamReader::States::empty) << "Stream was not completely consumed";
   msr.Close();
 
   // check type and cast to ObjectInfoRequest
@@ -318,7 +318,7 @@ TEST_F(gpcc_cood_ObjectInfoRequest_TestsF, Deserialize_InvalidSubindices)
 
   uint8_t storage[64U];
 
-  gpcc::Stream::MemStreamWriter msw(storage, sizeof(storage), gpcc::Stream::IStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(storage, sizeof(storage), gpcc::stream::IStreamWriter::Endian::Little);
   spUUT1->ToBinary(msw);
   msw.AlignToByteBoundary(false);
   ASSERT_EQ(msw.RemainingCapacity(), sizeof(storage) - reqSize) << "Unexpected number of bytes written";
@@ -330,7 +330,7 @@ TEST_F(gpcc_cood_ObjectInfoRequest_TestsF, Deserialize_InvalidSubindices)
   storage[offsetOfFirstSubindex] = 11U;
 
   // try to deserialize
-  gpcc::Stream::MemStreamReader msr(storage, reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(storage, reqSize, gpcc::stream::IStreamReader::Endian::Little);
   EXPECT_THROW((void)RequestBase::FromBinary(msr), std::runtime_error);
 }
 

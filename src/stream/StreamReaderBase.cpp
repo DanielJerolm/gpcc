@@ -12,7 +12,7 @@
 
 namespace gpcc
 {
-namespace Stream
+namespace stream
 {
 
 // --> IStreamReader
@@ -168,7 +168,7 @@ char StreamReaderBase::Read_char(void)
   return static_cast<char>(Pop());
 }
 std::string StreamReaderBase::Read_string(void)
-/// \copydoc gpcc::Stream::IStreamReader::Read_string(void)
+/// \copydoc gpcc::stream::IStreamReader::Read_string(void)
 {
   std::string s;
   char c = static_cast<char>(Pop());
@@ -284,5 +284,5 @@ StreamReaderBase::StreamReaderBase(States const _state, Endian const _endian) no
 {
 }
 
-} // namespace Stream
+} // namespace stream
 } // namespace gpcc

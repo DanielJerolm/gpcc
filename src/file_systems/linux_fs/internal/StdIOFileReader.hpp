@@ -26,15 +26,15 @@ namespace internal     {
 
 /**
  * \ingroup GPCC_FILESYSTEMS_LINUXFS_INTERNAL
- * \brief Class used to read data from a regular file via @ref gpcc::Stream::IStreamReader.
+ * \brief Class used to read data from a regular file via @ref gpcc::stream::IStreamReader.
  *
  * An instance of this class is created by class @ref FileStorage if a regular file shall be opened for reading.
- * This class offers read access via @ref gpcc::Stream::IStreamReader and manages all read accesses to the storage.
+ * This class offers read access via @ref gpcc::stream::IStreamReader and manages all read accesses to the storage.
  * All read accesses are done using buffered I/O operations. Finally this class takes care for unlocking of the
  * opened file at the @ref FileStorage instance.
- * [IStreamReader::RemainingBytes()](@ref gpcc::Stream::IStreamReader::RemainingBytes()) is not supported.
+ * [IStreamReader::RemainingBytes()](@ref gpcc::stream::IStreamReader::RemainingBytes()) is not supported.
  *
- * After construction, the object is ready to read data from the file via the @ref gpcc::Stream::IStreamWriter
+ * After construction, the object is ready to read data from the file via the @ref gpcc::stream::IStreamWriter
  * interface.
  *
  * # Internals
@@ -88,7 +88,7 @@ namespace internal     {
  * __Thread safety:__\n
  * Not thread safe, but non-modifying concurrent access is safe.
  */
-class StdIOFileReader final : public Stream::StreamReaderBase
+class StdIOFileReader final : public stream::StreamReaderBase
 {
   public:
     StdIOFileReader(std::string const & fileName, FileStorage & _fileStorage, std::string const & _unlockID);

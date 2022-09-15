@@ -32,7 +32,7 @@ namespace internal
 SectionReader::SectionReader(EEPROMSectionSystem & _ESS,
                              std::string const & _sectionName,
                              std::unique_ptr<unsigned char[]> _spMem)
-: gpcc::Stream::StreamReaderBase(States::open, Endian::Little)
+: gpcc::stream::StreamReaderBase(States::open, Endian::Little)
 , pESS(&_ESS)
 , sectionName(_sectionName)
 , spMem(std::move(_spMem))
@@ -85,7 +85,7 @@ SectionReader::SectionReader(EEPROMSectionSystem & _ESS,
   }
 }
 SectionReader::SectionReader(SectionReader && other) noexcept
-: gpcc::Stream::StreamReaderBase(std::move(other))
+: gpcc::stream::StreamReaderBase(std::move(other))
 , pESS(other.pESS)
 , sectionName(std::move(other.sectionName))
 , spMem(std::move(other.spMem))
@@ -153,13 +153,13 @@ SectionReader::~SectionReader(void)
 }
 
 bool SectionReader::IsRemainingBytesSupported(void) const
-/// \copydoc gpcc::Stream::IStreamReader::IsRemainingBytesSupported
+/// \copydoc gpcc::stream::IStreamReader::IsRemainingBytesSupported
 {
   return false;
 }
 
 size_t SectionReader::RemainingBytes(void) const
-/// \copydoc gpcc::Stream::IStreamReader::RemainingBytes
+/// \copydoc gpcc::stream::IStreamReader::RemainingBytes
 {
   switch (state)
   {
@@ -169,16 +169,16 @@ size_t SectionReader::RemainingBytes(void) const
       throw std::logic_error("SectionReader::RemainingBytes: Operation not supported");
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   }
 
   PANIC();
 }
 
-/// \copydoc gpcc::Stream::IStreamReader::EnsureAllDataConsumed
+/// \copydoc gpcc::stream::IStreamReader::EnsureAllDataConsumed
 void SectionReader::EnsureAllDataConsumed(RemainingNbOfBits const expectation) const
 {
   switch (state)
@@ -191,14 +191,14 @@ void SectionReader::EnsureAllDataConsumed(RemainingNbOfBits const expectation) c
           case RemainingNbOfBits::sevenOrLess:
           {
             if (rdPtr != nullptr)
-              throw Stream::RemainingBitsError();
+              throw stream::RemainingBitsError();
             break;
           }
 
           case RemainingNbOfBits::moreThanSeven:
           {
             if (rdPtr == nullptr)
-              throw Stream::RemainingBitsError();
+              throw stream::RemainingBitsError();
             break;
           }
 
@@ -212,7 +212,7 @@ void SectionReader::EnsureAllDataConsumed(RemainingNbOfBits const expectation) c
             // (0..7)
 
             if ((rdPtr != nullptr) || (nbOfBitsInBitData != static_cast<uint8_t>(expectation)))
-              throw Stream::RemainingBitsError();
+              throw stream::RemainingBitsError();
             break;
           }
         } // switch (expectation)
@@ -221,15 +221,15 @@ void SectionReader::EnsureAllDataConsumed(RemainingNbOfBits const expectation) c
       } // case States::open / States::empty
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 }
 
 void SectionReader::Close(void)
-/// \copydoc gpcc::Stream::IStreamReader::Close
+/// \copydoc gpcc::stream::IStreamReader::Close
 {
   if (state != States::closed)
   {
@@ -252,7 +252,7 @@ void SectionReader::Close(void)
 }
 
 void SectionReader::Skip(size_t nBits)
-/// \copydoc gpcc::Stream::IStreamReader::Skip
+/// \copydoc gpcc::stream::IStreamReader::Skip
 {
   if (nBits == 0U)
     return;
@@ -299,7 +299,7 @@ void SectionReader::Skip(size_t nBits)
       if (rdPtr == nullptr)
       {
         state = States::error;
-        throw Stream::EmptyError();
+        throw stream::EmptyError();
       }
 
       // calculate the number of bytes and bits to be skipped
@@ -335,7 +335,7 @@ void SectionReader::Skip(size_t nBits)
             else
             {
               state = States::error;
-              throw Stream::EmptyError();
+              throw stream::EmptyError();
             }
           }
         }
@@ -363,18 +363,18 @@ void SectionReader::Skip(size_t nBits)
 
     case States::empty:
       state = States::error;
-      throw Stream::EmptyError();
+      throw stream::EmptyError();
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 }
 
 std::string SectionReader::Read_string(void)
-/// \copydoc gpcc::Stream::IStreamReader::Read_string(void)
+/// \copydoc gpcc::stream::IStreamReader::Read_string(void)
 {
   std::string s;
 
@@ -395,7 +395,7 @@ std::string SectionReader::Read_string(void)
         if (rdPtr == nullptr)
         {
           state = States::error;
-          throw Stream::EmptyError();
+          throw stream::EmptyError();
         }
 
         size_t const n = strnlen(static_cast<char const*>(static_cast<void const*>(rdPtr)), remainingBytesInCurrentBlock);
@@ -443,19 +443,19 @@ std::string SectionReader::Read_string(void)
 
     case States::empty:
       state = States::error;
-      throw Stream::EmptyError();
+      throw stream::EmptyError();
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 
   return s;
 }
 std::string SectionReader::Read_line(void)
-/// \copydoc gpcc::Stream::IStreamReader::Read_line(void)
+/// \copydoc gpcc::stream::IStreamReader::Read_line(void)
 {
   std::string s;
 
@@ -474,7 +474,7 @@ std::string SectionReader::Read_line(void)
       if (rdPtr == nullptr)
       {
         state = States::error;
-        throw Stream::EmptyError();
+        throw stream::EmptyError();
       }
 
       // Lambda: Loads next block, if current block has been consumed. Returns false, if there is no more data.
@@ -570,20 +570,20 @@ std::string SectionReader::Read_line(void)
 
     case States::empty:
       state = States::error;
-      throw Stream::EmptyError();
+      throw stream::EmptyError();
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 
   return s;
 }
 
 unsigned char SectionReader::Pop(void)
-/// \copydoc gpcc::Stream::StreamReaderBase::Pop(void)
+/// \copydoc gpcc::stream::StreamReaderBase::Pop(void)
 {
   // discard any bits from the last read byte that have not yet been read
   if (nbOfBitsInBitData != 0)
@@ -604,7 +604,7 @@ unsigned char SectionReader::Pop(void)
         // ReleaseBuffer() had already been invoked before.)
 
         state = States::error;
-        throw Stream::EmptyError();
+        throw stream::EmptyError();
       }
 
       // read one byte
@@ -624,19 +624,19 @@ unsigned char SectionReader::Pop(void)
 
     case States::empty:
       state = States::error;
-      throw Stream::EmptyError();
+      throw stream::EmptyError();
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 
   PANIC();
 }
 void SectionReader::Pop(void* p, size_t n)
-/// \copydoc gpcc::Stream::StreamReaderBase::Pop(void* p, size_t n)
+/// \copydoc gpcc::stream::StreamReaderBase::Pop(void* p, size_t n)
 {
   if (n == 0)
     return;
@@ -660,7 +660,7 @@ void SectionReader::Pop(void* p, size_t n)
         // ReleaseBuffer() had already been invoked before.)
 
         state = States::error;
-        throw Stream::EmptyError();
+        throw stream::EmptyError();
       }
 
       uint8_t * wrPtr = static_cast<uint8_t*>(p);
@@ -690,7 +690,7 @@ void SectionReader::Pop(void* p, size_t n)
             else
             {
               state = States::error;
-              throw Stream::EmptyError();
+              throw stream::EmptyError();
             }
           }
         }
@@ -700,17 +700,17 @@ void SectionReader::Pop(void* p, size_t n)
 
     case States::empty:
       state = States::error;
-      throw Stream::EmptyError();
+      throw stream::EmptyError();
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 }
 uint8_t SectionReader::PopBits(uint_fast8_t n)
-/// \copydoc gpcc::Stream::StreamReaderBase::PopBits(uint_fast8_t n)
+/// \copydoc gpcc::stream::StreamReaderBase::PopBits(uint_fast8_t n)
 {
   if (n == 0)
     return 0;
@@ -735,7 +735,7 @@ uint8_t SectionReader::PopBits(uint_fast8_t n)
           // ReleaseBuffer() had already been invoked before.)
 
           state = States::error;
-          throw Stream::EmptyError();
+          throw stream::EmptyError();
         }
 
         // read one byte
@@ -769,13 +769,13 @@ uint8_t SectionReader::PopBits(uint_fast8_t n)
 
     case States::empty:
       state = States::error;
-      throw Stream::EmptyError();
+      throw stream::EmptyError();
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 
   PANIC();
@@ -854,7 +854,7 @@ void SectionReader::LoadNextBlock(void)
   }
   catch (std::exception const &)
   {
-    std::throw_with_nested(Stream::IOError("SectionReader::LoadNextBlock: failed"));
+    std::throw_with_nested(stream::IOError("SectionReader::LoadNextBlock: failed"));
   }
 
   ON_SCOPE_EXIT_DISMISS();

@@ -26,7 +26,7 @@ namespace cli
   class CLI;
 }
 
-namespace Stream
+namespace stream
 {
   class IStreamWriter;
 }
@@ -39,7 +39,7 @@ namespace log {
  *
  * Recorded log messages can be...
  * - ...printed to a [CLI](@ref gpcc::cli::CLI) on demand via a CLI command registered by this class.
- * - ...written into an [IStreamWriter](@ref gpcc::Stream::IStreamWriter) interface via @ref Export().
+ * - ...written into an [IStreamWriter](@ref gpcc::stream::IStreamWriter) interface via @ref Export().
  * - ...printed and exported multiple times.
  * - ...discarded upon request (@ref Clear() or via CLI command)
  *
@@ -93,7 +93,7 @@ class Backend_CLILogHistory final : public Backend
     Backend_CLILogHistory& operator=(Backend_CLILogHistory &&) = delete;
 
     void Clear(void);
-    void Export(gpcc::Stream::IStreamWriter& output, bool const clearAfterExport);
+    void Export(gpcc::stream::IStreamWriter& output, bool const clearAfterExport);
 
     // <-- Backend
     void Process(std::string const & msg, LogType const type) override;

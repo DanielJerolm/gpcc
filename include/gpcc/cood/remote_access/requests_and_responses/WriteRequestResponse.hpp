@@ -51,7 +51,7 @@ class WriteRequestResponse final : public ResponseBase
 
     explicit WriteRequestResponse(SDOAbortCode const _result);
 
-    WriteRequestResponse(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, WriteRequestResponsePassKey);
+    WriteRequestResponse(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, WriteRequestResponsePassKey);
 
     WriteRequestResponse(WriteRequestResponse const &) = default;
     WriteRequestResponse(WriteRequestResponse &&) = default;
@@ -63,7 +63,7 @@ class WriteRequestResponse final : public ResponseBase
 
     // <-- ResponseBase
     size_t GetBinarySize(void) const override;
-    void ToBinary(gpcc::Stream::IStreamWriter & sw) const override;
+    void ToBinary(gpcc::stream::IStreamWriter & sw) const override;
 
     std::string ToString(void) const override;
     // --> ResponseBase

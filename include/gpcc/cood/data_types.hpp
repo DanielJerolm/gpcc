@@ -17,7 +17,7 @@
 
 namespace gpcc {
 
-namespace Stream {
+namespace stream {
   class IStreamReader;
   class IStreamWriter;
 }
@@ -212,8 +212,8 @@ char const * DataTypeToString(DataType const dt);
 uint16_t ToUint16(DataType const dt) noexcept;
 DataType ToDataType(uint16_t const value);
 
-std::string CANopenEncodedDataToString(gpcc::Stream::IStreamReader& sr, size_t const sizeInBit, DataType const type);
-void StringToCANOpenEncodedData(std::string const & s, size_t const sizeInBit, DataType const type, gpcc::Stream::IStreamWriter& sw);
+std::string CANopenEncodedDataToString(gpcc::stream::IStreamReader& sr, size_t const sizeInBit, DataType const type);
+void StringToCANOpenEncodedData(std::string const & s, size_t const sizeInBit, DataType const type, gpcc::stream::IStreamWriter& sw);
 
 DataType MapAlternativeDataTypesToOriginalTypes(DataType const dt) noexcept;
 

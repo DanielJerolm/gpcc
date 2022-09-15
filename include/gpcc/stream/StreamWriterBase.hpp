@@ -15,7 +15,7 @@
 
 namespace gpcc
 {
-namespace Stream
+namespace stream
 {
 
 /**
@@ -109,19 +109,19 @@ class StreamWriterBase: public IStreamWriter
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream cannot
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream cannot
  *   be recovered (e.g. undo a write)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [FullError](@ref gpcc::Stream::FullError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [FullError](@ref gpcc::stream::FullError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream cannot
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream cannot
  *   be recovered (e.g. undo a write)
  *
  * ---
@@ -144,19 +144,19 @@ class StreamWriterBase: public IStreamWriter
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream cannot
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream cannot
  *   be recovered (e.g. undo a write)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [FullError](@ref gpcc::Stream::FullError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [FullError](@ref gpcc::stream::FullError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream cannot
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream cannot
  *   be recovered (e.g. undo a write)
  *
  * ---
@@ -178,19 +178,19 @@ class StreamWriterBase: public IStreamWriter
  *
  * __Exception safety:__\n
  * Basic exception safety:\n
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream cannot
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream cannot
  *   be recovered (e.g. undo a write)
  *
  * You should be aware of the following exceptions:
- * - [IOError](@ref gpcc::Stream::IOError)
- * - [FullError](@ref gpcc::Stream::FullError)
- * - [ClosedError](@ref gpcc::Stream::ClosedError)
- * - [ErrorStateError](@ref gpcc::Stream::ErrorStateError)
+ * - [IOError](@ref gpcc::stream::IOError)
+ * - [FullError](@ref gpcc::stream::FullError)
+ * - [ClosedError](@ref gpcc::stream::ClosedError)
+ * - [ErrorStateError](@ref gpcc::stream::ErrorStateError)
  * - any derived from `std::exception`
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the stream enters state [States::error](@ref gpcc::Stream::IStreamWriter::States::error), if the stream cannot
+ * - the stream enters state [States::error](@ref gpcc::stream::IStreamWriter::States::error), if the stream cannot
  *   be recovered (e.g. undo a write)
  *
  * ---
@@ -206,7 +206,7 @@ class StreamWriterBase: public IStreamWriter
  * @}
  */
 
-} // namespace Stream
+} // namespace stream
 } // namespace gpcc
 
 #endif /* SRC_GPCC_STREAM_STREAMWRITERBASE_HPP_ */

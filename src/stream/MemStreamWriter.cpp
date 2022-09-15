@@ -15,7 +15,7 @@
 
 namespace gpcc
 {
-namespace Stream
+namespace stream
 {
 
 MemStreamWriter::MemStreamWriter(void* const _pMem, size_t const _size, Endian const _endian)
@@ -506,5 +506,5 @@ void MemStreamWriter::PushBits(uint8_t bits, uint_fast8_t n)
 }
 // <-- StreamWriterBase
 
-} // namespace Stream
+} // namespace stream
 } // namespace gpcc

@@ -83,7 +83,7 @@ RequestBase::~RequestBase(void)
  * \return
  * Instance of a sub-class of class @ref RequestBase, created from information consumed from `sr`.
  */
-std::unique_ptr<RequestBase> RequestBase::FromBinary(gpcc::Stream::IStreamReader & sr)
+std::unique_ptr<RequestBase> RequestBase::FromBinary(gpcc::stream::IStreamReader & sr)
 {
   // check version
   auto const _version = sr.Read_uint8();
@@ -184,7 +184,7 @@ size_t RequestBase::GetBinarySize(void) const
  * \param sw
  * The binary data is written into the referenced stream.
  */
-void RequestBase::ToBinary(gpcc::Stream::IStreamWriter & sw) const
+void RequestBase::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   // to be read by FromBinary()
   sw.Write_uint8(version);
@@ -366,7 +366,7 @@ RequestBase::RequestBase(RequestTypes const _type, size_t const _maxResponseSize
 
 /**
  * \brief Constructor. Creates a @ref RequestBase object from data read from an
- *        [IStreamReader](@ref gpcc::Stream::IStreamReader) containing a serialized @ref RequestBase object.
+ *        [IStreamReader](@ref gpcc::stream::IStreamReader) containing a serialized @ref RequestBase object.
  *
  * - - -
  *
@@ -391,7 +391,7 @@ RequestBase::RequestBase(RequestTypes const _type, size_t const _maxResponseSize
  * \param versionOnHand
  * Version of serialized object read from `sr`.
  */
-RequestBase::RequestBase(RequestTypes const _type, gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand)
+RequestBase::RequestBase(RequestTypes const _type, gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand)
 : type(_type)
 , pPrevInIntrusiveDList(nullptr)
 , pNextInIntrusiveDList(nullptr)

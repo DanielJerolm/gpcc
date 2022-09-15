@@ -74,7 +74,7 @@ RAMBlock::RAMBlock(size_t const size, uint8_t const v)
 
 /**
  * \brief Constructor. The RAMBlock's storage will be initialized with data read from an
- *        [IStreamReader](@ref gpcc::Stream::IStreamReader) interface.
+ *        [IStreamReader](@ref gpcc::stream::IStreamReader) interface.
  *
  * - - -
  *
@@ -95,7 +95,7 @@ RAMBlock::RAMBlock(size_t const size, uint8_t const v)
  * \param sr
  * `size` bytes will be read from this and used to initialize the RAMBlock's storage.
  */
-RAMBlock::RAMBlock(size_t const size, gpcc::Stream::IStreamReader& sr)
+RAMBlock::RAMBlock(size_t const size, gpcc::stream::IStreamReader& sr)
 : IRandomAccessStorage()
 , apiMutex()
 , storage(size)
@@ -497,7 +497,7 @@ std::vector<uint8_t> RAMBlock::GetDataAndClearDirtyFlag(void)
 }
 
 /**
- * \brief Writes the content of the RAMBlock's storage into a [IStreamWriter](@ref gpcc::Stream::IStreamWriter) and
+ * \brief Writes the content of the RAMBlock's storage into a [IStreamWriter](@ref gpcc::stream::IStreamWriter) and
  *        clears the RAMBlock's dirty flag.
  *
  * Both operations are carried out atomically.
@@ -521,10 +521,10 @@ std::vector<uint8_t> RAMBlock::GetDataAndClearDirtyFlag(void)
  *
  * \param sw
  * The content of the RAMBlock's storage will be written into this.\n
- * The storage behind the [IStreamWriter](@ref gpcc::Stream::IStreamWriter) must have a capacity equal to larger than
+ * The storage behind the [IStreamWriter](@ref gpcc::stream::IStreamWriter) must have a capacity equal to larger than
  * the size of the RAMBlock's storage.
  */
-void RAMBlock::WriteToStreamAndClearDirtyFlag(gpcc::Stream::IStreamWriter& sw)
+void RAMBlock::WriteToStreamAndClearDirtyFlag(gpcc::stream::IStreamWriter& sw)
 {
   gpcc::osal::MutexLocker apiMutexLocker(apiMutex);
   sw.Write_uint8(storage.data(), storage.size());

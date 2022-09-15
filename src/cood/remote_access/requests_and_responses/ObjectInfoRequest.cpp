@@ -94,7 +94,7 @@ ObjectInfoRequest::ObjectInfoRequest(uint16_t const _index,
 
 /**
  * \brief Constructor. Creates a @ref ObjectInfoRequest object from data read from an
- *        [IStreamReader](@ref gpcc::Stream::IStreamReader) containing a serialized @ref ObjectInfoRequest object.
+ *        [IStreamReader](@ref gpcc::stream::IStreamReader) containing a serialized @ref ObjectInfoRequest object.
  *
  * This is intended to be invoked by @ref RequestBase::FromBinary() only. In conjunction with
  * @ref RequestBase::FromBinary(), this is the counterpart to @ref RequestBase::ToBinary().
@@ -121,7 +121,7 @@ ObjectInfoRequest::ObjectInfoRequest(uint16_t const _index,
  * \param versionOnHand
  * Version of serialized object read from `sr`.
  */
-ObjectInfoRequest::ObjectInfoRequest(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectInfoRequestPassKey)
+ObjectInfoRequest::ObjectInfoRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectInfoRequestPassKey)
 : RequestBase(RequestTypes::objectInfoRequest, sr, versionOnHand)
 , index(sr.Read_uint16())
 , firstSubIndex(sr.Read_uint8())
@@ -147,7 +147,7 @@ size_t ObjectInfoRequest::GetBinarySize(void) const
 }
 
 /// \copydoc gpcc::cood::RequestBase::ToBinary
-void ObjectInfoRequest::ToBinary(gpcc::Stream::IStreamWriter & sw) const
+void ObjectInfoRequest::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   RequestBase::ToBinary(sw);
 

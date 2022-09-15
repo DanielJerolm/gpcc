@@ -17,7 +17,7 @@
 
 namespace gpcc      {
 
-namespace Stream    {
+namespace stream    {
   class IStreamReader;
   class IStreamWriter;
 }
@@ -39,7 +39,7 @@ class RAMBlock final : public gpcc::stdif::IRandomAccessStorage
   public:
     explicit RAMBlock(size_t const size);
     RAMBlock(size_t const size, uint8_t const v);
-    RAMBlock(size_t const size, gpcc::Stream::IStreamReader& sr);
+    RAMBlock(size_t const size, gpcc::stream::IStreamReader& sr);
     explicit RAMBlock(std::vector<uint8_t> const & data);
     explicit RAMBlock(std::vector<uint8_t> && data);
     explicit RAMBlock(RAMBlock const & other);
@@ -55,7 +55,7 @@ class RAMBlock final : public gpcc::stdif::IRandomAccessStorage
     void SetDirtyFlag(void);
     void ClearDirtyFlag(void);
     std::vector<uint8_t> GetDataAndClearDirtyFlag(void);
-    void WriteToStreamAndClearDirtyFlag(gpcc::Stream::IStreamWriter& sw);
+    void WriteToStreamAndClearDirtyFlag(gpcc::stream::IStreamWriter& sw);
 
     // <-- gpcc::stdif::IRandomAccessStorage
     size_t GetSize(void) const override;

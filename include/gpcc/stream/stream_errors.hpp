@@ -16,7 +16,7 @@
 
 namespace gpcc
 {
-namespace Stream
+namespace stream
 {
 
 /**
@@ -88,7 +88,7 @@ class ErrorStateError : public std::logic_error
 
 /**
  * @ingroup GPCC_STREAM
- * \brief Exception thrown by [IStreamReader::EnsureAllDataConsumed(...)](@ref gpcc::Stream::IStreamReader::EnsureAllDataConsumed)
+ * \brief Exception thrown by [IStreamReader::EnsureAllDataConsumed(...)](@ref gpcc::stream::IStreamReader::EnsureAllDataConsumed)
  *        if the remaining number of bits (or bytes) in the stream available for reading does not match the expectation passed to
  *        EnsureAllDataConsumed(...).
  */
@@ -100,7 +100,7 @@ class RemainingBitsError : public std::runtime_error
     virtual ~RemainingBitsError(void) noexcept = default;
 };
 
-} // namespace Stream
+} // namespace stream
 } // namespace gpcc
 
 #endif /* STREAM_ERRORS_HPP_202209141250 */

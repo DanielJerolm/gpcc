@@ -15,7 +15,7 @@
 #include <cstdint>
 
 namespace gpcc   {
-namespace Stream {
+namespace stream {
   class IStreamReader;
   class IStreamWriter;
 }
@@ -64,7 +64,7 @@ class ReturnStackItem final
 
     ReturnStackItem(void) = delete;
     ReturnStackItem(uint32_t const _id, uint32_t const _info) noexcept;
-    explicit ReturnStackItem(gpcc::Stream::IStreamReader & sr);
+    explicit ReturnStackItem(gpcc::stream::IStreamReader & sr);
 
     ReturnStackItem(ReturnStackItem const &) = default;
     ReturnStackItem(ReturnStackItem &&) = default;
@@ -77,7 +77,7 @@ class ReturnStackItem final
     bool operator==(ReturnStackItem const & rhv) const noexcept;
     bool operator!=(ReturnStackItem const & rhv) const noexcept;
 
-    void ToBinary(gpcc::Stream::IStreamWriter & sw) const;
+    void ToBinary(gpcc::stream::IStreamWriter & sw) const;
 
     uint32_t GetID(void) const noexcept;
     uint32_t GetInfo(void) const noexcept;

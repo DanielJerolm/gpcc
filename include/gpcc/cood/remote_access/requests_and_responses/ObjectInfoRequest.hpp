@@ -77,7 +77,7 @@ class ObjectInfoRequest final : public RequestBase
                       bool     const _inclusiveAppSpecificMetaData,
                       size_t   const _maxResponseSize);
 
-    ObjectInfoRequest(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectInfoRequestPassKey);
+    ObjectInfoRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectInfoRequestPassKey);
 
     ObjectInfoRequest(ObjectInfoRequest const &) = default;
     ObjectInfoRequest(ObjectInfoRequest &&) = default;
@@ -89,7 +89,7 @@ class ObjectInfoRequest final : public RequestBase
 
     // <-- RequestBase
     size_t GetBinarySize(void) const override;
-    void ToBinary(gpcc::Stream::IStreamWriter & sw) const override;
+    void ToBinary(gpcc::stream::IStreamWriter & sw) const override;
 
     std::string ToString(void) const override;
     // --> RequestBase

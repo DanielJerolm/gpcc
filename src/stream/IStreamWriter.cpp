@@ -12,7 +12,7 @@
 #include <gpcc/compiler/definitions.hpp>
 
 namespace gpcc   {
-namespace Stream {
+namespace stream {
 
 #ifndef __DOXYGEN__
 

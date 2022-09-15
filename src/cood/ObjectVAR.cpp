@@ -290,7 +290,7 @@ size_t ObjectVAR::GetSubIdxActualSize(uint8_t const subIdx) const
 /// \copydoc Object::Read
 SDOAbortCode ObjectVAR::Read(uint8_t const subIdx,
                              attr_t const permissions,
-                             gpcc::Stream::IStreamWriter & isw) const
+                             gpcc::stream::IStreamWriter & isw) const
 {
   if (subIdx != 0U)
     return SDOAbortCode::SubindexDoesNotExist;
@@ -313,7 +313,7 @@ SDOAbortCode ObjectVAR::Read(uint8_t const subIdx,
 /// \copydoc Object::Write
 SDOAbortCode ObjectVAR::Write(uint8_t const subIdx,
                               attr_t const permissions,
-                              gpcc::Stream::IStreamReader & isr)
+                              gpcc::stream::IStreamReader & isr)
 {
   if (subIdx != 0U)
     return SDOAbortCode::SubindexDoesNotExist;
@@ -343,13 +343,13 @@ SDOAbortCode ObjectVAR::Write(uint8_t const subIdx,
   try
   {
     CANopenEncodedDataToNativeData(isr, type, nElements, false, pTempMem);
-    isr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::sevenOrLess);
+    isr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::sevenOrLess);
   }
-  catch (gpcc::Stream::EmptyError const &)
+  catch (gpcc::stream::EmptyError const &)
   {
     return SDOAbortCode::DataTypeMismatchTooSmall;
   }
-  catch (gpcc::Stream::RemainingBitsError const &)
+  catch (gpcc::stream::RemainingBitsError const &)
   {
     return SDOAbortCode::DataTypeMismatchTooLong;
   }
@@ -406,7 +406,7 @@ SDOAbortCode ObjectVAR::Write(uint8_t const subIdx,
 SDOAbortCode ObjectVAR::CompleteRead(bool const inclSI0,
                                      bool const SI016Bits,
                                      attr_t const permissions,
-                                     gpcc::Stream::IStreamWriter & isw) const
+                                     gpcc::stream::IStreamWriter & isw) const
 {
   (void)inclSI0;
   (void)SI016Bits;
@@ -420,8 +420,8 @@ SDOAbortCode ObjectVAR::CompleteRead(bool const inclSI0,
 SDOAbortCode ObjectVAR::CompleteWrite(bool const inclSI0,
                                       bool const SI016Bits,
                                       attr_t const permissions,
-                                      gpcc::Stream::IStreamReader & isr,
-                                      gpcc::Stream::IStreamReader::RemainingNbOfBits const ernob)
+                                      gpcc::stream::IStreamReader & isr,
+                                      gpcc::stream::IStreamReader::RemainingNbOfBits const ernob)
 {
   (void)inclSI0;
   (void)SI016Bits;

@@ -78,7 +78,7 @@ TEST(gpcc_cood_data_types_Tests, ToDataType)
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_DataTypeNotSupported)
 {
   uint8_t const mem[] = {0, 0, 0, 0, 0, 0, 0, 0};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   ASSERT_THROW(str = CANopenEncodedDataToString(msr, 40U, DataType::unsigned40), DataTypeNotSupportedError);
@@ -87,7 +87,7 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_DataTypeNotSupported
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_NULL)
 {
   uint8_t const mem[] = {0};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 0U, DataType::null);
@@ -99,13 +99,13 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_NULL)
   str = CANopenEncodedDataToString(msr, 2U, DataType::null);
   EXPECT_STREQ(str.c_str(), "");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::MemStreamReader::RemainingNbOfBits::five));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::MemStreamReader::RemainingNbOfBits::five));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_BOOLEAN)
 {
   uint8_t const mem[] = {0x02U};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 1U, DataType::boolean);
@@ -113,13 +113,13 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_BOOLEAN)
   str = CANopenEncodedDataToString(msr, 1U, DataType::boolean);
   EXPECT_STREQ(str.c_str(), "TRUE");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::MemStreamReader::RemainingNbOfBits::six));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::MemStreamReader::RemainingNbOfBits::six));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_INTEGER8)
 {
   int8_t const mem[] = {-128, 0, 127};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 8U, DataType::integer8);
@@ -129,7 +129,7 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_INTEGER8)
   str = CANopenEncodedDataToString(msr, 8U, DataType::integer8);
   EXPECT_STREQ(str.c_str(), "127");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::MemStreamReader::RemainingNbOfBits::zero));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::MemStreamReader::RemainingNbOfBits::zero));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_INTEGER16)
@@ -137,7 +137,7 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_INTEGER16)
   uint8_t const mem[] = {0x00U, 0x80U,
                          0x00U, 0x00U,
                          0xFFU, 0x7FU};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 16U, DataType::integer16);
@@ -147,7 +147,7 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_INTEGER16)
   str = CANopenEncodedDataToString(msr, 16U, DataType::integer16);
   EXPECT_STREQ(str.c_str(), "32767");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::MemStreamReader::RemainingNbOfBits::zero));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::MemStreamReader::RemainingNbOfBits::zero));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_INTEGER32)
@@ -155,7 +155,7 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_INTEGER32)
   uint8_t const mem[] = {0x00U, 0x00U, 0x00U, 0x80U,
                          0x00U, 0x00U, 0x00U, 0x00U,
                          0xFFU, 0xFFU, 0xFFU, 0x7F};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 32U, DataType::integer32);
@@ -165,13 +165,13 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_INTEGER32)
   str = CANopenEncodedDataToString(msr, 32U, DataType::integer32);
   EXPECT_STREQ(str.c_str(), "2147483647");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::MemStreamReader::RemainingNbOfBits::zero));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::MemStreamReader::RemainingNbOfBits::zero));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_UNSIGNED8)
 {
   uint8_t const mem[] = {0, 255};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 8U, DataType::unsigned8);
@@ -179,14 +179,14 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_UNSIGNED8)
   str = CANopenEncodedDataToString(msr, 8U, DataType::unsigned8);
   EXPECT_STREQ(str.c_str(), "255 (0xFF)");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::MemStreamReader::RemainingNbOfBits::zero));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::MemStreamReader::RemainingNbOfBits::zero));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_UNSIGNED16)
 {
   uint8_t const mem[] = {0x00U, 0x00U,
                          0xFFU, 0xFFU};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 16U, DataType::unsigned16);
@@ -194,14 +194,14 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_UNSIGNED16)
   str = CANopenEncodedDataToString(msr, 16U, DataType::unsigned16);
   EXPECT_STREQ(str.c_str(), "65535 (0xFFFF)");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::MemStreamReader::RemainingNbOfBits::zero));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::MemStreamReader::RemainingNbOfBits::zero));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_UNSIGNED32)
 {
   uint8_t const mem[] = {0x00U, 0x00U, 0x00U, 0x00U,
                          0xFFU, 0xFFU, 0xFFU, 0xFFU};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 32U, DataType::unsigned32);
@@ -209,100 +209,100 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_UNSIGNED32)
   str = CANopenEncodedDataToString(msr, 32U, DataType::unsigned32);
   EXPECT_STREQ(str.c_str(), "4294967295 (0xFFFFFFFF)");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::MemStreamReader::RemainingNbOfBits::zero));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::MemStreamReader::RemainingNbOfBits::zero));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_REAL32)
 {
   uint8_t mem[4];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
   msw.Write_float(10.5);
   msw.Close();
 
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 32U, DataType::real32);
   EXPECT_STREQ(str.c_str(), "10.5");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::MemStreamReader::RemainingNbOfBits::zero));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::MemStreamReader::RemainingNbOfBits::zero));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_VISIBLE_STRING_ShortStr)
 {
   char const mem[] = {'t', 'e', 's', 't', 0x00, 0x00, 0x00, 0x00};
 
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, sizeof(mem) * 8U, DataType::visible_string);
   ASSERT_EQ(str.length(), 6U);
   EXPECT_STREQ(str.c_str(), "\"test\"");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::zero));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::zero));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_VISIBLE_STRING_ShortStr_DataBehindNT)
 {
   char const mem[] = {'t', 'e', 's', 't', 0x00, '!', '!', '!'};
 
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, sizeof(mem) * 8U, DataType::visible_string);
   ASSERT_EQ(str.length(), 6U);
   EXPECT_STREQ(str.c_str(), "\"test\"");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::zero));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::zero));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_VISIBLE_STRING_FullLength)
 {
   char const mem[] = {'t', 'e', 's', 't', 'A', 'B', 'C', 'D'};
 
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, sizeof(mem) * 8U, DataType::visible_string);
   ASSERT_EQ(str.length(), 10U);
   EXPECT_STREQ(str.c_str(), "\"testABCD\"");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::zero));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::zero));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_VISIBLE_STRING_ZeroChars)
 {
   char const mem[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, sizeof(mem) * 8U, DataType::visible_string);
   ASSERT_EQ(str.length(), 2U);
   EXPECT_STREQ(str.c_str(), "\"\"");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::zero));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::zero));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_VISIBLE_STRING_ZeroChars_DataBehindNT)
 {
   char const mem[] = {0x00, '!', '!', '!', '!', '!', '!', '!'};
 
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, sizeof(mem) * 8U, DataType::visible_string);
   ASSERT_EQ(str.length(), 2U);
   EXPECT_STREQ(str.c_str(), "\"\"");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::zero));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::zero));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_VISIBLE_STRING_ZeroLength)
 {
   char const mem[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 0U, DataType::visible_string);
@@ -316,7 +316,7 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_OCTET_STRING_1)
 {
   uint8_t const mem[] = {0x3EU};
 
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 1U * 8U, DataType::octet_string);
@@ -327,7 +327,7 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_OCTET_STRING_2)
 {
   uint8_t const mem[] = {0x00U, 0x01U, 0xFFU};
 
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 3U * 8U, DataType::octet_string);
@@ -338,7 +338,7 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_OCTET_STRING_ZeroLen
 {
   uint8_t const mem[] = {0x00U, 0x01U, 0xFFU};
 
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   ASSERT_THROW(str = CANopenEncodedDataToString(msr, 0U * 8U, DataType::octet_string), std::logic_error);
@@ -348,7 +348,7 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_UNICODE_STRING_1)
 {
   uint8_t const mem[] = {0x3EU, 0x45U};
 
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 1U * 16U, DataType::unicode_string);
@@ -359,7 +359,7 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_UNICODE_STRING_2)
 {
   uint8_t const mem[] = {0x3EU, 0x45U, 0xABU, 0xCDU, 0xFEU, 0x87U};
 
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 3U * 16U, DataType::unicode_string);
@@ -370,7 +370,7 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_UNICODE_STRING_ZeroL
 {
   uint8_t const mem[] = {0x00U, 0x01U, 0xFFU};
 
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   ASSERT_THROW(str = CANopenEncodedDataToString(msr, 0U * 8U, DataType::unicode_string), std::logic_error);
@@ -379,17 +379,17 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_UNICODE_STRING_ZeroL
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_REAL64)
 {
   uint8_t mem[8];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
   msw.Write_double(10.5);
   msw.Close();
 
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 64U, DataType::real64);
   EXPECT_STREQ(str.c_str(), "10.5");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::zero));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::zero));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_INTEGER64)
@@ -397,7 +397,7 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_INTEGER64)
   uint8_t const mem[] = {0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x80U,
                          0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U,
                          0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0x7F};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 64U, DataType::integer64);
@@ -407,14 +407,14 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_INTEGER64)
   str = CANopenEncodedDataToString(msr, 64U, DataType::integer64);
   EXPECT_STREQ(str.c_str(), "9223372036854775807");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::zero));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::zero));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_UNSIGNED64)
 {
   uint8_t const mem[] = {0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U,
                          0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFF};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 64U, DataType::unsigned64);
@@ -422,13 +422,13 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_UNSIGNED64)
   str = CANopenEncodedDataToString(msr, 64U, DataType::unsigned64);
   EXPECT_STREQ(str.c_str(), "18446744073709551615 (0xFFFFFFFF.FFFFFFFF)");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::zero));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::zero));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_BIT1)
 {
   uint8_t const mem[] = {0x02U};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 1U, DataType::bit1);
@@ -436,13 +436,13 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_BIT1)
   str = CANopenEncodedDataToString(msr, 1U, DataType::bit1);
   EXPECT_STREQ(str.c_str(), "0b1");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::six));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::six));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_BIT2)
 {
   uint8_t const mem[] = {0x0BU};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 2U, DataType::bit2);
@@ -450,13 +450,13 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_BIT2)
   str = CANopenEncodedDataToString(msr, 2U, DataType::bit2);
   EXPECT_STREQ(str.c_str(), "0b10");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::four));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::four));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_BIT3)
 {
   uint8_t const mem[] = {0x27U};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 3U, DataType::bit3);
@@ -464,13 +464,13 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_BIT3)
   str = CANopenEncodedDataToString(msr, 3U, DataType::bit3);
   EXPECT_STREQ(str.c_str(), "0b100");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::two));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::two));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_BIT4)
 {
   uint8_t const mem[] = {0x8FU};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 4U, DataType::bit4);
@@ -478,13 +478,13 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_BIT4)
   str = CANopenEncodedDataToString(msr, 4U, DataType::bit4);
   EXPECT_STREQ(str.c_str(), "0b1000");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::zero));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::zero));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_BIT5)
 {
   uint8_t const mem[] = {0x1FU, 0x02U};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 5U, DataType::bit5);
@@ -492,13 +492,13 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_BIT5)
   str = CANopenEncodedDataToString(msr, 5U, DataType::bit5);
   EXPECT_STREQ(str.c_str(), "0b10000");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::six));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::six));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_BIT6)
 {
   uint8_t const mem[] = {0x3FU, 0x08U};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 6U, DataType::bit6);
@@ -506,13 +506,13 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_BIT6)
   str = CANopenEncodedDataToString(msr, 6U, DataType::bit6);
   EXPECT_STREQ(str.c_str(), "0b100000");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::four));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::four));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_BIT7)
 {
   uint8_t const mem[] = {0x7FU, 0x20U};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 7U, DataType::bit7);
@@ -520,13 +520,13 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_BIT7)
   str = CANopenEncodedDataToString(msr, 7U, DataType::bit7);
   EXPECT_STREQ(str.c_str(), "0b1000000");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::two));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::two));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_BIT8)
 {
   uint8_t const mem[] = {0xFFU, 0x80U};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   str = CANopenEncodedDataToString(msr, 8U, DataType::bit8);
@@ -534,13 +534,13 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_BIT8)
   str = CANopenEncodedDataToString(msr, 8U, DataType::bit8);
   EXPECT_STREQ(str.c_str(), "0b10000000");
 
-  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::zero));
+  EXPECT_NO_THROW(msr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::zero));
 }
 
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_AdditionalDataTypes)
 {
   uint8_t const mem[] = {0x00U, 0x01U, 0x02U, 0x03U};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   EXPECT_THROW(str = CANopenEncodedDataToString(msr, 1U, DataType::boolean_native_bit1), std::invalid_argument);
@@ -549,7 +549,7 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_AdditionalDataTypes)
 TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_NotEnoughDataInStream)
 {
   uint8_t const mem[] = {0xFFU, 0x80U};
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
   std::string str;
 
   ASSERT_THROW(str = CANopenEncodedDataToString(msr, 32U, DataType::unsigned32), std::runtime_error);
@@ -558,7 +558,7 @@ TEST(gpcc_cood_data_types_Tests, CANopenEncodedDataToString_NotEnoughDataInStrea
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_DataTypeNotSupported)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   EXPECT_THROW(StringToCANOpenEncodedData("12", 40U, DataType::unsigned40, msw), DataTypeNotSupportedError);
 }
@@ -566,7 +566,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_DataTypeNotSupported
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_NULL)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   EXPECT_THROW(StringToCANOpenEncodedData("",  0U, DataType::null, msw), DataTypeNotSupportedError);
   EXPECT_THROW(StringToCANOpenEncodedData("",  1U, DataType::null, msw), DataTypeNotSupportedError);
@@ -577,7 +577,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_NULL)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BOOLEAN)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   StringToCANOpenEncodedData("TRUE",  1U, DataType::boolean, msw);
   StringToCANOpenEncodedData("true",  1U, DataType::boolean, msw);
@@ -594,7 +594,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BOOLEAN)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BOOLEAN_invVal)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   EXPECT_THROW(StringToCANOpenEncodedData("T",     1U, DataType::boolean, msw), std::invalid_argument);
   EXPECT_THROW(StringToCANOpenEncodedData("TRUEE", 1U, DataType::boolean, msw), std::invalid_argument);
@@ -609,7 +609,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BOOLEAN_invVal)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_INTEGER8)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   StringToCANOpenEncodedData("-128", 8U, DataType::integer8, msw);
   StringToCANOpenEncodedData("-1",   8U, DataType::integer8, msw);
@@ -627,7 +627,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_INTEGER8)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_INTEGER8_invVal)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   EXPECT_THROW(StringToCANOpenEncodedData("-129",  8U, DataType::integer8, msw), std::invalid_argument);
   EXPECT_THROW(StringToCANOpenEncodedData("128",   8U, DataType::integer8, msw), std::invalid_argument);
@@ -639,7 +639,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_INTEGER8_invVal)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_INTEGER16)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   StringToCANOpenEncodedData("-32768", 16U, DataType::integer16, msw);
   StringToCANOpenEncodedData("-1",     16U, DataType::integer16, msw);
@@ -660,7 +660,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_INTEGER16)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_INTEGER16_invVal)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   EXPECT_THROW(StringToCANOpenEncodedData("-32769", 16U, DataType::integer16, msw), std::invalid_argument);
   EXPECT_THROW(StringToCANOpenEncodedData("32768",  16U, DataType::integer16, msw), std::invalid_argument);
@@ -672,7 +672,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_INTEGER16_invVal)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_INTEGER32)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   StringToCANOpenEncodedData("-2147483648", 32U, DataType::integer32, msw);
   StringToCANOpenEncodedData("-1",          32U, DataType::integer32, msw);
@@ -693,7 +693,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_INTEGER32)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_INTEGER32_invVal)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   EXPECT_THROW(StringToCANOpenEncodedData("-2147483649", 32U, DataType::integer32, msw), std::invalid_argument);
   EXPECT_THROW(StringToCANOpenEncodedData("2147483648",  32U, DataType::integer32, msw), std::invalid_argument);
@@ -705,7 +705,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_INTEGER32_invVal)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_UNSIGNED8)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   StringToCANOpenEncodedData("0",     8U, DataType::unsigned8, msw);
   StringToCANOpenEncodedData("1",     8U, DataType::unsigned8, msw);
@@ -723,7 +723,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_UNSIGNED8)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_UNSIGNED8_invVal)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   EXPECT_THROW(StringToCANOpenEncodedData("-",           8U, DataType::unsigned8, msw), std::invalid_argument);
   EXPECT_THROW(StringToCANOpenEncodedData("256",         8U, DataType::unsigned8, msw), std::invalid_argument);
@@ -737,7 +737,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_UNSIGNED8_invVal)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_UNSIGNED16)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   StringToCANOpenEncodedData("0",     16U, DataType::unsigned16, msw);
   StringToCANOpenEncodedData("1",     16U, DataType::unsigned16, msw);
@@ -760,7 +760,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_UNSIGNED16)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_UNSIGNED16_invVal)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   EXPECT_THROW(StringToCANOpenEncodedData("-",                   16U, DataType::unsigned16, msw), std::invalid_argument);
   EXPECT_THROW(StringToCANOpenEncodedData("65536",               16U, DataType::unsigned16, msw), std::invalid_argument);
@@ -774,7 +774,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_UNSIGNED16_invVal)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_UNSIGNED32)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   StringToCANOpenEncodedData("0",          32U, DataType::unsigned32, msw);
   StringToCANOpenEncodedData("1",          32U, DataType::unsigned32, msw);
@@ -797,7 +797,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_UNSIGNED32)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_UNSIGNED32_invVal)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   EXPECT_THROW(StringToCANOpenEncodedData("-",           32U, DataType::unsigned32, msw), std::invalid_argument);
   EXPECT_THROW(StringToCANOpenEncodedData("4294967296",  32U, DataType::unsigned32, msw), std::invalid_argument);
@@ -811,14 +811,14 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_UNSIGNED32_invVal)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_REAL32)
 {
   uint8_t mem[16];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   StringToCANOpenEncodedData("0.55", 32U, DataType::real32, msw);
   StringToCANOpenEncodedData("3E15", 32U, DataType::real32, msw);
 
   msw.Close();
 
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
 
   float f;
 
@@ -838,7 +838,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_REAL32)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_REAL32_invVal)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   EXPECT_THROW(StringToCANOpenEncodedData("0,5",  32U, DataType::real32, msw), std::invalid_argument);
   EXPECT_THROW(StringToCANOpenEncodedData("13F4", 32U, DataType::real32, msw), std::invalid_argument);
@@ -847,7 +847,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_REAL32_invVal)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_VISIBLE_STRING)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   //                         "0......7"
   StringToCANOpenEncodedData("",         8U * 8U, DataType::visible_string, msw);
@@ -866,7 +866,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_VISIBLE_STRING)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_VISIBLE_STRING_invVal)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   //                                      "0......7"
   EXPECT_THROW(StringToCANOpenEncodedData("",          0U * 8U, DataType::visible_string, msw), std::invalid_argument);
@@ -876,7 +876,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_VISIBLE_STRING_invVa
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_OCTET_STRING_1)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   // (number of bits decrements from call to call)
   StringToCANOpenEncodedData("12", 4U * 8U, DataType::octet_string, msw);
@@ -893,7 +893,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_OCTET_STRING_1)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_OCTET_STRING_2)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   // (number of bits does not decrement from call to call)
   StringToCANOpenEncodedData("12", 4U * 8U, DataType::octet_string, msw);
@@ -910,7 +910,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_OCTET_STRING_2)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_OCTET_STRING_invVal)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   EXPECT_THROW(StringToCANOpenEncodedData("",      0U * 8U, DataType::octet_string, msw), std::invalid_argument);
   EXPECT_THROW(StringToCANOpenEncodedData("0",     4U * 8U, DataType::octet_string, msw), std::invalid_argument);
@@ -922,7 +922,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_OCTET_STRING_invVal)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_UNICODE_STRING_1)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   // (number of bits decrements from call to call)
   StringToCANOpenEncodedData("1234", 4U * 16U, DataType::unicode_string, msw);
@@ -939,7 +939,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_UNICODE_STRING_1)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_UNICODE_STRING_2)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   // (number of bits does not decrement from call to call)
   StringToCANOpenEncodedData("1234", 4U * 16U, DataType::unicode_string, msw);
@@ -956,7 +956,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_UNICODE_STRING_2)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_UNICODE_STRING_invVal)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   EXPECT_THROW(StringToCANOpenEncodedData("",      0U * 16U, DataType::unicode_string, msw), std::invalid_argument);
   EXPECT_THROW(StringToCANOpenEncodedData("0",     4U * 16U, DataType::unicode_string, msw), std::invalid_argument);
@@ -968,14 +968,14 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_UNICODE_STRING_invVa
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_REAL64)
 {
   uint8_t mem[16];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   StringToCANOpenEncodedData("0.55", 64U, DataType::real64, msw);
   StringToCANOpenEncodedData("3E15", 64U, DataType::real64, msw);
 
   msw.Close();
 
-  gpcc::Stream::MemStreamReader msr(mem, sizeof(mem), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(mem, sizeof(mem), gpcc::stream::MemStreamReader::Endian::Little);
 
   double d;
 
@@ -995,7 +995,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_REAL64)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_REAL64_invVal)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   EXPECT_THROW(StringToCANOpenEncodedData("0,5",  64U, DataType::real64, msw), std::invalid_argument);
   EXPECT_THROW(StringToCANOpenEncodedData("13F4", 64U, DataType::real64, msw), std::invalid_argument);
@@ -1004,7 +1004,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_REAL64_invVal)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_INTEGER64)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   StringToCANOpenEncodedData("-9223372036854775808", 64U, DataType::integer64, msw);
   StringToCANOpenEncodedData("-1",                   64U, DataType::integer64, msw);
@@ -1025,7 +1025,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_INTEGER64)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_INTEGER64_invValue)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   EXPECT_THROW(StringToCANOpenEncodedData("-9223372036854775809", 64U, DataType::integer64, msw), std::invalid_argument);
   EXPECT_THROW(StringToCANOpenEncodedData("9223372036854775808",  64U, DataType::integer64, msw), std::invalid_argument);
@@ -1036,7 +1036,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_INTEGER64_invValue)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT1)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   StringToCANOpenEncodedData("0b0", 1U, DataType::bit1, msw);
   StringToCANOpenEncodedData("0b1", 1U, DataType::bit1, msw);
@@ -1056,7 +1056,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT1)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT1_invValue)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   EXPECT_THROW(StringToCANOpenEncodedData("0b11", 1U, DataType::bit1, msw), std::invalid_argument);
   EXPECT_THROW(StringToCANOpenEncodedData("a", 1U, DataType::bit1, msw), std::invalid_argument);
@@ -1067,7 +1067,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT1_invValue)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT2)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   StringToCANOpenEncodedData("0b00", 2U, DataType::bit2, msw);
   StringToCANOpenEncodedData("0b10", 2U, DataType::bit2, msw);
@@ -1093,7 +1093,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT2)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT2_invValue)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   EXPECT_THROW(StringToCANOpenEncodedData("0b100", 2U, DataType::bit2, msw), std::invalid_argument);
   EXPECT_THROW(StringToCANOpenEncodedData("a", 2U, DataType::bit2, msw), std::invalid_argument);
@@ -1104,7 +1104,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT2_invValue)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT3)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   StringToCANOpenEncodedData("0b000", 3U, DataType::bit3, msw);
   StringToCANOpenEncodedData("0b001", 3U, DataType::bit3, msw);
@@ -1120,7 +1120,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT3)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT4)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   StringToCANOpenEncodedData("0b0001", 4U, DataType::bit4, msw);
   StringToCANOpenEncodedData("0b0010", 4U, DataType::bit4, msw);
@@ -1136,7 +1136,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT4)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT5)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   StringToCANOpenEncodedData("0b00001", 5U, DataType::bit5, msw);
   StringToCANOpenEncodedData("0b00010", 5U, DataType::bit5, msw);
@@ -1153,7 +1153,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT5)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT6)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   StringToCANOpenEncodedData("0b000001", 6U, DataType::bit6, msw);
   StringToCANOpenEncodedData("0b000010", 6U, DataType::bit6, msw);
@@ -1171,7 +1171,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT6)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT7)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   StringToCANOpenEncodedData("0b0000001", 7U, DataType::bit7, msw);
   StringToCANOpenEncodedData("0b0000010", 7U, DataType::bit7, msw);
@@ -1190,7 +1190,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT7)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT8)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   StringToCANOpenEncodedData("0b00000001", 8U, DataType::bit8, msw);
   StringToCANOpenEncodedData("0b00000010", 8U, DataType::bit8, msw);
@@ -1220,7 +1220,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT8)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_AdditionalDataTypes)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   EXPECT_THROW(StringToCANOpenEncodedData("TRUE", 8U, DataType::boolean_native_bit1, msw), std::invalid_argument);
 }
@@ -1228,7 +1228,7 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_AdditionalDataTypes)
 TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_BIT8_invValue)
 {
   uint8_t mem[128];
-  gpcc::Stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(mem, sizeof(mem), gpcc::stream::MemStreamWriter::Endian::Little);
 
   EXPECT_THROW(StringToCANOpenEncodedData("0x100", 8U, DataType::bit8, msw), std::invalid_argument);
   EXPECT_THROW(StringToCANOpenEncodedData("256", 8U, DataType::bit8, msw), std::invalid_argument);

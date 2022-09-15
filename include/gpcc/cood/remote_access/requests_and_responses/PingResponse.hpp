@@ -47,7 +47,7 @@ class PingResponse final : public ResponseBase
 {
   public:
     PingResponse(void);
-    PingResponse(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, PingResponsePassKey);
+    PingResponse(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, PingResponsePassKey);
 
     PingResponse(PingResponse const &) = default;
     PingResponse(PingResponse &&) = default;
@@ -59,7 +59,7 @@ class PingResponse final : public ResponseBase
 
     // <-- ResponseBase
     size_t GetBinarySize(void) const override;
-    void ToBinary(gpcc::Stream::IStreamWriter & sw) const override;
+    void ToBinary(gpcc::stream::IStreamWriter & sw) const override;
 
     std::string ToString(void) const override;
     // --> ResponseBase

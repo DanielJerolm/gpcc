@@ -25,7 +25,7 @@ namespace gpcc_tests {
 namespace cood       {
 
 using namespace gpcc::cood;
-using namespace gpcc::Stream;
+using namespace gpcc::stream;
 
 using namespace testing;
 
@@ -80,8 +80,8 @@ class gpcc_cood_ObjectRECORD_wicb_TestsF: public Test
     uint8_t writeBuffer[1022];
 
     // Stream reader/writer for the buffers above
-    gpcc::Stream::MemStreamReader readBufferReader;
-    gpcc::Stream::MemStreamWriter writeBufferWriter;
+    gpcc::stream::MemStreamReader readBufferReader;
+    gpcc::stream::MemStreamWriter writeBufferWriter;
 
     // ...and finally the UUT
     std::unique_ptr<ObjectRECORD_wicb> spUUT;
@@ -211,8 +211,8 @@ gpcc_cood_ObjectRECORD_wicb_TestsF::gpcc_cood_ObjectRECORD_wicb_TestsF(void)
 , cbm()
 , readBuffer()
 , writeBuffer()
-, readBufferReader(&readBuffer, sizeof(readBuffer), gpcc::Stream::MemStreamReader::Endian::Little)
-, writeBufferWriter(&writeBuffer, sizeof(writeBuffer), gpcc::Stream::MemStreamWriter::Endian::Little)
+, readBufferReader(&readBuffer, sizeof(readBuffer), gpcc::stream::MemStreamReader::Endian::Little)
+, writeBufferWriter(&writeBuffer, sizeof(writeBuffer), gpcc::stream::MemStreamWriter::Endian::Little)
 , spUUT()
 {
   strcpy(data.data_visiblestring, "Test!");
@@ -2220,7 +2220,7 @@ TEST_F(gpcc_cood_ObjectRECORD_wicb_TestsF, Write_Gap_StreamReaderEmpty)
 
   auto locker(spUUT->LockData());
 
-  auto sr = gpcc::Stream::MemStreamReader(nullptr, 0U, gpcc::Stream::IStreamReader::Endian::Little);
+  auto sr = gpcc::stream::MemStreamReader(nullptr, 0U, gpcc::stream::IStreamReader::Endian::Little);
   EXPECT_EQ(spUUT->Write(4U, Object::attr_ACCESS_WR_PREOP, sr), SDOAbortCode::DataTypeMismatchTooSmall);
 }
 
@@ -2267,7 +2267,7 @@ TEST_F(gpcc_cood_ObjectRECORD_wicb_TestsF, Write_StreamReaderEmpty)
 
   auto locker(spUUT->LockData());
 
-  auto sr = gpcc::Stream::MemStreamReader(nullptr, 0U, gpcc::Stream::IStreamReader::Endian::Little);
+  auto sr = gpcc::stream::MemStreamReader(nullptr, 0U, gpcc::stream::IStreamReader::Endian::Little);
   EXPECT_EQ(spUUT->Write(4U, Object::attr_ACCESS_WR_PREOP, sr), SDOAbortCode::DataTypeMismatchTooSmall);
 
   EXPECT_EQ(data.data_ui32a, 0U);
@@ -3045,7 +3045,7 @@ TEST_F(gpcc_cood_ObjectRECORD_wicb_TestsF, CompleteRead_NotEnoughSpaceInStreamWr
   writeBufferWriter.Close();
 
   MemStreamWriter msw(writeBuffer, 12U, IStreamWriter::Endian::Little);
-  EXPECT_THROW(spUUT->CompleteRead(true, true, Object::attr_ACCESS_RD_PREOP, msw), gpcc::Stream::FullError);
+  EXPECT_THROW(spUUT->CompleteRead(true, true, Object::attr_ACCESS_RD_PREOP, msw), gpcc::stream::FullError);
 }
 
 TEST_F(gpcc_cood_ObjectRECORD_wicb_TestsF, CompleteRead_StreamWriterInErrorState)
@@ -3080,10 +3080,10 @@ TEST_F(gpcc_cood_ObjectRECORD_wicb_TestsF, CompleteRead_StreamWriterInErrorState
   writeBufferWriter.Close();
 
   MemStreamWriter msw(writeBuffer, 2U, IStreamWriter::Endian::Little);
-  ASSERT_THROW(msw.Write_uint32(0), gpcc::Stream::FullError);
+  ASSERT_THROW(msw.Write_uint32(0), gpcc::stream::FullError);
   ASSERT_EQ(msw.GetState(), IStreamWriter::States::error);
 
-  EXPECT_THROW(spUUT->CompleteRead(true, true, Object::attr_ACCESS_RD_PREOP, msw), gpcc::Stream::ErrorStateError);
+  EXPECT_THROW(spUUT->CompleteRead(true, true, Object::attr_ACCESS_RD_PREOP, msw), gpcc::stream::ErrorStateError);
 }
 
 TEST_F(gpcc_cood_ObjectRECORD_wicb_TestsF, CompleteWrite_A_SI0_16bit)

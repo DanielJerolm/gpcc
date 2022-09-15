@@ -100,7 +100,7 @@ class ObjectInfoResponse final : public ResponseBase
                                 size_t const maxResponseSize,
                                 size_t const returnStackSize);
 
-    ObjectInfoResponse(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectInfoResponsePassKey);
+    ObjectInfoResponse(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectInfoResponsePassKey);
 
     ObjectInfoResponse(ObjectInfoResponse const &) = default;
     ObjectInfoResponse(ObjectInfoResponse &&) = default;
@@ -113,7 +113,7 @@ class ObjectInfoResponse final : public ResponseBase
 
     // <-- ResponseBase
     size_t GetBinarySize(void) const override;
-    void ToBinary(gpcc::Stream::IStreamWriter & sw) const override;
+    void ToBinary(gpcc::stream::IStreamWriter & sw) const override;
 
     std::string ToString(void) const override;
     // --> ResponseBase
@@ -160,7 +160,7 @@ class ObjectInfoResponse final : public ResponseBase
 
         SubindexDescr(void) = delete;
         SubindexDescr(Object const & obj, uint8_t const subIndex, bool const inclusiveName, bool const inclusiveASM);
-        SubindexDescr(gpcc::Stream::IStreamReader & sr);
+        SubindexDescr(gpcc::stream::IStreamReader & sr);
         SubindexDescr(SubindexDescr const &) = default;
         SubindexDescr(SubindexDescr &&) noexcept = default;
         ~SubindexDescr(void) = default;
@@ -169,7 +169,7 @@ class ObjectInfoResponse final : public ResponseBase
         SubindexDescr& operator=(SubindexDescr &&) = default;
 
         size_t GetBinarySize(void) const;
-        void ToBinary(gpcc::Stream::IStreamWriter & sw) const;
+        void ToBinary(gpcc::stream::IStreamWriter & sw) const;
     };
 
 

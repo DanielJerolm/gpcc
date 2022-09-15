@@ -550,9 +550,9 @@ void RODACLIClientBase::CLI_Read(std::string const & restOfLine)
   // ============================================
   // Print to CLI
   // ============================================
-  gpcc::Stream::MemStreamReader msr(spReadResponse->GetData().data(),
+  gpcc::stream::MemStreamReader msr(spReadResponse->GetData().data(),
                                     spReadResponse->GetData().size(),
-                                    gpcc::Stream::IStreamReader::Endian::Little);
+                                    gpcc::stream::IStreamReader::Endian::Little);
 
   auto str = CANopenEncodedDataToString(msr, spReadResponse->GetDataSize(), spSIInfo->GetSubIdxDataType(args.GetSubIndex()));
   msr.Close();
@@ -604,7 +604,7 @@ void RODACLIClientBase::CLI_Write(std::string const & restOfLine)
   // ============================================
   // Analyze args (second part: data)
   // ============================================
-  args.ExtractData(dataType, subIdxMaxSize, gpcc::Stream::IStreamWriter::Endian::Little);
+  args.ExtractData(dataType, subIdxMaxSize, gpcc::stream::IStreamWriter::Endian::Little);
 
   // ============================================
   // write to object
@@ -656,9 +656,9 @@ void RODACLIClientBase::CLI_CARead(std::string const & restOfLine)
   // ============================================
   // Print to CLI
   // ============================================
-  gpcc::Stream::MemStreamReader msr(spReadResponse->GetData().data(),
+  gpcc::stream::MemStreamReader msr(spReadResponse->GetData().data(),
                                     spReadResponse->GetData().size(),
-                                    gpcc::Stream::IStreamReader::Endian::Little);
+                                    gpcc::stream::IStreamReader::Endian::Little);
 
   // extract value of SI0
   uint8_t const si0 = msr.Read_uint8();
@@ -823,7 +823,7 @@ void RODACLIClientBase::CLI_CAWrite(std::string const & restOfLine)
   // allocate memory
   size_t sizeInByte = (sizeInBit + 7U) / 8U;
   std::vector<uint8_t> data(sizeInByte);
-  gpcc::Stream::MemStreamWriter msw(data.data(), sizeInByte, gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(data.data(), sizeInByte, gpcc::stream::MemStreamWriter::Endian::Little);
 
   // ============================================
   // Fill buffer with write data entered by the user

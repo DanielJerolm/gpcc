@@ -161,7 +161,7 @@ void Backend_CLILogHistory::Clear(void)
  * Controls, if the log message buffer and the additional status information shall be cleared after successful export.\n
  * Export and clear will be performed as an atomic operation.
  */
-void Backend_CLILogHistory::Export(gpcc::Stream::IStreamWriter& output, bool const clearAfterExport)
+void Backend_CLILogHistory::Export(gpcc::stream::IStreamWriter& output, bool const clearAfterExport)
 {
   gpcc::osal::MutexLocker mutexLocker(mutex);
 

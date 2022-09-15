@@ -28,18 +28,18 @@ namespace internal
 
 /**
  * \ingroup GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_INTERNAL
- * \brief Class used to write data to a new section via @ref gpcc::Stream::IStreamWriter.
+ * \brief Class used to write data to a new section via @ref gpcc::stream::IStreamWriter.
  *
  * An instance of this class is created by class @ref EEPROMSectionSystem if a new section shall
  * be created or if an existing section shall be overwritten. This class offers write access to
- * the new section via @ref gpcc::Stream::IStreamWriter and manages all write accesses to the storage.
+ * the new section via @ref gpcc::stream::IStreamWriter and manages all write accesses to the storage.
  * Finally this class cares for proper creation of the section head and it cares for unlocking of
  * the new section at the @ref EEPROMSectionSystem.
  *
- * [IStreamWriter::RemainingCapacity()](@ref gpcc::Stream::IStreamWriter::RemainingCapacity()) is not supported.
+ * [IStreamWriter::RemainingCapacity()](@ref gpcc::stream::IStreamWriter::RemainingCapacity()) is not supported.
  *
  * # Internals
- * After construction, the object is ready to receive data written via the @ref gpcc::Stream::StreamWriterBase
+ * After construction, the object is ready to receive data written via the @ref gpcc::stream::StreamWriterBase
  * interface. `wrPtr` refers to the next written byte in `spMem`. `spMem` operates as a write buffer. `spMem`
  * holds a complete Section System block, inclusive header. `remainingBytesInCurrentBlock` is used to keep
  * track of the remaining number of data bytes that can be written into `spMem`.
@@ -57,7 +57,7 @@ namespace internal
  * If `bitData` contains less than 8 bits and a byte shall be written, then `bitData` is filled up with zeros
  * and `bitData` is written into the buffer. Afterwards the byte is written.
  */
-class SectionWriter: public gpcc::Stream::StreamWriterBase
+class SectionWriter: public gpcc::stream::StreamWriterBase
 {
   public:
     SectionWriter(EEPROMSectionSystem & _ESS,

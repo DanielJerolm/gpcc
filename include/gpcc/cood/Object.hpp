@@ -23,7 +23,7 @@
 
 namespace gpcc {
 
-namespace Stream {
+namespace stream {
   class IStreamWriter;
 }
 
@@ -320,19 +320,19 @@ class Object
 
     virtual SDOAbortCode Read(uint8_t const subIdx,
                               attr_t const permissions,
-                              gpcc::Stream::IStreamWriter & isw) const = 0;
+                              gpcc::stream::IStreamWriter & isw) const = 0;
     virtual SDOAbortCode Write(uint8_t const subIdx,
                                attr_t const permissions,
-                               gpcc::Stream::IStreamReader & isr) = 0;
+                               gpcc::stream::IStreamReader & isr) = 0;
     virtual SDOAbortCode CompleteRead(bool const inclSI0,
                                       bool const SI016Bits,
                                       attr_t const permissions,
-                                      gpcc::Stream::IStreamWriter & isw) const = 0;
+                                      gpcc::stream::IStreamWriter & isw) const = 0;
     virtual SDOAbortCode CompleteWrite(bool const inclSI0,
                                        bool const SI016Bits,
                                        attr_t const permissions,
-                                       gpcc::Stream::IStreamReader & isr,
-                                       gpcc::Stream::IStreamReader::RemainingNbOfBits const ernob) = 0;
+                                       gpcc::stream::IStreamReader & isr,
+                                       gpcc::stream::IStreamReader::RemainingNbOfBits const ernob) = 0;
     // --> Access to runtime data
 
    protected:
@@ -347,8 +347,8 @@ class Object
                                                 DataType const type,
                                                 uint16_t const nDataElements,
                                                 bool const completeAccess,
-                                                gpcc::Stream::IStreamWriter & out);
-     static void CANopenEncodedDataToNativeData(gpcc::Stream::IStreamReader & in,
+                                                gpcc::stream::IStreamWriter & out);
+     static void CANopenEncodedDataToNativeData(gpcc::stream::IStreamReader & in,
                                                 DataType const type,
                                                 uint16_t const nDataElements,
                                                 bool const completeAccess,
@@ -555,7 +555,7 @@ class Object
  * The _maximum size_ of a subindex is the maximum possible value for the _actual size_ of a subindex.
  *
  * The _actual size_ of a subindex is the number of bits occupied by a subindex, if it would be stored in
- * CANopen format into an [IStreamWriter](@ref gpcc::Stream::IStreamWriter) via
+ * CANopen format into an [IStreamWriter](@ref gpcc::stream::IStreamWriter) via
  * [Object::Read()](@ref gpcc::cood::Object::Read).
  *
  * For data types with flexible length (e.g. VISIBLE_STRING), the _actual size_ may change during runtime.\n
@@ -706,7 +706,7 @@ class Object
 /**
  * \fn Object::GetObjectStreamSize
  * \brief Retrieves the number of bits occupied by the whole object if it would be stored in
- *        CANopen format into a [IStreamWriter](@ref gpcc::Stream::IStreamWriter) using "complete access".
+ *        CANopen format into a [IStreamWriter](@ref gpcc::stream::IStreamWriter) using "complete access".
  *
  * - - -
  *
@@ -729,7 +729,7 @@ class Object
  *
  * \return
  * Number of bits occupied by the complete object if it would be stored in CANopen format into a
- * [IStreamWriter](@ref gpcc::Stream::IStreamWriter) using "complete access".\n
+ * [IStreamWriter](@ref gpcc::stream::IStreamWriter) using "complete access".\n
  * For ARRAY and RECORD objects, SI0 is always included and the number of subindices is given by
  * the current value of SI0 (and not by the maximum value of SI0).\n
  * Bits for alignment:
@@ -776,7 +776,7 @@ class Object
  * \brief Retrieves the actual size of a subindex in bit.
  *
  * The _actual size_ of a subindex is the number of bits occupied by a subindex, if it would be stored in
- * CANopen format into an [IStreamWriter](@ref gpcc::Stream::IStreamWriter) via
+ * CANopen format into an [IStreamWriter](@ref gpcc::stream::IStreamWriter) via
  * [Object::Read()](@ref gpcc::cood::Object::Read). The _actual size_ may vary for data types with flexible
  * length (e.g. VISIBLE_STRING). If the subindex' data type offers flexible length and if the object supports it,
  * then the before-read-callback will be invoked to update the subindex' data if necessary and thus get an up-to-date
@@ -822,7 +822,7 @@ class Object
 
 /**
  * \fn Object::Read
- * \brief Reads the native data of one subindex into an [IStreamWriter](@ref gpcc::Stream::IStreamWriter) using
+ * \brief Reads the native data of one subindex into an [IStreamWriter](@ref gpcc::stream::IStreamWriter) using
  *        CANopen encoding.
  *
  * The table below enumerates common error conditions and how they are treated by this method:
@@ -846,7 +846,7 @@ class Object
  * - the before-read-callback may have been invoked
  * - incomplete/undefined data may have been written to `isw`.
  *
- * \throws FullError   `isw` is full ([details](@ref gpcc::Stream::FullError)).
+ * \throws FullError   `isw` is full ([details](@ref gpcc::stream::FullError)).
  *
  * __Thread cancellation safety:__\n
  * Basic guarantee:
@@ -862,7 +862,7 @@ class Object
  * Access permissions.
  *
  * \param isw
- * [IStreamWriter](@ref gpcc::Stream::IStreamWriter) into which the data read from the subindex shall be written.\n
+ * [IStreamWriter](@ref gpcc::stream::IStreamWriter) into which the data read from the subindex shall be written.\n
  * Byte-based data will be written into the stream using byte-alignment.\n
  * Bit-based data will be stuffed together.\n
  * To achieve CANopen encoding, the stream writer must be configured to use little-endian.\n
@@ -876,7 +876,7 @@ class Object
 
 /**
  * \fn Object::Write
- * \brief Writes CANopen encoded data read from an [IStreamReader](@ref gpcc::Stream::IStreamReader) into one subindex using
+ * \brief Writes CANopen encoded data read from an [IStreamReader](@ref gpcc::stream::IStreamReader) into one subindex using
  *        native encoding.
  *
  * The table below enumerates common error conditions and how they are treated by this method:
@@ -905,7 +905,7 @@ class Object
  * - the before-write-callback may have been invoked.
  * - the data represented by the subindex is guaranteed to be not modified in case of any exception.
  *
- * \throws EmptyError           Not enough data in `isr` ([details](@ref gpcc::Stream::EmptyError)).
+ * \throws EmptyError           Not enough data in `isr` ([details](@ref gpcc::stream::EmptyError)).
  *
  * \throws std::bad_alloc       Out of memory.
  *
@@ -924,7 +924,7 @@ class Object
  * Access permissions.
  *
  * \param isr
- * [IStreamReader](@ref gpcc::Stream::IStreamReader) from which the data shall be read.\n
+ * [IStreamReader](@ref gpcc::stream::IStreamReader) from which the data shall be read.\n
  * The stream must contain the data for the subindex only. There must be no additional data in the stream.\n
  * Byte-based data will be read from the stream using byte-alignment.\n
  * Bit-based data is assumed to be stuffed together.\n
@@ -940,7 +940,7 @@ class Object
 /**
  * \fn Object::CompleteRead
  * \brief Reads the complete object (native format) and stores the read data into an
- *        [IStreamWriter](@ref gpcc::Stream::IStreamWriter) using CANopen encoding.
+ *        [IStreamWriter](@ref gpcc::stream::IStreamWriter) using CANopen encoding.
  *
  * This method is used to implement an EtherCAT SDO Complete Access.
  *
@@ -972,7 +972,7 @@ class Object
  * - the before-read-callback may have been invoked
  * - incomplete/undefined data may have been written to `isw`.
  *
- * \throws FullError   `isw` is full ([details](@ref gpcc::Stream::FullError)).
+ * \throws FullError   `isw` is full ([details](@ref gpcc::stream::FullError)).
  *
  * __Thread cancellation safety:__\n
  * Basic guarantee:
@@ -994,7 +994,7 @@ class Object
  * Access permissions.
  *
  * \param isw
- * [IStreamWriter](@ref gpcc::Stream::IStreamWriter) into which the data shall be written.\n
+ * [IStreamWriter](@ref gpcc::stream::IStreamWriter) into which the data shall be written.\n
  * Byte-based data will be written into the stream using byte-alignment.\n
  * Bit-based data will be stuffed together.\n
  * To achieve CANopen encoding, the stream writer must be configured to use little-endian.\n
@@ -1008,7 +1008,7 @@ class Object
 
 /**
  * \fn Object::CompleteWrite
- * \brief Writes CANopen encoded data read from an [IStreamReader](@ref gpcc::Stream::IStreamReader) to the complete
+ * \brief Writes CANopen encoded data read from an [IStreamReader](@ref gpcc::stream::IStreamReader) to the complete
  *        object in native format.
  *
  * This method is used to implement an EtherCAT SDO Complete Access.
@@ -1047,7 +1047,7 @@ class Object
  * - the before-write-callback may have been invoked.
  * - the data represented by the object is guaranteed to be not modified in case of any exception.
  *
- * \throws EmptyError           Not enough data in `isr` ([details](@ref gpcc::Stream::EmptyError)).
+ * \throws EmptyError           Not enough data in `isr` ([details](@ref gpcc::stream::EmptyError)).
  *
  * \throws std::bad_alloc       Out of memory.
  *
@@ -1072,18 +1072,18 @@ class Object
  * Access permissions.
  *
  * \param isr
- * [IStreamReader](@ref gpcc::Stream::IStreamReader) from which the data shall be read.\n
+ * [IStreamReader](@ref gpcc::stream::IStreamReader) from which the data shall be read.\n
  * Byte-based data will be read from the stream using byte-alignment.\n
  * Bit-based data is assumed to be stuffed together.\n
  * To achieve CANopen encoding, the stream reader must be configured to use little-endian.
  *
  * \param ernob
  * Expected number of bits remaining in `isr` after reading the data from the stream for preview purposes. The
- * [expectation](@ref gpcc::Stream::IStreamReader::RemainingNbOfBits) will be checked before the before-write-callback
+ * [expectation](@ref gpcc::stream::IStreamReader::RemainingNbOfBits) will be checked before the before-write-callback
  * is invoked. Common values:
- * - gpcc::Stream::IStreamReader::RemainingNbOfBits::any
- * - gpcc::Stream::IStreamReader::RemainingNbOfBits::sevenOrLess
- * - gpcc::Stream::IStreamReader::RemainingNbOfBits::moreThanSeven
+ * - gpcc::stream::IStreamReader::RemainingNbOfBits::any
+ * - gpcc::stream::IStreamReader::RemainingNbOfBits::sevenOrLess
+ * - gpcc::stream::IStreamReader::RemainingNbOfBits::moreThanSeven
  *
  * \return
  * Result of the operation.\n

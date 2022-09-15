@@ -33,7 +33,7 @@ namespace container
   class BitField;
 }
 
-namespace Stream
+namespace stream
 {
   class IStreamReader;
   class IStreamWriter;
@@ -63,9 +63,9 @@ namespace internal
  * e.g. FAT partition.
  *
  * @ref EEPROMSectionSystem implements the @ref IFileStorage interface. Sections can be read and written via the
- * [IStreamReader](@ref gpcc::Stream::IStreamReader) and [IStreamWriter](@ref gpcc::Stream::IStreamWriter) interfaces.
- * [IStreamReader::RemainingBytes()](@ref gpcc::Stream::IStreamReader::RemainingBytes) and
- * [IStreamWriter::RemainingCapacity()](@ref gpcc::Stream::IStreamWriter::RemainingCapacity) are not supported.
+ * [IStreamReader](@ref gpcc::stream::IStreamReader) and [IStreamWriter](@ref gpcc::stream::IStreamWriter) interfaces.
+ * [IStreamReader::RemainingBytes()](@ref gpcc::stream::IStreamReader::RemainingBytes) and
+ * [IStreamWriter::RemainingCapacity()](@ref gpcc::stream::IStreamWriter::RemainingCapacity) are not supported.
  *
  * If the requirements described in section "Storage Requirements" are met, then @ref EEPROMSectionSystem
  * is _power-fail-safe_, even if power fails during an operation that modifies the content of the storage device.
@@ -267,8 +267,8 @@ class EEPROMSectionSystem: public IFileStorage
     void Unmount(void);
 
     // --> IFileStorage
-    std::unique_ptr<Stream::IStreamReader> Open(std::string const & name) override;
-    std::unique_ptr<Stream::IStreamWriter> Create(std::string const & name, bool const overwriteIfExisting) override;
+    std::unique_ptr<stream::IStreamReader> Open(std::string const & name) override;
+    std::unique_ptr<stream::IStreamWriter> Create(std::string const & name, bool const overwriteIfExisting) override;
     void Delete(std::string const & name) override;
     void Rename(std::string const & currName, std::string const & newName) override;
 

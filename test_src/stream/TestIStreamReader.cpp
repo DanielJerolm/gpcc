@@ -12,9 +12,9 @@
 #include <gpcc/stream/IStreamReader.hpp>
 
 namespace gpcc_tests {
-namespace Stream     {
+namespace stream     {
 
-using namespace gpcc::Stream;
+using namespace gpcc::stream;
 using namespace testing;
 
 TEST(gpcc_Stream_IStreamReader, NativeEndian)
@@ -38,5 +38,5 @@ TEST(gpcc_Stream_IStreamReader, NativeEndian)
   }
 }
 
-} // namespace Stream
+} // namespace stream
 } // namespace gpcc_tests

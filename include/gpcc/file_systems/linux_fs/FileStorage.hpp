@@ -37,10 +37,10 @@ namespace internal
  * files referenced by links located in the referenced directory or a sub-directory can be accessed through the
  * @ref FileStorage instance.
  *
- * Files can be read and written via the [IStreamReader](@ref gpcc::Stream::IStreamReader) and
- * [IStreamWriter](@ref gpcc::Stream::IStreamWriter) interfaces.
- * [IStreamReader::RemainingBytes()](@ref gpcc::Stream::IStreamReader::RemainingBytes) and
- * [IStreamWriter::RemainingCapacity()](@ref gpcc::Stream::IStreamWriter::RemainingCapacity) are not supported.
+ * Files can be read and written via the [IStreamReader](@ref gpcc::stream::IStreamReader) and
+ * [IStreamWriter](@ref gpcc::stream::IStreamWriter) interfaces.
+ * [IStreamReader::RemainingBytes()](@ref gpcc::stream::IStreamReader::RemainingBytes) and
+ * [IStreamWriter::RemainingCapacity()](@ref gpcc::stream::IStreamWriter::RemainingCapacity) are not supported.
  *
  * __Note:__\n
  * The methods of this interface dereference links. Please refer to the documentation of each method for details
@@ -103,8 +103,8 @@ class FileStorage final: public IFileAndDirectoryStorage
     FileStorage& operator=(FileStorage &&) = delete;
 
     // <-- IFileStorage
-    std::unique_ptr<Stream::IStreamReader> Open(std::string const & name) override;
-    std::unique_ptr<Stream::IStreamWriter> Create(std::string const & name, bool const overwriteIfExisting) override;
+    std::unique_ptr<stream::IStreamReader> Open(std::string const & name) override;
+    std::unique_ptr<stream::IStreamWriter> Create(std::string const & name, bool const overwriteIfExisting) override;
     void Delete(std::string const & name) override;
     void Rename(std::string const & currName, std::string const & newName) override;
 

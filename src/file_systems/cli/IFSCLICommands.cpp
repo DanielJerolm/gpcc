@@ -288,7 +288,7 @@ void CLICMDDump(std::string const & restOfLine, gpcc::cli::CLI & cli, IFileStora
   cli.WriteLine("Offset      +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F 0123456789ABCDEF");
   while (true)
   {
-    while ((fileReader->GetState() != gpcc::Stream::IStreamReader::States::empty) && (bufLevel != sizeof(buffer)))
+    while ((fileReader->GetState() != gpcc::stream::IStreamReader::States::empty) && (bufLevel != sizeof(buffer)))
       buffer[bufLevel++] = fileReader->Read_uint8();
 
     if (bufLevel == 0)
@@ -372,7 +372,7 @@ void CLICMDCopy(std::string const & restOfLine, gpcc::cli::CLI & cli, IFileStora
   ON_SCOPE_EXIT(closeWriter) { try { fileWriter->Close(); } catch (std::exception const &) {};};
 
   // copy
-  while (fileReader->GetState() != gpcc::Stream::IStreamReader::States::empty)
+  while (fileReader->GetState() != gpcc::stream::IStreamReader::States::empty)
     fileWriter->Write_uint8(fileReader->Read_uint8());
 
   // Close destination file. It will not be deleted if everything succeeds.

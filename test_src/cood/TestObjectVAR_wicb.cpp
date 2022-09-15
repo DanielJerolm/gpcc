@@ -23,7 +23,7 @@ namespace gpcc_tests {
 namespace cood       {
 
 using namespace gpcc::cood;
-using namespace gpcc::Stream;
+using namespace gpcc::stream;
 
 using namespace testing;
 
@@ -1618,7 +1618,7 @@ TEST_F(gpcc_cood_ObjectVAR_wicb_TestsF, Write_VISIBLE_STRING_empty_A)
 
   auto locker(spUUT->LockData());
 
-  gpcc::Stream::MemStreamReader sr(nullptr, 0, gpcc::Stream::IStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader sr(nullptr, 0, gpcc::stream::IStreamReader::Endian::Little);
   EXPECT_EQ(spUUT->Write(0U, Object::attr_ACCESS_WR_PREOP, sr), SDOAbortCode::OK);
 
   EXPECT_EQ(pv[0], 0);
@@ -2454,7 +2454,7 @@ TEST_F(gpcc_cood_ObjectVAR_wicb_TestsF, Write_StreamReaderEmpty)
   readBuffer[2] = 0x13U;
   readBuffer[3] = 0x45U;
 
-  auto sr = gpcc::Stream::MemStreamReader(nullptr, 0U, gpcc::Stream::IStreamReader::Endian::Little);
+  auto sr = gpcc::stream::MemStreamReader(nullptr, 0U, gpcc::stream::IStreamReader::Endian::Little);
   auto const retVal = spUUT->Write(0U, Object::attr_ACCESS_WR_PREOP, sr);
   ASSERT_EQ(SDOAbortCode::DataTypeMismatchTooSmall, retVal);
 

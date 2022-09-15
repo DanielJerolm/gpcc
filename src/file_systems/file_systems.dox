@@ -33,8 +33,8 @@
  *
  * The [IFileStorage](@ref gpcc::file_systems::IFileStorage) interface allows to create, open, delete, rename and
  * enumerate files and to measure file sizes independent of the underlying type of file system and storage device.
- * Read- and write-access to files is offered through [IStreamReader](@ref gpcc::Stream::IStreamReader) and
- * [IStreamWriter](@ref gpcc::Stream::IStreamWriter) interfaces.
+ * Read- and write-access to files is offered through [IStreamReader](@ref gpcc::stream::IStreamReader) and
+ * [IStreamWriter](@ref gpcc::stream::IStreamWriter) interfaces.
  *
  * The [IFileAndDirectoryStorage](@ref gpcc::file_systems::IFileAndDirectoryStorage) interface is derived from the
  * [IFileStorage](@ref gpcc::file_systems::IFileStorage) interface and extends it by the following functionality:
@@ -105,7 +105,7 @@
  *
  * ## IStreamReader::RemainingBytes()
  * Not all classes offering the [IFileStorage](@ref gpcc::file_systems::IFileStorage) interface support
- * [IStreamReader::RemainingBytes()](@ref gpcc::Stream::IStreamReader::RemainingBytes()) when reading files.
+ * [IStreamReader::RemainingBytes()](@ref gpcc::stream::IStreamReader::RemainingBytes()) when reading files.
  *
  * For details, please refer to the documentation of the class realizing the [IFileStorage](@ref gpcc::file_systems::IFileStorage)
  * and [IFileAndDirectoryStorage](@ref gpcc::file_systems::IFileAndDirectoryStorage) interfaces for your particular

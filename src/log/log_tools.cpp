@@ -137,7 +137,7 @@ std::vector<ILogFacilityCtrl::tLogSrcConfig> ReadLogSrcConfigFromFile(file_syste
   }
 
   // cross-check: file must be empty after loading all items
-  if (f->GetState() != gpcc::Stream::IStreamReader::States::empty)
+  if (f->GetState() != gpcc::stream::IStreamReader::States::empty)
     throw std::runtime_error("Inconsistent file content");
 
   // close file
@@ -278,7 +278,7 @@ std::vector<ILogFacilityCtrl::tLogSrcConfig> ReadLogSrcConfigFromTextFile(file_s
   ON_SCOPE_EXIT(closeFile) { try { f->Close(); } catch (std::exception const &) { /* intentionally empty */ } };
 
   // loop and read lines from file until EOF
-  while (f->GetState() != gpcc::Stream::IStreamReader::States::empty)
+  while (f->GetState() != gpcc::stream::IStreamReader::States::empty)
   {
     std::string line = f->Read_line();
 
