@@ -10,7 +10,7 @@
 
 #ifndef OBJECTINFOREQUEST_HPP_202102131446
 
-#include "RequestBase.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/RequestBase.hpp>
 
 namespace gpcc {
 namespace cood {

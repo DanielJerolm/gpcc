@@ -11,8 +11,8 @@
 #ifndef MULTIPLEXER_HPP_202106212050
 #define MULTIPLEXER_HPP_202106212050
 
-#include "MultiplexerPort.hpp"
 #include <gpcc/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiable.hpp>
+#include <gpcc/cood/remote_access/infrastructure/MultiplexerPort.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <memory>
 #include <vector>

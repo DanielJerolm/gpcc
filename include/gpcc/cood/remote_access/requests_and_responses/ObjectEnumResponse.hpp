@@ -11,7 +11,7 @@
 #ifndef OBJECTENUMRESPONSE_HPP_202103042132
 #define OBJECTENUMRESPONSE_HPP_202103042132
 
-#include "ResponseBase.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ResponseBase.hpp>
 #include <gpcc/cood/sdo_abort_codes.hpp>
 
 namespace gpcc {

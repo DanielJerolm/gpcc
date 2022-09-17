@@ -11,7 +11,7 @@
 #ifndef SRC_GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_EXCEPTIONS_HPP_
 #define SRC_GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_EXCEPTIONS_HPP_
 
-#include "EEPROMSectionSystem.hpp"
+#include <gpcc/file_systems/eeprom_section_system/EEPROMSectionSystem.hpp>
 #include <stdexcept>
 #include <string>
 #include <cstdint>

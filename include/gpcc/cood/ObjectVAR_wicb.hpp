@@ -11,8 +11,8 @@
 #ifndef OBJECT_VAR_WICB_HPP_202103121720
 #define OBJECT_VAR_WICB_HPP_202103121720
 
-#include "IObjectNotifiable.hpp"
-#include "ObjectVAR.hpp"
+#include <gpcc/cood/IObjectNotifiable.hpp>
+#include <gpcc/cood/ObjectVAR.hpp>
 
 namespace gpcc {
 namespace cood {

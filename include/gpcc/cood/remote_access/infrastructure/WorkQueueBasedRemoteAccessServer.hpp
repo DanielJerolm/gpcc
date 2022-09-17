@@ -11,7 +11,7 @@
 #ifndef WORKQUEUEBASEDREMOTEACCESSSERVER_HPP_202105170848
 #define WORKQUEUEBASEDREMOTEACCESSSERVER_HPP_202105170848
 
-#include "RemoteAccessServer.hpp"
+#include <gpcc/cood/remote_access/infrastructure/RemoteAccessServer.hpp>
 #include <gpcc/execution/async/DeferredWorkPackage.hpp>
 #include <gpcc/execution/async/IDeferredWorkQueue.hpp>
 #include <gpcc/execution/async/WorkPackage.hpp>

@@ -11,7 +11,7 @@
 #ifndef BACKEND_CLILOGHISTORY_HPP_202001041425
 #define BACKEND_CLILOGHISTORY_HPP_202001041425
 
-#include "Backend.hpp"
+#include <gpcc/log/backends/Backend.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <list>
 #include <string>

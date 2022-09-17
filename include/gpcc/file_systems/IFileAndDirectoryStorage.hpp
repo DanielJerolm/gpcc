@@ -11,7 +11,7 @@
 #ifndef IFILEANDDIRECTORYSTORAGE_HPP_201808041954
 #define IFILEANDDIRECTORYSTORAGE_HPP_201808041954
 
-#include "IFileStorage.hpp"
+#include <gpcc/file_systems/IFileStorage.hpp>
 
 namespace gpcc         {
 namespace file_systems {

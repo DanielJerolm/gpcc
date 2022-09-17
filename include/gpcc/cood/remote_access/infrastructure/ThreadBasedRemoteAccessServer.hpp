@@ -11,7 +11,7 @@
 #ifndef THREADBASEDREMOTEACCESSSERVER_HPP_202007041301
 #define THREADBASEDREMOTEACCESSSERVER_HPP_202007041301
 
-#include "RemoteAccessServer.hpp"
+#include <gpcc/cood/remote_access/infrastructure/RemoteAccessServer.hpp>
 #include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/Thread.hpp>

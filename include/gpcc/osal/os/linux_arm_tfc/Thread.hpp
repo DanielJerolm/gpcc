@@ -15,14 +15,14 @@
 
 #include <gpcc/compiler/definitions.hpp>
 #include <gpcc/osal/ThreadRegistry.hpp>
+#include <pthread.h>
 #include <atomic>
 #include <functional>
+#include <memory>
 #include <string>
+#include <climits>
 #include <cstddef>
 #include <cstdint>
-#include <climits>
-#include <pthread.h>
-#include <memory>
 
 namespace gpcc {
 namespace osal {

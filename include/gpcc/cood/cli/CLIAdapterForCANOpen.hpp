@@ -11,7 +11,7 @@
 #ifndef CLIADAPTERFORCANOPEN_HPP_201905172140
 #define CLIADAPTERFORCANOPEN_HPP_201905172140
 
-#include "CLIAdapterBase.hpp"
+#include <gpcc/cood/cli/CLIAdapterBase.hpp>
 
 namespace gpcc {
 namespace cood {

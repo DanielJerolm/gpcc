@@ -11,7 +11,7 @@
 #ifndef MULTICALLBACK_HPP_201702062036
 #define MULTICALLBACK_HPP_201702062036
 
-#include "MultiCallbackSM.hpp"
+#include <gpcc/callback/MultiCallbackSM.hpp>
 #include <gpcc/osal/Mutex.hpp>
 
 namespace gpcc {

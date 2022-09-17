@@ -11,7 +11,7 @@
 #ifndef TTCESTARTSTOPCTRL_HPP_201612301751
 #define TTCESTARTSTOPCTRL_HPP_201612301751
 
-#include "TriggeredThreadedCyclicExec.hpp"
+#include <gpcc/execution/cyclic/TriggeredThreadedCyclicExec.hpp>
 #include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/Panic.hpp>

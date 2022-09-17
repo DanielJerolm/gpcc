@@ -13,7 +13,7 @@
 #ifndef THREADREGISTRY_HPP_201701282133
 #define THREADREGISTRY_HPP_201701282133
 
-#include "IThreadRegistry.hpp"
+#include <gpcc/osal/IThreadRegistry.hpp>
 #include <gpcc/osal/Mutex.hpp>
 
 namespace gpcc {

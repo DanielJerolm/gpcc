@@ -17,8 +17,8 @@
 #include <list>
 #include <memory>
 #include <string>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace gpcc
 {

@@ -11,7 +11,7 @@
 #ifndef WRITEREQUEST_HPP_202006251837
 #define WRITEREQUEST_HPP_202006251837
 
-#include "RequestBase.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/RequestBase.hpp>
 #include <gpcc/cood/Object.hpp>
 
 namespace gpcc {

@@ -11,10 +11,10 @@
 #ifndef SRC_GPCC_RESOURCEMANAGEMENT_MEMORY_HEAPMANAGER_HPP_
 #define SRC_GPCC_RESOURCEMANAGEMENT_MEMORY_HEAPMANAGER_HPP_
 
-#include "HeapManagerStatistics.hpp"
+#include <gpcc/resource_management/memory/HeapManagerStatistics.hpp>
 #include <memory>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace gpcc
 {

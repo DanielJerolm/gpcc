@@ -11,7 +11,7 @@
 #ifndef SRC_GPCC_STREAM_STREAMWRITERBASE_HPP_
 #define SRC_GPCC_STREAM_STREAMWRITERBASE_HPP_
 
-#include "IStreamWriter.hpp"
+#include <gpcc/stream/IStreamWriter.hpp>
 
 namespace gpcc
 {

@@ -11,14 +11,14 @@
 #ifndef RESPONSEBASE_HPP_202006282132
 #define RESPONSEBASE_HPP_202006282132
 
-#include "ReturnStackItem.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ReturnStackItem.hpp>
 #include <gpcc/container/IntrusiveDList.hpp>
-#include <cstddef>
-#include <cstdint>
 #include <limits>
 #include <memory>
 #include <string>
 #include <vector>
+#include <cstddef>
+#include <cstdint>
 
 namespace gpcc   {
 namespace stream {

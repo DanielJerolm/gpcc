@@ -11,7 +11,7 @@
 #ifndef OBJECTVAR_HPP_201809291301
 #define OBJECTVAR_HPP_201809291301
 
-#include "Object.hpp"
+#include <gpcc/cood/Object.hpp>
 
 namespace gpcc {
 

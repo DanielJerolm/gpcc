@@ -11,7 +11,7 @@
 #ifndef OBJECTRECORD_HPP_201810131332
 #define OBJECTRECORD_HPP_201810131332
 
-#include "Object.hpp"
+#include <gpcc/cood/Object.hpp>
 
 namespace gpcc {
 namespace cood {

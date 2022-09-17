@@ -11,7 +11,7 @@
 #ifndef PINGRESPONSE_HPP_202108052133
 #define PINGRESPONSE_HPP_202108052133
 
-#include "ResponseBase.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ResponseBase.hpp>
 
 namespace gpcc {
 namespace cood {

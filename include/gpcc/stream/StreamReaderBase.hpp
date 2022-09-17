@@ -11,7 +11,7 @@
 #ifndef SRC_GPCC_STREAM_STREAMREADERBASE_HPP_
 #define SRC_GPCC_STREAM_STREAMREADERBASE_HPP_
 
-#include "IStreamReader.hpp"
+#include <gpcc/stream/IStreamReader.hpp>
 
 namespace gpcc
 {

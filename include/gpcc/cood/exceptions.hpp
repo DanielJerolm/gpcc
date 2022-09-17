@@ -11,7 +11,7 @@
 #ifndef EXCEPTIONS_HPP_201809272122
 #define EXCEPTIONS_HPP_201809272122
 
-#include "data_types.hpp"
+#include <gpcc/cood/data_types.hpp>
 #include <stdexcept>
 #include <string>
 

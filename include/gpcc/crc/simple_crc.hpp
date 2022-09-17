@@ -11,8 +11,8 @@
 #ifndef SIMPLE_CRC_HPP_201612311313
 #define SIMPLE_CRC_HPP_201612311313
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace gpcc {
 namespace crc  {

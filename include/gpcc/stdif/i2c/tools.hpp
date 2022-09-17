@@ -11,7 +11,7 @@
 #ifndef TOOLS_HPP_202209062108
 #define TOOLS_HPP_202209062108
 
-#include "II2C_Master.hpp"
+#include <gpcc/stdif/i2c/II2C_Master.hpp>
 
 namespace gpcc  {
 namespace stdif {

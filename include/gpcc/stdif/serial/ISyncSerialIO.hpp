@@ -11,8 +11,8 @@
 #ifndef ISYNCSERIALIO_HPP_201712292059
 #define ISYNCSERIALIO_HPP_201712292059
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace gpcc  {
 namespace stdif {

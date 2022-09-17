@@ -11,9 +11,9 @@
 #ifndef IOBJECTNOTIFIABLE_HPP_202103121617
 #define IOBJECTNOTIFIABLE_HPP_202103121617
 
-#include "sdo_abort_codes.hpp"
-#include <cstdint>
+#include <gpcc/cood/sdo_abort_codes.hpp>
 #include <cstddef>
+#include <cstdint>
 
 namespace gpcc {
 namespace cood {

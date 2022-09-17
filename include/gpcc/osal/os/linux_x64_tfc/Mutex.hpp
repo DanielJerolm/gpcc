@@ -13,9 +13,9 @@
 #ifndef MUTEX_HPP_201702252213
 #define MUTEX_HPP_201702252213
 
-#include <cstddef>
 #include <pthread.h>
 #include <memory>
+#include <cstddef>
 
 namespace gpcc {
 namespace osal {

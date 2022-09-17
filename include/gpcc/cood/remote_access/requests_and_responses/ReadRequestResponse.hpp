@@ -11,7 +11,7 @@
 #ifndef READREQUESTRESPONSE_HPP_202010101331
 #define READREQUESTRESPONSE_HPP_202010101331
 
-#include "ResponseBase.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ResponseBase.hpp>
 #include <gpcc/cood/sdo_abort_codes.hpp>
 
 namespace gpcc {

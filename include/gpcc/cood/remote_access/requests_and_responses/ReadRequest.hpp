@@ -11,7 +11,7 @@
 #ifndef READREQUEST_HPP_202010091707
 #define READREQUEST_HPP_202010091707
 
-#include "RequestBase.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/RequestBase.hpp>
 #include <gpcc/cood/Object.hpp>
 
 namespace gpcc {

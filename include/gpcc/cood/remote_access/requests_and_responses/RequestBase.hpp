@@ -11,7 +11,7 @@
 #ifndef REQUESTBASE_HPP_202006251835
 #define REQUESTBASE_HPP_202006251835
 
-#include "ReturnStackItem.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ReturnStackItem.hpp>
 #include <gpcc/container/IntrusiveDList.hpp>
 #include <limits>
 #include <memory>

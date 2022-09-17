@@ -11,8 +11,8 @@
 #ifndef OBJECTDICTIONARY_HPP_201809301431
 #define OBJECTDICTIONARY_HPP_201809301431
 
-#include "IObjectAccess.hpp"
-#include "IObjectRegistration.hpp"
+#include <gpcc/cood/IObjectAccess.hpp>
+#include <gpcc/cood/IObjectRegistration.hpp>
 #include <gpcc/osal/RWLock.hpp>
 #include <map>
 

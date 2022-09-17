@@ -11,7 +11,7 @@
 #ifndef IQUERYACCESSRIGHTS_HPP_202110090919
 #define IQUERYACCESSRIGHTS_HPP_202110090919
 
-#include "gpcc/src/cood/Object.hpp"
+#include <gpcc/cood/Object.hpp>
 #include <functional>
 
 namespace gpcc {

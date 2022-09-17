@@ -11,8 +11,8 @@
 #ifndef MULTIRODACLICLIENTBASE_HPP_202106121953
 #define MULTIRODACLICLIENTBASE_HPP_202106121953
 
-#include "IMultiRODACLIClient.hpp"
-#include "RODACLIClientBase.hpp"
+#include <gpcc/cood/remote_access/infrastructure/IMultiRODACLIClient.hpp>
+#include <gpcc/cood/remote_access/infrastructure/RODACLIClientBase.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <unordered_map>
 

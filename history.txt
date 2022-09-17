@@ -6,8 +6,9 @@ Next to do:
 ===============================================================================
 
 - Header restructuring
-  - [IP] Move public headers to include/gpcc
-  - [  ] Check order of includes
+  - [OK] Move public headers to include/gpcc
+  - [IP] Check order of includes
+  - [  ] Rename namespace EEPROMSectionSystem to eeprom_section_system
 
 - Bugfix: AnyStringToU32 should be AnyNumberToU32
 

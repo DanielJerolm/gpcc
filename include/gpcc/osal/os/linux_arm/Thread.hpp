@@ -13,17 +13,17 @@
 #ifndef THREAD_HPP_201702042222
 #define THREAD_HPP_201702042222
 
-#include "ConditionVariable.hpp"
-#include "Mutex.hpp"
 #include <gpcc/compiler/definitions.hpp>
+#include <gpcc/osal/ConditionVariable.hpp>
+#include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/ThreadRegistry.hpp>
+#include <pthread.h>
 #include <atomic>
 #include <functional>
 #include <string>
 #include <climits>
 #include <cstddef>
 #include <cstdint>
-#include <pthread.h>
 
 namespace gpcc {
 namespace osal {

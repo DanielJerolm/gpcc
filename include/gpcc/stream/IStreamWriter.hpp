@@ -11,10 +11,10 @@
 #ifndef SRC_GPCC_STREAM_ISTREAMWRITER_HPP_
 #define SRC_GPCC_STREAM_ISTREAMWRITER_HPP_
 
-#include <cstdint>
-#include <cstddef>
-#include <string>
 #include <limits>
+#include <string>
+#include <cstddef>
+#include <cstdint>
 
 namespace gpcc
 {

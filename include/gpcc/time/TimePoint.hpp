@@ -11,10 +11,10 @@
 #ifndef TIMEPOINT_HPP_201701172134
 #define TIMEPOINT_HPP_201701172134
 
-#include "clock.hpp"
+#include <gpcc/time/clock.hpp>
 #include <string>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 #include <ctime>
 
 namespace gpcc {

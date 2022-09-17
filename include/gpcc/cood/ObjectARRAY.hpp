@@ -11,7 +11,7 @@
 #ifndef OBJECTARRAY_HPP_201810092146
 #define OBJECTARRAY_HPP_201810092146
 
-#include "Object.hpp"
+#include <gpcc/cood/Object.hpp>
 
 namespace gpcc {
 namespace cood {

@@ -15,8 +15,8 @@
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/time/TimeSpan.hpp>
 #include <functional>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace gpcc {
 

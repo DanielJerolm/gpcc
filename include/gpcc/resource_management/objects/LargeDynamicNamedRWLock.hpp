@@ -11,8 +11,8 @@
 #ifndef SRC_GPCC_RESOURCEMANAGEMENT_OBJECTS_LARGEDYNAMICNAMEDRWLOCK_HPP_
 #define SRC_GPCC_RESOURCEMANAGEMENT_OBJECTS_LARGEDYNAMICNAMEDRWLOCK_HPP_
 
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
 namespace gpcc
 {

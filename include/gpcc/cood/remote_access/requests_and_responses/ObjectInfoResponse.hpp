@@ -11,7 +11,7 @@
 #ifndef OBJECTINFORESPONSE_HPP_202102132033
 #define OBJECTINFORESPONSE_HPP_202102132033
 
-#include "ResponseBase.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ResponseBase.hpp>
 #include <gpcc/cood/data_types.hpp>
 #include <gpcc/cood/Object.hpp>
 #include <gpcc/cood/sdo_abort_codes.hpp>

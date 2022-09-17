@@ -11,8 +11,8 @@
 #ifndef IRANDOMACCESSSTORAGE_HPP_202209072134
 #define IRANDOMACCESSSTORAGE_HPP_202209072134
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace gpcc  {
 namespace stdif {

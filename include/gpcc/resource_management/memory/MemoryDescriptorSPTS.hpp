@@ -11,7 +11,7 @@
 #ifndef SRC_GPCC_RESOURCEMANAGEMENT_MEMORY_MEMORYDESCRIPTORSPTS_HPP_
 #define SRC_GPCC_RESOURCEMANAGEMENT_MEMORY_MEMORYDESCRIPTORSPTS_HPP_
 
-#include "MemoryDescriptor.hpp"
+#include <gpcc/resource_management/memory/MemoryDescriptor.hpp>
 #include <memory>
 
 namespace gpcc

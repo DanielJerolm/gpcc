@@ -11,7 +11,7 @@
 #ifndef MULTIRODACLICLIENT_HPP_202106122044
 #define MULTIRODACLICLIENT_HPP_202106122044
 
-#include "MultiRODACLIClientBase.hpp"
+#include <gpcc/cood/remote_access/infrastructure/MultiRODACLIClientBase.hpp>
 
 namespace gpcc {
 namespace cood {

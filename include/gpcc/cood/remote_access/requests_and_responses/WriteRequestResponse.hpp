@@ -11,7 +11,7 @@
 #ifndef WRITEREQUESTRESPONSE_HPP_202006292122
 #define WRITEREQUESTRESPONSE_HPP_202006292122
 
-#include "ResponseBase.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ResponseBase.hpp>
 #include <gpcc/cood/sdo_abort_codes.hpp>
 
 namespace gpcc {

@@ -11,7 +11,7 @@
 #ifndef PINGREQUEST_HPP_202108051135
 #define PINGREQUEST_HPP_202108051135
 
-#include "RequestBase.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/RequestBase.hpp>
 
 namespace gpcc {
 namespace cood {

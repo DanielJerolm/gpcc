@@ -11,8 +11,8 @@
 #ifndef SRC_GPCC_RESOURCEMANAGEMENT_MEMORY_MEMORYDESCRIPTOR_HPP_
 #define SRC_GPCC_RESOURCEMANAGEMENT_MEMORY_MEMORYDESCRIPTOR_HPP_
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace gpcc
 {

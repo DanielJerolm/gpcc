@@ -15,10 +15,10 @@
 #include <gpcc/container/IntrusiveDList.hpp>
 #include <gpcc/cood/remote_access/requests_and_responses/ReturnStackItem.hpp>
 #include <gpcc/osal/Mutex.hpp>
-#include <cstddef>
-#include <cstdint>
 #include <atomic>
 #include <vector>
+#include <cstddef>
+#include <cstdint>
 
 namespace gpcc {
 namespace log  {

@@ -11,8 +11,8 @@
 #ifndef OBJECT_ARRAY_WICB_HPP_202103132155
 #define OBJECT_ARRAY_WICB_HPP_202103132155
 
-#include "IObjectNotifiable.hpp"
-#include "ObjectARRAY.hpp"
+#include <gpcc/cood/IObjectNotifiable.hpp>
+#include <gpcc/cood/ObjectARRAY.hpp>
 
 namespace gpcc {
 namespace cood {

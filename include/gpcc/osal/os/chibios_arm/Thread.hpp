@@ -13,9 +13,9 @@
 #ifndef THREAD_HPP_201702011718
 #define THREAD_HPP_201702011718
 
-#include "ConditionVariable.hpp"
-#include "Mutex.hpp"
 #include <gpcc/compiler/definitions.hpp>
+#include <gpcc/osal/ConditionVariable.hpp>
+#include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/ThreadRegistry.hpp>
 #include <ch.h>
 #include <atomic>

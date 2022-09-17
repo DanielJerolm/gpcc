@@ -11,7 +11,7 @@
 #ifndef MULTICALLBACKSM_HPP_201702062029
 #define MULTICALLBACKSM_HPP_201702062029
 
-#include "ICallback.hpp"
+#include <gpcc/callback/ICallback.hpp>
 #include <forward_list>
 #include <utility>
 

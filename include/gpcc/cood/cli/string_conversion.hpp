@@ -11,8 +11,8 @@
 #ifndef STRING_CONVERSION_HPP_201905072210
 #define STRING_CONVERSION_HPP_201905072210
 
-#include <cstdint>
 #include <string>
+#include <cstdint>
 
 namespace gpcc {
 namespace cood {

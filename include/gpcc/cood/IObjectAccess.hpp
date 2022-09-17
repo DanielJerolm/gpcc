@@ -11,11 +11,11 @@
 #ifndef IOBJECTACCESS_HPP_201810042131
 #define IOBJECTACCESS_HPP_201810042131
 
-#include "ObjectPtr.hpp"
+#include <gpcc/cood/ObjectPtr.hpp>
 #include <gpcc/osal/RWLockReadLocker.hpp>
 #include <vector>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace gpcc {
 namespace cood {

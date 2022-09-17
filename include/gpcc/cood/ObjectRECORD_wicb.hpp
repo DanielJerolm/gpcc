@@ -11,8 +11,8 @@
 #ifndef OBJECT_RECORD_WICB_HPP_202103141647
 #define OBJECT_RECORD_WICB_HPP_202103141647
 
-#include "IObjectNotifiable.hpp"
-#include "ObjectRECORD.hpp"
+#include <gpcc/cood/IObjectNotifiable.hpp>
+#include <gpcc/cood/ObjectRECORD.hpp>
 
 namespace gpcc {
 namespace cood {

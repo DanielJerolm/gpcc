@@ -11,7 +11,7 @@
 #ifndef BACKEND_CLI_HPP_201701052126
 #define BACKEND_CLI_HPP_201701052126
 
-#include "Backend.hpp"
+#include <gpcc/log/backends/Backend.hpp>
 
 namespace gpcc {
 

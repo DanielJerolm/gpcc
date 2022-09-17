@@ -10,6 +10,7 @@
 
 #ifndef CLICOLORS_HPP_201803282204
 #define CLICOLORS_HPP_201803282204
+
 /**
  * @ingroup GPCC_CLI
  * @defgroup GPC_CLI_FCS Font and color styles

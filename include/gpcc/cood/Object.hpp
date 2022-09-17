@@ -11,15 +11,15 @@
 #ifndef OBJECT_HPP_201809212218
 #define OBJECT_HPP_201809212218
 
-#include "data_types.hpp"
-#include "sdo_abort_codes.hpp"
+#include <gpcc/cood/data_types.hpp>
+#include <gpcc/cood/sdo_abort_codes.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/stream/IStreamReader.hpp>
 #include <functional>
 #include <string>
 #include <vector>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace gpcc {
 

@@ -11,14 +11,14 @@
 #ifndef THREADEDLOGFACILITY_HPP_201701061541
 #define THREADEDLOGFACILITY_HPP_201701061541
 
-#include "ILogFacility.hpp"
-#include "ILogFacilityCtrl.hpp"
+#include <gpcc/log/logfacilities/ILogFacility.hpp>
+#include <gpcc/log/logfacilities/ILogFacilityCtrl.hpp>
 #include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <atomic>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace gpcc {
 namespace log  {

@@ -12,10 +12,10 @@
 #define BITFIELD_HPP_201612310952
 
 #include <limits>
-#include <string>
 #include <memory>
-#include <cstdint>
+#include <string>
 #include <cstddef>
+#include <cstdint>
 
 namespace gpcc      {
 namespace container {

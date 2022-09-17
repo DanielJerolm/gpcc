@@ -11,7 +11,7 @@
 #ifndef WORKQUEUE_HPP_201612212309
 #define WORKQUEUE_HPP_201612212309
 
-#include "IWorkQueue.hpp"
+#include <gpcc/execution/async/IWorkQueue.hpp>
 #include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/Mutex.hpp>
 

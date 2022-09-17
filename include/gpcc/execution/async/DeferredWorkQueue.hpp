@@ -11,7 +11,7 @@
 #ifndef DEFERREDWORKQUEUE_HPP_201612221248
 #define DEFERREDWORKQUEUE_HPP_201612221248
 
-#include "IDeferredWorkQueue.hpp"
+#include <gpcc/execution/async/IDeferredWorkQueue.hpp>
 #include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/Mutex.hpp>
 

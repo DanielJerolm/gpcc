@@ -11,8 +11,8 @@
 #ifndef SRC_GPCC_RESOURCEMANAGEMENT_MEMORY_HEAPMANAGERSPTS_HPP_
 #define SRC_GPCC_RESOURCEMANAGEMENT_MEMORY_HEAPMANAGERSPTS_HPP_
 
-#include "HeapManager.hpp"
 #include <gpcc/osal/Mutex.hpp>
+#include <gpcc/resource_management/memory/HeapManager.hpp>
 #include <memory>
 
 namespace gpcc

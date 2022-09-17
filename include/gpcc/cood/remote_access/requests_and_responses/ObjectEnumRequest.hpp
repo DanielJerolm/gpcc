@@ -10,7 +10,7 @@
 
 #ifndef OBJECTENUMREQUEST_HPP_202103022210
 
-#include "RequestBase.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/RequestBase.hpp>
 #include <gpcc/cood/Object.hpp>
 
 namespace gpcc {

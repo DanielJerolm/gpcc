@@ -14,9 +14,9 @@
 #define SEMAPHORE_HPP_201702252311
 
 #include <limits>
+#include <memory>
 #include <cstddef>
 #include <cstdint>
-#include <memory>
 
 namespace gpcc {
 namespace osal {

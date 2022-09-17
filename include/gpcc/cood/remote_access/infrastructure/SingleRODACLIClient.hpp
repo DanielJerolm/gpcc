@@ -11,7 +11,7 @@
 #ifndef SINGLERODACLICLIENT_HPP_202105280815
 #define SINGLERODACLICLIENT_HPP_202105280815
 
-#include "SingleRODACLIClientBase.hpp"
+#include <gpcc/cood/remote_access/infrastructure/SingleRODACLIClientBase.hpp>
 
 namespace gpcc {
 namespace cood {

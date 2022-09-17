@@ -11,7 +11,7 @@
 #ifndef IDEFERREDWORKQUEUE_HPP_201612212259
 #define IDEFERREDWORKQUEUE_HPP_201612212259
 
-#include "IWorkQueue.hpp"
+#include <gpcc/execution/async/IWorkQueue.hpp>
 
 namespace gpcc {
 namespace execution {
