@@ -9,11 +9,11 @@
 */
 
 #include <gpcc/cood/remote_access/infrastructure/MultiRODACLIClientBase.hpp>
+#include <gpcc/cli/exceptions.hpp>
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/cli/Command.hpp>
-#include <gpcc/cli/exceptions.hpp>
-#include <gpcc/osal/Panic.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/string/tools.hpp>
 #include <functional>
 #include <stdexcept>

@@ -9,10 +9,10 @@
 */
 
 #include "BlockAccessor.hpp"
-#include <gpcc/file_systems/eeprom_section_system/EEPROMSectionSystem.hpp>
-#include <gpcc/crc/simple_crc.hpp>
-#include <gpcc/file_systems/eeprom_section_system/exceptions.hpp>
 #include <gpcc/compiler/definitions.hpp>
+#include <gpcc/crc/simple_crc.hpp>
+#include <gpcc/file_systems/eeprom_section_system/EEPROMSectionSystem.hpp>
+#include <gpcc/file_systems/eeprom_section_system/exceptions.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/stdif/storage/IRandomAccessStorage.hpp>

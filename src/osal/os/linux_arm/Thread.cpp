@@ -11,18 +11,18 @@
 #ifdef OS_LINUX_ARM
 
 #include <gpcc/osal/Thread.hpp>
-#include <gpcc/osal/Panic.hpp>
 #include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <cxxabi.h>
+#include <sched.h>
+#include <time.h>
+#include <unistd.h>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
 #include <system_error>
 #include <cerrno>
-#include <sched.h>
-#include <time.h>
-#include <unistd.h>
-#include <cxxabi.h>
 
 #define MS_PER_SEC 1000UL
 #define NS_PER_MS  1000000UL

@@ -22,8 +22,8 @@
 #include <gpcc/compiler/definitions.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/stream/MemStreamWriter.hpp>
-#include <cstring>
 #include <stdexcept>
+#include <cstring>
 
 // Table T[i] containing 4294967296 * abs(sin(i)) with i in radians.
 // Values according to RFC1321.

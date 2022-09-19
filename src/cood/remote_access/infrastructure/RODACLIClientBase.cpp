@@ -9,15 +9,9 @@
 */
 
 #include <gpcc/cood/remote_access/infrastructure/RODACLIClientBase.hpp>
-#include <gpcc/cli/CLI.hpp>
 #include <gpcc/cli/exceptions.hpp>
+#include <gpcc/cli/CLI.hpp>
 #include <gpcc/cood/cli/string_conversion.hpp>
-#include "gpcc/src/cood/cli/internal/CAReadArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/CAWriteArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/EnumerateArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/InfoArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/ReadArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/WriteArgsParser.hpp"
 #include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp>
 #include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp>
 #include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoRequest.hpp>
@@ -35,6 +29,12 @@
 #include <gpcc/stream/MemStreamReader.hpp>
 #include <gpcc/stream/MemStreamWriter.hpp>
 #include <gpcc/string/tools.hpp>
+#include "src/cood/cli/internal/CAReadArgsParser.hpp"
+#include "src/cood/cli/internal/CAWriteArgsParser.hpp"
+#include "src/cood/cli/internal/EnumerateArgsParser.hpp"
+#include "src/cood/cli/internal/InfoArgsParser.hpp"
+#include "src/cood/cli/internal/ReadArgsParser.hpp"
+#include "src/cood/cli/internal/WriteArgsParser.hpp"
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>

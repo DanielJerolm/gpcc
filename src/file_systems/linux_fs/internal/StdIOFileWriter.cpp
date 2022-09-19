@@ -11,12 +11,12 @@
 #if defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(__DOXYGEN__)
 
 #include "StdIOFileWriter.hpp"
-#include "tools.hpp"
 #include <gpcc/file_systems/exceptions.hpp>
 #include <gpcc/file_systems/linux_fs/FileStorage.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/stream/stream_errors.hpp>
+#include "tools.hpp"
 #include <stdexcept>
 #include <system_error>
 #include <cerrno>

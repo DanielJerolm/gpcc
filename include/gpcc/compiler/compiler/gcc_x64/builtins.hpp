@@ -13,8 +13,8 @@
 #ifndef BUILTINS_HPP_202206112145
 #define BUILTINS_HPP_202206112145
 
-#include <cstdint>
 #include <limits>
+#include <cstdint>
 
 namespace gpcc
 {

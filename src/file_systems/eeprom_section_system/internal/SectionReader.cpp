@@ -9,13 +9,13 @@
 */
 
 #include "SectionReader.hpp"
-#include "EEPROMSectionSystemInternals.hpp"
 #include <gpcc/file_systems/eeprom_section_system/EEPROMSectionSystem.hpp>
 #include <gpcc/file_systems/eeprom_section_system/exceptions.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/stream/stream_errors.hpp>
+#include "EEPROMSectionSystemInternals.hpp"
 #include <exception>
 #include <stdexcept>
 #include <cstring>

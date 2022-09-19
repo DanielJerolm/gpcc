@@ -12,10 +12,10 @@
 
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
 #include "internal/TFCCore.hpp"
 #include "internal/UnmanagedConditionVariable.hpp"
 #include "internal/UnmanagedMutexLocker.hpp"
-#include <gpcc/raii/scope_guard.hpp>
 #include <pthread.h>
 
 namespace gpcc {

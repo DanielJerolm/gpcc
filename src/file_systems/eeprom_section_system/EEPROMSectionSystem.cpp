@@ -9,17 +9,17 @@
 */
 
 #include <gpcc/file_systems/eeprom_section_system/EEPROMSectionSystem.hpp>
-#include <gpcc/file_systems/eeprom_section_system/exceptions.hpp>
 #include <gpcc/container/BitField.hpp>
+#include <gpcc/file_systems/eeprom_section_system/exceptions.hpp>
 #include <gpcc/file_systems/exceptions.hpp>
-#include "internal/EEPROMSectionSystemInternals.hpp"
-#include "internal/FreeBlockListBackup.hpp"
-#include "internal/BlockAccessor.hpp"
-#include "internal/SectionReader.hpp"
-#include "internal/SectionWriter.hpp"
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
+#include "internal/BlockAccessor.hpp"
+#include "internal/EEPROMSectionSystemInternals.hpp"
+#include "internal/FreeBlockListBackup.hpp"
+#include "internal/SectionReader.hpp"
+#include "internal/SectionWriter.hpp"
 #include <limits>
 #include <stdexcept>
 #include <cassert>

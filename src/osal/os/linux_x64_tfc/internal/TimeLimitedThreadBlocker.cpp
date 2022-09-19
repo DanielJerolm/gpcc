@@ -11,11 +11,11 @@
 #ifdef OS_LINUX_X64_TFC
 
 #include "TimeLimitedThreadBlocker.hpp"
-#include "TFCCore.hpp"
-#include "UnmanagedMutexLocker.hpp"
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
+#include "TFCCore.hpp"
+#include "UnmanagedMutexLocker.hpp"
 #include <stdexcept>
 
 namespace gpcc {

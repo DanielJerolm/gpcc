@@ -13,9 +13,9 @@
 #ifndef ADVANCEDUNMANAGEDMUTEXLOCKER_HPP_201702261542
 #define ADVANCEDUNMANAGEDMUTEXLOCKER_HPP_201702261542
 
+#include <gpcc/osal/Panic.hpp>
 #include "UnmanagedMutex.hpp"
 #include "UnmanagedMutexLocker.hpp"
-#include <gpcc/osal/Panic.hpp>
 
 namespace gpcc     {
 namespace osal     {

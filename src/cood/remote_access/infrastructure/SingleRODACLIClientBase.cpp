@@ -9,9 +9,9 @@
 */
 
 #include <gpcc/cood/remote_access/infrastructure/SingleRODACLIClientBase.hpp>
+#include <gpcc/cli/exceptions.hpp>
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/cli/Command.hpp>
-#include <gpcc/cli/exceptions.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <functional>

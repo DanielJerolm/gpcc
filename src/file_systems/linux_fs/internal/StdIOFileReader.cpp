@@ -16,13 +16,13 @@
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/stream/stream_errors.hpp>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <limits>
 #include <stdexcept>
 #include <system_error>
 #include <cerrno>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 namespace gpcc         {
 namespace file_systems {

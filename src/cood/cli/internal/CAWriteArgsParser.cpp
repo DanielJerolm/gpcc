@@ -12,8 +12,8 @@
 #include <gpcc/cli/exceptions.hpp>
 #include <gpcc/cood/cli/string_conversion.hpp>
 #include <gpcc/string/tools.hpp>
-#include <stdexcept>
 #include <exception>
+#include <stdexcept>
 
 namespace gpcc      {
 namespace cood      {

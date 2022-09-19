@@ -12,8 +12,8 @@
 #define SRC_GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_INTERNAL_BLOCKACCESSOR_HPP_
 
 #include "EEPROMSectionSystemInternals.hpp"
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace gpcc
 {

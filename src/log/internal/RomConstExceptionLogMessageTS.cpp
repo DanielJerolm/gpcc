@@ -10,8 +10,8 @@
 
 #include "RomConstExceptionLogMessageTS.hpp"
 #include <gpcc/string/tools.hpp>
-#include <cstring>
 #include <stdexcept>
+#include <cstring>
 
 namespace gpcc     {
 namespace log      {

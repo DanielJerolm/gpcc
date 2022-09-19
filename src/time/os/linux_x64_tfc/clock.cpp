@@ -11,7 +11,7 @@
 #ifdef OS_LINUX_X64_TFC
 
 #include <gpcc/time/clock.hpp>
-#include "gpcc/src/osal/os/linux_x64_tfc/internal/TFCCore.hpp"
+#include "src/osal/os/linux_x64_tfc/internal/TFCCore.hpp"
 
 namespace gpcc {
 namespace time {

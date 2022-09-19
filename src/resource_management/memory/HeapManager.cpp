@@ -10,10 +10,10 @@
 
 #include <gpcc/resource_management/memory/HeapManager.hpp>
 #include <gpcc/resource_management/memory/MemoryDescriptor.hpp>
-#include "internal/FreeBlockPool.hpp"
-#include "internal/MemoryDescriptorPool.hpp"
 #include <gpcc/math/checks.hpp>
 #include <gpcc/raii/scope_guard.hpp>
+#include "internal/FreeBlockPool.hpp"
+#include "internal/MemoryDescriptorPool.hpp"
 #include <stdexcept>
 #include <limits>
 

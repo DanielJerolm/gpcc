@@ -12,8 +12,8 @@
 #include <gpcc/execution/async/WorkPackage.hpp>
 #include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
-#include <gpcc/osal/Semaphore.hpp>
 #include <gpcc/osal/Panic.hpp>
+#include <gpcc/osal/Semaphore.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <stdexcept>
 

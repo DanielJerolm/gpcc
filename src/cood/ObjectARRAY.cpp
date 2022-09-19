@@ -9,16 +9,16 @@
 */
 
 #include <gpcc/cood/ObjectARRAY.hpp>
-#include <gpcc/cood/IObjectNotifiable.hpp>
 #include <gpcc/cood/exceptions.hpp>
+#include <gpcc/cood/IObjectNotifiable.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/stream/IStreamReader.hpp>
 #include <gpcc/stream/IStreamWriter.hpp>
 #include <gpcc/stream/stream_errors.hpp>
-#include <cstring>
 #include <stdexcept>
+#include <cstring>
 
 namespace gpcc {
 namespace cood {

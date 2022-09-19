@@ -11,14 +11,14 @@
 #if defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(__DOXYGEN__)
 
 #include "UnitTestDirProvider.hpp"
-#include "tools.hpp"
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/osal/Thread.hpp>
-#include <stdexcept>
-#include <system_error>
+#include "tools.hpp"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <stdexcept>
+#include <system_error>
 #include <cerrno>
 
 namespace gpcc         {

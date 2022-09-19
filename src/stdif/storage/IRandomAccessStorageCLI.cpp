@@ -9,9 +9,9 @@
 */
 
 #include <gpcc/stdif/storage/IRandomAccessStorageCLI.hpp>
-#include <gpcc/stdif/storage/IRandomAccessStorage.hpp>
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/cli/exceptions.hpp>
+#include <gpcc/stdif/storage/IRandomAccessStorage.hpp>
 #include <gpcc/string/tools.hpp>
 #include <limits>
 #include <vector>

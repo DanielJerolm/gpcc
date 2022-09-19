@@ -9,8 +9,8 @@
 */
 
 #include <gpcc/time/TimePoint.hpp>
-#include <gpcc/time/TimeSpan.hpp>
 #include <gpcc/compiler/builtins.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 #include <limits>
 #include <stdexcept>
 #include <cstdio>

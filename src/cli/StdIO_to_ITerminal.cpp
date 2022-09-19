@@ -15,11 +15,11 @@
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
+#include <errno.h>
+#include <unistd.h>
 #include <limits>
 #include <stdexcept>
 #include <system_error>
-#include <errno.h>
-#include <unistd.h>
 #include <cstdio>
 
 namespace gpcc {

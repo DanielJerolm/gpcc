@@ -8,8 +8,8 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include <gpcc/resource_management/memory/MemoryDescriptor.hpp>
 #include "FreeBlockPool.hpp"
+#include <gpcc/resource_management/memory/MemoryDescriptor.hpp>
 #include <limits>
 #include <stdexcept>
 

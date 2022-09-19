@@ -18,7 +18,6 @@
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-
 #include <stdexcept>
 
 namespace gpcc {

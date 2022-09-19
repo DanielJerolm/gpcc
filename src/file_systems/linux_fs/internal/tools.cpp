@@ -14,14 +14,14 @@
 #include <gpcc/file_systems/exceptions.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/string/tools.hpp>
+#include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <dirent.h>
 #include <unistd.h>
-#include <cerrno>
-#include <cstdint>
 #include <stdexcept>
 #include <system_error>
+#include <cerrno>
+#include <cstdint>
 
 namespace gpcc         {
 namespace file_systems {

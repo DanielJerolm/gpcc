@@ -9,8 +9,8 @@
 */
 
 #include "HierarchicNamedRWLockNode.hpp"
-#include <gpcc/resource_management/objects/exceptions.hpp>
 #include <gpcc/osal/Panic.hpp>
+#include <gpcc/resource_management/objects/exceptions.hpp>
 #include <gpcc/string/tools.hpp>
 #include <algorithm>
 #include <cstring>

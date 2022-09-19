@@ -10,8 +10,8 @@
 
 #include <gpcc/file_systems/cli/IFSCLICommands.hpp>
 #include <gpcc/cli/CLI.hpp>
-#include <gpcc/file_systems/IFileStorage.hpp>
 #include <gpcc/file_systems/exceptions.hpp>
+#include <gpcc/file_systems/IFileStorage.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/string/tools.hpp>
 #include <cstddef>

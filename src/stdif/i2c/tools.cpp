@@ -10,7 +10,6 @@
 
 #include <gpcc/stdif/i2c/tools.hpp>
 
-
 namespace gpcc  {
 namespace stdif {
 

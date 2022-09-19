@@ -9,9 +9,9 @@
 */
 
 #include <gpcc/resource_management/objects/HierarchicNamedRWLock.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/resource_management/objects/exceptions.hpp>
 #include "internal/HierarchicNamedRWLockNode.hpp"
-#include <gpcc/osal/Panic.hpp>
 #include <limits>
 
 namespace gpcc                {

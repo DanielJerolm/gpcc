@@ -11,12 +11,12 @@
 #ifdef OS_LINUX_X64_TFC
 
 #include "TFCCore.hpp"
-#include "TimeLimitedThreadBlocker.hpp"
-#include "UnmanagedMutexLocker.hpp"
-#include <gpcc/osal/Panic.hpp>
 #include <gpcc/compiler/builtins.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
+#include "TimeLimitedThreadBlocker.hpp"
+#include "UnmanagedMutexLocker.hpp"
 #include <algorithm>
 #include <limits>
 #include <stdexcept>

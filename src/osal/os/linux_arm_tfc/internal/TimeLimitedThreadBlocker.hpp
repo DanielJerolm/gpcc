@@ -14,8 +14,8 @@
 #define TIMELIMITEDTHREADBLOCKER_HPP_201904071048
 
 #include "ThreadBlockerBase.hpp"
-#include "UnmanagedConditionVariable.hpp"
 #include <gpcc/time/TimePoint.hpp>
+#include "UnmanagedConditionVariable.hpp"
 
 namespace gpcc {
 namespace osal {

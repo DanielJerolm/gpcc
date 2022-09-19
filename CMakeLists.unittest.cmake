@@ -25,14 +25,7 @@ add_library(${PROJECT_NAME})
 
 add_subdirectory(src)
 
-target_include_directories(${PROJECT_NAME}
-                           PRIVATE
-                           ..
-                           include
-                           INTERFACE
-                           ..
-                           include
-                          )
+target_include_directories(${PROJECT_NAME} PRIVATE . PUBLIC include)
 
 SetupBasicDefines(${PROJECT_NAME})
 SetRequiredCompilerOptionsAndFeatures(${PROJECT_NAME})

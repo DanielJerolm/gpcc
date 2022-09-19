@@ -13,10 +13,10 @@
 #include <gpcc/stream/IStreamReader.hpp>
 #include <gpcc/stream/IStreamWriter.hpp>
 #include <gpcc/string/tools.hpp>
-#include <cstdio>
 #include <exception>
 #include <limits>
 #include <stdexcept>
+#include <cstdio>
 
 namespace gpcc {
 namespace cood {

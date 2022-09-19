@@ -11,24 +11,24 @@
 #if defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(__DOXYGEN__)
 
 #include <gpcc/file_systems/linux_fs/FileStorage.hpp>
-#include "internal/StdIOFileReader.hpp"
-#include "internal/StdIOFileWriter.hpp"
-#include "internal/tools.hpp"
 #include <gpcc/file_systems/exceptions.hpp>
 #include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/string/tools.hpp>
+#include "internal/StdIOFileReader.hpp"
+#include "internal/StdIOFileWriter.hpp"
+#include "internal/tools.hpp"
 #include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/statfs.h>
 #include <unistd.h>
-#include <cerrno>
-#include <cstdio>
 #include <stdexcept>
 #include <system_error>
+#include <cerrno>
+#include <cstdio>
 
 namespace gpcc         {
 namespace file_systems {

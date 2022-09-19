@@ -11,24 +11,24 @@
 #ifdef OS_LINUX_X64_TFC
 
 #include <gpcc/osal/Thread.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/time/TimePoint.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 #include "internal/AdvancedUnmanagedMutexLocker.hpp"
 #include "internal/TFCCore.hpp"
 #include "internal/TimeLimitedThreadBlocker.hpp"
 #include "internal/UnmanagedConditionVariable.hpp"
 #include "internal/UnmanagedMutex.hpp"
 #include "internal/UnmanagedMutexLocker.hpp"
-#include <gpcc/osal/Panic.hpp>
-#include <gpcc/raii/scope_guard.hpp>
-#include <gpcc/time/TimePoint.hpp>
-#include <gpcc/time/TimeSpan.hpp>
+#include <cxxabi.h>
+#include <sched.h>
+#include <unistd.h>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
 #include <system_error>
 #include <cerrno>
-#include <sched.h>
-#include <unistd.h>
-#include <cxxabi.h>
 
 namespace gpcc {
 namespace osal {

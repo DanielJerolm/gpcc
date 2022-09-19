@@ -9,16 +9,10 @@
 */
 
 #include <gpcc/cood/cli/CLIAdapterBase.hpp>
+#include <gpcc/cli/exceptions.hpp>
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/cli/Command.hpp>
-#include <gpcc/cli/exceptions.hpp>
 #include <gpcc/cood/cli/string_conversion.hpp>
-#include "gpcc/src/cood/cli/internal/CAReadArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/CAWriteArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/EnumerateArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/InfoArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/ReadArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/WriteArgsParser.hpp"
 #include <gpcc/cood/IObjectAccess.hpp>
 #include <gpcc/cood/ObjectPtr.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
@@ -27,6 +21,12 @@
 #include <gpcc/stream/MemStreamReader.hpp>
 #include <gpcc/stream/MemStreamWriter.hpp>
 #include <gpcc/string/tools.hpp>
+#include "internal/CAReadArgsParser.hpp"
+#include "internal/CAWriteArgsParser.hpp"
+#include "internal/EnumerateArgsParser.hpp"
+#include "internal/InfoArgsParser.hpp"
+#include "internal/ReadArgsParser.hpp"
+#include "internal/WriteArgsParser.hpp"
 #include <functional>
 #include <iomanip>
 #include <limits>

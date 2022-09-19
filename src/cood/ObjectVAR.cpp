@@ -9,15 +9,15 @@
 */
 
 #include <gpcc/cood/ObjectVAR.hpp>
-#include <gpcc/cood/IObjectNotifiable.hpp>
 #include <gpcc/cood/exceptions.hpp>
+#include <gpcc/cood/IObjectNotifiable.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include <gpcc/stream/stream_errors.hpp>
 #include <gpcc/stream/IStreamWriter.hpp>
-#include <cstring>
+#include <gpcc/stream/stream_errors.hpp>
 #include <stdexcept>
+#include <cstring>
 
 namespace gpcc {
 namespace cood {

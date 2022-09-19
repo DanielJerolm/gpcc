@@ -10,12 +10,12 @@
 
 #include <gpcc/log/logfacilities/ThreadedLogFacility.hpp>
 #include <gpcc/log/backends/Backend.hpp>
-#include "gpcc/src/log/internal/LogMessage.hpp"
 #include <gpcc/log/Logger.hpp>
 #include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
+#include "src/log/internal/LogMessage.hpp"
 #include <algorithm>
 #include <limits>
 #include <stdexcept>

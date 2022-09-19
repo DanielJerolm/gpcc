@@ -9,8 +9,8 @@
 */
 
 #include <gpcc/stream/MemStreamWriter.hpp>
-#include <gpcc/stream/stream_errors.hpp>
 #include <gpcc/osal/Panic.hpp>
+#include <gpcc/stream/stream_errors.hpp>
 #include "cstring"
 
 namespace gpcc

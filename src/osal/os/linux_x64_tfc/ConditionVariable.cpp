@@ -13,12 +13,12 @@
 #include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/time/TimePoint.hpp>
 #include "internal/TFCCore.hpp"
 #include "internal/ThreadBlocker.hpp"
 #include "internal/TimeLimitedThreadBlocker.hpp"
 #include "internal/UnmanagedMutexLocker.hpp"
-#include <gpcc/raii/scope_guard.hpp>
-#include <gpcc/time/TimePoint.hpp>
 #include <algorithm>
 #include <stdexcept>
 
