@@ -12,5 +12,5 @@
  * @ingroup GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM
  * @defgroup GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_INTERNAL Internal stuff
  *
- * \brief Stuff required behind the scenes by class [EEPROMSectionSystem](@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem).
+ * \brief Stuff required behind the scenes by class [EEPROMSectionSystem](@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem).
  */

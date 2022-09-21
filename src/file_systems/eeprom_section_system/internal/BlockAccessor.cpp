@@ -25,7 +25,7 @@ namespace gpcc
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 namespace internal
 {
@@ -1147,6 +1147,6 @@ bool BlockAccessor::SwapEndian(void* const pBlock) const noexcept
 }
 
 } // namespace internal
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace file_systems
 } // namespace gpcc

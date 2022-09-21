@@ -20,7 +20,7 @@ namespace gpcc_tests
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 
 // Fake EEPROM, used as storage in EEPROMSectionSystem tests.
@@ -84,7 +84,7 @@ class FakeEEPROM: public gpcc::stdif::IRandomAccessStorage
 };
 
 } // namespace file_systems
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace gpcc_tests
 
 #endif // SRC_TESTS_FILESYSTEMS_EEPROMSECTIONSYSTEM_FAKEEEPROM_HPP_

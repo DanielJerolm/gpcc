@@ -37,7 +37,7 @@ class GPCC_stdif_IRandomAccessStorageCLI_Tests: public testing::Test
     virtual ~GPCC_stdif_IRandomAccessStorageCLI_Tests(void);
 
   protected:
-    file_systems::EEPROMSectionSystem::FakeEEPROM fakeStorage;
+    file_systems::eeprom_section_system::FakeEEPROM fakeStorage;
     cli::FakeTerminal terminal;
     gpcc::cli::CLI cli;
     bool cliNeedsStop;

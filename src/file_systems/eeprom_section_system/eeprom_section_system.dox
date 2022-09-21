@@ -19,8 +19,8 @@
  * @ingroup GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM
  * @defgroup GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_EXCEPTIONS Exceptions
  *
- * \brief Exceptions thrown by class [EEPROMSectionSystem](@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem).
+ * \brief Exceptions thrown by class [EEPROMSectionSystem](@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem).
  *
- * \htmlonly <style>div.image img[src="file_systems/EEPROMSectionSystem/Exceptions.jpg"]{width:80%;}</style> \endhtmlonly
- * \image html "file_systems/EEPROMSectionSystem/Exceptions.jpg" "EEPROM Section System related exceptions"
+ * \htmlonly <style>div.image img[src="file_systems/eeprom_section_system/Exceptions.jpg"]{width:80%;}</style> \endhtmlonly
+ * \image html "file_systems/eeprom_section_system/Exceptions.jpg" "EEPROM Section System related exceptions"
  */

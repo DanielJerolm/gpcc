@@ -15,7 +15,7 @@ namespace gpcc_tests
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 
 FakeEEPROMUndo::FakeEEPROMUndo(uint32_t const _startAddress, size_t const _size, void const * pData)
@@ -74,5 +74,5 @@ void FakeEEPROMUndo::Revert(void* const pMem) const
 }
 
 } // namespace file_systems
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace gpcc_tests

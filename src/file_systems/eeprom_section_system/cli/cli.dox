@@ -12,9 +12,9 @@
  * @ingroup GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM
  * @defgroup GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_CLI CLI Commands
  *
- * \brief CLI commands for an (EEPROMSectionSystem)[@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem).
+ * \brief CLI commands for an (EEPROMSectionSystem)[@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem).
  *
  * This group contains CLI commands that can be used to format, unmount, and mount an
- * (EEPROMSectionSystem)[@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem) instance.\n
+ * (EEPROMSectionSystem)[@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem) instance.\n
  * The supported CLI interface is @ref gpcc::cli::CLI.
  */

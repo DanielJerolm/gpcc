@@ -4,12 +4,6 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
-
-- Header restructuring
-  - [OK] Move public headers to include/gpcc
-  - [OK] Check order of includes
-  - [  ] Rename namespace EEPROMSectionSystem to eeprom_section_system
-
 - Bugfix: AnyStringToU32 should be AnyNumberToU32
 
 - Options for enhancements identified during header restructuring:
@@ -189,6 +183,12 @@ Next to do:
 
 History:
 ===============================================================================
+2022-09-21
+- Headers restructured
+- Folder names all in lower case now
+- Namespace names all in lower case now
+- Order of #includes meets coding style
+
 2022-08-20
 - Update doxygen scripts and checked that all doc builds with zero errors
 

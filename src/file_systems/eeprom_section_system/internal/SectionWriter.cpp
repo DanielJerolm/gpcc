@@ -26,7 +26,7 @@ namespace gpcc
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 namespace internal
 {
@@ -713,6 +713,6 @@ void SectionWriter::CloseCrashedSectionWriter(void)
 }
 
 } // namespace internal
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace file_systems
 } // namespace gpcc

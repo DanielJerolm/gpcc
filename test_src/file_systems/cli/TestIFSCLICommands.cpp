@@ -31,7 +31,7 @@ namespace file_systems
 using namespace gpcc_tests::cli;
 using namespace gpcc::file_systems;
 
-class GPCC_FileSystems_CLI_TestsF: public EEPROMSectionSystem::EEPROMSectionSystemTestFixture
+class GPCC_FileSystems_CLI_TestsF: public eeprom_section_system::EEPROMSectionSystemTestFixture
 {
   public:
     GPCC_FileSystems_CLI_TestsF(void);
@@ -42,8 +42,8 @@ class GPCC_FileSystems_CLI_TestsF: public EEPROMSectionSystem::EEPROMSectionSyst
     gpcc::cli::CLI cli;
     bool cliRunning;
 
-    EEPROMSectionSystem::RandomData rndData1;
-    EEPROMSectionSystem::RandomData rndData2;
+    eeprom_section_system::RandomData rndData1;
+    eeprom_section_system::RandomData rndData2;
 
 
     void SetUp(void) override;
@@ -116,7 +116,7 @@ void GPCC_FileSystems_CLI_TestsF::TearDown(void)
 {
   try
   {
-    if (uut.GetState() != gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted)
+    if (uut.GetState() != gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::not_mounted)
       uut.Unmount();
 
     if (cliRunning)

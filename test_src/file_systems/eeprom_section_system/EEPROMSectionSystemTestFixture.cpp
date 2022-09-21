@@ -22,12 +22,12 @@ namespace gpcc_tests
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 
 using namespace testing;
-using namespace gpcc::file_systems::EEPROMSectionSystem;
-using namespace gpcc::file_systems::EEPROMSectionSystem::internal;
+using namespace gpcc::file_systems::eeprom_section_system;
+using namespace gpcc::file_systems::eeprom_section_system::internal;
 
 EEPROMSectionSystemTestFixture::EEPROMSectionSystemTestFixture(void)
 : Test()
@@ -53,9 +53,9 @@ void EEPROMSectionSystemTestFixture::SetUp(void)
 void EEPROMSectionSystemTestFixture::TearDown(void)
 {
   // unmount, if uut's state is not not_mounted
-  EEPROMSectionSystem::EEPROMSectionSystem::States const state = uut.GetState();
-  EXPECT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, state);
-  if (state != EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted)
+  eeprom_section_system::EEPROMSectionSystem::States const state = uut.GetState();
+  EXPECT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, state);
+  if (state != eeprom_section_system::EEPROMSectionSystem::States::not_mounted)
     uut.Unmount();
 }
 
@@ -132,5 +132,5 @@ void EEPROMSectionSystemTestFixture::UpdateNextBlock(uint16_t const blockIdx, ui
 }
 
 } // namespace file_systems
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace gpcc_tests

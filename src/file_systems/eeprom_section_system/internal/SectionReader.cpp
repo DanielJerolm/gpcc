@@ -24,7 +24,7 @@ namespace gpcc
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 namespace internal
 {
@@ -861,6 +861,6 @@ void SectionReader::LoadNextBlock(void)
 }
 
 } // namespace internal
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace file_systems
 } // namespace gpcc

@@ -36,7 +36,7 @@ namespace log  {
  * This is thread-safe.
  *
  * __Exception safety:__\n
- * Strong guarantee, if [EEPROMSectionSystem](@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem) is
+ * Strong guarantee, if [EEPROMSectionSystem](@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem) is
  * the underlying file system implementation.\n
  * Basic guarantee for other file system implementations:\n
  * - An incomplete file may be created
@@ -173,7 +173,7 @@ std::vector<ILogFacilityCtrl::tLogSrcConfig> ReadLogSrcConfigFromFile(file_syste
  * This is thread-safe.
  *
  * __Exception safety:__\n
- * Strong guarantee, if [EEPROMSectionSystem](@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem) is
+ * Strong guarantee, if [EEPROMSectionSystem](@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem) is
  * the underlying file system implementation.\n
  * Basic guarantee for other file system implementations:\n
  * - An incomplete file may be created

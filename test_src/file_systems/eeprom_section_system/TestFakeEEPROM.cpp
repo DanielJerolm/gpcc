@@ -16,7 +16,7 @@ namespace gpcc_tests
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 
 using namespace testing;
@@ -503,5 +503,5 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_FakeEEPROM_Tests, InvalidateOutOfBou
 }
 
 } // namespace file_systems
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace gpcc_tests

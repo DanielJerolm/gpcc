@@ -20,10 +20,10 @@ namespace gpcc_tests
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 
-using gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem;
+using gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem;
 
 RandomData::RandomData(size_t const minSize, size_t const maxSize)
 : data()
@@ -48,7 +48,7 @@ bool RandomData::operator=(RandomData const & other) const
   return (data == other.data);
 }
 
-void RandomData::Write(std::string const & name, bool overwriteIfExisting, gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem & uut) const
+void RandomData::Write(std::string const & name, bool overwriteIfExisting, gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem & uut) const
 {
   auto writer(uut.Create(name, overwriteIfExisting));
   ON_SCOPE_EXIT()
@@ -68,7 +68,7 @@ void RandomData::Write(std::string const & name, bool overwriteIfExisting, gpcc:
   ON_SCOPE_EXIT_DISMISS();
   writer->Close();
 }
-void RandomData::Compare(std::string const & name, gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem & uut) const
+void RandomData::Compare(std::string const & name, gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem & uut) const
 {
   std::vector<uint8_t> readData;
 
@@ -109,5 +109,5 @@ uint8_t const * RandomData::GetData(void) const
 }
 
 } // namespace file_systems
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace gpcc_tests

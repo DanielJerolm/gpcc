@@ -19,7 +19,7 @@ namespace gpcc_tests
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 
 // Class encapsulating a chunk of data from an FakeEEPROM instance.
@@ -45,7 +45,7 @@ class FakeEEPROMUndo
 };
 
 } // namespace file_systems
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace gpcc_tests
 
 #endif // SRC_TESTS_FILESYSTEMS_EEPROMSECTIONSYSTEM_FAKEEEPROMUNDO_HPP_

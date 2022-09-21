@@ -21,7 +21,7 @@ namespace cli
 }
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 class EEPROMSectionSystem;
 
@@ -30,7 +30,7 @@ void CLICMDFormat(std::string const & restOfLine, gpcc::cli::CLI & cli, EEPROMSe
 void CLICMDUnmount(std::string const & restOfLine, gpcc::cli::CLI & cli, EEPROMSectionSystem* pESS);
 void CLICMDMount(std::string const & restOfLine, gpcc::cli::CLI & cli, EEPROMSectionSystem* pESS);
 
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace file_systems
 } // namespace gpcc
 

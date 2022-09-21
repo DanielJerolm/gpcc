@@ -14,7 +14,7 @@ namespace gpcc
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 namespace internal
 {
@@ -51,6 +51,6 @@ FreeBlockListBackup::FreeBlockListBackup(uint16_t const _nFreeBlocks,
 }
 
 } // namespace internal
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace file_systems
 } // namespace gpcc

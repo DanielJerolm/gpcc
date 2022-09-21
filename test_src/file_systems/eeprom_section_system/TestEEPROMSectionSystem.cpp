@@ -29,17 +29,17 @@ namespace gpcc_tests
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 
 using namespace testing;
-using namespace gpcc::file_systems::EEPROMSectionSystem;
-using namespace gpcc::file_systems::EEPROMSectionSystem::internal;
+using namespace gpcc::file_systems::eeprom_section_system;
+using namespace gpcc::file_systems::eeprom_section_system::internal;
 
 typedef EEPROMSectionSystemTestFixture GPCC_FileSystems_EEPROMSectionSystem_TestsF;
 typedef GPCC_FileSystems_EEPROMSectionSystem_TestsF GPCC_FileSystems_EEPROMSectionSystem_DeathTestsF;
 
-static void BasicTest_WriteRead(EEPROMSectionSystem::EEPROMSectionSystem* pUUT, uint16_t const blockSize, uint16_t const additionalDepth)
+static void BasicTest_WriteRead(eeprom_section_system::EEPROMSectionSystem* pUUT, uint16_t const blockSize, uint16_t const additionalDepth)
 {
   // Performs basic tests on an UUT:
   // - Write sections until all space exhausted.
@@ -91,7 +91,7 @@ static void BasicTest_WriteRead(EEPROMSectionSystem::EEPROMSectionSystem* pUUT, 
     throw;
   }
 }
-static void BasicTest_FormatWriteRead(EEPROMSectionSystem::EEPROMSectionSystem* pUUT, uint16_t const blockSize, uint16_t const additionalDepth)
+static void BasicTest_FormatWriteRead(eeprom_section_system::EEPROMSectionSystem* pUUT, uint16_t const blockSize, uint16_t const additionalDepth)
 {
   // Performs basic tests on an UUT:
   // - Format
@@ -153,40 +153,40 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Construction_StartAddress)
 {
   FakeEEPROM fakeStorage(1024, 64);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT;
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT;
 
-  ASSERT_NO_THROW(spUUT.reset(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, 960)));
+  ASSERT_NO_THROW(spUUT.reset(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, 960)));
   ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), 64, 1));
 
-  ASSERT_NO_THROW(spUUT.reset(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 64, 960)));
+  ASSERT_NO_THROW(spUUT.reset(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 64, 960)));
   ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), 64, 1));
 
-  ASSERT_THROW(spUUT.reset(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 32, 960)), std::invalid_argument);
+  ASSERT_THROW(spUUT.reset(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 32, 960)), std::invalid_argument);
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Construction_Size)
 {
-  FakeEEPROM fakeStorageMBS(1024, gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize);
+  FakeEEPROM fakeStorageMBS(1024, gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize);
   FakeEEPROM fakeStorage64(1024, 64);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT;
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT;
 
   // different sizes
-  ASSERT_NO_THROW(spUUT.reset(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage64, 0, 960)));
+  ASSERT_NO_THROW(spUUT.reset(new eeprom_section_system::EEPROMSectionSystem(fakeStorage64, 0, 960)));
   ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), 64, 1));
 
-  ASSERT_NO_THROW(spUUT.reset(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage64, 0, 1024)));
+  ASSERT_NO_THROW(spUUT.reset(new eeprom_section_system::EEPROMSectionSystem(fakeStorage64, 0, 1024)));
   ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), 64, 1));
 
   // not a whole numbered multiple of the page size
-  ASSERT_THROW(spUUT.reset(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage64, 0, 1000)), std::invalid_argument);
+  ASSERT_THROW(spUUT.reset(new eeprom_section_system::EEPROMSectionSystem(fakeStorage64, 0, 1000)), std::invalid_argument);
 
   // minimum number of blocks
-  ASSERT_THROW(spUUT.reset(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorageMBS, 0, 2 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize)), std::invalid_argument);
-  ASSERT_NO_THROW(spUUT.reset(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorageMBS, 0, 3 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize)));
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize, 1));
+  ASSERT_THROW(spUUT.reset(new eeprom_section_system::EEPROMSectionSystem(fakeStorageMBS, 0, 2 * gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize)), std::invalid_argument);
+  ASSERT_NO_THROW(spUUT.reset(new eeprom_section_system::EEPROMSectionSystem(fakeStorageMBS, 0, 3 * gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize)));
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize, 1));
 
   // out-of-bounds
-  ASSERT_THROW(spUUT.reset(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage64, 64, 1024)), std::invalid_argument);
+  ASSERT_THROW(spUUT.reset(new eeprom_section_system::EEPROMSectionSystem(fakeStorage64, 64, 1024)), std::invalid_argument);
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_DeathTestsF, Destruction_BadState)
 {
@@ -194,7 +194,7 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_DeathTestsF, Destruction_BadState)
 
   FakeEEPROM fakeStorage64(1024, 64);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage64, 0, 960));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage64, 0, 960));
   spUUT->Format(64);
   EXPECT_DEATH(spUUT.reset(), ".*gpcc/src/file_systems/eeprom_section_system/EEPROMSectionSystem.cpp.*");
 
@@ -216,14 +216,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_BadState)
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, MountStep1_StoragePageSizeTooSmall)
 {
   FakeEEPROM fakeStorage(1024, 16);
-  EEPROMSectionSystem::EEPROMSectionSystem uut(fakeStorage, 0, 1024);
+  eeprom_section_system::EEPROMSectionSystem uut(fakeStorage, 0, 1024);
 
   ASSERT_THROW(uut.MountStep1(), std::logic_error);
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_BlankStorage)
 {
   // note: fakeStorage is initialized with zeros by FakeEEPROM::FakeEEPROM()
-  ASSERT_THROW(uut.MountStep1(), EEPROMSectionSystem::BadSectionSystemInfoBlockError);
+  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::BadSectionSystemInfoBlockError);
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_BadCRC)
 {
@@ -232,7 +232,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_BadCRC)
 
   InvalidateCRC(0);
 
-  ASSERT_THROW(uut.MountStep1(), EEPROMSectionSystem::BadSectionSystemInfoBlockError);
+  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::BadSectionSystemInfoBlockError);
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_WrongType_freeBlock)
 {
@@ -253,7 +253,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_WrongType_fr
   fakeStorage.Write(0, 10, pBuffer);
   UpdateCRC(0);
 
-  ASSERT_THROW(uut.MountStep1(), EEPROMSectionSystem::BadSectionSystemInfoBlockError);
+  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::BadSectionSystemInfoBlockError);
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_WrongType_sectionHead)
 {
@@ -278,7 +278,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_WrongType_se
   fakeStorage.Write(0, 14, pBuffer);
   UpdateCRC(0);
 
-  ASSERT_THROW(uut.MountStep1(), EEPROMSectionSystem::BadSectionSystemInfoBlockError);
+  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::BadSectionSystemInfoBlockError);
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_WrongType_sectionData)
 {
@@ -303,7 +303,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_WrongType_se
   fakeStorage.Write(0, 14, pBuffer);
   UpdateCRC(0);
 
-  ASSERT_THROW(uut.MountStep1(), EEPROMSectionSystem::BadSectionSystemInfoBlockError);
+  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::BadSectionSystemInfoBlockError);
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_BadVersion)
 {
@@ -319,7 +319,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_BadVersion)
 
   UpdateCRC(0);
 
-  ASSERT_THROW(uut.MountStep1(), EEPROMSectionSystem::InvalidVersionError);
+  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::InvalidVersionError);
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_BadBlockSize)
 {
@@ -330,7 +330,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_BadBlockSize
   pBuffer[1] = 0;
   fakeStorage.Write(offsetof(SectionSystemInfoBlock_t, blockSize), 2, pBuffer);
   UpdateCRC(0);
-  ASSERT_THROW(uut.MountStep1(), EEPROMSectionSystem::InvalidHeaderError);
+  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::InvalidHeaderError);
 
   pBuffer[0] = (blockSize + 1U) & 0xFFU;
   pBuffer[1] = (blockSize + 1U) >> 8U;
@@ -344,17 +344,17 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_BadBlockSize
   UpdateCRC(0);
   ASSERT_THROW(uut.MountStep1(), std::invalid_argument);
 
-  pBuffer[0] = gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize;
+  pBuffer[0] = gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize;
   pBuffer[1] = 0;
   fakeStorage.Write(offsetof(SectionSystemInfoBlock_t, blockSize), 2, pBuffer);
   UpdateCRC(0);
-  ASSERT_THROW(uut.MountStep1(), EEPROMSectionSystem::StorageSizeMismatchError);
+  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::StorageSizeMismatchError);
 
-  pBuffer[0] = (2 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize) & 0xFFU;
-  pBuffer[1] = (2 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize) >> 8U;
+  pBuffer[0] = (2 * gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MaximumBlockSize) & 0xFFU;
+  pBuffer[1] = (2 * gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MaximumBlockSize) >> 8U;
   fakeStorage.Write(offsetof(SectionSystemInfoBlock_t, blockSize), 2, pBuffer);
   UpdateCRC(0);
-  ASSERT_THROW(uut.MountStep1(), EEPROMSectionSystem::InvalidHeaderError);
+  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::InvalidHeaderError);
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_BadNumberOfBlocks)
 {
@@ -365,113 +365,113 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_BadNumberOfB
   pBuffer[1] = ((storageSize / blockSize) + 1U) >> 8U;
   fakeStorage.Write(offsetof(SectionSystemInfoBlock_t, nBlocks), 2, pBuffer);
   UpdateCRC(0);
-  ASSERT_THROW(uut.MountStep1(), EEPROMSectionSystem::StorageSizeMismatchError);
+  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::StorageSizeMismatchError);
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Format_WrongState)
 {
   // state is not_mounted
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
   Format(128);
 
   // state is mounted
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
-  ASSERT_THROW(uut.Format(128), EEPROMSectionSystem::InsufficientStateError);
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_THROW(uut.Format(128), eeprom_section_system::InsufficientStateError);
 
   uut.Unmount();
 
   // bring uut into state "ro_mount"
   uut.MountStep1();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::ro_mount, uut.GetState());
-  ASSERT_THROW(uut.Format(128), EEPROMSectionSystem::InsufficientStateError);
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut.GetState());
+  ASSERT_THROW(uut.Format(128), eeprom_section_system::InsufficientStateError);
 
   // bring uut into state "defect"
   uut.MountStep2();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
   fakeStorage.Invalidate(blockSize, blockSize);
   RandomData data1(8,8);
   ASSERT_THROW(data1.Write("Section1", false, uut), DataIntegrityError);
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
-  ASSERT_THROW(uut.Format(128), EEPROMSectionSystem::InsufficientStateError);
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_THROW(uut.Format(128), eeprom_section_system::InsufficientStateError);
 
   uut.Unmount();
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_BlockSizeTooSmall)
 {
   FakeEEPROM fakeStorage(1024, 0);
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, 1024));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, 1024));
 
-  ASSERT_THROW(spUUT->Format(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize-1), std::invalid_argument);
+  ASSERT_THROW(spUUT->Format(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize-1), std::invalid_argument);
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_MinimumBlockSize)
 {
   FakeEEPROM fakeStorage(1024, 0);
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, 1024));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, 1024));
 
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize, 1));
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize + 1, 1));
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize, 1));
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize + 1, 1));
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_BlockSizeTooLarge)
 {
   size_t const size = 32*1024;
   FakeEEPROM fakeStorage(size, 0);
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
-  ASSERT_THROW(spUUT->Format(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize+1), std::invalid_argument);
+  ASSERT_THROW(spUUT->Format(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MaximumBlockSize+1), std::invalid_argument);
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_MaximumBlockSize)
 {
   size_t const size = 32*1024;
   FakeEEPROM fakeStorage(size, 0);
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize, 1));
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumBlockSize-1, 1));
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MaximumBlockSize, 1));
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MaximumBlockSize-1, 1));
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_BlockSizeLargerThanPageSize)
 {
   size_t const size = 2*1024;
-  FakeEEPROM fakeStorage(size, gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize);
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  FakeEEPROM fakeStorage(size, gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize);
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
-  ASSERT_THROW(spUUT->Format(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize+1), std::invalid_argument);
+  ASSERT_THROW(spUUT->Format(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize+1), std::invalid_argument);
 
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize, 1));
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize, 1));
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_PageSizeNotDividedByBlockSize)
 {
   size_t const size = 2*1024;
-  FakeEEPROM fakeStorage(size, 2 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize);
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  FakeEEPROM fakeStorage(size, 2 * gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize);
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize, 0));
-  ASSERT_THROW(spUUT->Format(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize+1), std::invalid_argument);
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize, 0));
+  ASSERT_THROW(spUUT->Format(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize+1), std::invalid_argument);
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_StorageHasNoPageSize)
 {
   size_t const size = 2*1024;
   FakeEEPROM fakeStorage(size, 0);
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize+1, 1));
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize+1, 1));
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_ResultingNbOfBlocksTooSmall)
 {
-  FakeEEPROM fakeStorage(3 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize, 0);
+  FakeEEPROM fakeStorage(3 * gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize, 0);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, 3 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, 3 * gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize));
 
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize, 1));
-  ASSERT_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize + 1, 0), std::invalid_argument);
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize, 1));
+  ASSERT_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize + 1, 0), std::invalid_argument);
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_ResultingNbOfBlocksTooLarge)
 {
-  size_t const size = 2 * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MaximumNbOfBlocks * gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize;
+  size_t const size = 2 * gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MaximumNbOfBlocks * gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize;
   FakeEEPROM fakeStorage(size, 0);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
-  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize * 2, 0));
-  ASSERT_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::MinimumBlockSize, 0), std::invalid_argument);
+  ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize * 2, 0));
+  ASSERT_THROW(BasicTest_FormatWriteRead(spUUT.get(), gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize, 0), std::invalid_argument);
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_TypicalEEPROM64kB)
 {
@@ -479,7 +479,7 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_TypicalEEPROM64kB)
   size_t const pageSize = 128;
   FakeEEPROM fakeStorage(size, pageSize);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
   ASSERT_NO_THROW(BasicTest_FormatWriteRead(spUUT.get(), pageSize, 2));
 }
@@ -489,13 +489,13 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithPageSize
   size_t const pageSize = 32U;
   FakeEEPROM fakeStorage(size, pageSize);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
   spUUT->Format(pageSize);
   spUUT->Unmount();
   spUUT->MountStep1();
   spUUT->MountStep2();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, spUUT->GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, spUUT->GetState());
   spUUT->Unmount();
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithPageSize_SmallPage64kB)
@@ -504,13 +504,13 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithPageSize
   size_t const pageSize = 32U;
   FakeEEPROM fakeStorage(size, pageSize);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
   spUUT->Format(pageSize);
   spUUT->Unmount();
   spUUT->MountStep1();
   spUUT->MountStep2();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, spUUT->GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, spUUT->GetState());
   spUUT->Unmount();
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithPageSize_SmallPageMaxNbOfBlocks)
@@ -519,13 +519,13 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithPageSize
   size_t const pageSize = 32U;
   FakeEEPROM fakeStorage(size, pageSize);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
   spUUT->Format(pageSize);
   spUUT->Unmount();
   spUUT->MountStep1();
   spUUT->MountStep2();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, spUUT->GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, spUUT->GetState());
   spUUT->Unmount();
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithPageSize_LargePage64kB)
@@ -534,13 +534,13 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithPageSize
   size_t const pageSize = 4096U;
   FakeEEPROM fakeStorage(size, pageSize);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
   spUUT->Format(pageSize);
   spUUT->Unmount();
   spUUT->MountStep1();
   spUUT->MountStep2();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, spUUT->GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, spUUT->GetState());
   spUUT->Unmount();
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithPageSize_LargePage1MB)
@@ -549,13 +549,13 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithPageSize
   size_t const pageSize = 4096U;
   FakeEEPROM fakeStorage(size, pageSize);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
   spUUT->Format(pageSize);
   spUUT->Unmount();
   spUUT->MountStep1();
   spUUT->MountStep2();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, spUUT->GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, spUUT->GetState());
   spUUT->Unmount();
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithPageSize_LargePage16MB)
@@ -564,13 +564,13 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithPageSize
   size_t const pageSize = 4096U;
   FakeEEPROM fakeStorage(size, pageSize);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
   spUUT->Format(pageSize);
   spUUT->Unmount();
   spUUT->MountStep1();
   spUUT->MountStep2();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, spUUT->GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, spUUT->GetState());
   spUUT->Unmount();
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithoutPageSize_SmallPage256B)
@@ -579,13 +579,13 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithoutPageS
   size_t const pageSize = 32U;
   FakeEEPROM fakeStorage(size, 0U);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
   spUUT->Format(pageSize);
   spUUT->Unmount();
   spUUT->MountStep1();
   spUUT->MountStep2();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, spUUT->GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, spUUT->GetState());
   spUUT->Unmount();
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithoutPageSize_SmallPage64kB)
@@ -594,13 +594,13 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithoutPageS
   size_t const pageSize = 32U;
   FakeEEPROM fakeStorage(size, 0U);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
   spUUT->Format(pageSize);
   spUUT->Unmount();
   spUUT->MountStep1();
   spUUT->MountStep2();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, spUUT->GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, spUUT->GetState());
   spUUT->Unmount();
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithoutPageSize_SmallPageMaxNbOfBlocks)
@@ -609,13 +609,13 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithoutPageS
   size_t const pageSize = 32U;
   FakeEEPROM fakeStorage(size, 0U);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
   spUUT->Format(pageSize);
   spUUT->Unmount();
   spUUT->MountStep1();
   spUUT->MountStep2();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, spUUT->GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, spUUT->GetState());
   spUUT->Unmount();
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithoutPageSize_LargePage64kB)
@@ -624,13 +624,13 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithoutPageS
   size_t const pageSize = 4096U;
   FakeEEPROM fakeStorage(size, 0U);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
   spUUT->Format(pageSize);
   spUUT->Unmount();
   spUUT->MountStep1();
   spUUT->MountStep2();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, spUUT->GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, spUUT->GetState());
   spUUT->Unmount();
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithoutPageSize_LargePage1MB)
@@ -639,13 +639,13 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithoutPageS
   size_t const pageSize = 4096U;
   FakeEEPROM fakeStorage(size, 0U);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
   spUUT->Format(pageSize);
   spUUT->Unmount();
   spUUT->MountStep1();
   spUUT->MountStep2();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, spUUT->GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, spUUT->GetState());
   spUUT->Unmount();
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithoutPageSize_LargePage16MB)
@@ -654,24 +654,24 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithoutPageS
   size_t const pageSize = 4096U;
   FakeEEPROM fakeStorage(size, 0U);
 
-  std::unique_ptr<EEPROMSectionSystem::EEPROMSectionSystem> spUUT(new EEPROMSectionSystem::EEPROMSectionSystem(fakeStorage, 0, size));
+  std::unique_ptr<eeprom_section_system::EEPROMSectionSystem> spUUT(new eeprom_section_system::EEPROMSectionSystem(fakeStorage, 0, size));
 
   spUUT->Format(pageSize);
   spUUT->Unmount();
   spUUT->MountStep1();
   spUUT->MountStep2();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, spUUT->GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, spUUT->GetState());
   spUUT->Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, GetState)
 {
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
   Format(128);
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
   uut.Unmount();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
   uut.MountStep1();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::ro_mount, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut.GetState());
   uut.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_CircleOfFreeBlocks)
@@ -903,7 +903,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads
   uut.MountStep1();
   ASSERT_THROW(uut.MountStep2(), BlockLinkageError);
 
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
   uut.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads_diffName_2ndOlder)
@@ -1104,7 +1104,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads
   uut.MountStep1();
   ASSERT_THROW(uut.MountStep2(), BlockLinkageError);
 
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
   uut.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads_sameName_2ndOlder)
@@ -1303,22 +1303,22 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_WrongState)
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
 
   // not_mounted
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
   ASSERT_THROW(spISW = uut.Create("Sec1", false), InsufficientStateError);
 
   // ro_mount
   uut.MountStep1();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::ro_mount, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut.GetState());
   ASSERT_THROW(spISW = uut.Create("Sec1", false), InsufficientStateError);
 
   // mounted
   uut.MountStep2();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
 
   // defect
   fakeStorage.Invalidate(blockSize * 1U, blockSize);
   ASSERT_THROW(spISW = uut.Create("Sec1", false), InvalidHeaderError);
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
 
   ASSERT_THROW(spISW = uut.Create("Sec1", false), InsufficientStateError);
 
@@ -2022,7 +2022,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageErrorUp
   EXPECT_ANY_THROW(spISW->Close());
   spISW.reset();
 
-  ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
 
   uut.Unmount();
 
@@ -2066,7 +2066,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageErrorUp
   EXPECT_THROW(spISW->Close(), gpcc::stream::IOError);
   spISW.reset();
 
-  ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
 
   uut.Unmount();
 
@@ -2110,7 +2110,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageErrorUp
   EXPECT_THROW(spISW->Close(), gpcc::stream::IOError);
   spISW.reset();
 
-  ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
 
   uut.Unmount();
 
@@ -2157,7 +2157,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageThrowsU
   EXPECT_ANY_THROW(spISW->Close());
   spISW.reset();
 
-  ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
 
   uut.Unmount();
 
@@ -2201,7 +2201,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageThrowsU
   EXPECT_THROW(spISW->Close(), gpcc::stream::IOError);
   spISW.reset();
 
-  ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
 
   uut.Unmount();
 
@@ -2245,7 +2245,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageThrowsU
   EXPECT_THROW(spISW->Close(), gpcc::stream::IOError);
   spISW.reset();
 
-  ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
 
   uut.Unmount();
 
@@ -2384,20 +2384,20 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_WrongState)
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
 
   // state is not_mounted
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
 
   ASSERT_THROW(spISR = uut.Open("Section1"), InsufficientStateError);
 
   // bring uut into state "ro_mount"
   uut.MountStep1();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::ro_mount, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut.GetState());
 
   ASSERT_NO_THROW(spISR = uut.Open("Section1"));
   spISR.reset();
 
   // bring uut into state "mounted"
   uut.MountStep2();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
 
   ASSERT_NO_THROW(spISR = uut.Open("Section1"));
   spISR.reset();
@@ -2405,7 +2405,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_WrongState)
   // bring uut into state "defect"
   fakeStorage.Invalidate(blockSize * 3U, blockSize);
   ASSERT_THROW(data.Write("Section2", false, uut), DataIntegrityError);
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
 
   ASSERT_THROW(spISR = uut.Open("Section1"), InsufficientStateError);
 
@@ -2513,7 +2513,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_diffN
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), BlockLinkageError);
 
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
   uut.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_diffName_2ndOlder)
@@ -2695,7 +2695,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_sameN
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = uut.Open("Section1"), BlockLinkageError);
 
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
   uut.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_sameName_2ndOlder)
@@ -2898,7 +2898,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EmptySection)
   spISR->Close();
   spISR.reset();
 
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
 
   uut.Unmount();
 }
@@ -3196,7 +3196,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_NoN
   spISR->Close();
   spISR.reset();
 
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
 
   BasicTest_WriteRead(&uut, blockSize, 1);
 
@@ -3233,7 +3233,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_NoN
   spISR->Close();
   spISR.reset();
 
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
 
   BasicTest_WriteRead(&uut, blockSize, 1);
 
@@ -4225,7 +4225,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NoTer
   spISR->Close();
   spISR.reset();
 
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
 
   BasicTest_WriteRead(&uut, blockSize, 1);
 
@@ -4263,7 +4263,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NoTer
   spISR->Close();
   spISR.reset();
 
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
 
   BasicTest_WriteRead(&uut, blockSize, 1);
 
@@ -6154,11 +6154,11 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Unmount_OK_DifferentStates)
 {
   Format(128);
   uut.Unmount();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
 
   uut.MountStep1();
   uut.Unmount();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
 
   uut.MountStep1();
   uut.MountStep2();
@@ -6166,16 +6166,16 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Unmount_OK_DifferentStates)
   fakeStorage.Invalidate(blockSize, blockSize);
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   ASSERT_THROW(spISW = uut.Create("Section1", false), DataIntegrityError);
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
 
   uut.Unmount();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Unmount_WrongState)
 {
   Format(128);
   uut.Unmount();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
 
   ASSERT_THROW(uut.Unmount(), InsufficientStateError);
 }
@@ -6189,7 +6189,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Unmount_LockedByReader)
   auto spISR = uut.Open("Section1");
 
   ASSERT_THROW(uut.Unmount(), NotAllSectionsClosedError);
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
 
   spISR.reset();
 
@@ -6204,7 +6204,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Unmount_LockedByWriter)
   auto spISW = uut.Create("Section1", false);
 
   ASSERT_THROW(uut.Unmount(), NotAllSectionsClosedError);
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
 
   spISW.reset();
 
@@ -6231,25 +6231,25 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Delete_WrongState)
   uut.Unmount();
 
   // state is not_mounted
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
 
   ASSERT_THROW(uut.Delete("Section1"), InsufficientStateError);
 
   // bring uut into state "ro_mount"
   uut.MountStep1();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::ro_mount, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut.GetState());
 
   ASSERT_THROW(uut.Delete("Section1"), InsufficientStateError);
 
   // bring uut into state "mounted"
   uut.MountStep2();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
 
   // bring uut into state "defect"
   fakeStorage.Invalidate(blockSize, blockSize);
   RandomData data(8,8);
   ASSERT_THROW(data.Write("Section2", false, uut), DataIntegrityError);
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
 
   ASSERT_THROW(uut.Delete("Section1"), InsufficientStateError);
 
@@ -6431,26 +6431,26 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_WrongState)
   uut.Unmount();
 
   // state is not_mounted
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
 
   ASSERT_THROW(uut.Rename("Section1", "Section2"), InsufficientStateError);
 
   // bring uut into state "ro_mount"
   uut.MountStep1();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::ro_mount, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut.GetState());
 
   ASSERT_THROW(uut.Rename("Section1", "Section2"), InsufficientStateError);
 
   // bring uut into state "mounted"
   uut.MountStep2();
 
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
 
   // bring uut into state "defect"
   fakeStorage.Invalidate(blockSize, blockSize);
   RandomData data(8,8);
   ASSERT_THROW(data.Write("Section2", false, uut), DataIntegrityError);
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
 
   ASSERT_THROW(uut.Rename("Section1", "Section2"), InsufficientStateError);
 
@@ -6743,26 +6743,26 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, EnumerateSections_WrongState
   std::list<std::string> sections;
 
   // state is not_mounted
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
 
   ASSERT_THROW(sections = uut.Enumerate(), InsufficientStateError);
 
   // bring uut into state "ro_mount"
   uut.MountStep1();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::ro_mount, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut.GetState());
 
   ASSERT_THROW(sections = uut.Enumerate(), InsufficientStateError);
 
   // bring uut into state "mounted"
   uut.MountStep2();
 
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
 
   // bring uut into state "defect"
   fakeStorage.Invalidate(blockSize, blockSize);
   RandomData data(8,8);
   ASSERT_THROW(data.Write("Section2", false, uut), DataIntegrityError);
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
 
   ASSERT_THROW(sections = uut.Enumerate(), InsufficientStateError);
 
@@ -6858,17 +6858,17 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, DetermineSectionSize_WrongSt
   size_t size;
 
   // state is not_mounted
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
   ASSERT_THROW(size = uut.DetermineSize("Section1", nullptr), InsufficientStateError);
 
   // bring uut into state "ro_mount"
   uut.MountStep1();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::ro_mount, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut.GetState());
   ASSERT_THROW(size = uut.DetermineSize("Section1", nullptr), InsufficientStateError);
 
   // bring uut into state "mounted"
   uut.MountStep2();
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
   ASSERT_NO_THROW(size = uut.DetermineSize("Section1", nullptr));
   ASSERT_EQ(18U, size);
 
@@ -6876,7 +6876,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, DetermineSectionSize_WrongSt
   fakeStorage.Invalidate(3 * blockSize, blockSize);
   RandomData data2(8,8);
   ASSERT_THROW(data2.Write("Section2", false, uut), DataIntegrityError);
-  ASSERT_EQ(EEPROMSectionSystem::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
   ASSERT_THROW(size = uut.DetermineSize("Section1", nullptr), InsufficientStateError);
 
   uut.Unmount();
@@ -7045,6 +7045,6 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MultipleReadersAndWritersAtT
 }
 
 } // namespace file_systems
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace gpcc_tests
 

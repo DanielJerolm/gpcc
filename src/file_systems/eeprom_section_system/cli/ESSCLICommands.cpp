@@ -16,7 +16,7 @@ namespace gpcc
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 
 void CLICMDGetState(std::string const & restOfLine, gpcc::cli::CLI & cli, EEPROMSectionSystem* pESS)
@@ -27,7 +27,7 @@ void CLICMDGetState(std::string const & restOfLine, gpcc::cli::CLI & cli, EEPROM
  * Example for registration at an CLI:
  * ~~~{.cpp}
  * pCLI->AddCommand(gpcc::cli::Command::Create("ess_getState", "\nRetrieves EEPROM Section System's state.",
- *                  std::bind(&gpcc::file_systems::EEPROMSectionSystem::CLICMDGetState,
+ *                  std::bind(&gpcc::file_systems::eeprom_section_system::CLICMDGetState,
  *                  std::placeholders::_1, std::placeholders::_2, pESS));
  * ~~~
  *
@@ -70,13 +70,13 @@ void CLICMDFormat(std::string const & restOfLine, gpcc::cli::CLI & cli, EEPROMSe
  *
  * Before formatting, the user is requested to enter "yes" into the CLI.\n
  * The EEPROM Section System must be in state
- * (States::not_mounted)[@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted].
+ * (States::not_mounted)[@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::not_mounted].
  * Otherwise formatting will be refused.
  *
  * Example for registration at an CLI:
  * ~~~{.cpp}
  * pCLI->AddCommand(gpcc::cli::Command::Create("ess_format", "\nFormats an EEPROM Section System.",
- *                  std::bind(&gpcc::file_systems::EEPROMSectionSystem::CLICMDFormat,
+ *                  std::bind(&gpcc::file_systems::eeprom_section_system::CLICMDFormat,
  *                  std::placeholders::_1, std::placeholders::_2, pESS, blockSize));
  * ~~~
  *
@@ -88,13 +88,13 @@ void CLICMDFormat(std::string const & restOfLine, gpcc::cli::CLI & cli, EEPROMSe
  * __Exception safety:__\n
  * Basic exception safety:\n
  * - the storage content may be undefined.
- * - the state of the EEPROM Section System may be (States::not_mounted)[@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted].
+ * - the state of the EEPROM Section System may be (States::not_mounted)[@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::not_mounted].
  * - content of terminal's screen could be undefined
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
  * - the storage content may be undefined.
- * - the state of the EEPROM Section System may be (States::not_mounted)[@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted].
+ * - the state of the EEPROM Section System may be (States::not_mounted)[@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::not_mounted].
  * - content of terminal's screen could be undefined
  *
  * ---
@@ -149,7 +149,7 @@ void CLICMDUnmount(std::string const & restOfLine, gpcc::cli::CLI & cli, EEPROMS
  * Example for registration at an CLI:
  * ~~~{.cpp}
  * pCLI->AddCommand(gpcc::cli::Command::Create("ess_unmount", "\nUnmounts an EEPROM Section System.",
- *                  std::bind(&gpcc::file_systems::EEPROMSectionSystem::CLICMDUnmount,
+ *                  std::bind(&gpcc::file_systems::eeprom_section_system::CLICMDUnmount,
  *                  std::placeholders::_1, std::placeholders::_2, pESS));
  * ~~~
  *
@@ -194,20 +194,20 @@ void CLICMDMount(std::string const & restOfLine, gpcc::cli::CLI & cli, EEPROMSec
  * integrity checks and any necessary repair operations.
  *
  * The @ref EEPROMSectionSystem may be in one of the following states:
- * - (States::not_mounted)[@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted]\n
+ * - (States::not_mounted)[@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::not_mounted]\n
  *   The EEPROM Section System will be mounted in two steps: First ro-acccess then rw-access
- * - (States::ro_mount)[@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::ro_mount]\n
+ * - (States::ro_mount)[@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::ro_mount]\n
  *   The EEPROM Section System will be mounted for rw-access
- * - (States::defect)[@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::defect]\n
+ * - (States::defect)[@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect]\n
  *   The EEPROM Section System will be checked, repaired (if necessary), and mounted for rw-access
- * - (States::mounted)[@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::mounted]\n
+ * - (States::mounted)[@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::mounted]\n
  *   The EEPROM Section System will be checked, repaired (if necessary), and mounted for rw-access
  *
  * Example for registration at an CLI:
  * ~~~{.cpp}
  * pCLI->AddCommand(gpcc::cli::Command::Create("ess_mount", "\nMounts an EEPROM Section System for read-write access.\n"\
  *                                                          "Mounting includes full integrity checks and any necessary repair operations.",
- *                  std::bind(&gpcc::file_systems::EEPROMSectionSystem::CLICMDMount,
+ *                  std::bind(&gpcc::file_systems::eeprom_section_system::CLICMDMount,
  *                  std::placeholders::_1, std::placeholders::_2, pESS));
  * ~~~
  *
@@ -260,6 +260,6 @@ void CLICMDMount(std::string const & restOfLine, gpcc::cli::CLI & cli, EEPROMSec
   cli.WriteLine("Mounted for rw-access.");
 }
 
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace file_systems
 } // namespace gpcc

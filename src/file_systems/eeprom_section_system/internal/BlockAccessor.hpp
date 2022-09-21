@@ -25,14 +25,14 @@ namespace stdif
 
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 namespace internal
 {
 
 /**
  * \ingroup GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_INTERNAL
- * \brief Helper for [EEPROMSectionSystem](@ref EEPROMSectionSystem::EEPROMSectionSystem): Divides the storage into blocks and offers read- and write-access.
+ * \brief Helper for [EEPROMSectionSystem](@ref eeprom_section_system::EEPROMSectionSystem): Divides the storage into blocks and offers read- and write-access.
  *
  * This class manages the storage an @ref EEPROMSectionSystem is working on:
  * - partition into blocks
@@ -109,7 +109,7 @@ class BlockAccessor
 };
 
 } // namespace internal
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace file_systems
 } // namespace gpcc
 

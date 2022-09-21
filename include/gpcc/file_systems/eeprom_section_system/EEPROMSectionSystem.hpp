@@ -41,7 +41,7 @@ namespace stream
 
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 
 namespace internal
@@ -133,8 +133,8 @@ namespace internal
  * @ref States::mounted     | Section System is mounted for full read/write-access.
  * @ref States::defect      | Section System is defect and needs check (call to @ref MountStep2()).
  *
- * \htmlonly <style>div.image img[src="file_systems/EEPROMSectionSystem/EEPROMSectionSystemInternalStates.jpg"]{width:80%;}</style> \endhtmlonly
- * \image html "file_systems/EEPROMSectionSystem/EEPROMSectionSystemInternalStates.jpg" "States of the Section System"
+ * \htmlonly <style>div.image img[src="file_systems/eeprom_section_system/EEPROMSectionSystemInternalStates.jpg"]{width:80%;}</style> \endhtmlonly
+ * \image html "file_systems/eeprom_section_system/EEPROMSectionSystemInternalStates.jpg" "States of the Section System"
  *
  * # Internals
  * ## Definition of the term "Section System"
@@ -360,7 +360,7 @@ class EEPROMSectionSystem: public IFileStorage
     void StoreBlock(uint16_t const blockIndex, void* const pMem, bool const mutexLocked);
 };
 
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace file_systems
 } // namespace gpcc
 

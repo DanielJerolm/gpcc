@@ -17,7 +17,7 @@ namespace gpcc
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 
 class EEPROMSectionSystem;
@@ -36,7 +36,7 @@ namespace internal
  */
 class FreeBlockListBackup
 {
-    friend class gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem;
+    friend class gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem;
 
   private:
     /// Backup of `EEPROMSectionSystem::nFreeBlocks`.
@@ -52,7 +52,7 @@ class FreeBlockListBackup
 };
 
 } // namespace internal
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace file_systems
 } // namespace gpcc
 

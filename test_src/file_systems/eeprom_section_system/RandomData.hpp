@@ -20,7 +20,7 @@ namespace gpcc
 {
   namespace file_systems
   {
-    namespace EEPROMSectionSystem
+    namespace eeprom_section_system
     {
       class EEPROMSectionSystem;
     }
@@ -31,7 +31,7 @@ namespace gpcc_tests
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 
 // Class encapsulating a chunk of random data that can be written to an EEPROMSectionSystem instance
@@ -43,8 +43,8 @@ class RandomData
 
     bool operator=(RandomData const & other) const;
 
-    void Write(std::string const & name, bool overwriteIfExisting, gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem & uut) const;
-    void Compare(std::string const & name, gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem & uut) const;
+    void Write(std::string const & name, bool overwriteIfExisting, gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem & uut) const;
+    void Compare(std::string const & name, gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem & uut) const;
 
     size_t GetSize(void) const;
     uint8_t const * GetData(void) const;
@@ -54,7 +54,7 @@ class RandomData
 };
 
 } // namespace file_systems
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace gpcc_tests
 
 #endif // SRC_TESTS_FILESYSTEMS_EEPROMSECTIONSYSTEM_RANDOMDATA_HPP_

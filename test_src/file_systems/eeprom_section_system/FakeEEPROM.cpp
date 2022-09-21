@@ -16,7 +16,7 @@ namespace gpcc_tests
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 
 FakeEEPROM::FakeEEPROM(size_t const _size, size_t const _pageSize)
@@ -228,5 +228,5 @@ void FakeEEPROM::CheckAccessBounds(uint32_t const startAdress, size_t const n) c
 }
 
 } // namespace file_systems
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace gpcc_tests

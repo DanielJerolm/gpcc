@@ -18,7 +18,7 @@ namespace gpcc
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 
 class EEPROMSectionSystem;
@@ -128,7 +128,7 @@ class SectionReader: public stream::StreamReaderBase
 };
 
 } // namespace internal
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace file_systems
 } // namespace gpcc
 

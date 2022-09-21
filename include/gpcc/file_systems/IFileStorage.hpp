@@ -366,7 +366,7 @@ class IFileStorage
  * \fn IFileStorage::GetFreeSpace
  * \brief Retrieves the amount of free space available for data in the underlying storage device.
  *
- * If the underlying class is @ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem, then this method
+ * If the underlying class is @ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem, then this method
  * retrieves the amount of free space available for user data, as it would be _after creation of a new file_.
  *
  * If the underlying class is @ref gpcc::file_systems::linux_fs::FileStorage, then this function retrieves the amount

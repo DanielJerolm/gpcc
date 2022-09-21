@@ -29,7 +29,7 @@ namespace gpcc
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 
 #ifndef __DOXYGEN__
@@ -2844,6 +2844,6 @@ void EEPROMSectionSystem::StoreBlock(uint16_t const blockIndex, void* const pMem
   ON_SCOPE_EXIT_DISMISS(markDefect);
 }
 
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace file_systems
 } // namespace gpcc

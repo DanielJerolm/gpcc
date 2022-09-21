@@ -18,7 +18,7 @@ namespace gpcc_tests
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 
 // Test fixture for EEPROMSectionSystem related tests.
@@ -36,7 +36,7 @@ class EEPROMSectionSystemTestFixture: public testing::Test
 
   protected:
     FakeEEPROM fakeStorage;
-    gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem uut;
+    gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem uut;
     uint8_t* pBuffer;
 
     void SetUp(void) override;
@@ -49,6 +49,6 @@ class EEPROMSectionSystemTestFixture: public testing::Test
 };
 
 } // namespace file_systems
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace gpcc_tests
 

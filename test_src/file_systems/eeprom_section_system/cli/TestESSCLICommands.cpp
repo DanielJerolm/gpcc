@@ -21,7 +21,7 @@ namespace gpcc_tests
 {
 namespace file_systems
 {
-namespace EEPROMSectionSystem
+namespace eeprom_section_system
 {
 
 using namespace gpcc_tests::cli;
@@ -64,23 +64,23 @@ void GPCC_FileSystems_EEPROMSectionSystem_CLI_TestsF::SetUp(void)
   terminal.WaitForInputProcessed();
 
   cli.AddCommand(gpcc::cli::Command::Create("GetState", "\nHelp text",
-                                            std::bind(&gpcc::file_systems::EEPROMSectionSystem::CLICMDGetState,
+                                            std::bind(&gpcc::file_systems::eeprom_section_system::CLICMDGetState,
                                                       std::placeholders::_1,
                                                       std::placeholders::_2,
                                                       &uut)));
   cli.AddCommand(gpcc::cli::Command::Create("Format", "\nHelp text",
-                                            std::bind(&gpcc::file_systems::EEPROMSectionSystem::CLICMDFormat,
+                                            std::bind(&gpcc::file_systems::eeprom_section_system::CLICMDFormat,
                                                       std::placeholders::_1,
                                                       std::placeholders::_2,
                                                       &uut,
                                                       fakeStorage.GetPageSize())));
   cli.AddCommand(gpcc::cli::Command::Create("Unmount", "\nHelp text",
-                                            std::bind(&gpcc::file_systems::EEPROMSectionSystem::CLICMDUnmount,
+                                            std::bind(&gpcc::file_systems::eeprom_section_system::CLICMDUnmount,
                                                       std::placeholders::_1,
                                                       std::placeholders::_2,
                                                       &uut)));
   cli.AddCommand(gpcc::cli::Command::Create("Mount", "\nHelp text",
-                                            std::bind(&gpcc::file_systems::EEPROMSectionSystem::CLICMDMount,
+                                            std::bind(&gpcc::file_systems::eeprom_section_system::CLICMDMount,
                                                       std::placeholders::_1,
                                                       std::placeholders::_2,
                                                       &uut)));
@@ -212,7 +212,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_CLI_TestsF, CLICMDFormat_no)
   terminal.WaitForInputProcessed();
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_CLI_TestsF, CLICMDFormat_unexpectedParams)
@@ -238,7 +238,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_CLI_TestsF, CLICMDFormat_unexpectedP
   terminal.WaitForInputProcessed();
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_CLI_TestsF, CLICMDFormat_not_unmounted)
@@ -270,7 +270,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_CLI_TestsF, CLICMDFormat_not_unmount
   terminal.WaitForInputProcessed();
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
   ASSERT_TRUE(terminal.Compare(expected));
 
   uut.Unmount();
@@ -300,7 +300,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_CLI_TestsF, CLICMDFormat_OK)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
   ASSERT_TRUE(terminal.Compare(expected));
 
   uut.Unmount();
@@ -331,7 +331,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_CLI_TestsF, CLICMDUnmount_unexpected
   terminal.WaitForInputProcessed();
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
   ASSERT_TRUE(terminal.Compare(expected));
 
   uut.Unmount();
@@ -359,7 +359,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_CLI_TestsF, CLICMDUnmount_notMounted
   terminal.WaitForInputProcessed();
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_CLI_TestsF, CLICMDUnmount_OK)
@@ -388,7 +388,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_CLI_TestsF, CLICMDUnmount_OK)
   terminal.WaitForInputProcessed();
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_CLI_TestsF, CLICMDMount_unexpectedParams)
@@ -418,7 +418,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_CLI_TestsF, CLICMDMount_unexpectedPa
   terminal.WaitForInputProcessed();
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_CLI_TestsF, CLICMDMount_unmountedBefore)
@@ -448,7 +448,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_CLI_TestsF, CLICMDMount_unmountedBef
   terminal.WaitForInputProcessed();
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
   ASSERT_TRUE(terminal.Compare(expected));
 
   uut.Unmount();
@@ -481,7 +481,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_CLI_TestsF, CLICMDMount_ro_mountedBe
   terminal.WaitForInputProcessed();
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
   ASSERT_TRUE(terminal.Compare(expected));
 
   uut.Unmount();
@@ -512,12 +512,12 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_CLI_TestsF, CLICMDMount_mountedBefor
   terminal.WaitForInputProcessed();
 
   ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
   ASSERT_TRUE(terminal.Compare(expected));
 
   uut.Unmount();
 }
 
 } // namespace file_systems
-} // namespace EEPROMSectionSystem
+} // namespace eeprom_section_system
 } // namespace gpcc_tests
