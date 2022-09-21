@@ -19,7 +19,7 @@
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/string/tools.hpp>
-#include "gpcc/test_src/cood/ObjectVAR_wicb_withASM.hpp"
+#include "test_src/cood/ObjectVAR_wicb_withASM.hpp"
 #include <functional>
 #include <memory>
 #include <sstream>

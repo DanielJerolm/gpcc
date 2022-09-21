@@ -8,21 +8,21 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "Trace.hpp"
-#include "TriggerProvider.hpp"
 #include "UUT_TriggeredThreadedCyclicExec.hpp"
 #include "UUT_TTCEStartStopCtrl.hpp"
-#include "WaitUntilStoppedHelper.hpp"
 #include <gpcc/execution/async/WorkPackage.hpp>
 #include <gpcc/execution/async/WorkQueue.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/time/TimeSpan.hpp>
+#include "Trace.hpp"
+#include "TriggerProvider.hpp"
+#include "WaitUntilStoppedHelper.hpp"
 #include "gtest/gtest.h"
 #include <stdexcept>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 // Universal timeout when waiting for things that will happen (of course if the UUT behaves as expected)
 #define GENERAL_TIMEOUT_MS 500

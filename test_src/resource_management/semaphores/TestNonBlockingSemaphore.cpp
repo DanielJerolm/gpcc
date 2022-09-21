@@ -9,17 +9,17 @@
 */
 
 #include <gpcc/resource_management/semaphores/NonBlockingSemaphore.hpp>
+#include <gpcc/execution/async/DeferredWorkPackage.hpp>
+#include <gpcc/execution/async/DeferredWorkQueue.hpp>
 #include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/osal/Thread.hpp>
-#include <gpcc/execution/async/DeferredWorkQueue.hpp>
-#include <gpcc/execution/async/DeferredWorkPackage.hpp>
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
-#include <memory>
 #include "gtest/gtest.h"
+#include <memory>
 
 namespace gpcc_tests          {
 namespace resource_management {

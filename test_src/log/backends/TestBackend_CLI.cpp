@@ -8,12 +8,12 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include <gpcc/cli/CLI.hpp>
 #include <gpcc/log/backends/Backend_CLI.hpp>
+#include <gpcc/cli/CLI.hpp>
 #include <gpcc/log/log_levels.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"
+#include "test_src/fakes/cli/FakeTerminal.hpp"
 #include "gtest/gtest.h"
 #include <functional>
 

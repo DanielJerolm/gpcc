@@ -10,8 +10,8 @@
 
 #ifdef OS_LINUX_X64_TFC
 
-#include "gpcc/src/osal/os/linux_x64_tfc/internal/UnmanagedMutex.hpp"
-#include "gpcc/src/osal/os/linux_x64_tfc/internal/UnmanagedMutexLocker.hpp"
+#include "src/osal/os/linux_x64_tfc/internal/UnmanagedMutexLocker.hpp"
+#include "src/osal/os/linux_x64_tfc/internal/UnmanagedMutex.hpp"
 #include "gtest/gtest.h"
 #include <memory>
 

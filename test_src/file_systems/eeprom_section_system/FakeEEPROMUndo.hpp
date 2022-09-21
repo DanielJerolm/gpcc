@@ -12,8 +12,8 @@
 #define SRC_TESTS_FILESYSTEMS_EEPROMSECTIONSYSTEM_FAKEEEPROMUNDO_HPP_
 
 #include <memory>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace gpcc_tests
 {

@@ -9,10 +9,9 @@
 */
 
 #include <gpcc/compiler/builtins.hpp>
-
 #include "gtest/gtest.h"
-#include <cstdint>
 #include <limits>
+#include <cstdint>
 
 namespace gpcc_tests
 {

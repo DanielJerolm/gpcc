@@ -8,13 +8,13 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include <gpcc/osal/exceptions.hpp>
-#include <gpcc/osal/RWLock.hpp>
-#include <gpcc/osal/Thread.hpp>
 #include <gpcc/osal/RWLockReadLocker.hpp>
-#include <gpcc/osal/RWLockWriteLocker.hpp>
 #include <gpcc/execution/async/DeferredWorkQueue.hpp>
 #include <gpcc/execution/async/WorkPackage.hpp>
+#include <gpcc/osal/exceptions.hpp>
+#include <gpcc/osal/RWLock.hpp>
+#include <gpcc/osal/RWLockWriteLocker.hpp>
+#include <gpcc/osal/Thread.hpp>
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
 #include "gtest/gtest.h"

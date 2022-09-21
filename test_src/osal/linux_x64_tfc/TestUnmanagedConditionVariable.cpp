@@ -10,11 +10,11 @@
 
 #ifdef OS_LINUX_X64_TFC
 
-#include "gpcc/src/osal/os/linux_x64_tfc/internal/AdvancedUnmanagedMutexLocker.hpp"
-#include "gpcc/src/osal/os/linux_x64_tfc/internal/UnmanagedConditionVariable.hpp"
-#include "gpcc/src/osal/os/linux_x64_tfc/internal/UnmanagedMutexLocker.hpp"
+#include "src/osal/os/linux_x64_tfc/internal/UnmanagedConditionVariable.hpp"
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
+#include "src/osal/os/linux_x64_tfc/internal/AdvancedUnmanagedMutexLocker.hpp"
+#include "src/osal/os/linux_x64_tfc/internal/UnmanagedMutexLocker.hpp"
 #include "gtest/gtest.h"
 #include <unistd.h>
 

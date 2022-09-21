@@ -8,12 +8,12 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
+#include <gpcc/osal/RWLock.hpp>
 #include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
-#include <gpcc/osal/RWLock.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/time/TimePoint.hpp>

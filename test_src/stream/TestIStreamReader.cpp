@@ -8,8 +8,8 @@
     Copyright (C) 2019 Daniel Jerolm
 */
 
-#include "gtest/gtest.h"
 #include <gpcc/stream/IStreamReader.hpp>
+#include "gtest/gtest.h"
 
 namespace gpcc_tests {
 namespace stream     {

@@ -8,14 +8,14 @@
     Copyright (C) 2020 Daniel Jerolm
 */
 
-#include <gpcc/cli/CLI.hpp>
 #include <gpcc/log/backends/Backend_CLILogHistory.hpp>
+#include <gpcc/cli/CLI.hpp>
 #include <gpcc/log/log_levels.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/stream/MemStreamWriter.hpp>
 #include <gpcc/string/tools.hpp>
-#include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"
+#include "test_src/fakes/cli/FakeTerminal.hpp"
 #include "gtest/gtest.h"
 #include <functional>
 #include <string>

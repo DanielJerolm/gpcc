@@ -8,8 +8,8 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gtest/gtest.h"
 #include <gpcc/resource_management/objects/SmallDynamicNamedRWLock.hpp>
+#include "gtest/gtest.h"
 #include <memory>
 #include <string>
 #include <stdexcept>

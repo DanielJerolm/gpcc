@@ -9,10 +9,10 @@
 */
 
 #include "UUT_TriggeredThreadedCyclicExec.hpp"
-#include "Trace.hpp"
 #include <gpcc/execution/cyclic/TTCEStartStopCtrl.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/time/TimeSpan.hpp>
+#include "Trace.hpp"
 #include <functional>
 
 namespace gpcc_tests {

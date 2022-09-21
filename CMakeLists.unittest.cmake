@@ -38,7 +38,7 @@ add_library(${PROJECT_NAME}_testcases OBJECT)
 
 add_subdirectory(test_src)
 
-target_include_directories(${PROJECT_NAME}_testcases PRIVATE ..)
+target_include_directories(${PROJECT_NAME}_testcases PRIVATE .)
 
 if(${GPCC_OS} STREQUAL "chibios_arm")
   message(FATAL_ERROR "Error: 'GPCC_OS=chibios_arm' not supported for unit test environment.")

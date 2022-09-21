@@ -15,13 +15,13 @@
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/string/tools.hpp>
-#include "gpcc/test_src/cood/remote_access/infrastructure/TestbenchThreadBasedRAS.hpp"
-#include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"
+#include "test_src/cood/remote_access/infrastructure/TestbenchThreadBasedRAS.hpp"
+#include "test_src/fakes/cli/FakeTerminal.hpp"
 #include "gtest/gtest.h"
 #include <iostream>
 #include <memory>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 
 namespace gpcc_tests {

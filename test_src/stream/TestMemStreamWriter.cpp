@@ -8,9 +8,9 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gtest/gtest.h"
 #include <gpcc/stream/MemStreamWriter.hpp>
 #include <gpcc/stream/stream_errors.hpp>
+#include "gtest/gtest.h"
 #include <memory>
 #include <iostream>
 #include <cassert>

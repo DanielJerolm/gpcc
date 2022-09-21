@@ -10,10 +10,7 @@
 
 #ifdef OS_LINUX_X64_TFC
 
-#include "gpcc/src/osal/os/linux_x64_tfc/internal/TFCCore.hpp"
-#include "gpcc/src/osal/os/linux_x64_tfc/internal/TimeLimitedThreadBlocker.hpp"
-#include "gpcc/src/osal/os/linux_x64_tfc/internal/UnmanagedMutex.hpp"
-#include "gpcc/src/osal/os/linux_x64_tfc/internal/UnmanagedMutexLocker.hpp"
+#include "src/osal/os/linux_x64_tfc/internal/TimeLimitedThreadBlocker.hpp"
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
@@ -21,6 +18,9 @@
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
+#include "src/osal/os/linux_x64_tfc/internal/TFCCore.hpp"
+#include "src/osal/os/linux_x64_tfc/internal/UnmanagedMutex.hpp"
+#include "src/osal/os/linux_x64_tfc/internal/UnmanagedMutexLocker.hpp"
 #include "gtest/gtest.h"
 
 

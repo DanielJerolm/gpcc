@@ -11,9 +11,10 @@
 #ifndef SRC_TESTS_FILESYSTEMS_EEPROMSECTIONSYSTEM_RANDOMDATA_HPP_
 #define SRC_TESTS_FILESYSTEMS_EEPROMSECTIONSYSTEM_RANDOMDATA_HPP_
 
+#include <string>
 #include <vector>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace gpcc
 {

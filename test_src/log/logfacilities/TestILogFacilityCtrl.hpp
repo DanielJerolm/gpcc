@@ -11,14 +11,14 @@
 #ifndef TESTILOGFACILITYCTRL_HPP_201701061629
 #define TESTILOGFACILITYCTRL_HPP_201701061629
 
-#include "FakeBackend.hpp"
-#include <gpcc/log/logfacilities/ILogFacility.hpp>
 #include <gpcc/log/logfacilities/ILogFacilityCtrl.hpp>
+#include <gpcc/log/logfacilities/ILogFacility.hpp>
 #include <gpcc/log/Logger.hpp>
 #include <gpcc/log/log_levels.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
+#include "FakeBackend.hpp"
 #include "gtest/gtest.h"
 #include <iostream>
 #include <memory>

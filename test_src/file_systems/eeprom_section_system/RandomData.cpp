@@ -8,11 +8,11 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
+#include "RandomData.hpp"
 #include <gpcc/file_systems/eeprom_section_system/EEPROMSectionSystem.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/stream/IStreamReader.hpp>
 #include <gpcc/stream/IStreamWriter.hpp>
-#include "RandomData.hpp"
 #include <stdexcept>
 #include <cstdlib>
 

@@ -8,8 +8,8 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include <gpcc/stdif/i2c/II2C_Master.hpp>
 #include <gpcc/stdif/i2c/tools.hpp>
+#include <gpcc/stdif/i2c/II2C_Master.hpp>
 #include "gtest/gtest.h"
 #include <cstring>
 

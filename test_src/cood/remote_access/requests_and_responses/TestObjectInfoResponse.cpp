@@ -9,8 +9,8 @@
 */
 
 #include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoResponse.hpp>
-#include <gpcc/cood/remote_access/requests_and_responses/RequestBase.hpp>
 #include <gpcc/cood/remote_access/requests_and_responses/ReturnStackItem.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/RequestBase.hpp>
 #include <gpcc/cood/exceptions.hpp>
 #include <gpcc/cood/ObjectARRAY.hpp>
 #include <gpcc/cood/ObjectRECORD.hpp>
@@ -19,7 +19,7 @@
 #include <gpcc/stream/MemStreamReader.hpp>
 #include <gpcc/stream/MemStreamWriter.hpp>
 #include <gpcc/string/tools.hpp>
-#include "gpcc/test_src/cood/ObjectVARwithASM.hpp"
+#include "test_src/cood/ObjectVARwithASM.hpp"
 #include "gtest/gtest.h"
 #include <iostream>
 #include <limits>

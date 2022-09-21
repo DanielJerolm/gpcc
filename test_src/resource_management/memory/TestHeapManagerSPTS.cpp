@@ -8,21 +8,21 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gtest/gtest.h"
-#include <gpcc/execution/async/WorkQueue.hpp>
+#include <gpcc/resource_management/memory/HeapManagerSPTS.hpp>
 #include <gpcc/execution/async/WorkPackage.hpp>
+#include <gpcc/execution/async/WorkQueue.hpp>
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
-#include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/Thread.hpp>
-#include <gpcc/resource_management/memory/HeapManagerSPTS.hpp>
 #include <gpcc/resource_management/memory/HeapManagerStatistics.hpp>
 #include <gpcc/resource_management/memory/MemoryDescriptorSPTS.hpp>
+#include "gtest/gtest.h"
 #include <exception>
+#include <functional>
 #include <limits>
 #include <memory>
 #include <vector>
-#include <functional>
 
 namespace gpcc_tests
 {

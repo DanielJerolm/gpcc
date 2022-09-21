@@ -8,11 +8,11 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "FakeEEPROM.hpp"
 #include <gpcc/file_systems/eeprom_section_system/EEPROMSectionSystem.hpp>
+#include "FakeEEPROM.hpp"
 #include "gtest/gtest.h"
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace gpcc_tests
 {

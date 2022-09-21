@@ -8,8 +8,8 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gtest/gtest.h"
 #include "FakeEEPROM.hpp"
+#include "gtest/gtest.h"
 #include <cstring>
 
 namespace gpcc_tests

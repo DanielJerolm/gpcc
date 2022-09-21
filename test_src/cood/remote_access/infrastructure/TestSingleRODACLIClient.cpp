@@ -9,19 +9,19 @@
 */
 
 #include <gpcc/cood/remote_access/infrastructure/SingleRODACLIClient.hpp>
-#include "TestbenchThreadBasedRAS.hpp"
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/string/tools.hpp>
-#include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"
+#include "TestbenchThreadBasedRAS.hpp"
+#include "test_src/fakes/cli/FakeTerminal.hpp"
 #include "gtest/gtest.h"
 #include <iostream>
 #include <memory>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 
 namespace gpcc_tests {

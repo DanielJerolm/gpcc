@@ -9,14 +9,14 @@
 */
 
 #include "EEPROMSectionSystemTestFixture.hpp"
-#include "gpcc/src/file_systems/eeprom_section_system/internal/EEPROMSectionSystemInternals.hpp"
-#include "RandomData.hpp"
 #include <gpcc/file_systems/eeprom_section_system/exceptions.hpp>
 #include <gpcc/file_systems/exceptions.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/stream/IStreamReader.hpp>
 #include <gpcc/stream/IStreamWriter.hpp>
 #include <gpcc/stream/stream_errors.hpp>
+#include "RandomData.hpp"
+#include "src/file_systems/eeprom_section_system/internal/EEPROMSectionSystemInternals.hpp"
 #include <algorithm>
 #include <iostream>
 #include <list>

@@ -8,12 +8,12 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "logfacilities/FakeBackend.hpp"
-#include <gpcc/log/logfacilities/ThreadedLogFacility.hpp>
 #include <gpcc/log/Logger.hpp>
+#include <gpcc/log/logfacilities/ThreadedLogFacility.hpp>
 #include <gpcc/log/log_levels.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
+#include "logfacilities/FakeBackend.hpp"
 #include "gtest/gtest.h"
 #include <exception>
 #include <iostream>

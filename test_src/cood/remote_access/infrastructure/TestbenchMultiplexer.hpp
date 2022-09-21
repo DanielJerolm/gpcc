@@ -13,7 +13,7 @@
 
 #ifndef SKIP_TFC_BASED_TESTS
 
-#include "gpcc/test_src/cood/remote_access/roda_itf/TestbenchBase.hpp"
+#include "test_src/cood/remote_access/roda_itf/TestbenchBase.hpp"
 #include <memory>
 
 namespace gpcc {

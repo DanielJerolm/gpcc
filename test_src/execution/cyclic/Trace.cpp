@@ -9,8 +9,8 @@
 */
 
 #include "Trace.hpp"
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
 namespace gpcc_tests {
 namespace execution {

@@ -10,14 +10,14 @@
 
 #if defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC)
 
-#include "gpcc/src/file_systems/linux_fs/internal/tools.hpp"
-#include "gpcc/src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
+#include "src/file_systems/linux_fs/internal/tools.hpp"
 #include <gpcc/file_systems/exceptions.hpp>
 #include <gpcc/raii/scope_guard.hpp>
+#include "src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
 #include "gtest/gtest.h"
+#include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <dirent.h>
 #include <system_error>
 #include <cerrno>
 #include <cstdio>

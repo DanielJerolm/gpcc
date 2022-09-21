@@ -8,13 +8,11 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
+#include <gpcc/log/cli/commands.hpp>
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/cli/Command.hpp>
 #include <gpcc/file_systems/linux_fs/FileStorage.hpp>
-#include "gpcc/src/file_systems/linux_fs/internal/tools.hpp"
-#include "gpcc/src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
 #include <gpcc/log/backends/Backend_CLI.hpp>
-#include <gpcc/log/cli/commands.hpp>
 #include <gpcc/log/logfacilities/ThreadedLogFacility.hpp>
 #include <gpcc/log/log_levels.hpp>
 #include <gpcc/log/Logger.hpp>
@@ -22,13 +20,15 @@
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/string/tools.hpp>
-#include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"
+#include "src/file_systems/linux_fs/internal/tools.hpp"
+#include "src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
+#include "test_src/fakes/cli/FakeTerminal.hpp"
 #include "gtest/gtest.h"
 #include <iostream>
 #include <memory>
 #include <sstream>
-#include <string>
 #include <stdexcept>
+#include <string>
 #include <cerrno>
 #include <cstdio>
 

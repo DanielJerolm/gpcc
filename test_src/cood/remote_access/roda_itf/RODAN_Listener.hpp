@@ -15,9 +15,9 @@
 #include <gpcc/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiable.hpp>
 #include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/Mutex.hpp>
+#include <functional>
 #include <cstddef>
 #include <cstdint>
-#include <functional>
 
 namespace gpcc {
 namespace cood {

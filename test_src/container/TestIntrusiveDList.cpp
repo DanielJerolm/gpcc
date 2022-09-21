@@ -12,11 +12,11 @@
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "gtest/gtest.h"
-#include <cstdint>
 #include <list>
 #include <memory>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 namespace gpcc_tests {
 namespace container  {

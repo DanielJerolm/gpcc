@@ -21,10 +21,9 @@
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include "gpcc/test_src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessMock.hpp"
-#include "gpcc/test_src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiableMock.hpp"
-#include "gpcc/test_src/execution/async/DWQwithThread.hpp"
-
+#include "test_src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessMock.hpp"
+#include "test_src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiableMock.hpp"
+#include "test_src/execution/async/DWQwithThread.hpp"
 #include "gtest/gtest.h"
 #include <memory>
 #include <stdexcept>

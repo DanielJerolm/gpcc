@@ -20,11 +20,11 @@
 #include <gpcc/log/logfacilities/ThreadedLogFacility.hpp>
 #include <gpcc/log/Logger.hpp>
 #include <gpcc/osal/Mutex.hpp>
-#include "gpcc/test_src/log/backends/Backend_Recorder.hpp"
-#include <cstddef>
-#include <cstdint>
+#include "test_src/log/backends/Backend_Recorder.hpp"
 #include <string>
 #include <vector>
+#include <cstddef>
+#include <cstdint>
 
 namespace gpcc {
 namespace cood {

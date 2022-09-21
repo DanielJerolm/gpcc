@@ -15,8 +15,8 @@
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <vector>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace gpcc_tests {
 namespace execution {

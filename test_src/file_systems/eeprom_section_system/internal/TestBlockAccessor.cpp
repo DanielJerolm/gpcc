@@ -8,12 +8,12 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
+#include "src/file_systems/eeprom_section_system/internal/BlockAccessor.hpp"
 #include <gpcc/crc/simple_crc.hpp>
-#include "gpcc/src/file_systems/eeprom_section_system/internal/BlockAccessor.hpp"
-#include "gpcc/src/file_systems/eeprom_section_system/internal/EEPROMSectionSystemInternals.hpp"
 #include <gpcc/file_systems/eeprom_section_system/EEPROMSectionSystem.hpp>
 #include <gpcc/file_systems/eeprom_section_system/exceptions.hpp>
-#include "../FakeEEPROM.hpp"
+#include "src/file_systems/eeprom_section_system/internal/EEPROMSectionSystemInternals.hpp"
+#include "test_src/file_systems/eeprom_section_system/FakeEEPROM.hpp"
 #include "gtest/gtest.h"
 #include <limits>
 #include <stdexcept>

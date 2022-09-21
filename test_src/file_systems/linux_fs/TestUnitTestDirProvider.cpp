@@ -10,14 +10,14 @@
 
 #if defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC)
 
-#include "gpcc/src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
-#include "gpcc/src/file_systems/linux_fs/internal/tools.hpp"
+#include "src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
 #include <gpcc/file_systems/linux_fs/FileStorage.hpp>
+#include "src/file_systems/linux_fs/internal/tools.hpp"
 #include "gtest/gtest.h"
-#include <memory>
-#include <system_error>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <memory>
+#include <system_error>
 
 
 using namespace testing;

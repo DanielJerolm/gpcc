@@ -11,7 +11,6 @@
 #ifndef TESTILOGFACILITY_HPP_201601061558
 #define TESTILOGFACILITY_HPP_201601061558
 
-#include "FakeBackend.hpp"
 #include <gpcc/log/logfacilities/ILogFacility.hpp>
 #include <gpcc/log/logfacilities/ILogFacilityCtrl.hpp>
 #include <gpcc/log/Logger.hpp>
@@ -19,6 +18,7 @@
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
+#include "FakeBackend.hpp"
 #include "gtest/gtest.h"
 #include <iostream>
 #include <memory>

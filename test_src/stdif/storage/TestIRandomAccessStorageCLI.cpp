@@ -8,19 +8,19 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
+#include <gpcc/stdif/storage/IRandomAccessStorageCLI.hpp>
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/cli/Command.hpp>
-#include "gpcc/test_src/file_systems/eeprom_section_system/FakeEEPROM.hpp"
-#include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/stdif/storage/IRandomAccessStorage.hpp>
-#include <gpcc/stdif/storage/IRandomAccessStorageCLI.hpp>
+#include "test_src/fakes/cli/FakeTerminal.hpp"
+#include "test_src/file_systems/eeprom_section_system/FakeEEPROM.hpp"
 #include "gtest/gtest.h"
 #include <functional>
 #include <iostream>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace gpcc_tests
 {

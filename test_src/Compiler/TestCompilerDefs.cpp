@@ -10,7 +10,6 @@
 
 #include <gpcc/compiler/definitions.hpp>
 #include <gpcc/osal/Panic.hpp>
-
 #include "gtest/gtest.h"
 #include <cstdint>
 

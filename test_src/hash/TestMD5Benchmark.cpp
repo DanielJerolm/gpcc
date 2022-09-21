@@ -14,13 +14,13 @@
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/string/tools.hpp>
 #include "gtest/gtest.h"
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <iostream>
 #include <stdexcept>
 #include <string>
-#include <iostream>
 
 namespace gpcc_tests {
 namespace hash       {

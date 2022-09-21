@@ -8,13 +8,13 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
+#include <gpcc/file_systems/eeprom_section_system/cli/ESSCLICommands.hpp>
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/cli/Command.hpp>
-#include "../EEPROMSectionSystemTestFixture.hpp"
-#include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"
-#include <gpcc/file_systems/eeprom_section_system/cli/ESSCLICommands.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
+#include "test_src/fakes/cli/FakeTerminal.hpp"
+#include "test_src/file_systems/eeprom_section_system/EEPROMSectionSystemTestFixture.hpp"
 #include <functional>
 
 namespace gpcc_tests

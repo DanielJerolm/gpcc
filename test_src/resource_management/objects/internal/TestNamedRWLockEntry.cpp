@@ -8,8 +8,8 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
+#include "src/resource_management/objects/internal/NamedRWLockEntry.hpp"
 #include "gtest/gtest.h"
-#include "gpcc/src/resource_management/objects/internal/NamedRWLockEntry.hpp"
 #include <string>
 
 namespace gpcc_tests

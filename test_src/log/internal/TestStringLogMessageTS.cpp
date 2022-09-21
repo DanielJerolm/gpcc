@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/log/internal/StringLogMessageTS.hpp"
+#include "src/log/internal/StringLogMessageTS.hpp"
 #include "gtest/gtest.h"
 
 using namespace gpcc::log;
