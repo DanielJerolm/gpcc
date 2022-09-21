@@ -13,8 +13,8 @@ target_sources(${PROJECT_NAME}_testcases
                cli/TestCLI_withICLINotifiable.cpp
                cli/TestCommand.cpp
                cli/TestFakeTerminal.cpp
-               Compiler/TestCompilerBuiltins.cpp
-               Compiler/TestCompilerDefs.cpp
+               compiler/TestCompilerBuiltins.cpp
+               compiler/TestCompilerDefs.cpp
                container/TestBitField.cpp
                container/TestIntrusiveDList.cpp
                container/TestRAMBlock.cpp
