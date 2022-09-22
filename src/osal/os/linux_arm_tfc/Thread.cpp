@@ -10,23 +10,25 @@
 
 #ifdef OS_LINUX_ARM_TFC
 
-#include "Thread.hpp"
+#include <gpcc/osal/Thread.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/time/TimePoint.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 #include "internal/AdvancedUnmanagedMutexLocker.hpp"
 #include "internal/TFCCore.hpp"
 #include "internal/TimeLimitedThreadBlocker.hpp"
+#include "internal/UnmanagedConditionVariable.hpp"
+#include "internal/UnmanagedMutex.hpp"
 #include "internal/UnmanagedMutexLocker.hpp"
-#include "Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/time/TimePoint.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <cxxabi.h>
+#include <sched.h>
+#include <unistd.h>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
 #include <system_error>
 #include <cerrno>
-#include <sched.h>
-#include <unistd.h>
-#include <cxxabi.h>
 
 namespace gpcc {
 namespace osal {
@@ -197,11 +199,11 @@ size_t Thread::GetDefaultStackSize(void)
 Thread::Thread(std::string const & _name)
 : pTFCCore(internal::TFCCore::Get())
 , name(_name)
-, mutex()
-, joinMutex()
+, spMutex(std::make_unique<internal::UnmanagedMutex>())
+, spJoinMutex(std::make_unique<internal::UnmanagedMutex>())
 , entryFunction()
 , threadState(ThreadState::noThreadOrJoined)
-, threadStateRunningCondVar()
+, spThreadStateRunningCondVar(std::make_unique<internal::UnmanagedConditionVariable>())
 , thread_id()
 , threadWaitingForJoin(false)
 , cancelabilityEnabled(false)
@@ -227,14 +229,14 @@ Thread::~Thread(void)
 {
   try
   {
-    joinMutex.Lock();
-    mutex.Lock();
+    spJoinMutex->Lock();
+    spMutex->Lock();
 
     if (threadState != ThreadState::noThreadOrJoined)
       Panic("Thread::~Thread: Managed thread not yet joined");
 
-    mutex.Unlock();
-    joinMutex.Unlock();
+    spMutex->Unlock();
+    spJoinMutex->Unlock();
 
     InternalGetThreadRegistry().UnregisterThread(*this);
   }
@@ -433,7 +435,7 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
   else
     infoLine << name.substr(0, nameFieldWidth - 3U) << "...";
 
-  internal::UnmanagedMutexLocker mutexLocker(mutex);
+  internal::UnmanagedMutexLocker mutexLocker(*spMutex);
 
   bool detailsRequired = false;
 
@@ -583,7 +585,7 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
  */
 bool Thread::IsItMe(void) const
 {
-  internal::UnmanagedMutexLocker mutexLocker(mutex);
+  internal::UnmanagedMutexLocker mutexLocker(*spMutex);
 
   if (threadState == ThreadState::running)
     return (pthread_equal(thread_id, pthread_self()) != 0);
@@ -664,8 +666,8 @@ void Thread::Start(tEntryFunction const & _entryFunction,
   if ((stackSize < GetMinStackSize()) || ((stackSize % GetStackAlign()) != 0U))
     throw std::invalid_argument("Thread::Start: 'stackSize' is invalid");
 
-  internal::UnmanagedMutexLocker joinMutexLocker(joinMutex);
-  internal::UnmanagedMutexLocker mutexLocker(mutex);
+  internal::UnmanagedMutexLocker joinMutexLocker(*spJoinMutex);
+  internal::UnmanagedMutexLocker mutexLocker(*spMutex);
 
   // check that there is currently no thread
   if (threadState != ThreadState::noThreadOrJoined)
@@ -744,7 +746,7 @@ void Thread::Start(tEntryFunction const & _entryFunction,
     try
     {
       while (threadState == ThreadState::starting)
-        threadStateRunningCondVar.Wait(mutex);
+        spThreadStateRunningCondVar->Wait(*spMutex);
     }
     catch (...)
     {
@@ -817,7 +819,7 @@ void Thread::Start(tEntryFunction const & _entryFunction,
  */
 void Thread::Cancel(void)
 {
-  internal::UnmanagedMutexLocker mutexLocker(mutex);
+  internal::UnmanagedMutexLocker mutexLocker(*spMutex);
 
   // verify that the object manages a thread, which has not yet been joined
   if (threadState == ThreadState::noThreadOrJoined)
@@ -893,8 +895,8 @@ void Thread::Cancel(void)
  */
 void* Thread::Join(bool* const pCancelled)
 {
-  internal::UnmanagedMutexLocker joinMutexLocker(joinMutex);
-  internal::AdvancedUnmanagedMutexLocker mutexLocker(mutex);
+  internal::UnmanagedMutexLocker joinMutexLocker(*spJoinMutex);
+  internal::AdvancedUnmanagedMutexLocker mutexLocker(*spMutex);
 
   // verify that the object manages a thread, which has not yet been joined
   if (threadState == ThreadState::noThreadOrJoined)
@@ -1044,7 +1046,7 @@ void Thread::SetCancelabilityEnabled(bool const enable)
 {
   // verify that the current thread is the one managed by this object
   {
-    internal::UnmanagedMutexLocker locker(mutex);
+    internal::UnmanagedMutexLocker locker(*spMutex);
     if ((threadState != ThreadState::running) || (pthread_equal(thread_id, pthread_self()) == 0))
       throw std::logic_error("Thread::SetCancelabilityEnabled: Not invoked by the managed thread");
   }
@@ -1090,7 +1092,7 @@ void Thread::SetCancelabilityEnabled(bool const enable)
  */
 bool Thread::GetCancelabilityEnabled(void) const
 {
-  internal::UnmanagedMutexLocker mutexLocker(mutex);
+  internal::UnmanagedMutexLocker mutexLocker(*spMutex);
 
   // verify that the current thread is the one managed by this object
   if ((threadState != ThreadState::running) || (pthread_equal(thread_id, pthread_self()) == 0))
@@ -1121,7 +1123,7 @@ void Thread::TestForCancellation(void)
 {
   // verify that the current thread is the one managed by this object
   {
-    internal::UnmanagedMutexLocker mutexLocker(mutex);
+    internal::UnmanagedMutexLocker mutexLocker(*spMutex);
 
     if ((threadState != ThreadState::running) || (pthread_equal(thread_id, pthread_self()) == 0))
       throw std::logic_error("Thread::TestForCancellation: Not invoked by the managed thread");
@@ -1160,7 +1162,7 @@ void Thread::TerminateNow(void* const threadReturnValue)
 {
   // verify that the current thread is the one managed by this object
   {
-    internal::UnmanagedMutexLocker mutexLocker(mutex);
+    internal::UnmanagedMutexLocker mutexLocker(*spMutex);
 
     if ((threadState != ThreadState::running) || (pthread_equal(thread_id, pthread_self()) == 0))
       throw std::logic_error("Thread::TerminateNow: Not invoked by the managed thread");
@@ -1262,11 +1264,11 @@ void* Thread::InternalThreadEntry2(void)
 
   try
   {
-    internal::AdvancedUnmanagedMutexLocker mutexLocker(mutex);
+    internal::AdvancedUnmanagedMutexLocker mutexLocker(*spMutex);
 
     // set threadState to ThreadState::running
     threadState = ThreadState::running;
-    threadStateRunningCondVar.Signal();
+    spThreadStateRunningCondVar->Signal();
 
     // execute user's thread entry function
     mutexLocker.Unlock();
@@ -1296,7 +1298,7 @@ void* Thread::InternalThreadEntry2(void)
     // Thread was cancelled using POSIX functionality.
     try
     {
-      mutex.Lock();
+      spMutex->Lock();
 
       // update state
       threadState = ThreadState::terminated;
@@ -1314,7 +1316,7 @@ void* Thread::InternalThreadEntry2(void)
         pTFCCore->ReportThreadCancellationDone();
       pTFCCore->ReportThreadPermanentlyBlockedBegin();
 
-      mutex.Unlock();
+      spMutex->Unlock();
     }
     catch (...)
     {

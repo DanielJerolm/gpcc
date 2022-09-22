@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "log_levels.hpp"
+#include <gpcc/log/log_levels.hpp>
 #include <stdexcept>
 
 namespace gpcc {

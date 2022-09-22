@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "int_math.hpp"
+#include <gpcc/math/int_math.hpp>
 
 namespace gpcc {
 namespace math {

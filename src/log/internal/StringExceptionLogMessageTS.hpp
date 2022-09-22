@@ -12,7 +12,7 @@
 #define STRINGEXCEPTIONLOGMESSAGETS_HPP_202111211426
 
 #include "LogMessage.hpp"
-#include "gpcc/src/time/TimePoint.hpp"
+#include <gpcc/time/TimePoint.hpp>
 #include <exception>
 
 namespace gpcc     {

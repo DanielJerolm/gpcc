@@ -11,8 +11,8 @@
 #ifndef BACKEND_RECORDER_HPP_201702152052
 #define BACKEND_RECORDER_HPP_201702152052
 
-#include "gpcc/src/log/backends/Backend.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/log/backends/Backend.hpp>
+#include <gpcc/osal/Mutex.hpp>
 #include <vector>
 #include <cstddef>
 

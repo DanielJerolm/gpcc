@@ -11,8 +11,8 @@
 #ifndef IOBJECTNOTIFIABLEMOCK_HPP_201809042025
 #define IOBJECTNOTIFIABLEMOCK_HPP_201809042025
 
-#include "gpcc/src/cood/Object.hpp"
-#include "gpcc/src/cood/IObjectNotifiable.hpp"
+#include <gpcc/cood/Object.hpp>
+#include <gpcc/cood/IObjectNotifiable.hpp>
 #include "gmock/gmock.h"
 
 namespace gpcc_tests {

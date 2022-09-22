@@ -8,15 +8,15 @@
     Copyright (C) 2018 Daniel Jerolm
 */
 
-#include "data_types.hpp"
-#include "exceptions.hpp"
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
-#include "gpcc/src/string/tools.hpp"
-#include <cstdio>
+#include <gpcc/cood/data_types.hpp>
+#include <gpcc/cood/exceptions.hpp>
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
+#include <gpcc/string/tools.hpp>
 #include <exception>
 #include <limits>
 #include <stdexcept>
+#include <cstdio>
 
 namespace gpcc {
 namespace cood {
@@ -418,7 +418,7 @@ DataType ToDataType(uint16_t const value)
 
 /**
  * \ingroup GPCC_COOD_DATATYPES
- * \brief Reads the data of one subindex (encoded in CANopen format) from an @ref gpcc::Stream::IStreamReader and
+ * \brief Reads the data of one subindex (encoded in CANopen format) from an @ref gpcc::stream::IStreamReader and
  *        generates a human-readable string representation of the data value.
  *
  * - - -
@@ -442,7 +442,7 @@ DataType ToDataType(uint16_t const value)
  * - - -
  *
  * \param sr
- * Reference to an @ref gpcc::Stream::IStreamReader from which the CANopen encoded data shall be read.
+ * Reference to an @ref gpcc::stream::IStreamReader from which the CANopen encoded data shall be read.
  *
  * \param sizeInBit
  * Size (in bit) of the CANopen encoded data to be read from `sr`.\n
@@ -466,7 +466,7 @@ DataType ToDataType(uint16_t const value)
  * \return
  * The generated human-readable string.
  */
-std::string CANopenEncodedDataToString(gpcc::Stream::IStreamReader& sr, size_t const sizeInBit, DataType const type)
+std::string CANopenEncodedDataToString(gpcc::stream::IStreamReader& sr, size_t const sizeInBit, DataType const type)
 {
   // check sizeInBit
   switch (type)
@@ -681,7 +681,7 @@ std::string CANopenEncodedDataToString(gpcc::Stream::IStreamReader& sr, size_t c
 /**
  * \ingroup GPCC_COOD_DATATYPES
  * \brief Converts a human-readable string representation of the data of one subindex into CANopen encoded data and
- *        writes the CANopen encoded data into an @ref gpcc::Stream::IStreamWriter.
+ *        writes the CANopen encoded data into an @ref gpcc::stream::IStreamWriter.
  *
  * This function is intended to process user input. It is aware of all sort of erroneous input strings.
  *
@@ -766,9 +766,9 @@ std::string CANopenEncodedDataToString(gpcc::Stream::IStreamReader& sr, size_t c
  * any query on class @ref Object.
  *
  * \param sw
- * The CANopen encoded data will be written into the referenced @ref gpcc::Stream::IStreamWriter.
+ * The CANopen encoded data will be written into the referenced @ref gpcc::stream::IStreamWriter.
  */
-void StringToCANOpenEncodedData(std::string const & s, size_t const sizeInBit, DataType const type, gpcc::Stream::IStreamWriter& sw)
+void StringToCANOpenEncodedData(std::string const & s, size_t const sizeInBit, DataType const type, gpcc::stream::IStreamWriter& sw)
 {
   // check sizeInBit
   switch (type)
@@ -946,7 +946,7 @@ void StringToCANOpenEncodedData(std::string const & s, size_t const sizeInBit, D
       case DataType::bit7:
       case DataType::bit8:
       {
-        uint8_t const bits = gpcc::string::AnyStringToU8(s);
+        uint8_t const bits = gpcc::string::AnyNumberToU8(s);
         if (bits > ((1UL << sizeInBit) - 1U))
           throw std::invalid_argument("Value too large");
 

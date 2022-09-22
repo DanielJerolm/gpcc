@@ -11,15 +11,15 @@
 #ifndef SKIP_TFC_BASED_TESTS
 
 #include "TestbenchBase.hpp"
-#include "gpcc/src/cood/ObjectARRAY.hpp"
-#include "gpcc/src/cood/ObjectVAR.hpp"
-#include "gpcc/src/cood/ObjectVAR_wicb.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/string/tools.hpp"
-#include "gpcc/test_src/cood/ObjectVAR_wicb_withASM.hpp"
+#include <gpcc/cood/ObjectARRAY.hpp>
+#include <gpcc/cood/ObjectVAR.hpp>
+#include <gpcc/cood/ObjectVAR_wicb.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/osal/Thread.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/string/tools.hpp>
+#include "test_src/cood/ObjectVAR_wicb_withASM.hpp"
 #include <functional>
 #include <memory>
 #include <sstream>

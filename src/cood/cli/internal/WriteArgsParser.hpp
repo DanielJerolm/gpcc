@@ -11,8 +11,8 @@
 #ifndef WRITEARGSPARSER_HPP_202106042143
 #define WRITEARGSPARSER_HPP_202106042143
 
-#include "gpcc/src/cood/data_types.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
+#include <gpcc/cood/data_types.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
 #include <string>
 #include <vector>
 #include <cstddef>
@@ -65,7 +65,7 @@ class WriteArgsParser final
 
     void ExtractData(DataType const dataType,
                      size_t const subIndexMaxSize,
-                     gpcc::Stream::IStreamWriter::Endian const endian);
+                     gpcc::stream::IStreamWriter::Endian const endian);
 
     uint16_t GetIndex(void) const noexcept;
     uint8_t GetSubIndex(void) const noexcept;

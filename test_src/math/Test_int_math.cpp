@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/math/int_math.hpp"
+#include <gpcc/math/int_math.hpp>
 #include "gtest/gtest.h"
 #include <limits>
 

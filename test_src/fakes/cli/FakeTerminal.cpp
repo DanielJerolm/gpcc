@@ -9,12 +9,12 @@
 */
 
 #include "FakeTerminal.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/string/tools.hpp"
-#include "gpcc/src/time/TimePoint.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/string/tools.hpp>
+#include <gpcc/time/TimePoint.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 #include <iomanip>
 #include <iostream>
 #include <cstring>

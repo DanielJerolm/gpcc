@@ -9,9 +9,9 @@
 */
 
 #include "RomConstLogMessageTS.hpp"
-#include "gpcc/src/string/tools.hpp"
-#include <cstring>
+#include <gpcc/string/tools.hpp>
 #include <stdexcept>
+#include <cstring>
 
 namespace gpcc     {
 namespace log      {

@@ -10,8 +10,8 @@
 
 #ifdef OS_CHIBIOS_ARM
 
-#include "Panic.hpp"
-#include "ch.h"
+#include <gpcc/osal/Panic.hpp>
+#include <ch.h>
 #include <atomic>
 #include <string>
 #include <cstring>

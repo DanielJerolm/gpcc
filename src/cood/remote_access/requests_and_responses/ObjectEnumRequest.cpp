@@ -8,10 +8,10 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "ObjectEnumRequest.hpp"
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp>
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
+#include <gpcc/string/tools.hpp>
 #include <sstream>
 #include <stdexcept>
 
@@ -76,7 +76,7 @@ ObjectEnumRequest::ObjectEnumRequest(uint16_t                   const _startInde
 
 /**
  * \brief Constructor. Creates a @ref ObjectEnumRequest object from data read from an
- *        [IStreamReader](@ref gpcc::Stream::IStreamReader) containing a serialized @ref ObjectEnumRequest object.
+ *        [IStreamReader](@ref gpcc::stream::IStreamReader) containing a serialized @ref ObjectEnumRequest object.
  *
  * This is intended to be invoked by @ref RequestBase::FromBinary() only. In conjunction with
  * @ref RequestBase::FromBinary(), this is the counterpart to @ref RequestBase::ToBinary().
@@ -103,7 +103,7 @@ ObjectEnumRequest::ObjectEnumRequest(uint16_t                   const _startInde
  * \param versionOnHand
  * Version of serialized object read from `sr`.
  */
-ObjectEnumRequest::ObjectEnumRequest(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectEnumRequestPassKey)
+ObjectEnumRequest::ObjectEnumRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectEnumRequestPassKey)
 : RequestBase(RequestTypes::objectEnumRequest, sr, versionOnHand)
 , startIndex(sr.Read_uint16())
 , lastIndex(sr.Read_uint16())
@@ -125,7 +125,7 @@ size_t ObjectEnumRequest::GetBinarySize(void) const
 }
 
 /// \copydoc gpcc::cood::RequestBase::ToBinary
-void ObjectEnumRequest::ToBinary(gpcc::Stream::IStreamWriter & sw) const
+void ObjectEnumRequest::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   RequestBase::ToBinary(sw);
 

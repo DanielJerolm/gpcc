@@ -8,33 +8,33 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "RODACLIClientBase.hpp"
-#include "gpcc/src/cli/exceptions.hpp"
-#include "gpcc/src/cli/CLI.hpp"
-#include "gpcc/src/cood/cli/string_conversion.hpp"
-#include "gpcc/src/cood/cli/internal/CAReadArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/CAWriteArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/EnumerateArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/InfoArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/ReadArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/WriteArgsParser.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectInfoRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectInfoResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReadRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReadRequestResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReturnStackItem.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/WriteRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp"
-#include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/time/TimePoint.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
-#include "gpcc/src/Stream/MemStreamReader.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/cood/remote_access/infrastructure/RODACLIClientBase.hpp>
+#include <gpcc/cli/exceptions.hpp>
+#include <gpcc/cli/CLI.hpp>
+#include <gpcc/cood/cli/string_conversion.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReadRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReadRequestResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReturnStackItem.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/WriteRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp>
+#include <gpcc/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/time/TimePoint.hpp>
+#include <gpcc/time/TimeSpan.hpp>
+#include <gpcc/stream/MemStreamReader.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
+#include <gpcc/string/tools.hpp>
+#include "src/cood/cli/internal/CAReadArgsParser.hpp"
+#include "src/cood/cli/internal/CAWriteArgsParser.hpp"
+#include "src/cood/cli/internal/EnumerateArgsParser.hpp"
+#include "src/cood/cli/internal/InfoArgsParser.hpp"
+#include "src/cood/cli/internal/ReadArgsParser.hpp"
+#include "src/cood/cli/internal/WriteArgsParser.hpp"
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -550,9 +550,9 @@ void RODACLIClientBase::CLI_Read(std::string const & restOfLine)
   // ============================================
   // Print to CLI
   // ============================================
-  gpcc::Stream::MemStreamReader msr(spReadResponse->GetData().data(),
+  gpcc::stream::MemStreamReader msr(spReadResponse->GetData().data(),
                                     spReadResponse->GetData().size(),
-                                    gpcc::Stream::IStreamReader::Endian::Little);
+                                    gpcc::stream::IStreamReader::Endian::Little);
 
   auto str = CANopenEncodedDataToString(msr, spReadResponse->GetDataSize(), spSIInfo->GetSubIdxDataType(args.GetSubIndex()));
   msr.Close();
@@ -604,7 +604,7 @@ void RODACLIClientBase::CLI_Write(std::string const & restOfLine)
   // ============================================
   // Analyze args (second part: data)
   // ============================================
-  args.ExtractData(dataType, subIdxMaxSize, gpcc::Stream::IStreamWriter::Endian::Little);
+  args.ExtractData(dataType, subIdxMaxSize, gpcc::stream::IStreamWriter::Endian::Little);
 
   // ============================================
   // write to object
@@ -656,9 +656,9 @@ void RODACLIClientBase::CLI_CARead(std::string const & restOfLine)
   // ============================================
   // Print to CLI
   // ============================================
-  gpcc::Stream::MemStreamReader msr(spReadResponse->GetData().data(),
+  gpcc::stream::MemStreamReader msr(spReadResponse->GetData().data(),
                                     spReadResponse->GetData().size(),
-                                    gpcc::Stream::IStreamReader::Endian::Little);
+                                    gpcc::stream::IStreamReader::Endian::Little);
 
   // extract value of SI0
   uint8_t const si0 = msr.Read_uint8();
@@ -823,7 +823,7 @@ void RODACLIClientBase::CLI_CAWrite(std::string const & restOfLine)
   // allocate memory
   size_t sizeInByte = (sizeInBit + 7U) / 8U;
   std::vector<uint8_t> data(sizeInByte);
-  gpcc::Stream::MemStreamWriter msw(data.data(), sizeInByte, gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(data.data(), sizeInByte, gpcc::stream::MemStreamWriter::Endian::Little);
 
   // ============================================
   // Fill buffer with write data entered by the user

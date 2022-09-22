@@ -8,7 +8,7 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "exceptions.hpp"
+#include <gpcc/cli/exceptions.hpp>
 
 namespace gpcc     {
 namespace cli      {

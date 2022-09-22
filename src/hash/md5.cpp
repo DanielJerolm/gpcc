@@ -18,12 +18,12 @@
  * See https://tools.ietf.org/html/rfc1321 for details.
  */
 
-#include "md5.hpp"
-#include "gpcc/src/Compiler/definitions.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
-#include <cstring>
+#include <gpcc/hash/md5.hpp>
+#include <gpcc/compiler/definitions.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
 #include <stdexcept>
+#include <cstring>
 
 // Table T[i] containing 4294967296 * abs(sin(i)) with i in radians.
 // Values according to RFC1321.
@@ -465,7 +465,7 @@ std::vector<uint8_t> MD5Sum(void const * const pData, size_t const s)
   while (state != States::done);
 
   // build result
-  gpcc::Stream::MemStreamWriter msw(result.data(), result.size(), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(result.data(), result.size(), gpcc::stream::MemStreamWriter::Endian::Little);
   msw.Write_uint32(A);
   msw.Write_uint32(B);
   msw.Write_uint32(C);

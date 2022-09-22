@@ -8,18 +8,18 @@
     Copyright (C) 2019 Daniel Jerolm
 */
 
-#include "ObjectRECORD.hpp"
-#include "IObjectNotifiable.hpp"
-#include "exceptions.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
-#include "gpcc/src/Stream/StreamErrors.hpp"
-#include <cstring>
+#include <gpcc/cood/ObjectRECORD.hpp>
+#include <gpcc/cood/exceptions.hpp>
+#include <gpcc/cood/IObjectNotifiable.hpp>
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
+#include <gpcc/stream/stream_errors.hpp>
 #include <limits>
 #include <stdexcept>
+#include <cstring>
 
 namespace gpcc {
 namespace cood {
@@ -456,7 +456,7 @@ size_t ObjectRECORD::GetSubIdxActualSize(uint8_t const subIdx) const
 /// \copydoc Object::Read
 SDOAbortCode ObjectRECORD::Read(uint8_t const subIdx,
                                 attr_t const permissions,
-                                gpcc::Stream::IStreamWriter & isw) const
+                                gpcc::stream::IStreamWriter & isw) const
 {
   // subindex not existing?
   if (subIdx > SI0)
@@ -534,7 +534,7 @@ SDOAbortCode ObjectRECORD::Read(uint8_t const subIdx,
 /// \copydoc Object::Write
 SDOAbortCode ObjectRECORD::Write(uint8_t const subIdx,
                                  attr_t const permissions,
-                                 gpcc::Stream::IStreamReader & isr)
+                                 gpcc::stream::IStreamReader & isr)
 {
   // subindex not existing?
   if (subIdx > SI0)
@@ -563,13 +563,13 @@ SDOAbortCode ObjectRECORD::Write(uint8_t const subIdx,
     try
     {
       isr.Skip(pSIDescr->nElements);
-      isr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::sevenOrLess);
+      isr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::sevenOrLess);
     }
-    catch (gpcc::Stream::EmptyError const &)
+    catch (gpcc::stream::EmptyError const &)
     {
       return SDOAbortCode::DataTypeMismatchTooSmall;
     }
-    catch (gpcc::Stream::RemainingBitsError const &)
+    catch (gpcc::stream::RemainingBitsError const &)
     {
       return SDOAbortCode::DataTypeMismatchTooLong;
     }
@@ -600,13 +600,13 @@ SDOAbortCode ObjectRECORD::Write(uint8_t const subIdx,
     try
     {
       CANopenEncodedDataToNativeData(isr, pSIDescr->type, pSIDescr->nElements, false, pTempMem);
-      isr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::sevenOrLess);
+      isr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::sevenOrLess);
     }
-    catch (gpcc::Stream::EmptyError const &)
+    catch (gpcc::stream::EmptyError const &)
     {
       return SDOAbortCode::DataTypeMismatchTooSmall;
     }
-    catch (gpcc::Stream::RemainingBitsError const &)
+    catch (gpcc::stream::RemainingBitsError const &)
     {
       return SDOAbortCode::DataTypeMismatchTooLong;
     }
@@ -657,7 +657,7 @@ SDOAbortCode ObjectRECORD::Write(uint8_t const subIdx,
 SDOAbortCode ObjectRECORD::CompleteRead(bool const inclSI0,
                                         bool const SI016Bits,
                                         attr_t const permissions,
-                                        gpcc::Stream::IStreamWriter & isw) const
+                                        gpcc::stream::IStreamWriter & isw) const
 {
   // check permissions for SI0, if SI0 is included
   if ((inclSI0) && ((permissions & attr_ACCESS_RD) == 0U))
@@ -753,8 +753,8 @@ SDOAbortCode ObjectRECORD::CompleteRead(bool const inclSI0,
 SDOAbortCode ObjectRECORD::CompleteWrite(bool const inclSI0,
                                          bool const SI016Bits,
                                          attr_t const permissions,
-                                         gpcc::Stream::IStreamReader & isr,
-                                         gpcc::Stream::IStreamReader::RemainingNbOfBits const ernob)
+                                         gpcc::stream::IStreamReader & isr,
+                                         gpcc::stream::IStreamReader::RemainingNbOfBits const ernob)
 {
   // permission for SI0 must not be checked, because SI0 is always pure read-only in this RECORD object implementation
 
@@ -857,11 +857,11 @@ SDOAbortCode ObjectRECORD::CompleteWrite(bool const inclSI0,
 
     isr.EnsureAllDataConsumed(ernob);
   }
-  catch (gpcc::Stream::EmptyError const &)
+  catch (gpcc::stream::EmptyError const &)
   {
     return SDOAbortCode::DataTypeMismatchTooSmall;
   }
-  catch (gpcc::Stream::RemainingBitsError const &)
+  catch (gpcc::stream::RemainingBitsError const &)
   {
     return SDOAbortCode::DataTypeMismatchTooLong;
   }

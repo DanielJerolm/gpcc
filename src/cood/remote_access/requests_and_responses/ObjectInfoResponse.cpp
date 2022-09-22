@@ -8,10 +8,10 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "ObjectInfoResponse.hpp"
-#include "gpcc/src/cood/exceptions.hpp"
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoResponse.hpp>
+#include <gpcc/cood/exceptions.hpp>
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
 #include <limits>
 #include <sstream>
 #include <stdexcept>
@@ -192,7 +192,7 @@ ObjectInfoResponse::ObjectInfoResponse(Object const & obj,
 
 /**
  * \brief Constructor. Creates a @ref ObjectInfoResponse object from data read from an
- *        [IStreamReader](@ref gpcc::Stream::IStreamReader) containing a serialized @ref ObjectInfoResponse object.
+ *        [IStreamReader](@ref gpcc::stream::IStreamReader) containing a serialized @ref ObjectInfoResponse object.
  *
  * This is intended to be invoked by @ref ResponseBase::FromBinary() only. In conjunction with
  * @ref ResponseBase::FromBinary(), this is the counterpart to @ref ResponseBase::ToBinary().
@@ -219,7 +219,7 @@ ObjectInfoResponse::ObjectInfoResponse(Object const & obj,
  * \param versionOnHand
  * Version of serialized object read from `sr`.
  */
-ObjectInfoResponse::ObjectInfoResponse(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectInfoResponsePassKey)
+ObjectInfoResponse::ObjectInfoResponse(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectInfoResponsePassKey)
 : ResponseBase(ResponseTypes::objectInfoResponse, sr, versionOnHand)
 , result(SDOAbortCode::GeneralError)
 , inclusiveNames(false)
@@ -331,7 +331,7 @@ size_t ObjectInfoResponse::GetBinarySize(void) const
 }
 
 /// \copydoc gpcc::cood::ResponseBase::ToBinary
-void ObjectInfoResponse::ToBinary(gpcc::Stream::IStreamWriter & sw) const
+void ObjectInfoResponse::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   ResponseBase::ToBinary(sw);
 
@@ -1332,7 +1332,7 @@ ObjectInfoResponse::SubindexDescr::SubindexDescr(Object const & obj,
  * \param sr
  * Interface for reading binary data.
  */
-ObjectInfoResponse::SubindexDescr::SubindexDescr(gpcc::Stream::IStreamReader & sr)
+ObjectInfoResponse::SubindexDescr::SubindexDescr(gpcc::stream::IStreamReader & sr)
 : empty(false)
 , inclName(false)
 , inclASM(false)
@@ -1441,7 +1441,7 @@ size_t ObjectInfoResponse::SubindexDescr::GetBinarySize(void) const
 /**
  * \brief Writes a binary representation of the object into a stream.
  *
- * The counterpart of this is @ref SubindexDescr(gpcc::Stream::IStreamReader & sr).
+ * The counterpart of this is @ref SubindexDescr(gpcc::stream::IStreamReader & sr).
  *
  * @ref GetBinarySize() may be used to determine the size of the written binary data in advance.
  *
@@ -1465,7 +1465,7 @@ size_t ObjectInfoResponse::SubindexDescr::GetBinarySize(void) const
  * \param sw
  * The binary data is written into the referenced stream.
  */
-void ObjectInfoResponse::SubindexDescr::ToBinary(gpcc::Stream::IStreamWriter & sw) const
+void ObjectInfoResponse::SubindexDescr::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   sw.Write_bool(empty);
 

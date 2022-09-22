@@ -10,11 +10,12 @@
 
 #ifdef OS_LINUX_ARM_TFC
 
-#include "Mutex.hpp"
-#include "Panic.hpp"
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
 #include "internal/TFCCore.hpp"
+#include "internal/UnmanagedConditionVariable.hpp"
 #include "internal/UnmanagedMutexLocker.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
 #include <pthread.h>
 
 namespace gpcc {
@@ -37,7 +38,7 @@ Mutex::Mutex(void)
 , thread_id()
 , nbOfblockedThreads(0)
 , blockedThreadIsGoingToWakeUp(false)
-, unlockedCV()
+, spUnlockedCV(std::make_unique<internal::UnmanagedConditionVariable>())
 {
 }
 
@@ -208,7 +209,7 @@ void Mutex::InternalLock(void)
     };
 
     while (locked)
-      unlockedCV.Wait(pTFCCore->GetBigLock());
+      spUnlockedCV->Wait(pTFCCore->GetBigLock());
 
     blockedThreadIsGoingToWakeUp = false;
   }
@@ -254,7 +255,7 @@ void Mutex::InternalUnlock(void)
   if (pthread_equal(thread_id, pthread_self()) == 0)
     Panic("Mutex::InternalUnlock: The calling thread is not the one which has locked the mutex");
 
-  unlockedCV.Signal();
+  spUnlockedCV->Signal();
   locked = false;
   if (nbOfblockedThreads != 0)
   {

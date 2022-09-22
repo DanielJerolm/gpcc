@@ -10,8 +10,8 @@
 
 #ifdef OS_LINUX_ARM_TFC
 
-#include "clock.hpp"
-#include "gpcc/src/osal/os/linux_arm_tfc/internal/TFCCore.hpp"
+#include <gpcc/time/clock.hpp>
+#include "src/osal/os/linux_arm_tfc/internal/TFCCore.hpp"
 
 namespace gpcc {
 namespace time {

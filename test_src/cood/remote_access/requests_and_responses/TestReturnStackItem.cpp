@@ -8,10 +8,10 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReturnStackItem.hpp"
-#include "gpcc/src/Stream/MemStreamReader.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ReturnStackItem.hpp>
+#include <gpcc/stream/MemStreamReader.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
+#include <gpcc/string/tools.hpp>
 #include "gtest/gtest.h"
 
 namespace gpcc_tests {
@@ -112,7 +112,7 @@ TEST(gpcc_cood_ReturnStackItem_Tests, SerializeAndDeserialize)
 
   // serialize
   uint8_t storage[64U];
-  gpcc::Stream::MemStreamWriter msw(storage, sizeof(storage), gpcc::Stream::IStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(storage, sizeof(storage), gpcc::stream::IStreamWriter::Endian::Little);
 
   uut.ToBinary(msw);
   ASSERT_EQ(msw.RemainingCapacity(), sizeof(storage) - ReturnStackItem::binarySize) << "Unexpected number of bytes written";
@@ -123,7 +123,7 @@ TEST(gpcc_cood_ReturnStackItem_Tests, SerializeAndDeserialize)
   EXPECT_EQ(uut.GetInfo(), 2U);
 
   // deserialize
-  gpcc::Stream::MemStreamReader msr(storage, ReturnStackItem::binarySize, gpcc::Stream::IStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(storage, ReturnStackItem::binarySize, gpcc::stream::IStreamReader::Endian::Little);
 
   ReturnStackItem uut2(msr);
 

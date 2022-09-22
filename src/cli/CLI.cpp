@@ -8,17 +8,19 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "CLI.hpp"
-#include "CLIColors.hpp"
-#include "ICLINotifiable.hpp"
-#include "ITerminal.hpp"
-#include "exceptions.hpp"
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/string/levenshtein_distance.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/cli/CLI.hpp>
+#include <gpcc/cli/CLIColors.hpp>
+#include <gpcc/cli/exceptions.hpp>
+#include <gpcc/cli/ICLINotifiable.hpp>
+#include <gpcc/cli/ITerminal.hpp>
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/string/levenshtein_distance.hpp>
+#include <gpcc/string/tools.hpp>
+#include "internal/ReturnKeyFilter.hpp"
+#include "internal/TerminalRxParser.hpp"
 #include <exception>
 #include <cstdio>
 #include <cstring>
@@ -79,8 +81,8 @@ CLI::CLI(ITerminal& _terminal,
 , terminalWidth(_terminalWidth)
 , historyDepth(_historyDepth)
 , thread(pThreadName)
-, rxParser()
-, returnKeyFilter()
+, spRxParser(std::make_unique<internal::TerminalRxParser>())
+, spReturnKeyFilter(std::make_unique<internal::ReturnKeyFilter>())
 , history()
 , cmdMutex()
 , pCurrExecCmd(nullptr)
@@ -503,7 +505,7 @@ void CLI::SetLineHead(std::string const & newConsoleLineHead)
  *
  * This method can be used as an alternative if otherwise multiple `std::string` objects had to be concatenated:
  * ~~~{.cpp}
- * #include "gpcc/src/cli/CLIColors.hpp"
+ * #include <gpcc/cli/CLIColors.hpp>
  * #include <string>
  *
  * // [...]
@@ -1345,7 +1347,7 @@ void CLI::EnterLine(bool const useHistory, std::string const & lineHead)
   // - Stop of CLI is requested
   // ------------------------------------------------------------------------------------------
   terminal.Flush();
-  rxParser.Clear();
+  spRxParser->Clear();
   char c = 0;
   while (true)
   {
@@ -1367,11 +1369,11 @@ void CLI::EnterLine(bool const useHistory, std::string const & lineHead)
     }
 
     // pass received or re-inserted byte to the VT100 parser
-    auto const result = rxParser.Input(c);
+    auto const result = spRxParser->Input(c);
     c = 0;
 
     // check if RETURN-key has been pressed
-    bool const returnKey = returnKeyFilter.Filter(result);
+    bool const returnKey = spReturnKeyFilter->Filter(result);
 
     terminalMutexLocker.Relock();
     cmdMutexLocker.Relock();
@@ -1572,8 +1574,8 @@ void CLI::EnterLine(bool const useHistory, std::string const & lineHead)
       case TerminalRxParser::Result::NoCommand:
       {
         // fetch stuff from rx parser
-        rxParser.RemoveNonPrintableCharacters();
-        char const * const newChars = rxParser.Output(maxInputLength - inputBuffer.length());
+        spRxParser->RemoveNonPrintableCharacters();
+        char const * const newChars = spRxParser->Output(maxInputLength - inputBuffer.length());
         size_t nbOfNewChars = strlen(newChars);
 
         if (nbOfNewChars != 0)
@@ -1613,7 +1615,7 @@ void CLI::EnterLine(bool const useHistory, std::string const & lineHead)
     } // switch (Result)
 
     if (result != TerminalRxParser::Result::NeedMoreData)
-      rxParser.Clear();
+      spRxParser->Clear();
 
     if (returnKey)
     {

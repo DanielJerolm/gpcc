@@ -11,8 +11,8 @@
 #ifndef DWQWITHTHREAD_HPP_202105190841
 #define DWQWITHTHREAD_HPP_202105190841
 
-#include "gpcc/src/execution/async/DeferredWorkQueue.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/execution/async/DeferredWorkQueue.hpp>
+#include <gpcc/osal/Thread.hpp>
 #include <string>
 
 namespace gpcc_tests {

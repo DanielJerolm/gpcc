@@ -8,7 +8,7 @@
     Copyright (C) 2019 Daniel Jerolm
 */
 
-#include "CLIAdapterForCANOpen.hpp"
+#include <gpcc/cood/cli/CLIAdapterForCANOpen.hpp>
 
 namespace gpcc {
 namespace cood {

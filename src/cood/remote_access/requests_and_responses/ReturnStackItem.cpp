@@ -8,9 +8,9 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "ReturnStackItem.hpp"
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ReturnStackItem.hpp>
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
 
 namespace gpcc {
 namespace cood {
@@ -47,7 +47,7 @@ ReturnStackItem::ReturnStackItem(uint32_t const _id, uint32_t const _info) noexc
 
 /**
  * \brief Constructor. Creates a @ref ReturnStackItem object from data read from an
- *        [IStreamReader](@ref gpcc::Stream::IStreamReader) containing a serialized @ref ReturnStackItem object.
+ *        [IStreamReader](@ref gpcc::stream::IStreamReader) containing a serialized @ref ReturnStackItem object.
  *
  * This is the counterpart of @ref ToBinary().
  *
@@ -66,7 +66,7 @@ ReturnStackItem::ReturnStackItem(uint32_t const _id, uint32_t const _info) noexc
  * \param sr
  * Stream from which the data shall be read.
  */
-ReturnStackItem::ReturnStackItem(gpcc::Stream::IStreamReader & sr)
+ReturnStackItem::ReturnStackItem(gpcc::stream::IStreamReader & sr)
 : id(sr.Read_uint32())
 , info(sr.Read_uint32())
 {
@@ -74,9 +74,9 @@ ReturnStackItem::ReturnStackItem(gpcc::Stream::IStreamReader & sr)
 
 /**
  * \brief Writes a binary representation of the object into a stream, which can be deserialized via
- *        @ref ReturnStackItem(gpcc::Stream::IStreamReader & sr).
+ *        @ref ReturnStackItem(gpcc::stream::IStreamReader & sr).
  *
- * The counterpart of this is @ref ReturnStackItem(gpcc::Stream::IStreamReader & sr).
+ * The counterpart of this is @ref ReturnStackItem(gpcc::stream::IStreamReader & sr).
  *
  * @ref binarySize number of bytes will be written.
  *
@@ -98,7 +98,7 @@ ReturnStackItem::ReturnStackItem(gpcc::Stream::IStreamReader & sr)
  * \param sw
  * The binary data is written into the referenced stream.
  */
-void ReturnStackItem::ToBinary(gpcc::Stream::IStreamWriter & sw) const
+void ReturnStackItem::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   sw.Write_uint32(id);
   sw.Write_uint32(info);

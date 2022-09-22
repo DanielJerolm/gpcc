@@ -14,9 +14,9 @@
 #ifndef SKIP_TFC_BASED_TESTS
 
 #include "TestIRODA.hpp"
-#include "gpcc/src/cood/Object.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp"
+#include <gpcc/cood/Object.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp>
 
 namespace gpcc_tests {
 namespace cood       {

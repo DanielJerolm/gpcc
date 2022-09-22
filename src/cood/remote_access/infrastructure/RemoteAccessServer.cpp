@@ -8,29 +8,29 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "RemoteAccessServer.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectInfoRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectInfoResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/PingRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/PingResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReadRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReadRequestResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/RequestBase.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ResponseBase.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/WriteRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp"
-#include "gpcc/src/cood/remote_access/roda_itf/exceptions.hpp"
-#include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiable.hpp"
-#include "gpcc/src/cood/IObjectAccess.hpp"
-#include "gpcc/src/cood/Object.hpp"
-#include "gpcc/src/log/Logger.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/Stream/MemStreamReader.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
+#include <gpcc/cood/remote_access/infrastructure/RemoteAccessServer.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/PingRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/PingResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReadRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReadRequestResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/RequestBase.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ResponseBase.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/WriteRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp>
+#include <gpcc/cood/remote_access/roda_itf/exceptions.hpp>
+#include <gpcc/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiable.hpp>
+#include <gpcc/cood/IObjectAccess.hpp>
+#include <gpcc/cood/Object.hpp>
+#include <gpcc/log/Logger.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/stream/MemStreamReader.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
 #include <exception>
 #include <stdexcept>
 
@@ -976,9 +976,9 @@ void RemoteAccessServer::ServeReadRequest(ReadRequest & request)
         {
           // create a container for the data and a MemStreamWriter
           std::vector<uint8_t> data(sizeInByte);
-          gpcc::Stream::MemStreamWriter msw(data.data(),
+          gpcc::stream::MemStreamWriter msw(data.data(),
                                             data.size(),
-                                            gpcc::Stream::MemStreamWriter::Endian::Little);
+                                            gpcc::stream::MemStreamWriter::Endian::Little);
 
           // do the actual read
           SDOAbortCode result;
@@ -1063,9 +1063,9 @@ void RemoteAccessServer::ServeWriteRequest(WriteRequest & request)
     auto spObject = od.GetObject(request.GetIndex());
     if (spObject)
     {
-      gpcc::Stream::MemStreamReader msr(request.GetData().data(),
+      gpcc::stream::MemStreamReader msr(request.GetData().data(),
                                         request.GetData().size(),
-                                        gpcc::Stream::MemStreamReader::Endian::Little);
+                                        gpcc::stream::MemStreamReader::Endian::Little);
 
       bool const completeAccess = (request.GetAccessType() != WriteRequest::AccessType::singleSubindex);
 
@@ -1083,7 +1083,7 @@ void RemoteAccessServer::ServeWriteRequest(WriteRequest & request)
         bool const si0_16bit = (request.GetAccessType() == WriteRequest::AccessType::completeAccess_SI0_16bit);
 
         result = spObject->CompleteWrite(inclSI0, si0_16bit, request.GetPermissions(),
-                                         msr, gpcc::Stream::IStreamReader::RemainingNbOfBits::sevenOrLess);
+                                         msr, gpcc::stream::IStreamReader::RemainingNbOfBits::sevenOrLess);
       }
 
       spResponse->SetResult(result);

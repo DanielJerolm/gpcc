@@ -11,13 +11,13 @@
 #ifndef SKIP_TFC_BASED_TESTS
 
 #include "TestbenchMultiplexer.hpp"
-#include "gpcc/src/cood/remote_access/infrastructure/Multiplexer.hpp"
-#include "gpcc/src/cood/remote_access/infrastructure/ThreadBasedRemoteAccessServer.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReturnStackItem.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/cood/remote_access/infrastructure/Multiplexer.hpp>
+#include <gpcc/cood/remote_access/infrastructure/ThreadBasedRemoteAccessServer.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReturnStackItem.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/osal/Thread.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/string/tools.hpp>
 #include <algorithm>
 #include <stdexcept>
 

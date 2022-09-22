@@ -8,11 +8,11 @@
     Copyright (C) 2018 Daniel Jerolm
 */
 
-#include "gpcc/src/cood/ObjectDictionary.hpp"
-#include "gpcc/src/cood/ObjectPtr.hpp"
-#include "gpcc/src/cood/ObjectVAR.hpp"
-#include <memory>
+#include <gpcc/cood/ObjectDictionary.hpp>
+#include <gpcc/cood/ObjectPtr.hpp>
+#include <gpcc/cood/ObjectVAR.hpp>
 #include "gtest/gtest.h"
+#include <memory>
 
 namespace gpcc_tests {
 namespace cood       {

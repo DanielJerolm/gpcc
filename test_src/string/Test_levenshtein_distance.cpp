@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/string/levenshtein_distance.hpp"
+#include <gpcc/string/levenshtein_distance.hpp>
 #include "gtest/gtest.h"
 
 namespace gpcc_tests {

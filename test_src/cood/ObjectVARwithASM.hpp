@@ -11,7 +11,7 @@
 #ifndef OBJECTVARWITHASM_HPP_202103212106
 #define OBJECTVARWITHASM_HPP_202103212106
 
-#include "gpcc/src/cood/ObjectVAR.hpp"
+#include <gpcc/cood/ObjectVAR.hpp>
 #include <vector>
 #include <cstdint>
 

@@ -8,12 +8,12 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "commands.hpp"
-#include "gpcc/src/cli/CLI.hpp"
-#include "gpcc/src/file_systems/IFileStorage.hpp"
-#include "gpcc/src/log/logfacilities/ILogFacilityCtrl.hpp"
-#include "gpcc/src/log/log_tools.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/log/cli/commands.hpp>
+#include <gpcc/cli/CLI.hpp>
+#include <gpcc/file_systems/IFileStorage.hpp>
+#include <gpcc/log/logfacilities/ILogFacilityCtrl.hpp>
+#include <gpcc/log/log_tools.hpp>
+#include <gpcc/string/tools.hpp>
 #include <algorithm>
 #include <stdexcept>
 
@@ -487,7 +487,7 @@ void CLI_Cmd_LogCtrl(std::string const & restOfLine, gpcc::cli::CLI & cli, ILogF
  * This is thread-safe.
  *
  * __Exception safety:__\n
- * Strong guarantee, if [EEPROMSectionSystem](@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem) is
+ * Strong guarantee, if [EEPROMSectionSystem](@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem) is
  * the underlying file system implementation.\n
  * Basic guarantee for other file system implementations:\n
  * - An incomplete file may be created
@@ -620,7 +620,7 @@ void CLI_Cmd_ReadConfigFromFile(std::string const & restOfLine, gpcc::cli::CLI &
  * This is thread-safe.
  *
  * __Exception safety:__\n
- * Strong guarantee, if [EEPROMSectionSystem](@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem) is
+ * Strong guarantee, if [EEPROMSectionSystem](@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem) is
  * the underlying file system implementation.\n
  * Basic guarantee for other file system implementations:\n
  * - An incomplete file may be created

@@ -8,10 +8,10 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "ThreadBasedRemoteAccessServer.hpp"
-#include "gpcc/src/log/Logger.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
+#include <gpcc/cood/remote_access/infrastructure/ThreadBasedRemoteAccessServer.hpp>
+#include <gpcc/log/Logger.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include <functional>
 #include <stdexcept>
 

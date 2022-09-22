@@ -8,9 +8,9 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/execution/async/DeferredWorkPackage.hpp"
-#include "gpcc/src/time/TimePoint.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <gpcc/execution/async/DeferredWorkPackage.hpp>
+#include <gpcc/time/TimePoint.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 #include "gtest/gtest.h"
 
 namespace gpcc_tests {

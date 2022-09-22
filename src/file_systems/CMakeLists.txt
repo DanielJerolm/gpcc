@@ -3,14 +3,14 @@
 # -------------------------------------
 target_sources(${PROJECT_NAME}
                PRIVATE
-               CLI/ISFCLICommands.cpp
-               EEPROMSectionSystem/CLI/ESSCLICommands.cpp
-               EEPROMSectionSystem/EEPROMSectionSystem.cpp
-               EEPROMSectionSystem/internal/BlockAccessor.cpp
-               EEPROMSectionSystem/internal/EEPROMSectionSystemInternals.cpp
-               EEPROMSectionSystem/internal/FreeBlockListBackup.cpp
-               EEPROMSectionSystem/internal/SectionReader.cpp
-               EEPROMSectionSystem/internal/SectionWriter.cpp
+               cli/IFSCLICommands.cpp
+               eeprom_section_system/cli/ESSCLICommands.cpp
+               eeprom_section_system/EEPROMSectionSystem.cpp
+               eeprom_section_system/internal/BlockAccessor.cpp
+               eeprom_section_system/internal/EEPROMSectionSystemInternals.cpp
+               eeprom_section_system/internal/FreeBlockListBackup.cpp
+               eeprom_section_system/internal/SectionReader.cpp
+               eeprom_section_system/internal/SectionWriter.cpp
               )
 
 if((${GPCC_OS} STREQUAL "linux_arm") OR

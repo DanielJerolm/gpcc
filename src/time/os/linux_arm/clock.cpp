@@ -10,7 +10,7 @@
 
 #ifdef OS_LINUX_ARM
 
-#include "clock.hpp"
+#include <gpcc/time/clock.hpp>
 #include <system_error>
 #include <cerrno>
 

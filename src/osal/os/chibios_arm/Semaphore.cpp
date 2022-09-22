@@ -10,8 +10,8 @@
 
 #ifdef OS_CHIBIOS_ARM
 
-#include "Semaphore.hpp"
-#include "Panic.hpp"
+#include <gpcc/osal/Semaphore.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include <stdexcept>
 
 namespace gpcc {

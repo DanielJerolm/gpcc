@@ -8,7 +8,7 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "ObjectRECORD_wicb.hpp"
+#include <gpcc/cood/ObjectRECORD_wicb.hpp>
 
 namespace gpcc {
 namespace cood {

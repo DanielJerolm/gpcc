@@ -8,23 +8,22 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "gpcc/src/cood/remote_access/infrastructure/Multiplexer.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/PingRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/PingResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp"
-#include "gpcc/src/cood/remote_access/roda_itf/exceptions.hpp"
-#include "gpcc/src/cood/sdo_abort_codes.hpp"
-#include "gpcc/src/execution/async/DeferredWorkPackage.hpp"
-#include "gpcc/src/execution/async/WorkPackage.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/test_src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessMock.hpp"
-#include "gpcc/test_src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiableMock.hpp"
-#include "gpcc/test_src/execution/async/DWQwithThread.hpp"
-
+#include <gpcc/cood/remote_access/infrastructure/Multiplexer.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/PingRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/PingResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp>
+#include <gpcc/cood/remote_access/roda_itf/exceptions.hpp>
+#include <gpcc/cood/sdo_abort_codes.hpp>
+#include <gpcc/execution/async/DeferredWorkPackage.hpp>
+#include <gpcc/execution/async/WorkPackage.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/osal/Thread.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include "test_src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessMock.hpp"
+#include "test_src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiableMock.hpp"
+#include "test_src/execution/async/DWQwithThread.hpp"
 #include "gtest/gtest.h"
 #include <memory>
 #include <stdexcept>

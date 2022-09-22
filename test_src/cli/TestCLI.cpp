@@ -8,17 +8,17 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/cli/CLI.hpp"
-#include "gpcc/src/cli/Command.hpp"
-#include "gpcc/src/cli/exceptions.hpp"
-#include "gpcc/src/osal/ConditionVariable.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/time/TimePoint.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
-#include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"
+#include <gpcc/cli/CLI.hpp>
+#include <gpcc/cli/Command.hpp>
+#include <gpcc/cli/exceptions.hpp>
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/ConditionVariable.hpp>
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/Thread.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/time/TimePoint.hpp>
+#include <gpcc/time/TimeSpan.hpp>
+#include "test_src/fakes/cli/FakeTerminal.hpp"
 #include "gtest/gtest.h"
 #include <stdexcept>
 

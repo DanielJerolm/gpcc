@@ -8,15 +8,15 @@
     Copyright (C) 2019 Daniel Jerolm
 */
 
-#include "gpcc/src/container/IntrusiveDList.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/container/IntrusiveDList.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
 #include "gtest/gtest.h"
-#include <cstdint>
 #include <list>
 #include <memory>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 namespace gpcc_tests {
 namespace container  {

@@ -12,7 +12,7 @@
 #define STRINGLOGMESSAGETS_HPP_201701061519
 
 #include "LogMessage.hpp"
-#include "gpcc/src/time/TimePoint.hpp"
+#include <gpcc/time/TimePoint.hpp>
 
 namespace gpcc     {
 namespace log      {

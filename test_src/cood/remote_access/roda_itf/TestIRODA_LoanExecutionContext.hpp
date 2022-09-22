@@ -14,11 +14,11 @@
 #ifndef SKIP_TFC_BASED_TESTS
 
 #include "TestIRODA.hpp"
-#include "gpcc/src/cood/Object.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/WriteRequest.hpp"
-#include "gpcc/src/cood/remote_access/roda_itf/exceptions.hpp"
-#include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/cood/Object.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/WriteRequest.hpp>
+#include <gpcc/cood/remote_access/roda_itf/exceptions.hpp>
+#include <gpcc/osal/Thread.hpp>
+#include <gpcc/raii/scope_guard.hpp>
 
 namespace gpcc_tests {
 namespace cood       {

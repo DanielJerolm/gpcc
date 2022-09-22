@@ -569,7 +569,7 @@
  * - The interface shall offer the _functionality_ offered by the hardware only.\n
  *   If a driver requires specific settings, initialization, startup sequences or whatever, then these stuff should be
  *   part of the derived class (= the driver's implementation) only.
- * - Example for an interface for an I2C Master IP: @ref gpcc::StdIf::II2C_Master_Driver
+ * - Example for an interface for an I2C Master IP: @ref gpcc::stdif::II2C_Master
  *
  * ### Hardware Fake Design
  * - The hardware driver interface must follow the recommendations given above in chapter "Interface for Hardware

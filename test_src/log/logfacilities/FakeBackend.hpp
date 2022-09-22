@@ -11,8 +11,8 @@
 #ifndef FAKEBACKEND_HPP_201701061552
 #define FAKEBACKEND_HPP_201701061552
 
-#include "gpcc/src/log/backends/Backend.hpp"
-#include "gpcc/src/log/log_levels.hpp"
+#include <gpcc/log/backends/Backend.hpp>
+#include <gpcc/log/log_levels.hpp>
 #include <string>
 #include <vector>
 #include <cstdint>

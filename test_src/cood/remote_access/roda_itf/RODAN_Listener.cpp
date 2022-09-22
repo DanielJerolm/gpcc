@@ -9,15 +9,15 @@
 */
 
 #include "RODAN_Listener.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ResponseBase.hpp"
-#include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp"
-#include "gpcc/src/log/Logger.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/time/TimePoint.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ResponseBase.hpp>
+#include <gpcc/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp>
+#include <gpcc/log/Logger.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/osal/Thread.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/time/TimePoint.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 #include <stdexcept>
 
 namespace gpcc_tests {

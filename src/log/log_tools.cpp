@@ -8,10 +8,10 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "log_tools.hpp"
-#include "gpcc/src/file_systems/IFileStorage.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/log/log_tools.hpp>
+#include <gpcc/file_systems/IFileStorage.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/string/tools.hpp>
 #include <stdexcept>
 #include <cstdint>
 
@@ -36,7 +36,7 @@ namespace log  {
  * This is thread-safe.
  *
  * __Exception safety:__\n
- * Strong guarantee, if [EEPROMSectionSystem](@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem) is
+ * Strong guarantee, if [EEPROMSectionSystem](@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem) is
  * the underlying file system implementation.\n
  * Basic guarantee for other file system implementations:\n
  * - An incomplete file may be created
@@ -137,7 +137,7 @@ std::vector<ILogFacilityCtrl::tLogSrcConfig> ReadLogSrcConfigFromFile(file_syste
   }
 
   // cross-check: file must be empty after loading all items
-  if (f->GetState() != gpcc::Stream::IStreamReader::States::empty)
+  if (f->GetState() != gpcc::stream::IStreamReader::States::empty)
     throw std::runtime_error("Inconsistent file content");
 
   // close file
@@ -173,7 +173,7 @@ std::vector<ILogFacilityCtrl::tLogSrcConfig> ReadLogSrcConfigFromFile(file_syste
  * This is thread-safe.
  *
  * __Exception safety:__\n
- * Strong guarantee, if [EEPROMSectionSystem](@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem) is
+ * Strong guarantee, if [EEPROMSectionSystem](@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem) is
  * the underlying file system implementation.\n
  * Basic guarantee for other file system implementations:\n
  * - An incomplete file may be created
@@ -278,7 +278,7 @@ std::vector<ILogFacilityCtrl::tLogSrcConfig> ReadLogSrcConfigFromTextFile(file_s
   ON_SCOPE_EXIT(closeFile) { try { f->Close(); } catch (std::exception const &) { /* intentionally empty */ } };
 
   // loop and read lines from file until EOF
-  while (f->GetState() != gpcc::Stream::IStreamReader::States::empty)
+  while (f->GetState() != gpcc::stream::IStreamReader::States::empty)
   {
     std::string line = f->Read_line();
 

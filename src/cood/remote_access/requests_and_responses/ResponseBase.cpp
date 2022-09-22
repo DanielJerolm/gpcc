@@ -8,15 +8,15 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "ResponseBase.hpp"
-#include "ObjectEnumResponse.hpp"
-#include "ObjectInfoResponse.hpp"
-#include "PingResponse.hpp"
-#include "ReadRequestResponse.hpp"
-#include "WriteRequestResponse.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ResponseBase.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/PingResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReadRequestResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
 #include <stdexcept>
 
 namespace gpcc {
@@ -83,7 +83,7 @@ ResponseBase::~ResponseBase(void)
  * \return
  * Instance of a sub-class of class @ref ResponseBase, created from information consumed from `sr`.
  */
-std::unique_ptr<ResponseBase> ResponseBase::FromBinary(gpcc::Stream::IStreamReader & sr)
+std::unique_ptr<ResponseBase> ResponseBase::FromBinary(gpcc::stream::IStreamReader & sr)
 {
   // check version
   auto const _version = sr.Read_uint8();
@@ -179,7 +179,7 @@ size_t ResponseBase::GetBinarySize(void) const
  * \param sw
  * The binary data is written into the referenced stream.
  */
-void ResponseBase::ToBinary(gpcc::Stream::IStreamWriter & sw) const
+void ResponseBase::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   // to be read by FromBinary()
   sw.Write_uint8(version);
@@ -334,7 +334,7 @@ ResponseBase::ResponseBase(ResponseTypes const _type)
 
 /**
  * \brief Constructor. Creates a @ref ResponseBase object from data read from an
- *        [IStreamReader](@ref gpcc::Stream::IStreamReader) containing a serialized @ref ResponseBase object.
+ *        [IStreamReader](@ref gpcc::stream::IStreamReader) containing a serialized @ref ResponseBase object.
  *
  * - - -
  *
@@ -359,7 +359,7 @@ ResponseBase::ResponseBase(ResponseTypes const _type)
  * \param versionOnHand
  * Version of serialized object read from `sr`.
  */
-ResponseBase::ResponseBase(ResponseTypes const _type, gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand)
+ResponseBase::ResponseBase(ResponseTypes const _type, gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand)
 : type(_type)
 , pPrevInIntrusiveDList(nullptr)
 , pNextInIntrusiveDList(nullptr)

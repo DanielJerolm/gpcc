@@ -10,8 +10,8 @@
 
 #if (defined(OS_CHIBIOS_ARM) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC))
 
-#include "ThreadRegistry.hpp"
-#include "../Thread.hpp"
+#include <gpcc/osal/ThreadRegistry.hpp>
+#include <gpcc/osal/Thread.hpp>
 #include <cstring>
 
 namespace gpcc {

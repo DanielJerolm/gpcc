@@ -9,11 +9,11 @@
 */
 
 #include "InfoArgsParser.hpp"
-#include "gpcc/src/cli/exceptions.hpp"
-#include "gpcc/src/cood/cli/string_conversion.hpp"
-#include "gpcc/src/string/tools.hpp"
-#include <stdexcept>
+#include <gpcc/cli/exceptions.hpp>
+#include <gpcc/cood/cli/string_conversion.hpp>
+#include <gpcc/string/tools.hpp>
 #include <exception>
+#include <stdexcept>
 
 namespace gpcc      {
 namespace cood      {

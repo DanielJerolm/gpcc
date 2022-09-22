@@ -11,7 +11,7 @@
 #ifndef OBJECTVAR_WICB_WITHASM_HPP_202110012059
 #define OBJECTVAR_WICB_WITHASM_HPP_202110012059
 
-#include "gpcc/src/cood/ObjectVAR_wicb.hpp"
+#include <gpcc/cood/ObjectVAR_wicb.hpp>
 #include <vector>
 #include <cstdint>
 

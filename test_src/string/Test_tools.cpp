@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/string/tools.hpp>
 #include "gtest/gtest.h"
 
 namespace {
@@ -1610,6 +1610,54 @@ TEST(gpcc_string_tools_Tests, DecimalToI32)
   ASSERT_THROW(DecimalToI32("2147483648"),  std::out_of_range);
   ASSERT_THROW(DecimalToI32("-2147483649"), std::out_of_range);
 }
+TEST(gpcc_string_tools_Tests, AnyNumberToU8)
+{
+  ASSERT_EQ(12,  AnyNumberToU8("0xC"));
+  ASSERT_EQ(12,  AnyNumberToU8("0xc"));
+  ASSERT_EQ(254, AnyNumberToU8("0xFE"));
+  ASSERT_EQ(255, AnyNumberToU8("0xFF"));
+  ASSERT_EQ(33,  AnyNumberToU8("0x21"));
+  ASSERT_EQ(33,  AnyNumberToU8("0x000021"));
+
+  ASSERT_THROW(AnyNumberToU8(" 0xC"),   std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU8("0xC "),   std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU8("0xABZ"),  std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU8("0xAZ") ,  std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU8("0x100"),  std::out_of_range);
+  ASSERT_THROW(AnyNumberToU8("0X11"),   std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU8(""),       std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU8("0x"),     std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU8("0b"),     std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU8("0x0xFF"), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU8("0b0b10"), std::invalid_argument);
+
+  ASSERT_EQ(12,  AnyNumberToU8("0b1100"));
+  ASSERT_EQ(12,  AnyNumberToU8("0b00001100"));
+  ASSERT_EQ(12,  AnyNumberToU8("0b000000001100"));
+
+  ASSERT_THROW(AnyNumberToU8(" 0b1100"), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU8("0b1100 "), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU8("0b1102"), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU8("0b111001100"), std::out_of_range);
+  ASSERT_THROW(AnyNumberToU8("0B1101"), std::invalid_argument);
+
+  ASSERT_THROW(AnyNumberToU8("-1"), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU8("-0"), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU8("-0x0"), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU8("-0b0"), std::invalid_argument);
+
+  ASSERT_THROW(AnyNumberToU8("'a'"), std::invalid_argument);
+
+  ASSERT_EQ(0,   AnyNumberToU8("0"));
+  ASSERT_EQ(0,   AnyNumberToU8("000"));
+  ASSERT_EQ(1,   AnyNumberToU8("1"));
+  ASSERT_EQ(255, AnyNumberToU8("255"));
+
+  ASSERT_THROW(AnyNumberToU8(" 5"), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU8("5 "), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU8("256"), std::out_of_range);
+  ASSERT_THROW(AnyNumberToU8("55B"), std::invalid_argument);
+}
 TEST(gpcc_string_tools_Tests, AnyStringToU8)
 {
   ASSERT_EQ(12,  AnyStringToU8("0xC"));
@@ -1645,6 +1693,9 @@ TEST(gpcc_string_tools_Tests, AnyStringToU8)
   ASSERT_THROW(AnyStringToU8("-0"), std::invalid_argument);
   ASSERT_THROW(AnyStringToU8("-0x0"), std::invalid_argument);
   ASSERT_THROW(AnyStringToU8("-0b0"), std::invalid_argument);
+
+  ASSERT_EQ(97,  AnyStringToU8("'a'"));
+  ASSERT_EQ(39,  AnyStringToU8("'''"));
 
   ASSERT_EQ(0,   AnyStringToU8("0"));
   ASSERT_EQ(0,   AnyStringToU8("000"));

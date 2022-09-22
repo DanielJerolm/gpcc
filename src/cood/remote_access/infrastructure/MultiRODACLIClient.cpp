@@ -8,7 +8,7 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "MultiRODACLIClient.hpp"
+#include <gpcc/cood/remote_access/infrastructure/MultiRODACLIClient.hpp>
 
 namespace gpcc {
 namespace cood {

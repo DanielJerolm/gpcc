@@ -8,8 +8,8 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "gpcc/src/cli/exceptions.hpp"
-#include "gpcc/src/cood/cli/internal/WriteArgsParser.hpp"
+#include "src/cood/cli/internal/WriteArgsParser.hpp"
+#include <gpcc/cli/exceptions.hpp>
 #include "gtest/gtest.h"
 #include <memory>
 
@@ -48,7 +48,7 @@ TEST(gpcc_cood_cli_internal_WriteArgsParser, ExtractData_visiblestring_emptyStr)
   EXPECT_EQ(spUUT->GetIndex(), 0x1000U);
   EXPECT_EQ(spUUT->GetSubIndex(), 0U);
 
-  spUUT->ExtractData(gpcc::cood::DataType::visible_string, 16U * 8U, gpcc::Stream::IStreamWriter::Endian::Little);
+  spUUT->ExtractData(gpcc::cood::DataType::visible_string, 16U * 8U, gpcc::stream::IStreamWriter::Endian::Little);
 
   EXPECT_EQ(spUUT->GetDataSize(), 1U * 8U);
   std::vector<uint8_t> const expected = { 0U };
@@ -64,7 +64,7 @@ TEST(gpcc_cood_cli_internal_WriteArgsParser, ExtractData_visiblestring_half)
   EXPECT_EQ(spUUT->GetIndex(), 0x1000U);
   EXPECT_EQ(spUUT->GetSubIndex(), 0U);
 
-  spUUT->ExtractData(gpcc::cood::DataType::visible_string, 16U * 8U, gpcc::Stream::IStreamWriter::Endian::Little);
+  spUUT->ExtractData(gpcc::cood::DataType::visible_string, 16U * 8U, gpcc::stream::IStreamWriter::Endian::Little);
 
   EXPECT_EQ(spUUT->GetDataSize(), 4U * 8U);
   std::vector<uint8_t> const expected = { static_cast<uint8_t>('T'),
@@ -83,7 +83,7 @@ TEST(gpcc_cood_cli_internal_WriteArgsParser, ExtractData_visiblestring_full)
   EXPECT_EQ(spUUT->GetIndex(), 0x1000U);
   EXPECT_EQ(spUUT->GetSubIndex(), 0U);
 
-  spUUT->ExtractData(gpcc::cood::DataType::visible_string, 4U * 8U, gpcc::Stream::IStreamWriter::Endian::Little);
+  spUUT->ExtractData(gpcc::cood::DataType::visible_string, 4U * 8U, gpcc::stream::IStreamWriter::Endian::Little);
 
   EXPECT_EQ(spUUT->GetDataSize(), 4U * 8U);
   std::vector<uint8_t> const expected = { static_cast<uint8_t>('T'),
@@ -102,7 +102,7 @@ TEST(gpcc_cood_cli_internal_WriteArgsParser, ExtractData_octetstring)
   EXPECT_EQ(spUUT->GetIndex(), 0x1000U);
   EXPECT_EQ(spUUT->GetSubIndex(), 0U);
 
-  spUUT->ExtractData(gpcc::cood::DataType::octet_string, 0U, gpcc::Stream::IStreamWriter::Endian::Little);
+  spUUT->ExtractData(gpcc::cood::DataType::octet_string, 0U, gpcc::stream::IStreamWriter::Endian::Little);
 
   EXPECT_EQ(spUUT->GetDataSize(), 3U * 8U);
   std::vector<uint8_t> const expected = { 0x03U, 0x40U, 0x05U };
@@ -118,7 +118,7 @@ TEST(gpcc_cood_cli_internal_WriteArgsParser, ExtractData_unicodestring)
   EXPECT_EQ(spUUT->GetIndex(), 0x1000U);
   EXPECT_EQ(spUUT->GetSubIndex(), 0U);
 
-  spUUT->ExtractData(gpcc::cood::DataType::unicode_string, 0U, gpcc::Stream::IStreamWriter::Endian::Little);
+  spUUT->ExtractData(gpcc::cood::DataType::unicode_string, 0U, gpcc::stream::IStreamWriter::Endian::Little);
 
   EXPECT_EQ(spUUT->GetDataSize(), 2 * 16U);
   std::vector<uint8_t> const expected = { 0x40U, 0x03U, 0x12U, 0x05U };
@@ -134,7 +134,7 @@ TEST(gpcc_cood_cli_internal_WriteArgsParser, ExtractData_otherTypes)
   EXPECT_EQ(spUUT->GetIndex(), 0x1000U);
   EXPECT_EQ(spUUT->GetSubIndex(), 0U);
 
-  spUUT->ExtractData(gpcc::cood::DataType::unsigned8, 8U, gpcc::Stream::IStreamWriter::Endian::Little);
+  spUUT->ExtractData(gpcc::cood::DataType::unsigned8, 8U, gpcc::stream::IStreamWriter::Endian::Little);
 
   EXPECT_EQ(spUUT->GetDataSize(), 1 * 8U);
   std::vector<uint8_t> const expected = { 130U };

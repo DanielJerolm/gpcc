@@ -10,10 +10,10 @@
 
 #if (defined(OS_CHIBIOS_ARM) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC))
 
-#include "RWLockWriteLocker.hpp"
-#include "gpcc/src/osal/exceptions.hpp"
-#include "gpcc/src/time/TimePoint.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <gpcc/osal/RWLockWriteLocker.hpp>
+#include <gpcc/osal/exceptions.hpp>
+#include <gpcc/time/TimePoint.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 
 namespace gpcc {
 namespace osal {

@@ -10,16 +10,16 @@
 
 #if defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(__DOXYGEN__)
 
-#include "StdIO_to_ITerminal.hpp"
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/cli/StdIO_to_ITerminal.hpp>
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <errno.h>
+#include <unistd.h>
 #include <limits>
 #include <stdexcept>
 #include <system_error>
-#include <errno.h>
-#include <unistd.h>
 #include <cstdio>
 
 namespace gpcc {

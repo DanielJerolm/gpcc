@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "ISyncSerialIO_to_ITerminal.hpp"
+#include <gpcc/cli/ISyncSerialIO_to_ITerminal.hpp>
 #include <stdexcept>
 
 namespace gpcc {
@@ -28,10 +28,10 @@ namespace cli  {
  * - - -
  *
  * \param _ssio
- * Reference to an [ISyncSerialIO](@ref gpcc::StdIf::ISyncSerialIO) interface that shall be used to talk
+ * Reference to an [ISyncSerialIO](@ref gpcc::stdif::ISyncSerialIO) interface that shall be used to talk
  * to the terminal.
  */
-ISyncSerialIO_to_ITerminal::ISyncSerialIO_to_ITerminal(gpcc::StdIf::ISyncSerialIO & _ssio)
+ISyncSerialIO_to_ITerminal::ISyncSerialIO_to_ITerminal(gpcc::stdif::ISyncSerialIO & _ssio)
 : ITerminal()
 , ssio(_ssio)
 {

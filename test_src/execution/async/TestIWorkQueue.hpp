@@ -11,23 +11,23 @@
 #ifndef TESTIWORKQUEUE_HPP_201701061557
 #define TESTIWORKQUEUE_HPP_201701061557
 
-#include "gpcc/src/execution/async/WorkPackage.hpp"
-#include "gpcc/src/execution/async/DeferredWorkPackage.hpp"
-#include "gpcc/src/execution/async/WorkQueue.hpp"
-#include "gpcc/src/execution/async/DeferredWorkQueue.hpp"
-#include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/osal/Semaphore.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/time/TimePoint.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
-#include <vector>
-#include <iostream>
-#include <iomanip>
+#include <gpcc/execution/async/DeferredWorkPackage.hpp>
+#include <gpcc/execution/async/DeferredWorkQueue.hpp>
+#include <gpcc/execution/async/WorkPackage.hpp>
+#include <gpcc/execution/async/WorkQueue.hpp>
+#include <gpcc/osal/Semaphore.hpp>
+#include <gpcc/osal/Thread.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/time/TimePoint.hpp>
+#include <gpcc/time/TimeSpan.hpp>
+#include "gtest/gtest.h"
 #include <exception>
+#include <iomanip>
+#include <iostream>
+#include <vector>
 #include <cassert>
 #include <cstddef>
 
-#include "gtest/gtest.h"
 
 // Duration of the sleep contained in some work packages in ms.
 #define WP_SLEEPTIME_MS   50

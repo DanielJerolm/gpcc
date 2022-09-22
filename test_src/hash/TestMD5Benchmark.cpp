@@ -10,17 +10,17 @@
 
 #if defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC)
 
-#include "gpcc/src/hash/md5.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/hash/md5.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/string/tools.hpp>
 #include "gtest/gtest.h"
-#include <stdexcept>
-#include <string>
-#include <iostream>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <iostream>
+#include <stdexcept>
+#include <string>
 
 namespace gpcc_tests {
 namespace hash       {

@@ -9,8 +9,8 @@
 */
 
 #include "DWQwithThread.hpp"
-#include "gpcc/src/execution/async/WorkPackage.hpp"
-#include "gpcc/src/osal/Thread.hpp"
+#include <gpcc/execution/async/WorkPackage.hpp>
+#include <gpcc/osal/Thread.hpp>
 #include "gtest/gtest.h"
 #include <atomic>
 #include <memory>

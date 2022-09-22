@@ -10,21 +10,21 @@
 
 #if defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC)
 
-#include "gpcc/src/file_systems/exceptions.hpp"
-#include "gpcc/src/file_systems/linux_fs/FileStorage.hpp"
-#include "gpcc/src/file_systems/linux_fs/internal/tools.hpp"
-#include "gpcc/src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
-#include "gpcc/src/log/logfacilities/ILogFacilityCtrl.hpp"
-#include "gpcc/src/log/log_tools.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/log/log_tools.hpp>
+#include <gpcc/file_systems/exceptions.hpp>
+#include <gpcc/file_systems/linux_fs/FileStorage.hpp>
+#include <gpcc/log/logfacilities/ILogFacilityCtrl.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include "src/file_systems/linux_fs/internal/tools.hpp"
+#include "src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
 #include "gtest/gtest.h"
 #include <memory>
 #include <stdexcept>
 #include <string>
 #include <cerrno>
 #include <cstdio>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 using namespace gpcc::log;
 using namespace testing;
@@ -78,7 +78,7 @@ TEST_F(gpcc_log_log_tools_TestsF, WriteLogSrcConfigToFile_Empty)
 
   EXPECT_EQ(0x00000001UL, version);
   EXPECT_EQ(0UL, nEntries);
-  EXPECT_TRUE(f->GetState() == gpcc::Stream::IStreamReader::States::empty);
+  EXPECT_TRUE(f->GetState() == gpcc::stream::IStreamReader::States::empty);
 
   ON_SCOPE_EXIT_DISMISS();
   f->Close();
@@ -106,7 +106,7 @@ TEST_F(gpcc_log_log_tools_TestsF, WriteLogSrcConfigToFile_OneEntry)
   EXPECT_TRUE(e1 == "Name1");
   EXPECT_TRUE(l1 == LogLevel::WarningOrAbove);
 
-  EXPECT_TRUE(f->GetState() == gpcc::Stream::IStreamReader::States::empty);
+  EXPECT_TRUE(f->GetState() == gpcc::stream::IStreamReader::States::empty);
 
   ON_SCOPE_EXIT_DISMISS();
   f->Close();
@@ -141,7 +141,7 @@ TEST_F(gpcc_log_log_tools_TestsF, WriteLogSrcConfigToFile_TwoEntry)
   EXPECT_TRUE(e2 == "Name2");
   EXPECT_TRUE(l2 == LogLevel::InfoOrAbove);
 
-  EXPECT_TRUE(f->GetState() == gpcc::Stream::IStreamReader::States::empty);
+  EXPECT_TRUE(f->GetState() == gpcc::stream::IStreamReader::States::empty);
 
   ON_SCOPE_EXIT_DISMISS();
   f->Close();
@@ -176,7 +176,7 @@ TEST_F(gpcc_log_log_tools_TestsF, WriteLogSrcConfigToFile_TwoEntry_ZeroLengthNam
   EXPECT_TRUE(e2 == "Name2");
   EXPECT_TRUE(l2 == LogLevel::InfoOrAbove);
 
-  EXPECT_TRUE(f->GetState() == gpcc::Stream::IStreamReader::States::empty);
+  EXPECT_TRUE(f->GetState() == gpcc::stream::IStreamReader::States::empty);
 
   ON_SCOPE_EXIT_DISMISS();
   f->Close();
@@ -216,7 +216,7 @@ TEST_F(gpcc_log_log_tools_TestsF, WriteLogSrcConfigToFile_OverwriteExistingFile)
   EXPECT_TRUE(e2 == "Name3");
   EXPECT_TRUE(l2 == LogLevel::Nothing);
 
-  EXPECT_TRUE(f->GetState() == gpcc::Stream::IStreamReader::States::empty);
+  EXPECT_TRUE(f->GetState() == gpcc::stream::IStreamReader::States::empty);
 
   ON_SCOPE_EXIT_DISMISS();
   f->Close();
@@ -322,7 +322,7 @@ TEST_F(gpcc_log_log_tools_TestsF, WriteLogSrcConfigToTextFile_Empty_NoExplicitHe
   ON_SCOPE_EXIT() { try { f->Close(); } catch (std::exception const &) {}; };
 
   bool firstLine = true;
-  while (f->GetState() != gpcc::Stream::IStreamReader::States::empty)
+  while (f->GetState() != gpcc::stream::IStreamReader::States::empty)
   {
     std::string line = f->Read_line();
 
@@ -357,7 +357,7 @@ TEST_F(gpcc_log_log_tools_TestsF, WriteLogSrcConfigToTextFile_Empty_EmptyHeadlin
   ON_SCOPE_EXIT() { try { f->Close(); } catch (std::exception const &) {}; };
 
   bool firstLine = true;
-  while (f->GetState() != gpcc::Stream::IStreamReader::States::empty)
+  while (f->GetState() != gpcc::stream::IStreamReader::States::empty)
   {
     std::string line = f->Read_line();
 
@@ -392,7 +392,7 @@ TEST_F(gpcc_log_log_tools_TestsF, WriteLogSrcConfigToTextFile_Empty_ExplicitHead
   ON_SCOPE_EXIT() { try { f->Close(); } catch (std::exception const &) {}; };
 
   bool firstLine = true;
-  while (f->GetState() != gpcc::Stream::IStreamReader::States::empty)
+  while (f->GetState() != gpcc::stream::IStreamReader::States::empty)
   {
     std::string line = f->Read_line();
 
@@ -436,7 +436,7 @@ TEST_F(gpcc_log_log_tools_TestsF, WriteLogSrcConfigToTextFile_OneEntry)
 
   std::vector<std::string> extracted;
 
-  while (f->GetState() != gpcc::Stream::IStreamReader::States::empty)
+  while (f->GetState() != gpcc::stream::IStreamReader::States::empty)
   {
     std::string line = f->Read_line();
 
@@ -469,7 +469,7 @@ TEST_F(gpcc_log_log_tools_TestsF, WriteLogSrcConfigToTextFile_TwoEntry)
 
   std::vector<std::string> extracted;
 
-  while (f->GetState() != gpcc::Stream::IStreamReader::States::empty)
+  while (f->GetState() != gpcc::stream::IStreamReader::States::empty)
   {
     std::string line = f->Read_line();
 
@@ -508,7 +508,7 @@ TEST_F(gpcc_log_log_tools_TestsF, WriteLogSrcConfigToTextFile_OverwriteExistingF
 
   std::vector<std::string> extracted;
 
-  while (f->GetState() != gpcc::Stream::IStreamReader::States::empty)
+  while (f->GetState() != gpcc::stream::IStreamReader::States::empty)
   {
     std::string line = f->Read_line();
 

@@ -8,7 +8,7 @@
     Copyright (C) 2022 Daniel Jerolm
 */
 
-#include "gpcc/src/log/internal/CStringLogMessageTS.hpp"
+#include "src/log/internal/CStringLogMessageTS.hpp"
 #include "gtest/gtest.h"
 #include <cstdlib>
 #include <cstring>

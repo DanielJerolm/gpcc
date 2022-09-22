@@ -8,11 +8,11 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "WorkQueueBasedRemoteAccessServer.hpp"
-#include "gpcc/src/log/Logger.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <gpcc/cood/remote_access/infrastructure/WorkQueueBasedRemoteAccessServer.hpp>
+#include <gpcc/log/Logger.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 #include <functional>
 #include <stdexcept>
 

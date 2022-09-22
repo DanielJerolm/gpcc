@@ -8,8 +8,8 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "BitField.hpp"
-#include "gpcc/src/Compiler/builtins.hpp"
+#include <gpcc/container/BitField.hpp>
+#include <gpcc/compiler/builtins.hpp>
 #include <sstream>
 #include <stdexcept>
 #include <cstring>

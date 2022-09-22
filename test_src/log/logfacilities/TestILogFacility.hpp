@@ -11,14 +11,14 @@
 #ifndef TESTILOGFACILITY_HPP_201601061558
 #define TESTILOGFACILITY_HPP_201601061558
 
+#include <gpcc/log/logfacilities/ILogFacility.hpp>
+#include <gpcc/log/logfacilities/ILogFacilityCtrl.hpp>
+#include <gpcc/log/Logger.hpp>
+#include <gpcc/log/log_levels.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/osal/Thread.hpp>
+#include <gpcc/raii/scope_guard.hpp>
 #include "FakeBackend.hpp"
-#include "gpcc/src/log/logfacilities/ILogFacility.hpp"
-#include "gpcc/src/log/logfacilities/ILogFacilityCtrl.hpp"
-#include "gpcc/src/log/Logger.hpp"
-#include "gpcc/src/log/log_levels.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
 #include "gtest/gtest.h"
 #include <iostream>
 #include <memory>

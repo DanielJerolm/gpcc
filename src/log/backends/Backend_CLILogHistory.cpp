@@ -8,15 +8,15 @@
     Copyright (C) 2020 Daniel Jerolm
 */
 
-#include "Backend_CLILogHistory.hpp"
-#include "gpcc/src/cli/CLI.hpp"
-#include "gpcc/src/cli/CLIColors.hpp"
-#include "gpcc/src/cli/Command.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/log/backends/Backend_CLILogHistory.hpp>
+#include <gpcc/cli/CLI.hpp>
+#include <gpcc/cli/CLIColors.hpp>
+#include <gpcc/cli/Command.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
+#include <gpcc/string/tools.hpp>
 #include <stdexcept>
 #include <vector>
 
@@ -161,7 +161,7 @@ void Backend_CLILogHistory::Clear(void)
  * Controls, if the log message buffer and the additional status information shall be cleared after successful export.\n
  * Export and clear will be performed as an atomic operation.
  */
-void Backend_CLILogHistory::Export(gpcc::Stream::IStreamWriter& output, bool const clearAfterExport)
+void Backend_CLILogHistory::Export(gpcc::stream::IStreamWriter& output, bool const clearAfterExport)
 {
   gpcc::osal::MutexLocker mutexLocker(mutex);
 

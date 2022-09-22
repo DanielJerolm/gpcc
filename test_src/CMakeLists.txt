@@ -13,8 +13,8 @@ target_sources(${PROJECT_NAME}_testcases
                cli/TestCLI_withICLINotifiable.cpp
                cli/TestCommand.cpp
                cli/TestFakeTerminal.cpp
-               Compiler/TestCompilerBuiltins.cpp
-               Compiler/TestCompilerDefs.cpp
+               compiler/TestCompilerBuiltins.cpp
+               compiler/TestCompilerDefs.cpp
                container/TestBitField.cpp
                container/TestIntrusiveDList.cpp
                container/TestRAMBlock.cpp
@@ -76,15 +76,15 @@ target_sources(${PROJECT_NAME}_testcases
                execution/cyclic/UUT_TTCEStartStopCtrl.cpp
                execution/cyclic/WaitUntilStoppedHelper.cpp
                fakes/cli/FakeTerminal.cpp
-               file_systems/CLI/TestISFCLICommands.cpp
-               file_systems/EEPROMSectionSystem/CLI/TestESSCLICommands.cpp
-               file_systems/EEPROMSectionSystem/EEPROMSectionSystemTestFixture.cpp
-               file_systems/EEPROMSectionSystem/FakeEEPROM.cpp
-               file_systems/EEPROMSectionSystem/FakeEEPROMUndo.cpp
-               file_systems/EEPROMSectionSystem/internal/TestBlockAccessor.cpp
-               file_systems/EEPROMSectionSystem/RandomData.cpp
-               file_systems/EEPROMSectionSystem/TestEEPROMSectionSystem.cpp
-               file_systems/EEPROMSectionSystem/TestFakeEEPROM.cpp
+               file_systems/cli/TestIFSCLICommands.cpp
+               file_systems/eeprom_section_system/cli/TestESSCLICommands.cpp
+               file_systems/eeprom_section_system/EEPROMSectionSystemTestFixture.cpp
+               file_systems/eeprom_section_system/FakeEEPROM.cpp
+               file_systems/eeprom_section_system/FakeEEPROMUndo.cpp
+               file_systems/eeprom_section_system/internal/TestBlockAccessor.cpp
+               file_systems/eeprom_section_system/RandomData.cpp
+               file_systems/eeprom_section_system/TestEEPROMSectionSystem.cpp
+               file_systems/eeprom_section_system/TestFakeEEPROM.cpp
                file_systems/linux_fs/TestFileStorage.cpp
                file_systems/linux_fs/Test_tools.cpp
                file_systems/linux_fs/TestUnitTestDirProvider.cpp
@@ -138,19 +138,19 @@ target_sources(${PROJECT_NAME}_testcases
                osal/TestThread.cpp
                osal/TestThreadRegistry.cpp
                raii/Test_scope_guard.cpp
-               ResourceManagement/Memory/TestHeapManager.cpp
-               ResourceManagement/Memory/TestHeapManagerSPTS.cpp
-               ResourceManagement/Objects/internal/TestNamedRWLockEntry.cpp
-               ResourceManagement/Objects/TestHierarchicNamedRWLock.cpp
-               ResourceManagement/Objects/TestLargeDynamicNamedRWLock.cpp
-               ResourceManagement/Objects/TestSmallDynamicNamedRWLock.cpp
-               ResourceManagement/semaphores/TestNonBlockingSemaphore.cpp
-               StdIf/I2C/TestII2C_Tools.cpp
-               StdIf/TestIRandomAccessStorageCLI.cpp
-               Stream/TestIStreamReader.cpp
-               Stream/TestIStreamWriter.cpp
-               Stream/TestMemStreamReader.cpp
-               Stream/TestMemStreamWriter.cpp
+               resource_management/memory/TestHeapManager.cpp
+               resource_management/memory/TestHeapManagerSPTS.cpp
+               resource_management/objects/internal/TestNamedRWLockEntry.cpp
+               resource_management/objects/TestHierarchicNamedRWLock.cpp
+               resource_management/objects/TestLargeDynamicNamedRWLock.cpp
+               resource_management/objects/TestSmallDynamicNamedRWLock.cpp
+               resource_management/semaphores/TestNonBlockingSemaphore.cpp
+               stdif/i2c/Test_tools.cpp
+               stdif/storage/TestIRandomAccessStorageCLI.cpp
+               stream/TestIStreamReader.cpp
+               stream/TestIStreamWriter.cpp
+               stream/TestMemStreamReader.cpp
+               stream/TestMemStreamWriter.cpp
                string/Test_levenshtein_distance.cpp
                string/TestSharedString.cpp
                string/Test_tools.cpp

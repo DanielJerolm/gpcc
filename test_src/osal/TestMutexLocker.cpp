@@ -8,8 +8,8 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Mutex.hpp>
 #include "gtest/gtest.h"
 #include <memory>
 

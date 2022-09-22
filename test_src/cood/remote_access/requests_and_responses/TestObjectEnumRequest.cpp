@@ -8,11 +8,11 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReturnStackItem.hpp"
-#include "gpcc/src/Stream/MemStreamReader.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReturnStackItem.hpp>
+#include <gpcc/stream/MemStreamReader.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
+#include <gpcc/string/tools.hpp>
 #include "gtest/gtest.h"
 #include <limits>
 
@@ -196,7 +196,7 @@ TEST_F(gpcc_cood_ObjectEnumRequest_TestsF, SerializeAndDeserialize)
 
   uint8_t storage[64U];
 
-  gpcc::Stream::MemStreamWriter msw(storage, sizeof(storage), gpcc::Stream::IStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(storage, sizeof(storage), gpcc::stream::IStreamWriter::Endian::Little);
   spUUT->ToBinary(msw);
   msw.AlignToByteBoundary(false);
   ASSERT_EQ(msw.RemainingCapacity(), sizeof(storage) - reqSize) << "Unexpected number of bytes written";
@@ -205,9 +205,9 @@ TEST_F(gpcc_cood_ObjectEnumRequest_TestsF, SerializeAndDeserialize)
   spUUT.reset();
 
   // deserialize it
-  gpcc::Stream::MemStreamReader msr(storage, reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(storage, reqSize, gpcc::stream::IStreamReader::Endian::Little);
   auto spUUT2Base = RequestBase::FromBinary(msr);
-  ASSERT_TRUE(msr.GetState() == gpcc::Stream::IStreamReader::States::empty) << "Stream was not completely consumed";
+  ASSERT_TRUE(msr.GetState() == gpcc::stream::IStreamReader::States::empty) << "Stream was not completely consumed";
   msr.Close();
 
   // check type and cast to WriteRequest
@@ -238,7 +238,7 @@ TEST_F(gpcc_cood_ObjectEnumRequest_TestsF, SerializeAndDeserialize_InvalidAttrFi
 
   uint8_t storage[64U];
 
-  gpcc::Stream::MemStreamWriter msw(storage, sizeof(storage), gpcc::Stream::IStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(storage, sizeof(storage), gpcc::stream::IStreamWriter::Endian::Little);
   spUUT->ToBinary(msw);
   msw.AlignToByteBoundary(false);
   ASSERT_EQ(msw.RemainingCapacity(), sizeof(storage) - reqSize) << "Unexpected number of bytes written";
@@ -251,7 +251,7 @@ TEST_F(gpcc_cood_ObjectEnumRequest_TestsF, SerializeAndDeserialize_InvalidAttrFi
   storage[offsetOfAttrFilter + 1U] = 0U;
 
   // try to deserialize it
-  gpcc::Stream::MemStreamReader msr(storage, reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(storage, reqSize, gpcc::stream::IStreamReader::Endian::Little);
   ASSERT_THROW((void)RequestBase::FromBinary(msr), std::runtime_error);
   msr.Close();
 }
@@ -271,7 +271,7 @@ TEST_F(gpcc_cood_ObjectEnumRequest_TestsF, SerializeAndDeserialize_InvalidIndice
 
   uint8_t storage[64U];
 
-  gpcc::Stream::MemStreamWriter msw(storage, sizeof(storage), gpcc::Stream::IStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(storage, sizeof(storage), gpcc::stream::IStreamWriter::Endian::Little);
   spUUT->ToBinary(msw);
   msw.AlignToByteBoundary(false);
   ASSERT_EQ(msw.RemainingCapacity(), sizeof(storage) - reqSize) << "Unexpected number of bytes written";
@@ -284,7 +284,7 @@ TEST_F(gpcc_cood_ObjectEnumRequest_TestsF, SerializeAndDeserialize_InvalidIndice
   storage[offsetOfStartIndex + 1U] = 3U;
 
   // try to deserialize it
-  gpcc::Stream::MemStreamReader msr(storage, reqSize, gpcc::Stream::IStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(storage, reqSize, gpcc::stream::IStreamReader::Endian::Little);
   ASSERT_THROW((void)RequestBase::FromBinary(msr), std::runtime_error);
   msr.Close();
 }

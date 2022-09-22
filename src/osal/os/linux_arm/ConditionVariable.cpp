@@ -10,10 +10,10 @@
 
 #ifdef OS_LINUX_ARM
 
-#include "ConditionVariable.hpp"
-#include "Mutex.hpp"
-#include "Panic.hpp"
-#include "gpcc/src/time/TimePoint.hpp"
+#include <gpcc/osal/ConditionVariable.hpp>
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/time/TimePoint.hpp>
 #include <system_error>
 #include <ctime>
 

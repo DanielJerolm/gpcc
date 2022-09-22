@@ -8,9 +8,9 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
 #include "gtest/gtest.h"
 #include <memory>
 

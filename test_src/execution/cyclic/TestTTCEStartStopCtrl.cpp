@@ -8,21 +8,21 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "Trace.hpp"
-#include "TriggerProvider.hpp"
 #include "UUT_TriggeredThreadedCyclicExec.hpp"
 #include "UUT_TTCEStartStopCtrl.hpp"
+#include <gpcc/execution/async/WorkPackage.hpp>
+#include <gpcc/execution/async/WorkQueue.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/osal/Thread.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/time/TimeSpan.hpp>
+#include "Trace.hpp"
+#include "TriggerProvider.hpp"
 #include "WaitUntilStoppedHelper.hpp"
-#include "gpcc/src/execution/async/WorkPackage.hpp"
-#include "gpcc/src/execution/async/WorkQueue.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
 #include "gtest/gtest.h"
 #include <stdexcept>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 // Universal timeout when waiting for things that will happen (of course if the UUT behaves as expected)
 #define GENERAL_TIMEOUT_MS 500
@@ -141,7 +141,7 @@ void gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF::CreateStimulus_TriggerAndSt
   // 2nd: wait for thread of controlled TTCE (IN WORKQUEUE CONTEXT)
   // 3rd: Invoke StopAsync at UUT
 
-  wq.Add(WorkPackage::CreateDynamic(this, 0, std::bind(&TriggerProvider::Trigger, &triggerProvider, gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false)));
+  wq.Add(WorkPackage::CreateDynamic(this, 0, std::bind(&TriggerProvider::Trigger, &triggerProvider, gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false)));
   wq.Add(WorkPackage::CreateDynamic(this, 0, std::bind(&gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF::WaitForThread_WQ, this)));
   wq.Add(WorkPackage::CreateDynamic(this, 0, std::bind(&TTCEStartStopCtrl::StopAsync, &uut)));
 }
@@ -153,7 +153,7 @@ void gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF::CreateStimulus_TriggerWithT
   // 2nd: wait for thread of controlled TTCE (IN WORKQUEUE CONTEXT)
   // 3rd: Invoke StopAsync at UUT
 
-  wq.Add(WorkPackage::CreateDynamic(this, 0, std::bind(&TriggerProvider::Trigger, &triggerProvider, gpcc::StdIf::IIRQ2ThreadWakeup::Result::Timeout, false)));
+  wq.Add(WorkPackage::CreateDynamic(this, 0, std::bind(&TriggerProvider::Trigger, &triggerProvider, gpcc::stdif::IIRQ2ThreadWakeup::Result::Timeout, false)));
   wq.Add(WorkPackage::CreateDynamic(this, 0, std::bind(&gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF::WaitForThread_WQ, this)));
   wq.Add(WorkPackage::CreateDynamic(this, 0, std::bind(&TTCEStartStopCtrl::StopAsync, &uut)));
 }
@@ -187,7 +187,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, ControlledTTCEisAlive)
   for (size_t i = 0U; i < 3U; i++)
   {
     ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
-    triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+    triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   }
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
 
@@ -211,7 +211,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TurnOnRunTurnOff)
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -219,7 +219,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TurnOnRunTurnOff)
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -227,7 +227,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TurnOnRunTurnOff)
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -239,7 +239,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TurnOnRunTurnOff)
   for (size_t i = 0U; i < 3U; i++)
   {
     // --------------------------------------------------------------------------------------------
-    triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+    triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
     ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
     // --------------------------------------------------------------------------------------------
 
@@ -252,7 +252,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TurnOnRunTurnOff)
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::stopPending, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -330,7 +330,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TurnOnRunTurnOff_ExtraSta
   ASSERT_EQ(TTCEStartStopCtrl::Result::alreadyStarted, uut.StartAsync());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -338,7 +338,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TurnOnRunTurnOff_ExtraSta
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -346,7 +346,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TurnOnRunTurnOff_ExtraSta
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -360,7 +360,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TurnOnRunTurnOff_ExtraSta
   for (size_t i = 0U; i < 3U; i++)
   {
     // --------------------------------------------------------------------------------------------
-    triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+    triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
     ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
     // --------------------------------------------------------------------------------------------
 
@@ -375,7 +375,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TurnOnRunTurnOff_ExtraSta
   ASSERT_EQ(TTCEStartStopCtrl::Result::alreadyStopping, uut.StartAsync());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -454,7 +454,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TurnOnRunTurnOff_ExtraSto
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -462,7 +462,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TurnOnRunTurnOff_ExtraSto
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -470,7 +470,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TurnOnRunTurnOff_ExtraSto
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -482,7 +482,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TurnOnRunTurnOff_ExtraSto
   for (size_t i = 0U; i < 3U; i++)
   {
     // --------------------------------------------------------------------------------------------
-    triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+    triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
     ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
     // --------------------------------------------------------------------------------------------
 
@@ -497,7 +497,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TurnOnRunTurnOff_ExtraSto
   ASSERT_EQ(TTCEStartStopCtrl::Result::alreadyStopping, uut.StopAsync());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -574,7 +574,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TurnOnRunTurnOff_ExtraSto
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -586,7 +586,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TurnOnRunTurnOff_ExtraSto
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::stopPending, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -596,7 +596,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TurnOnRunTurnOff_ExtraSto
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::stopped, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -648,7 +648,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, OnRunWQIgnoredInStopPendi
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -656,7 +656,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, OnRunWQIgnoredInStopPendi
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -689,7 +689,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, OnRunWQIgnoredInStopPendi
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::stopPending, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -753,7 +753,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TriggerTimeoutWhileStarti
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -761,7 +761,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TriggerTimeoutWhileStarti
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -769,7 +769,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TriggerTimeoutWhileStarti
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -777,7 +777,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TriggerTimeoutWhileStarti
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::Timeout, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::Timeout, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -787,7 +787,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TriggerTimeoutWhileStarti
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::stopped, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -840,7 +840,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TriggerTimeoutWhileRunnin
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -848,7 +848,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TriggerTimeoutWhileRunnin
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -856,7 +856,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TriggerTimeoutWhileRunnin
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -866,7 +866,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TriggerTimeoutWhileRunnin
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::running, uut.GetCurrentState());
 
   // --------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // --------------------------------------------------------------------------------------------
 
@@ -876,7 +876,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TriggerTimeoutWhileRunnin
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::running, uut.GetCurrentState());
 
   // --------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::Timeout, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::Timeout, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // --------------------------------------------------------------------------------------------
 
@@ -887,7 +887,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, TriggerTimeoutWhileRunnin
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::stopped, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -954,7 +954,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, SampleReturnedFalseWhileR
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -962,7 +962,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, SampleReturnedFalseWhileR
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -970,7 +970,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, SampleReturnedFalseWhileR
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -980,7 +980,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, SampleReturnedFalseWhileR
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::running, uut.GetCurrentState());
 
   // --------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // --------------------------------------------------------------------------------------------
 
@@ -992,7 +992,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, SampleReturnedFalseWhileR
   controlledTTCE.SetSampleRetVal(false);
 
   // --------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // --------------------------------------------------------------------------------------------
 
@@ -1002,7 +1002,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, SampleReturnedFalseWhileR
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::stopped, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1073,7 +1073,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, LossOfLockWhileRunning_No
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1081,7 +1081,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, LossOfLockWhileRunning_No
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1089,7 +1089,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, LossOfLockWhileRunning_No
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1099,7 +1099,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, LossOfLockWhileRunning_No
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::running, uut.GetCurrentState());
 
   // --------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // --------------------------------------------------------------------------------------------
 
@@ -1110,7 +1110,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, LossOfLockWhileRunning_No
 
   controlledTTCE.SetIsPllRunningRetVal(false);
   // --------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // --------------------------------------------------------------------------------------------
 
@@ -1120,7 +1120,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, LossOfLockWhileRunning_No
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::stopped, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1187,7 +1187,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, StateStoppedStopPending_T
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1195,7 +1195,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, StateStoppedStopPending_T
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1203,7 +1203,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, StateStoppedStopPending_T
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1212,7 +1212,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, StateStoppedStopPending_T
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::running, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1243,7 +1243,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, StateStoppedStopPending_T
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::Result::alreadyStopping, uut.StartAsync());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1252,7 +1252,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, StateStoppedStopPending_T
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::stopped, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1322,7 +1322,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, StateStoppedStopPending_S
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1330,7 +1330,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, StateStoppedStopPending_S
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1338,7 +1338,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, StateStoppedStopPending_S
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1347,7 +1347,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, StateStoppedStopPending_S
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::running, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1380,7 +1380,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, StateStoppedStopPending_S
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::Result::alreadyStopping, uut.StartAsync());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1389,7 +1389,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, StateStoppedStopPending_S
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::stopped, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1463,7 +1463,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, StateStoppedStopPending_P
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1471,7 +1471,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, StateStoppedStopPending_P
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1479,7 +1479,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, StateStoppedStopPending_P
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1488,7 +1488,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, StateStoppedStopPending_P
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::running, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1521,7 +1521,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, StateStoppedStopPending_P
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::Result::alreadyStopping, uut.StartAsync());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1533,7 +1533,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, StateStoppedStopPending_P
   for (size_t i = 0U; i < 5U; i++)
   {
     // ----------------------------------------------------------------------------------------------
-    triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+    triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
     ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
     // ----------------------------------------------------------------------------------------------
 
@@ -1615,7 +1615,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, AutomaticRestartAfterPllL
   for (size_t i = 0U; i < 3U; i++)
   {
     // ----------------------------------------------------------------------------------------------
-    triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+    triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
     ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
     // ----------------------------------------------------------------------------------------------
 
@@ -1627,7 +1627,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, AutomaticRestartAfterPllL
     for (size_t j = 0U; j < startCycles; j++)
     {
       // ----------------------------------------------------------------------------------------------
-      triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+      triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
       ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
       // ----------------------------------------------------------------------------------------------
     }
@@ -1636,7 +1636,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, AutomaticRestartAfterPllL
     /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
     // ----------------------------------------------------------------------------------------------
-    triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+    triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
     ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
     // ----------------------------------------------------------------------------------------------
 
@@ -1648,7 +1648,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, AutomaticRestartAfterPllL
     for (size_t j = 0U; j < 3U; j++)
     {
       // --------------------------------------------------------------------------------------------
-      triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+      triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
       ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
       // --------------------------------------------------------------------------------------------
 
@@ -1659,7 +1659,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, AutomaticRestartAfterPllL
     controlledTTCE.SetIsPllRunningRetVal(false);
 
     // ----------------------------------------------------------------------------------------------
-    triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+    triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
     ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
     // ----------------------------------------------------------------------------------------------
 
@@ -1679,7 +1679,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, AutomaticRestartAfterPllL
   }
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1730,7 +1730,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, RefreshRemainingStartAtte
   for (size_t i = 0U; i < 4U; i++)
   {
     // ----------------------------------------------------------------------------------------------
-    triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+    triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
     ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
     // ----------------------------------------------------------------------------------------------
 
@@ -1742,7 +1742,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, RefreshRemainingStartAtte
     for (size_t j = 0U; j < startCycles; j++)
     {
       // ----------------------------------------------------------------------------------------------
-      triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+      triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
       ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
       // ----------------------------------------------------------------------------------------------
     }
@@ -1751,7 +1751,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, RefreshRemainingStartAtte
     /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
     // ----------------------------------------------------------------------------------------------
-    triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+    triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
     ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
     // ----------------------------------------------------------------------------------------------
 
@@ -1769,7 +1769,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, RefreshRemainingStartAtte
       }
 
       // --------------------------------------------------------------------------------------------
-      triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+      triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
       ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
       // --------------------------------------------------------------------------------------------
 
@@ -1780,7 +1780,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, RefreshRemainingStartAtte
     controlledTTCE.SetIsPllRunningRetVal(false);
 
     // ----------------------------------------------------------------------------------------------
-    triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+    triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
     ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
     // ----------------------------------------------------------------------------------------------
 
@@ -1800,7 +1800,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, RefreshRemainingStartAtte
   }
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1860,7 +1860,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, LockAndUnlockStart)
   uut.LockStart();
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1868,7 +1868,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, LockAndUnlockStart)
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1876,7 +1876,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, LockAndUnlockStart)
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -1888,7 +1888,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, LockAndUnlockStart)
   for (size_t i = 0U; i < 3U; i++)
   {
     // --------------------------------------------------------------------------------------------
-    triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+    triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
     ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
     // --------------------------------------------------------------------------------------------
 
@@ -1901,7 +1901,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, LockAndUnlockStart)
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::stopPending, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -2008,7 +2008,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, WaitUntilStopped)
   /* check */ ASSERT_EQ(TTCEStartStopCtrl::States::starting, uut.GetCurrentState());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -2018,7 +2018,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, WaitUntilStopped)
   wus_helper.StartWaiting();
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -2027,7 +2027,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, WaitUntilStopped)
   /* check */ ASSERT_FALSE(wus_helper.IsStopped());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 
@@ -2040,7 +2040,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, WaitUntilStopped)
   for (size_t i = 0U; i < 3U; i++)
   {
     // --------------------------------------------------------------------------------------------
-    triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+    triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
     ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
     // --------------------------------------------------------------------------------------------
 
@@ -2055,7 +2055,7 @@ TEST_F(gpcc_execution_cyclic_TTCEStartStopCtrl_TestsF, WaitUntilStopped)
   /* check */ ASSERT_FALSE(wus_helper.IsStopped());
 
   // ----------------------------------------------------------------------------------------------
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   // ----------------------------------------------------------------------------------------------
 

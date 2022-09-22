@@ -8,7 +8,7 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "SingleRODACLIClient.hpp"
+#include <gpcc/cood/remote_access/infrastructure/SingleRODACLIClient.hpp>
 
 namespace gpcc {
 namespace cood {

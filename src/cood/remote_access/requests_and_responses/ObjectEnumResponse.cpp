@@ -8,11 +8,11 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "ObjectEnumResponse.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
+#include <gpcc/string/tools.hpp>
 #include <exception>
 #include <sstream>
 #include <stdexcept>
@@ -56,7 +56,7 @@ ObjectEnumResponse::ObjectEnumResponse(SDOAbortCode const _result)
 
 /**
  * \brief Constructor. Creates a @ref ObjectEnumResponse object from data read from an
- *        [IStreamReader](@ref gpcc::Stream::IStreamReader) containing a serialized @ref ObjectEnumResponse object.
+ *        [IStreamReader](@ref gpcc::stream::IStreamReader) containing a serialized @ref ObjectEnumResponse object.
  *
  * This is intended to be invoked by @ref ResponseBase::FromBinary() only. In conjunction with
  * @ref ResponseBase::FromBinary(), this is the counterpart to @ref ResponseBase::ToBinary().
@@ -83,7 +83,7 @@ ObjectEnumResponse::ObjectEnumResponse(SDOAbortCode const _result)
  * \param versionOnHand
  * Version of serialized object read from `sr`.
  */
-ObjectEnumResponse::ObjectEnumResponse(gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectEnumResponsePassKey)
+ObjectEnumResponse::ObjectEnumResponse(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectEnumResponsePassKey)
 : ResponseBase(ResponseTypes::objectEnumResponse, sr, versionOnHand)
 , result(SDOAbortCode::GeneralError)
 , complete(false)
@@ -244,7 +244,7 @@ size_t ObjectEnumResponse::GetBinarySize(void) const
 }
 
 /// \copydoc gpcc::cood::ResponseBase::ToBinary
-void ObjectEnumResponse::ToBinary(gpcc::Stream::IStreamWriter & sw) const
+void ObjectEnumResponse::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   ResponseBase::ToBinary(sw);
 

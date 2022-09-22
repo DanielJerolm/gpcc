@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/cli/internal/TerminalRxParser.hpp"
+#include "src/cli/internal/TerminalRxParser.hpp"
 #include "gtest/gtest.h"
 
 namespace gpcc_tests {

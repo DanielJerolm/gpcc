@@ -8,8 +8,8 @@
     Copyright (C) 2019 Daniel Jerolm
 */
 
-#include "string_conversion.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/cood/cli/string_conversion.hpp>
+#include <gpcc/string/tools.hpp>
 #include <limits>
 #include <stdexcept>
 

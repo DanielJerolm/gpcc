@@ -8,10 +8,10 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "TTCEStartStopCtrl.hpp"
-#include "gpcc/src/execution/async/IWorkQueue.hpp"
-#include "gpcc/src/execution/async/WorkPackage.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
+#include <gpcc/execution/cyclic/TTCEStartStopCtrl.hpp>
+#include <gpcc/execution/async/IWorkQueue.hpp>
+#include <gpcc/execution/async/WorkPackage.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
 #include <stdexcept>
 
 namespace gpcc {

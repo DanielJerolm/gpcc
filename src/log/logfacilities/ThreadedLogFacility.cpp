@@ -8,14 +8,14 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "ThreadedLogFacility.hpp"
-#include "gpcc/src/log/backends/Backend.hpp"
-#include "gpcc/src/log/internal/LogMessage.hpp"
-#include "gpcc/src/log/Logger.hpp"
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/log/logfacilities/ThreadedLogFacility.hpp>
+#include <gpcc/log/backends/Backend.hpp>
+#include <gpcc/log/Logger.hpp>
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include "src/log/internal/LogMessage.hpp"
 #include <algorithm>
 #include <limits>
 #include <stdexcept>

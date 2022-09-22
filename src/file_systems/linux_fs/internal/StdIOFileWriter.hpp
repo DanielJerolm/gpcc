@@ -13,7 +13,7 @@
 #ifndef STDIOFILEWRITER_HPP_201805182120
 #define STDIOFILEWRITER_HPP_201805182120
 
-#include "gpcc/src/Stream/StreamWriterBase.hpp"
+#include <gpcc/stream/StreamWriterBase.hpp>
 #include <cstdio>
 
 namespace gpcc         {
@@ -26,18 +26,18 @@ namespace internal     {
 
 /**
  * \ingroup GPCC_FILESYSTEMS_LINUXFS_INTERNAL
- * \brief Class used to create or overwrite a regular file and write to it via @ref gpcc::Stream::IStreamWriter.
+ * \brief Class used to create or overwrite a regular file and write to it via @ref gpcc::stream::IStreamWriter.
  *
  * An instance of this class is created by class @ref FileStorage if a new regular file shall be created or if an
  * existing regular file shall be overwritten. This class offers write access to the new file via
- * @ref gpcc::Stream::IStreamWriter and manages all write accesses to the storage. All write accesses are done
+ * @ref gpcc::stream::IStreamWriter and manages all write accesses to the storage. All write accesses are done
  * using buffered I/O operations. Finally this class takes care for unlocking of the file at the @ref FileStorage
  * instance.
  *
- * After construction, the object is ready to receive data written via the @ref gpcc::Stream::StreamWriterBase
+ * After construction, the object is ready to receive data written via the @ref gpcc::stream::StreamWriterBase
  * interface.
  *
- * [IStreamWriter::RemainingCapacity()](@ref gpcc::Stream::IStreamWriter::RemainingCapacity()) is not supported.
+ * [IStreamWriter::RemainingCapacity()](@ref gpcc::stream::IStreamWriter::RemainingCapacity()) is not supported.
  *
  * # Internals
  * Byte-based data is immediately written to the underlying file referenced by `fd`. However, all writes are
@@ -53,7 +53,7 @@ namespace internal     {
  * __Thread safety:__\n
  * Not thread safe, but non-modifying concurrent access is safe.
  */
-class StdIOFileWriter final : public gpcc::Stream::StreamWriterBase
+class StdIOFileWriter final : public gpcc::stream::StreamWriterBase
 {
   public:
     StdIOFileWriter(std::string const & fileName, bool const overwriteIfExist, FileStorage & _fileStorage, std::string const & _unlockID);

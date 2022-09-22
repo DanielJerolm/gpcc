@@ -8,7 +8,7 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "gpcc/src/log/internal/RomConstExceptionLogMessageTS.hpp"
+#include "src/log/internal/RomConstExceptionLogMessageTS.hpp"
 #include "gtest/gtest.h"
 
 using namespace gpcc::log;

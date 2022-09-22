@@ -9,10 +9,10 @@
 */
 
 #include "UUT_TriggeredThreadedCyclicExec.hpp"
+#include <gpcc/execution/cyclic/TTCEStartStopCtrl.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 #include "Trace.hpp"
-#include "gpcc/src/execution/cyclic/TTCEStartStopCtrl.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
 #include <functional>
 
 namespace gpcc_tests {
@@ -20,7 +20,7 @@ namespace execution {
 namespace cyclic {
 
 UUT_TriggeredThreadedCyclicExec::UUT_TriggeredThreadedCyclicExec(Trace & _trace,
-                                                                 gpcc::StdIf::IIRQ2ThreadWakeup & trigger,
+                                                                 gpcc::stdif::IIRQ2ThreadWakeup & trigger,
                                                                  gpcc::time::TimeSpan const & waitForTriggerTimeout)
 : TriggeredThreadedCyclicExec("UUT", trigger, waitForTriggerTimeout, std::bind(&UUT_TriggeredThreadedCyclicExec::IsPllRunning, this))
 , trace(_trace)

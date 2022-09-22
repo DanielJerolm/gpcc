@@ -8,11 +8,11 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "TriggeredThreadedCyclicExec.hpp"
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/StdIf/IIRQ2ThreadWakeup.hpp"
+#include <gpcc/execution/cyclic/TriggeredThreadedCyclicExec.hpp>
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/stdif/notify/IIRQ2ThreadWakeup.hpp>
 #include <stdexcept>
 
 namespace gpcc {
@@ -41,7 +41,7 @@ namespace cyclic {
  * _The referenced string must not change during lifetime of the TriggeredThreadedCyclicExec object._\n
  * _nullptr is not allowed._
  * \param _trigger
- * Reference to an [IIRQ2ThreadWakeup](@ref gpcc::StdIf::IIRQ2ThreadWakeup) subclass instance that shall be
+ * Reference to an [IIRQ2ThreadWakeup](@ref gpcc::stdif::IIRQ2ThreadWakeup) subclass instance that shall be
  * used to deliver the cyclic trigger.
  * \param _timeout
  * Reference to a [TimeSpan](@ref gpcc::time::TimeSpan) instance providing the timeout for monitoring the cyclic
@@ -55,7 +55,7 @@ namespace cyclic {
  * _A copy is generated._
  */
 TriggeredThreadedCyclicExec::TriggeredThreadedCyclicExec(char const * const pThreadName,
-                                                         StdIf::IIRQ2ThreadWakeup & _trigger,
+                                                         stdif::IIRQ2ThreadWakeup & _trigger,
                                                          time::TimeSpan const & _timeout,
                                                          tIsPllLocked const & _isPllLockedFunc)
 : trigger(_trigger)
@@ -383,9 +383,9 @@ void* TriggeredThreadedCyclicExec::InternalThreadEntry(void)
     while (!thread.IsCancellationPending())
     {
       // wait for trigger
-      StdIf::IIRQ2ThreadWakeup::Result const result = trigger.WaitWithTimeout(timeout);
-      bool const overrun = (result == StdIf::IIRQ2ThreadWakeup::Result::AlreadySignalled);
-      bool const timeout = (result == StdIf::IIRQ2ThreadWakeup::Result::Timeout);
+      stdif::IIRQ2ThreadWakeup::Result const result = trigger.WaitWithTimeout(timeout);
+      bool const overrun = (result == stdif::IIRQ2ThreadWakeup::Result::AlreadySignalled);
+      bool const timeout = (result == stdif::IIRQ2ThreadWakeup::Result::Timeout);
 
       mutexLocker.Relock();
 

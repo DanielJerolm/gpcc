@@ -10,25 +10,25 @@
 
 #if defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(__DOXYGEN__)
 
-#include "FileStorage.hpp"
+#include <gpcc/file_systems/linux_fs/FileStorage.hpp>
+#include <gpcc/file_systems/exceptions.hpp>
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/string/tools.hpp>
 #include "internal/StdIOFileReader.hpp"
 #include "internal/StdIOFileWriter.hpp"
 #include "internal/tools.hpp"
-#include "gpcc/src/file_systems/exceptions.hpp"
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/string/tools.hpp"
 #include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/statfs.h>
 #include <unistd.h>
-#include <cerrno>
-#include <cstdio>
 #include <stdexcept>
 #include <system_error>
+#include <cerrno>
+#include <cstdio>
 
 namespace gpcc         {
 namespace file_systems {
@@ -95,7 +95,7 @@ FileStorage::~FileStorage(void)
 }
 
 /// \copydoc IFileStorage::Open
-std::unique_ptr<Stream::IStreamReader> FileStorage::Open(std::string const & name)
+std::unique_ptr<stream::IStreamReader> FileStorage::Open(std::string const & name)
 {
   BasicCheckName(name);
 
@@ -115,7 +115,7 @@ std::unique_ptr<Stream::IStreamReader> FileStorage::Open(std::string const & nam
     fileLockManager.ReleaseReadLock(lockID);
   };
 
-  auto spISR = std::unique_ptr<Stream::IStreamReader>(new internal::StdIOFileReader(fullName, *this, lockID));
+  auto spISR = std::unique_ptr<stream::IStreamReader>(new internal::StdIOFileReader(fullName, *this, lockID));
 
   ON_SCOPE_EXIT_DISMISS();
 
@@ -123,7 +123,7 @@ std::unique_ptr<Stream::IStreamReader> FileStorage::Open(std::string const & nam
 }
 
 /// \copydoc IFileStorage::Create
-std::unique_ptr<Stream::IStreamWriter> FileStorage::Create(std::string const & name, bool const overwriteIfExisting)
+std::unique_ptr<stream::IStreamWriter> FileStorage::Create(std::string const & name, bool const overwriteIfExisting)
 {
   FullCheckFileName(name);
 
@@ -143,7 +143,7 @@ std::unique_ptr<Stream::IStreamWriter> FileStorage::Create(std::string const & n
     fileLockManager.ReleaseWriteLock(lockID);
   };
 
-  auto spISW = std::unique_ptr<Stream::IStreamWriter>(new internal::StdIOFileWriter(fullName, overwriteIfExisting, *this, lockID));
+  auto spISW = std::unique_ptr<stream::IStreamWriter>(new internal::StdIOFileWriter(fullName, overwriteIfExisting, *this, lockID));
 
   ON_SCOPE_EXIT_DISMISS();
 

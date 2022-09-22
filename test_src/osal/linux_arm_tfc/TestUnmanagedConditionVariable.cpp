@@ -10,11 +10,11 @@
 
 #ifdef OS_LINUX_ARM_TFC
 
-#include "gpcc/src/osal/os/linux_arm_tfc/internal/AdvancedUnmanagedMutexLocker.hpp"
-#include "gpcc/src/osal/os/linux_arm_tfc/internal/UnmanagedConditionVariable.hpp"
-#include "gpcc/src/osal/os/linux_arm_tfc/internal/UnmanagedMutexLocker.hpp"
-#include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include "src/osal/os/linux_arm_tfc/internal/UnmanagedConditionVariable.hpp"
+#include <gpcc/osal/Thread.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include "src/osal/os/linux_arm_tfc/internal/AdvancedUnmanagedMutexLocker.hpp"
+#include "src/osal/os/linux_arm_tfc/internal/UnmanagedMutexLocker.hpp"
 #include "gtest/gtest.h"
 #include <unistd.h>
 

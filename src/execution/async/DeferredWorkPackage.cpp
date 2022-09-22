@@ -8,9 +8,9 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "DeferredWorkPackage.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <gpcc/execution/async/DeferredWorkPackage.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 #include <stdexcept>
 
 namespace gpcc {

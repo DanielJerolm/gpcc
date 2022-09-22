@@ -11,17 +11,17 @@
 #if defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(__DOXYGEN__)
 
 #include "tools.hpp"
-#include "gpcc/src/file_systems/exceptions.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/file_systems/exceptions.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/string/tools.hpp>
+#include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <dirent.h>
 #include <unistd.h>
-#include <cerrno>
-#include <cstdint>
 #include <stdexcept>
 #include <system_error>
+#include <cerrno>
+#include <cstdint>
 
 namespace gpcc         {
 namespace file_systems {

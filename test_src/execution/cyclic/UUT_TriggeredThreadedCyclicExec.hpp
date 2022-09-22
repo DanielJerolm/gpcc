@@ -11,8 +11,8 @@
 #ifndef UUT_TRIGGEREDTHREADEDCYCLICEXEC_HPP_201612302049
 #define UUT_TRIGGEREDTHREADEDCYCLICEXEC_HPP_201612302049
 
-#include "gpcc/src/execution/cyclic/TriggeredThreadedCyclicExec.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
+#include <gpcc/execution/cyclic/TriggeredThreadedCyclicExec.hpp>
+#include <gpcc/osal/Mutex.hpp>
 
 namespace gpcc
 {
@@ -23,7 +23,7 @@ namespace gpcc
       class TTCEStartStopCtrl;
     }
   }
-  namespace StdIf
+  namespace stdif
   {
     class IIRQ2ThreadWakeup;
   }
@@ -51,7 +51,7 @@ class UUT_TriggeredThreadedCyclicExec final : public TriggeredThreadedCyclicExec
 {
   public:
     UUT_TriggeredThreadedCyclicExec(Trace & _trace,
-                                    gpcc::StdIf::IIRQ2ThreadWakeup & trigger,
+                                    gpcc::stdif::IIRQ2ThreadWakeup & trigger,
                                     gpcc::time::TimeSpan const & waitForTriggerTimeout);
     UUT_TriggeredThreadedCyclicExec(UUT_TriggeredThreadedCyclicExec const &) = delete;
     UUT_TriggeredThreadedCyclicExec(UUT_TriggeredThreadedCyclicExec &&) = delete;

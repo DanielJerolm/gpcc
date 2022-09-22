@@ -9,12 +9,12 @@
 */
 
 #include "WriteArgsParser.hpp"
-#include "gpcc/src/cli/exceptions.hpp"
-#include "gpcc/src/cood/cli/string_conversion.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
-#include "gpcc/src/string/tools.hpp"
-#include <stdexcept>
+#include <gpcc/cli/exceptions.hpp>
+#include <gpcc/cood/cli/string_conversion.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
+#include <gpcc/string/tools.hpp>
 #include <exception>
+#include <stdexcept>
 
 namespace gpcc      {
 namespace cood      {
@@ -106,7 +106,7 @@ WriteArgsParser::WriteArgsParser(std::string const & args)
  */
 void WriteArgsParser::ExtractData(DataType const dataType,
                                   size_t const subIndexMaxSize,
-                                  gpcc::Stream::IStreamWriter::Endian const endian)
+                                  gpcc::stream::IStreamWriter::Endian const endian)
 {
   // Local buffer for the data. In the end, it will be moved to class' buffer in case of success.
   size_t _sizeInBit = 0U;
@@ -132,7 +132,7 @@ void WriteArgsParser::ExtractData(DataType const dataType,
 
       // allocate memory and convert user's input to data
       _data.resize(sizeInByte);
-      gpcc::Stream::MemStreamWriter msw(_data.data(), sizeInByte, endian);
+      gpcc::stream::MemStreamWriter msw(_data.data(), sizeInByte, endian);
       try
       {
         StringToCANOpenEncodedData(strippedDataStr, _sizeInBit, DataType::visible_string, msw);
@@ -160,7 +160,7 @@ void WriteArgsParser::ExtractData(DataType const dataType,
 
       // allocate memory and convert user's input to data
       _data.resize(sizeInByte);
-      gpcc::Stream::MemStreamWriter msw(_data.data(), sizeInByte, endian);
+      gpcc::stream::MemStreamWriter msw(_data.data(), sizeInByte, endian);
       try
       {
         for (auto const & value: values)
@@ -189,7 +189,7 @@ void WriteArgsParser::ExtractData(DataType const dataType,
 
       // allocate memory and convert user's input to data
       _data.resize(sizeInByte);
-      gpcc::Stream::MemStreamWriter msw(_data.data(), sizeInByte, endian);
+      gpcc::stream::MemStreamWriter msw(_data.data(), sizeInByte, endian);
       try
       {
         for (auto const & value: values)
@@ -217,7 +217,7 @@ void WriteArgsParser::ExtractData(DataType const dataType,
 
       // allocate memory and convert user's input to data
       _data.resize(sizeInByte);
-      gpcc::Stream::MemStreamWriter msw(_data.data(), sizeInByte, endian);
+      gpcc::stream::MemStreamWriter msw(_data.data(), sizeInByte, endian);
       try
       {
         StringToCANOpenEncodedData(dataStr, _sizeInBit, dataType, msw);

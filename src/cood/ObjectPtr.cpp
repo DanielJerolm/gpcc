@@ -8,11 +8,11 @@
     Copyright (C) 2018 Daniel Jerolm
 */
 
-#include "ObjectPtr.hpp"
-#include "Object.hpp"
-#include "ObjectDictionary.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/cood/ObjectPtr.hpp>
+#include <gpcc/cood/Object.hpp>
+#include <gpcc/cood/ObjectDictionary.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
 
 namespace gpcc {
 namespace cood {

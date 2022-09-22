@@ -9,11 +9,11 @@
 */
 
 #include "WaitUntilStoppedHelper.hpp"
-#include "gpcc/src/execution/cyclic/TTCEStartStopCtrl.hpp"
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/time/TimePoint.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
+#include <gpcc/execution/cyclic/TTCEStartStopCtrl.hpp>
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/time/TimePoint.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 #include <stdexcept>
 
 namespace gpcc_tests {

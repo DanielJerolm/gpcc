@@ -10,7 +10,7 @@
 
 #ifdef OS_CHIBIOS_ARM
 
-#include "clock.hpp"
+#include <gpcc/time/clock.hpp>
 #include <platform/system_time/system_time.h>
 #include <stdexcept>
 

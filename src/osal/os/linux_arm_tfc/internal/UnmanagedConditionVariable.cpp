@@ -11,8 +11,8 @@
 #ifdef OS_LINUX_ARM_TFC
 
 #include "UnmanagedConditionVariable.hpp"
+#include <gpcc/osal/Panic.hpp>
 #include "UnmanagedMutex.hpp"
-#include "../Panic.hpp"
 #include <system_error>
 
 namespace gpcc {

@@ -13,22 +13,20 @@
 
 #ifndef SKIP_TFC_BASED_TESTS
 
+#include <gpcc/cood/remote_access/requests_and_responses/ReturnStackItem.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/RequestBase.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ResponseBase.hpp>
+#include <gpcc/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/osal/Thread.hpp>
+#include <gpcc/string/tools.hpp>
 #include "RODAN_Listener.hpp"
 #include "TestbenchBase.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReturnStackItem.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/RequestBase.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ResponseBase.hpp"
-#include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/string/tools.hpp"
-
 #include "gtest/gtest.h"
-
-#include <cstdint>
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <cstdint>
 
 namespace gpcc_tests {
 namespace cood       {

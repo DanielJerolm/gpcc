@@ -415,8 +415,13 @@
  * - Public headers must not include private headers.
  *
  * \subsubsection GCS_CS_HEADER_FILES_ORDER Order of #include statements
- * - In case of a cpp-file, the own header shall be included first.
- * - In case of a hpp-file, the headers of base classes shall be included first.
+ * - In case of a cpp-file, the own header shall be included first.\n
+ *   The style used for 'other headers' below shall be applied.
+ * - In case of a cpp-file containing unit tests, the UUT's header or the header of the test fixture shall be included
+ *   first.\n
+ *   The style used for 'other headers' below shall be applied.
+ * - In case of a hpp-file, the headers of base classes shall be included first.\n
+ *   The style used for 'other headers' below shall be applied.
  * - The other headers shall be included in the following order:
  *   + Public headers from gpcc in alphabetical order using angle brackets:\n
  *     `#include <gpcc/.../some_file.hpp>`

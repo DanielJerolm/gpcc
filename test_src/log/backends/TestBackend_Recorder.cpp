@@ -9,8 +9,8 @@
 */
 
 #include "Backend_Recorder.hpp"
-#include "gpcc/src/file_systems/linux_fs/FileStorage.hpp"
-#include "gpcc/src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
+#include <gpcc/file_systems/linux_fs/FileStorage.hpp>
+#include "src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
 #include "gtest/gtest.h"
 
 namespace gpcc_tests {
@@ -89,7 +89,7 @@ TEST(gpcc_log_Backend_Recorder_Tests, RecordAndWriteToFile_NoClear)
   EXPECT_TRUE(line == "Test1");
   line = file->Read_line();
   EXPECT_TRUE(line == "Test2");
-  EXPECT_TRUE(file->GetState() == gpcc::Stream::IStreamReader::States::empty);
+  EXPECT_TRUE(file->GetState() == gpcc::stream::IStreamReader::States::empty);
   file->Close();
 }
 
@@ -114,7 +114,7 @@ TEST(gpcc_log_Backend_Recorder_Tests, RecordAndWriteToFile_Clear)
   EXPECT_TRUE(line == "Test1");
   line = file->Read_line();
   EXPECT_TRUE(line == "Test2");
-  EXPECT_TRUE(file->GetState() == gpcc::Stream::IStreamReader::States::empty);
+  EXPECT_TRUE(file->GetState() == gpcc::stream::IStreamReader::States::empty);
   file->Close();
 }
 
@@ -145,7 +145,7 @@ TEST(gpcc_log_Backend_Recorder_Tests, RecordAndWriteToFile_OverwriteFile)
   EXPECT_TRUE(line == "Test1");
   line = file->Read_line();
   EXPECT_TRUE(line == "Test2");
-  EXPECT_TRUE(file->GetState() == gpcc::Stream::IStreamReader::States::empty);
+  EXPECT_TRUE(file->GetState() == gpcc::stream::IStreamReader::States::empty);
   file->Close();
 }
 

@@ -10,11 +10,12 @@
 
 #ifdef OS_LINUX_X64_TFC
 
-#include "Semaphore.hpp"
-#include "Panic.hpp"
+#include <gpcc/osal/Semaphore.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
 #include "internal/TFCCore.hpp"
+#include "internal/UnmanagedConditionVariable.hpp"
 #include "internal/UnmanagedMutexLocker.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
 #include <stdexcept>
 
 namespace gpcc {
@@ -43,7 +44,7 @@ Semaphore::Semaphore(size_t const initialValue)
 , v(0)
 , blockedThreads(0)
 , threadsToBeReleased(0)
-, freeCV()
+, spFreeCV(std::make_unique<internal::UnmanagedConditionVariable>())
 {
   if (initialValue > MAX)
     throw std::invalid_argument("Semaphore::Semaphore: initialValue too large");
@@ -96,7 +97,7 @@ void Semaphore::Post(void)
   if (v < 0)
   {
     if (threadsToBeReleased == 0)
-      freeCV.Signal();
+      spFreeCV->Signal();
     v++;
     threadsToBeReleased++;
     pTFCCore->ReportThreadAboutToWakeUp();
@@ -150,7 +151,7 @@ void Semaphore::Wait(void)
     try
     {
       while (threadsToBeReleased == 0)
-        freeCV.Wait(pTFCCore->GetBigLock());
+        spFreeCV->Wait(pTFCCore->GetBigLock());
     }
     catch (...)
     {
@@ -224,7 +225,7 @@ void Semaphore::Signal_freeCV(void) noexcept
 {
   try
   {
-    freeCV.Signal();
+    spFreeCV->Signal();
   }
   catch (...)
   {
