@@ -19,6 +19,7 @@ namespace internal {
 
 /**
  * \ingroup GPCC_CLI_INTERNALS
+ * \class ReturnKeyFilter ReturnKeyFilter.hpp "src/cli/internal/ReturnKeyFilter.hpp"
  * \brief Filter for RETURN key codes (CR/LF) used by class @ref CLI.
  *
  * This class is a helper for class @ref CLI.

@@ -32,6 +32,7 @@ namespace internal
  */
 
 /**
+ * \class MemoryDescriptorPool MemoryDescriptorPool.hpp "src/resource_management/memory/internal/MemoryDescriptorPool.hpp"
  * \brief A grow-only pool for recycling unused @ref MemoryDescriptor instances that do not reference to any memory.
  *
  * _Implicit capabilities: default-construction_

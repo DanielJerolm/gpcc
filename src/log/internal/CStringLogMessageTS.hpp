@@ -20,6 +20,7 @@ namespace internal {
 
 /**
  * \ingroup GPCC_LOG_INTERNAL
+ * \class CStringLogMessageTS CStringLogMessageTS.hpp "src/log/internal/CStringLogMessageTS.hpp"
  * \brief Container for the ingredients of a log message composed of a c-string located on the heap plus a timestamp.
  *
  * - - -

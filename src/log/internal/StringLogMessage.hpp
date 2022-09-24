@@ -19,6 +19,7 @@ namespace internal {
 
 /**
  * \ingroup GPCC_LOG_INTERNAL
+ * \class StringLogMessage StringLogMessage.hpp "src/log/internal/StringLogMessage.hpp"
  * \brief Container for the ingredients of a log message comprised of an std::string.
  *
  * - - -

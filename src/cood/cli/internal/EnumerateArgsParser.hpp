@@ -20,6 +20,7 @@ namespace internal  {
 
 /**
  * \ingroup GPCC_COOD_CLI_INTERNAL
+ * \class EnumerateArgsParser EnumerateArgsParser.hpp "src/cood/cli/internal/EnumerateArgsParser.hpp"
  * \brief Parses the arguments passed to a CLI command that shall enumerate the objects contained in an
  *        object dictionary.
  *

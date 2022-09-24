@@ -20,6 +20,7 @@ namespace internal  {
 
 /**
  * \ingroup GPCC_COOD_CLI_INTERNAL
+ * \class InfoArgsParser InfoArgsParser.hpp "src/cood/cli/internal/InfoArgsParser.hpp"
  * \brief Parses the arguments passed to a CLI command that shall query information about a CANopen object.
  *
  * The following information is extracted from the args:

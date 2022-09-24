@@ -20,6 +20,7 @@ namespace internal {
 
 /**
  * \ingroup GPCC_LOG_INTERNAL
+ * \class RomConstLogMessageTS RomConstLogMessageTS.hpp "src/log/internal/RomConstLogMessageTS.hpp"
  * \brief Container for the ingredients of a log message composed of a c-string located in ROM/code memory
  *        plus a timestamp.
  *

@@ -21,6 +21,7 @@ namespace internal {
 
 /**
  * \ingroup GPCC_TIME_FLOW_CONTROL
+ * \class UnmanagedMutex UnmanagedMutex.hpp "src/osal/os/linux_x64_tfc/internal/UnmanagedMutex.hpp"
  * \brief A native, unmanaged mutex.
  *
  * This class provides a trivial mutex with the following properties:

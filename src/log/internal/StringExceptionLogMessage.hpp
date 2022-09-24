@@ -20,6 +20,7 @@ namespace internal {
 
 /**
  * \ingroup GPCC_LOG_INTERNAL
+ * \class StringExceptionLogMessage StringExceptionLogMessage.hpp "src/log/internal/StringExceptionLogMessage.hpp"
  * \brief Container for the ingredients of a log message composed of an std::string and an exception conserved in a std::exception_ptr.
  *
  * - - -

@@ -32,6 +32,7 @@ namespace internal
  */
 
 /**
+ * \class FreeBlockPool FreeBlockPool.hpp "src/resource_management/memory/internal/FreeBlockPool.hpp"
  * \brief A pool for @ref MemoryDescriptor instances referencing (unused/free) memory of different size.
  *
  * The pool organizes the @ref MemoryDescriptor instances in different lists based on the size of the

@@ -32,6 +32,7 @@ class TimeLimitedThreadBlocker;
 
 /**
  * \ingroup GPCC_TIME_FLOW_CONTROL
+ * \class TFCCore TFCCore.hpp "src/osal/os/linux_x64_tfc/internal/TFCCore.hpp"
  * \brief Time-Flow-Control Core
  *
  * This class implements the core of GPCC's Time-Flow-Control feature (see @ref GPCC_TIME_FLOW_CONTROL). It is part

@@ -32,6 +32,7 @@ namespace internal
 
 /**
  * \ingroup GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_INTERNAL
+ * \class BlockAccessor BlockAccessor.hpp "src/file_systems/eeprom_section_system/internal/BlockAccessor.hpp"
  * \brief Helper for [EEPROMSectionSystem](@ref eeprom_section_system::EEPROMSectionSystem): Divides the storage into blocks and offers read- and write-access.
  *
  * This class manages the storage an @ref EEPROMSectionSystem is working on:

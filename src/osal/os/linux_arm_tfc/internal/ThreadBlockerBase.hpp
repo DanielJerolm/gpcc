@@ -19,6 +19,7 @@ namespace internal {
 
 /**
  * \ingroup GPCC_TIME_FLOW_CONTROL
+ * \class ThreadBlockerBase ThreadBlockerBase.hpp "src/osal/os/linux_arm_tfc/internal/ThreadBlockerBase.hpp"
  * \brief Base class for all ThreadBlocker-implementations.
  *
  * This is the base class for class @ref ThreadBlocker and class @ref TimeLimitedThreadBlocker.

@@ -28,6 +28,7 @@ namespace internal
 
 /**
  * \ingroup GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_INTERNAL
+ * \class SectionWriter SectionWriter.hpp "src/file_systems/eeprom_section_system/internal/SectionWriter.hpp"
  * \brief Class used to write data to a new section via @ref gpcc::stream::IStreamWriter.
  *
  * An instance of this class is created by class @ref EEPROMSectionSystem if a new section shall

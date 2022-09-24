@@ -23,6 +23,7 @@ class UnmanagedMutex;
 
 /**
  * \ingroup GPCC_TIME_FLOW_CONTROL
+ * \class UnmanagedConditionVariable UnmanagedConditionVariable.hpp "src/osal/os/linux_x64_tfc/internal/UnmanagedConditionVariable.hpp"
  * \brief A native, unmanaged condition variable.
  *
  * This class provides a trivial condition variable with the following properties:
