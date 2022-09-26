@@ -295,7 +295,7 @@ class TriggeredThreadedCyclicExec
 };
 
 /**
- * \fn virtual void TriggeredThreadedCyclicExec::Cyclic(void) = 0
+ * \fn void TriggeredThreadedCyclicExec::Cyclic(void)
  * \brief This is called cyclically regardless of the @ref TriggeredThreadedCyclicExec's state.
  *
  * This is called independently of the @ref TriggeredThreadedCyclicExec's state each time when either a trigger
@@ -317,7 +317,7 @@ class TriggeredThreadedCyclicExec
  */
 
 /**
- * \fn virtual void TriggeredThreadedCyclicExec::OnStart(void) = 0
+ * \fn void TriggeredThreadedCyclicExec::OnStart(void)
  * \brief This is called after the @ref TriggeredThreadedCyclicExec has switched to @ref States::running.
  *
  * The order of calling when switching to state @ref States::running is as follows:
@@ -339,7 +339,7 @@ class TriggeredThreadedCyclicExec
  */
 
 /**
- * \fn virtual void TriggeredThreadedCyclicExec::OnStop(void) = 0
+ * \fn void TriggeredThreadedCyclicExec::OnStop(void)
  * \brief This is called after the @ref TriggeredThreadedCyclicExec has left state @ref States::running.
  *
  * The order of calling when leaving state @ref States::running is as follows:
@@ -361,7 +361,7 @@ class TriggeredThreadedCyclicExec
  */
 
 /**
- * \fn virtual bool TriggeredThreadedCyclicExec::Sample(bool const overrun) = 0
+ * \fn bool TriggeredThreadedCyclicExec::Sample(bool const overrun)
  * \brief In state @ref States::running, this is called cyclically each time the trigger is received.
  *
  * __Thread safety:__\n
@@ -387,7 +387,7 @@ class TriggeredThreadedCyclicExec
  */
 
 /**
- * \fn virtual void TriggeredThreadedCyclicExec::OnStateChange(TriggeredThreadedCyclicExec::State const newState, TriggeredThreadedCyclicExec::StopReasons const stopReason) = 0
+ * \fn void TriggeredThreadedCyclicExec::OnStateChange(State const newState, StopReasons const stopReason)
  * \brief This is called after the state of @ref TriggeredThreadedCyclicExec has changed or after a stop request is
  * received when the state is already @ref States::stopped.
  *

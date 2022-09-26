@@ -104,6 +104,7 @@ class MemoryDescriptorSPTS
  * Start address of the referenced piece of memory.\n
  * The start address is valid until the @ref MemoryDescriptorSPTS instance is released.
  */
+
 /**
  * \fn size_t MemoryDescriptorSPTS::GetSize(void) const
  * \brief Retrieves the size of the referenced piece of memory.

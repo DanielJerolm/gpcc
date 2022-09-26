@@ -52,7 +52,7 @@ class ThreadBlockerBase
 };
 
 /**
- * \fn virtual void ThreadBlockerBase::Signal(void) = 0
+ * \fn void ThreadBlockerBase::Signal(void)
  * \brief Signals that the blocked thread (if any) is allowed to continue.
  *
  * After calling this, any subsequent call to `Block()` will not block the calling thread any more.\n

@@ -105,7 +105,7 @@ class StreamReaderBase: public IStreamReader
 };
 
 /**
- * \fn unsigned char StreamReaderBase::Pop(void) = 0
+ * \fn unsigned char StreamReaderBase::Pop(void)
  *
  * \brief Pops one byte of data from the stream.
  *
@@ -140,7 +140,7 @@ class StreamReaderBase: public IStreamReader
  * \return The byte popped from the stream.
  */
 /**
- * \fn void StreamReaderBase::Pop(void* p, size_t n) = 0
+ * \fn void StreamReaderBase::Pop(void* p, size_t n)
  *
  * \brief Pops multiple bytes of data from the stream.
  *
@@ -181,7 +181,7 @@ class StreamReaderBase: public IStreamReader
  * _Note: In case of zero, any bits from the last read byte that have not yet been read will not be discarded._
  */
 /**
- * \fn uint8_t StreamReaderBase::PopBits(uint_fast8_t n) = 0
+ * \fn uint8_t StreamReaderBase::PopBits(uint_fast8_t n)
  *
  * \brief Pops up to 8 bits of data from the stream.
  *

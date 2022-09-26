@@ -52,7 +52,7 @@ class IMultiRODACLIClient
 };
 
 /**
- * \fn void IMultiRODACLIClient::Register
+ * \fn void IMultiRODACLIClient::Register(gpcc::cood::IRemoteObjectDictionaryAccess & rodaItf, uint32_t const id)
  * \brief Registers a RODA interface at the CLI client.
  *
  * \pre   The given ID is not yet used.
@@ -84,7 +84,7 @@ class IMultiRODACLIClient
  */
 
 /**
- * \fn void IMultiRODACLIClient::Unregister
+ * \fn void IMultiRODACLIClient::Unregister(uint32_t const id)
  * \brief Unregisters a RODA interface that has previously been registered via
  *        [Register(...)](@ref gpcc::cood::IMultiRODACLIClient::Register).
  *

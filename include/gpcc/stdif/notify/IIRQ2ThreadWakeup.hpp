@@ -75,7 +75,7 @@ class IIRQ2ThreadWakeup
 
 
 /**
- * \fn virtual bool IIRQ2ThreadWakeup::SignalFromISR(void) = 0
+ * \fn bool IIRQ2ThreadWakeup::SignalFromISR(void)
  * \brief Sets the wake-up flag and wakes up a blocked thread (if any).
  *
  * If the wake-up flag is already set, then this method has no effect.
@@ -98,7 +98,7 @@ class IIRQ2ThreadWakeup
  */
 
 /**
- * \fn virtual bool IIRQ2ThreadWakeup::SignalFromThread(void) = 0
+ * \fn bool IIRQ2ThreadWakeup::SignalFromThread(void)
  * \brief Sets the wake-up flag and wakes up a blocked thread (if any).
  *
  * If the wake-up flag is already set, then this method has no effect.
@@ -121,7 +121,7 @@ class IIRQ2ThreadWakeup
  */
 
 /**
- * \fn virtual IIRQ2ThreadWakeup::Result IIRQ2ThreadWakeup::Wait(void) = 0
+ * \fn gpcc::stdif::IIRQ2ThreadWakeup::Result IIRQ2ThreadWakeup::Wait(void)
  * \brief Blocks the calling thread until the wake-up flag is set and clears the flag.
  *
  * It is recommended to have only one thread invoking this method or @ref WaitWithTimeout() at any time. If multiple
@@ -151,7 +151,7 @@ class IIRQ2ThreadWakeup
  */
 
 /**
- * \fn virtual IIRQ2ThreadWakeup::Result IIRQ2ThreadWakeup::WaitWithTimeout(time::TimeSpan const & timeout) = 0
+ * \fn gpcc::stdif::IIRQ2ThreadWakeup::Result IIRQ2ThreadWakeup::WaitWithTimeout(gpcc::time::TimeSpan const & timeout)
  * \brief Blocks the calling thread (with timeout) until the wake-up flag is set and clears the flag.
  *
  * It is recommended to have only one thread invoking this method or @ref Wait() at any time. If multiple threads are

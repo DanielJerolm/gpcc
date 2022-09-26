@@ -184,7 +184,7 @@ class ScopeGuard final
  */
 
 /**
- * \fn ScopeGuard::Dismiss()
+ * \fn void ScopeGuard::Dismiss(void)
  * \brief Dismisses the scope guard. The roll-back code will not be executed when the scope guard is released.
  *
  * This has no effect, if the scope guard is already dismissed.

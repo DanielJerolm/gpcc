@@ -58,7 +58,7 @@ class ILogFacilityCtrl
 };
 
 /**
- * \fn ILogFacilityCtrl::EnumerateLogSources
+ * \fn std::vector<gpcc::log::ILogFacilityCtrl::tLogSrcConfig> ILogFacilityCtrl::EnumerateLogSources(void) const
  * \brief Retrieves a list with the names and log levels of all log sources currently registered at the log facility.
  *
  * - - -
@@ -82,7 +82,7 @@ class ILogFacilityCtrl
  */
 
 /**
- * \fn ILogFacilityCtrl::GetLogLevel
+ * \fn gpcc::log::LogLevel ILogFacilityCtrl::GetLogLevel(std::string const & srcName) const
  * \brief Queries the log level of a log source.
  *
  * - - -
@@ -110,7 +110,7 @@ class ILogFacilityCtrl
  */
 
 /**
- * \fn ILogFacilityCtrl::SetLogLevel
+ * \fn bool ILogFacilityCtrl::SetLogLevel(std::string const & srcName, gpcc::log::LogLevel const level)
  * \brief Sets the log level of a specific log source.
  *
  * - - -
@@ -139,7 +139,7 @@ class ILogFacilityCtrl
  */
 
 /**
- * \fn ILogFacilityCtrl::LowerLogLevel
+ * \fn bool ILogFacilityCtrl::LowerLogLevel(std::string const & srcName, gpcc::log::LogLevel const level)
  * \brief Ensures that the log level of a specific log source is at or below a given level.
  *
  * - - -
@@ -169,7 +169,7 @@ class ILogFacilityCtrl
  */
 
 /**
- * \fn ILogFacilityCtrl::RaiseLogLevel
+ * \fn bool ILogFacilityCtrl::RaiseLogLevel(std::string const & srcName, gpcc::log::LogLevel const level)
  * \brief Ensures that the log level of a specific log source is at or above a given level.
  *
  * - - -
@@ -199,7 +199,7 @@ class ILogFacilityCtrl
  */
 
 /**
- * \fn ILogFacilityCtrl::SetDefaultSettings
+ * \fn void ILogFacilityCtrl::SetDefaultSettings(std::vector<tLogSrcConfig> _defaultSettings)
  * \brief Provides a list of [tLogSrcConfig](@ref gpcc::log::ILogFacilityCtrl::tLogSrcConfig) entries to the
  *        log facility. The list is used to setup the initial log levels of subsequent registered
  *        [Logger](@ref gpcc::log::Logger) instances.
@@ -248,7 +248,7 @@ class ILogFacilityCtrl
  */
 
 /**
- * \fn ILogFacilityCtrl::RemoveDefaultSettings
+ * \fn std::vector<gpcc::log::ILogFacilityCtrl::tLogSrcConfig> ILogFacilityCtrl::RemoveDefaultSettings(void)
  * \brief Removes the list of default log levels for new registered [Logger](@ref gpcc::log::Logger) instances
  *        from the log facility.
  *

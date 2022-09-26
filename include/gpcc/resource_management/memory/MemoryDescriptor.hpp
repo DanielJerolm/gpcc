@@ -140,6 +140,7 @@ class MemoryDescriptor
  * Start address of the referenced piece of memory.\n
  * The start address is valid until the memory is returned to the @ref HeapManager.
  */
+
 /**
  * \fn size_t MemoryDescriptor::GetSize(void) const
  * \brief Retrieves the size of the referenced piece of memory.

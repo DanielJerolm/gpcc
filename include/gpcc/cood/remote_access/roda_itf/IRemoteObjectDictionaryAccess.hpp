@@ -53,7 +53,7 @@ class IRemoteObjectDictionaryAccess
 };
 
 /**
- * \fn IRemoteObjectDictionaryAccess::Register
+ * \fn void IRemoteObjectDictionaryAccess::Register(gpcc::cood::IRemoteObjectDictionaryAccessNotifiable * const pNotifiable)
  * \brief Registers an [IRemoteObjectDictionaryAccessNotifiable](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable)
  *        interface.
  *
@@ -89,7 +89,7 @@ class IRemoteObjectDictionaryAccess
  */
 
 /**
- * \fn IRemoteObjectDictionaryAccess::Unregister
+ * \fn void IRemoteObjectDictionaryAccess::Unregister(void)
  * \brief Unregisters the [IRemoteObjectDictionaryAccessNotifiable](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable)
  *        interface previously registered via [Register()](@ref gpcc::cood::IRemoteObjectDictionaryAccess::Register).
  *
@@ -127,7 +127,7 @@ class IRemoteObjectDictionaryAccess
  */
 
 /**
- * \fn IRemoteObjectDictionaryAccess::Send
+ * \fn void IRemoteObjectDictionaryAccess::Send(std::unique_ptr<gpcc::cood::RequestBase> & spReq)
  * \brief Sends a remote access request to the remote access server.
  *
  * The request will be processed asynchronously. The response will be delivered to the registered
@@ -180,7 +180,7 @@ class IRemoteObjectDictionaryAccess
  */
 
 /**
- * \fn IRemoteObjectDictionaryAccess::RequestExecutionContext
+ * \fn void IRemoteObjectDictionaryAccess::RequestExecutionContext(void)
  * \brief Requests invocation of [IRemoteObjectDictionaryAccessNotifiable::LoanExecutionContext()](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::LoanExecutionContext).
  *
  * If a request is already pending, then this method has no effect.

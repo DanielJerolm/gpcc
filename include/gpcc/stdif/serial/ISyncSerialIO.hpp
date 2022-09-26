@@ -44,7 +44,7 @@ class ISyncSerialIO
 };
 
 /**
- * \fn virtual void ISyncSerialIO::TxSync
+ * \fn void ISyncSerialIO::TxSync(void const * pData, size_t size)
  * \brief Transmits data synchronously.
  *
  * This method blocks until transmission has finished.
@@ -73,7 +73,7 @@ class ISyncSerialIO
  */
 
 /**
- * \fn virtual size_t ISyncSerialIO::RxSync
+ * \fn size_t ISyncSerialIO::RxSync(void* pData, size_t size, bool* const pOverflow, int32_t const timeout_ms)
  * \brief Receives data synchronously.
  *
  * This method blocks until either `size` bytes have been received or a timeout condition occurs.
@@ -120,7 +120,7 @@ class ISyncSerialIO
  */
 
 /**
- * \fn virtual void ISyncSerialIO::FlushRxBuffer
+ * \fn void ISyncSerialIO::FlushRxBuffer(void)
  * \brief Flushes all buffers in the receive path of the hardware and the driver.
  *
  * - - -

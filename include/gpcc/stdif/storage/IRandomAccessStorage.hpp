@@ -85,7 +85,7 @@ class IRandomAccessStorage
 };
 
 /**
- * \fn virtual size_t IRandomAccessStorage::GetSize() const = 0
+ * \fn size_t IRandomAccessStorage::GetSize() const
  * \brief Retrieves the size of the storage.
  *
  * - - -
@@ -106,7 +106,7 @@ class IRandomAccessStorage
  */
 
 /**
- * \fn virtual size_t IRandomAccessStorage::GetPageSize() const = 0
+ * \fn size_t IRandomAccessStorage::GetPageSize() const
  * \brief Retrieves if the storage is organized in pages and the page size.
  *
  * - - -
@@ -128,7 +128,7 @@ class IRandomAccessStorage
  */
 
 /**
- * \fn virtual void IRandomAccessStorage::Read(uint32_t address, size_t n, void* pBuffer) const = 0
+ * \fn void IRandomAccessStorage::Read(uint32_t address, size_t n, void* pBuffer) const
  * \brief Reads data from the storage.
  *
  * The read operation is automatically splitted into multiple read operations in order to satisfy page boundary
@@ -164,7 +164,7 @@ class IRandomAccessStorage
  */
 
 /**
- * \fn virtual void IRandomAccessStorage::Write(uint32_t address, size_t n, void const * pBuffer) = 0
+ * \fn void IRandomAccessStorage::Write(uint32_t address, size_t n, void const * pBuffer)
  * \brief Writes data into the storage.
  *
  * The write operation is automatically splitted into multiple write operations in order to satisfy page boundary
@@ -209,7 +209,7 @@ class IRandomAccessStorage
  */
 
 /**
- * \fn virtual bool IRandomAccessStorage::WriteAndCheck(uint32_t address, size_t n, void const * pBuffer, void* pAuxBuffer) = 0
+ * \fn bool IRandomAccessStorage::WriteAndCheck(uint32_t address, size_t n, void const * pBuffer, void* pAuxBuffer)
  * \brief Writes data into the storage, reads the written data back, and compares the data.
  *
  * The write operation is automatically splitted into multiple write operations in order to satisfy page boundary

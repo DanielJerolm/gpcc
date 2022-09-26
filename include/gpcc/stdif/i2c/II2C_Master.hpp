@@ -113,7 +113,7 @@ class II2C_Master
 
 
 /**
- * \fn void II2C_Master::LockBus(void)
+ * \fn gpcc::osal::MutexLocker II2C_Master::LockBus(void)
  * \brief Locks the I2C bus.
  *
  * If the bus is already locked, then this will block until the bus is unlocked.

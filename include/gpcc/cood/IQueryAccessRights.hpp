@@ -115,7 +115,7 @@ class IQueryAccessRights
 };
 
 /**
- * \fn bool IQueryAccessRights::AcquireAccessRights
+ * \fn bool IQueryAccessRights::AcquireAccessRights(gpcc::cood::Object::attr_t & rights, tOnUnlockedCallback const & cb)
  * \brief Acquires and queries access rights for object dictionary access.
  *
  * The acquisition and query are performed as one atomic operation.
@@ -153,7 +153,7 @@ class IQueryAccessRights
  */
 
 /**
- * \fn IQueryAccessRights::ReleaseAccessRights
+ * \fn void IQueryAccessRights::ReleaseAccessRights(void)
  * \brief Releases access rights that have previously been acquried via
  *        [AcquireAccessRights()](@ref gpcc::cood::IQueryAccessRights::AcquireAccessRights).
  *
@@ -174,7 +174,7 @@ class IQueryAccessRights
  */
 
 /**
- * \fn IQueryAccessRights::Abort
+ * \fn void IQueryAccessRights::Abort(tOnUnlockedCallback const & cb)
  * \brief Aborts delivery of a callback enqueued by
  *        [AcquireAccessRights()](@ref gpcc::cood::IQueryAccessRights::AcquireAccessRights).
  *

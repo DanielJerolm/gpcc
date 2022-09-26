@@ -210,7 +210,7 @@ class IStreamWriter
 };
 
 /**
- * \fn IStreamWriter& IStreamWriter::operator<< (uint8_t const value)
+ * \fn gpcc::steam::IStreamWriter& IStreamWriter::operator<< (uint8_t const value)
  *
  * \brief Writes data to the stream.
  *
@@ -244,51 +244,51 @@ class IStreamWriter
  * \return Reference to this.
  */
 /**
- * \fn IStreamWriter& IStreamWriter::operator<< (uint16_t const value)
+ * \fn gpcc::steam::IStreamWriter& IStreamWriter::operator<< (uint16_t const value)
  * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
- * \fn IStreamWriter& IStreamWriter::operator<< (uint32_t const value)
+ * \fn gpcc::steam::IStreamWriter& IStreamWriter::operator<< (uint32_t const value)
  * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
- * \fn IStreamWriter& IStreamWriter::operator<< (uint64_t const value)
+ * \fn gpcc::steam::IStreamWriter& IStreamWriter::operator<< (uint64_t const value)
  * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
- * \fn IStreamWriter& IStreamWriter::operator<< (int8_t const value)
+ * \fn gpcc::steam::IStreamWriter& IStreamWriter::operator<< (int8_t const value)
  * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
- * \fn IStreamWriter& IStreamWriter::operator<< (int16_t const value)
+ * \fn gpcc::steam::IStreamWriter& IStreamWriter::operator<< (int16_t const value)
  * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
- * \fn IStreamWriter& IStreamWriter::operator<< (int32_t const value)
+ * \fn gpcc::steam::IStreamWriter& IStreamWriter::operator<< (int32_t const value)
  * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
- * \fn IStreamWriter& IStreamWriter::operator<< (int64_t const value)
+ * \fn gpcc::steam::IStreamWriter& IStreamWriter::operator<< (int64_t const value)
  * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
- * \fn IStreamWriter& IStreamWriter::operator<< (float const value)
+ * \fn gpcc::steam::IStreamWriter& IStreamWriter::operator<< (float const value)
  * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
- * \fn IStreamWriter& IStreamWriter::operator<< (double const value)
+ * \fn gpcc::steam::IStreamWriter& IStreamWriter::operator<< (double const value)
  * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
- * \fn IStreamWriter& IStreamWriter::operator<< (bool const value)
+ * \fn gpcc::steam::IStreamWriter& IStreamWriter::operator<< (bool const value)
  * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
- * \fn IStreamWriter& IStreamWriter::operator<< (char const value)
+ * \fn gpcc::steam::IStreamWriter& IStreamWriter::operator<< (char const value)
  * \copydoc gpcc::stream::IStreamWriter::operator<< (uint8_t const)
  */
 /**
- * \fn IStreamWriter& IStreamWriter::operator<< (std::string const & value)
+ * \fn gpcc::steam::IStreamWriter& IStreamWriter::operator<< (std::string const & value)
  *
  * \brief Writes a string to the stream (incl. null-terminator).
  *
@@ -324,7 +324,7 @@ class IStreamWriter
  */
 
 /**
- * \fn IStreamWriter::States IStreamWriter::GetState(void) const
+ * \fn gpcc::stream::IStreamWriter::States IStreamWriter::GetState(void) const
  *
  * \brief Retrieves the current state of the stream writer.
  *
@@ -343,7 +343,7 @@ class IStreamWriter
  * \return Current state of the stream writer.
  */
 /**
- * \fn IStreamWriter::Endian IStreamWriter::GetEndian(void) const
+ * \fn gpcc::stream::IStreamWriter::Endian IStreamWriter::GetEndian(void) const
  *
  * \brief Retrieves the endian of the data encoded in the stream.
  *
@@ -418,7 +418,7 @@ class IStreamWriter
  */
 
 /**
- * \fn IStreamWriter::GetNbOfCachedBits
+ * \fn uint_fast8_t IStreamWriter::GetNbOfCachedBits(void) const
  * \brief Retrieves the number of cached bits which have not yet been written to the stream.
  *
  * Bits written to a stream are cached and are not immediately written to the stream. A byte of data will be written
@@ -498,7 +498,7 @@ class IStreamWriter
  */
 
 /**
- * \fn IStreamWriter::AlignToByteBoundary
+ * \fn uint_fast8_t IStreamWriter::AlignToByteBoundary(bool const fillWithOnesNotZeros)
  * \brief Aligns the stream to the next byte boundary by writing ones or zeros.
  *
  * This will have no effect, if the stream is already aligned to a byte boundary (= no cached bits).
@@ -900,7 +900,7 @@ class IStreamWriter
  * \copydoc gpcc::stream::IStreamWriter::Write_uint8(uint8_t const *,size_t)
  */
 /**
- * \fn bool IStreamWriter::Write_string(std::string const & str)
+ * \fn void IStreamWriter::Write_string(std::string const & str)
  *
  * \brief Writes a string to the stream (incl. null-terminator).
  *
@@ -935,7 +935,7 @@ class IStreamWriter
  * The null-terminator is written into the stream, too.
  */
 /**
- * \fn bool IStreamWriter::Write_line(std::string const & str)
+ * \fn void IStreamWriter::Write_line(std::string const & str)
  *
  * \brief Writes a line to the stream. Basically a string is written, but instead of
  * using a null-terminator, the string is terminated using '\\n'.

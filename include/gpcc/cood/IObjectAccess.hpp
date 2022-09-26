@@ -74,7 +74,7 @@ class IObjectAccess
 };
 
 /**
- * \fn IObjectAccess::LockForObjAccess
+ * \fn gpcc::osal::RWLockReadLocker IObjectAccess::LockForObjAccess(void)
  * \brief Locks the object dictionary for object access.
  *
  * While locked for object access, objects cannot be added to or removed from the object dictionary.
@@ -117,7 +117,7 @@ class IObjectAccess
  */
 
 /**
- * \fn IObjectAccess::GetNumberOfObjects
+ * \fn size_t IObjectAccess::GetNumberOfObjects(void) const
  * \brief Retrieves the number of objects currently contained in the object dictionary.
  *
  * - - -
@@ -141,7 +141,7 @@ class IObjectAccess
  */
 
 /**
- * \fn IObjectAccess::GetIndices
+ * \fn std::vector<uint16_t> IObjectAccess::GetIndices(void) const
  * \brief Retrieves a list of the indices of all objects currently contained in the object dictionary.
  *
  * As an alternative to this method, [GetFirstObject()](@ref gpcc::cood::IObjectAccess::GetFirstObject) could be
@@ -172,7 +172,7 @@ class IObjectAccess
  */
 
 /**
- * \fn IObjectAccess::GetFirstObject
+ * \fn gpcc::cood::ObjectPtr IObjectAccess::GetFirstObject(void)
  * \brief Returns a pointer to the first object in the object dictionary (the one with the smallest index value).
  *
  * This is intended to be used to iterate over all objects in an object dictionary.\n
@@ -220,7 +220,7 @@ class IObjectAccess
  */
 
 /**
- * \fn IObjectAccess::GetObject
+ * \fn gpcc::cood::ObjectPtr IObjectAccess::GetObject(uint16_t const index)
  * \brief Performs a look-up in the object dictionary for an object with a given index.
  *
  * - - -
@@ -261,7 +261,7 @@ class IObjectAccess
  */
 
 /**
- * \fn IObjectAccess::GetNextNearestObject
+ * \fn gpcc::cood::ObjectPtr IObjectAccess::GetNextNearestObject(uint16_t const index)
  * \brief Retrieves the object registered at a given index or a subsequent object at the next nearest index.
  *
  * - - -

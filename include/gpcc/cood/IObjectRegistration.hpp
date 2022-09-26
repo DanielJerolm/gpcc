@@ -57,7 +57,7 @@ class IObjectRegistration
 };
 
 /**
- * \fn IObjectRegistration::Clear
+ * \fn void IObjectRegistration::Clear(void)
  * \brief Removes all objects from the object dictionary and releases them.
  *
  * - - -
@@ -74,7 +74,7 @@ class IObjectRegistration
  */
 
 /**
- * \fn IObjectRegistration::Add
+ * \fn void IObjectRegistration::Add(std::unique_ptr<gpcc::cood::Object> & spObj, uint16_t const index)
  * \brief Adds an object to the object dictionary.
  *
  * - - -
@@ -102,7 +102,7 @@ class IObjectRegistration
  */
 
 /**
- * \fn IObjectRegistration::Remove
+ * \fn void IObjectRegistration::Remove(uint16_t const index)
  * \brief Removes an object from the object dictionary and releases it.
  *
  * - - -

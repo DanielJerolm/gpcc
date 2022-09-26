@@ -74,7 +74,7 @@ class IFileAndDirectoryStorage : public IFileStorage
 };
 
 /**
- * \fn IFileAndDirectoryStorage::IsDirectoryExisting
+ * \fn bool IFileAndDirectoryStorage::IsDirectoryExisting(std::string const & name)
  * \brief Checks if a directory is existing or not.
  *
  * - - -
@@ -106,7 +106,7 @@ class IFileAndDirectoryStorage : public IFileStorage
  */
 
 /**
- * \fn IFileAndDirectoryStorage::CreateDirectory
+ * \fn void IFileAndDirectoryStorage::CreateDirectory(std::string const & name)
  * \brief Creates a new empty directory.
  *
  * - - -
@@ -150,7 +150,7 @@ class IFileAndDirectoryStorage : public IFileStorage
  */
 
 /**
- * \fn IFileAndDirectoryStorage::DeleteDirectoryContent
+ * \fn void IFileAndDirectoryStorage::DeleteDirectoryContent(std::string const & name)
  * \brief Deletes the content of a directory (all files and sub-directories).\n
  *        The directory itself will not be deleted.
  *
@@ -195,7 +195,7 @@ class IFileAndDirectoryStorage : public IFileStorage
  */
 
 /**
- * \fn IFileAndDirectoryStorage::DeleteDirectory
+ * \fn void IFileAndDirectoryStorage::DeleteDirectory(std::string const & name)
  * \brief Deletes a directory.
  *
  * \pre   The directory must be empty. Use [DeleteDirectoryContent()](@ref gpcc::file_systems::IFileAndDirectoryStorage::DeleteDirectoryContent) to
@@ -238,7 +238,7 @@ class IFileAndDirectoryStorage : public IFileStorage
  */
 
 /**
- * \fn IFileAndDirectoryStorage::RenameDirectory
+ * \fn void IFileAndDirectoryStorage::RenameDirectory(std::string const & currName, std::string const & newName)
  * \brief Renames a directory and/or changes its location.
  *
  * - - -
@@ -288,7 +288,7 @@ class IFileAndDirectoryStorage : public IFileStorage
  */
 
 /**
- * \fn IFileAndDirectoryStorage::EnumerateSubDirectories
+ * \fn std::list<std::string> IFileAndDirectoryStorage::EnumerateSubDirectories(std::string const & dir)
  * \brief Enumerates all sub-directories in a given directory.
  *
  * Enumeration is not recursive.\n
@@ -334,7 +334,7 @@ class IFileAndDirectoryStorage : public IFileStorage
  */
 
 /**
- * \fn IFileAndDirectoryStorage::EnumerateFiles
+ * \fn std::list<std::string> IFileAndDirectoryStorage::EnumerateFiles(std::string const & dir)
  * \brief Enumerates all files in a given directory.
  *
  * Enumeration is not recursive.\n

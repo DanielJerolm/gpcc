@@ -117,7 +117,7 @@ inline LogType LogMessage::GetLogType(void) const noexcept
 }
 
 /**
- * \fn LogMessage::BuildText
+ * \fn std::string LogMessage::BuildText(void) const
  * \brief Creates an std::string containing the log message build from the ingredients stored in the
  *        @ref LogMessage sub-class.
  *

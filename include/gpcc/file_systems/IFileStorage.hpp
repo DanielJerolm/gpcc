@@ -86,7 +86,7 @@ class IFileStorage
 };
 
 /**
- * \fn IFileStorage::Open
+ * \fn std::unique_ptr<gpcc::stream::IStreamReader> IFileStorage::Open(std::string const & name)
  * \brief Opens an existing file for reading.
  *
  * This is intended to be used with regular files only. If buffered I/O is available on the platform,
@@ -134,7 +134,7 @@ class IFileStorage
  */
 
 /**
- * \fn IFileStorage::Create
+ * \fn std::unique_ptr<gpcc::stream::IStreamWriter> IFileStorage::Create(std::string const & name, bool const overwriteIfExisting)
  * \brief Creates a new (regular) file or overwrites an existing file and opens it for writing.
  *
  * - - -
@@ -188,7 +188,7 @@ class IFileStorage
  */
 
 /**
- * \fn IFileStorage::Delete
+ * \fn void IFileStorage::Delete(std::string const & name)
  * \brief Deletes a file.
  *
  * - - -
@@ -227,7 +227,7 @@ class IFileStorage
  */
 
 /**
- * \fn IFileStorage::Rename
+ * \fn void IFileStorage::Rename(std::string const & currName, std::string const & newName)
  * \brief Renames a file and/or changes its location.
  *
  * - - -
@@ -277,7 +277,7 @@ class IFileStorage
  */
 
 /**
- * \fn IFileStorage::Enumerate
+ * \fn std::list<std::string> IFileStorage::Enumerate(void) const
  * \brief Enumerates all files accessible through this interface.
  *
  * Note:
@@ -317,7 +317,7 @@ class IFileStorage
  */
 
 /**
- * \fn IFileStorage::DetermineSize
+ * \fn size_t IFileStorage::DetermineSize(std::string const & name, size_t * const pTotalSize) const
  * \brief Determines the size of a file.
  *
  * - - -
@@ -363,7 +363,7 @@ class IFileStorage
  */
 
 /**
- * \fn IFileStorage::GetFreeSpace
+ * \fn size_t IFileStorage::GetFreeSpace(void) const
  * \brief Retrieves the amount of free space available for data in the underlying storage device.
  *
  * If the underlying class is @ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem, then this method

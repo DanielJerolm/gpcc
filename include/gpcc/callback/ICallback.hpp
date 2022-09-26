@@ -55,7 +55,7 @@ class ICallback
 };
 
 /**
- * \fn ICallback::Register
+ * \fn void ICallback::Register(void const * const pClient, tFunctor const & callback)
  * \brief Registers a client's callback.
  *
  * Note: The registered callback may be invoked before this method returns.
@@ -86,7 +86,7 @@ class ICallback
  */
 
 /**
- * \fn ICallback::Unregister
+ * \fn void ICallback::Unregister(void const * const pClient)
  * \brief Unregisters a client's callback.
  *
  * After the call to this method has returned, the client's callback will not be invoked any more.
