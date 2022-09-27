@@ -1,5 +1,6 @@
 # Sub-CMakeLists-file for GPCC, specific for the "productive" target environment
 # ==============================================================================
+# Note: Current working directory is GPCC's root directory
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Option "GPCC_CliNoFontStyles"

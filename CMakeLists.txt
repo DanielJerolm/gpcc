@@ -67,7 +67,7 @@
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(gpcc LANGUAGES CXX)
 
-include(common.cmake)
+include(cmake/common.cmake)
 
 # ---------------------------------------------------------------------------------------------------------------------
 # User setting "GPCC_TargetEnvironment"
@@ -134,4 +134,4 @@ endif()
 # ---------------------------------------------------------------------------------------------------------------------
 # Continue in cmake files specific to the target environment
 # ---------------------------------------------------------------------------------------------------------------------
-include(CMakeLists.${GPCC_TargetEnvironment}.cmake)
+include(cmake/CMakeLists.${GPCC_TargetEnvironment}.cmake)
