@@ -56,7 +56,7 @@ class IDeferredWorkQueue: public IWorkQueue
 };
 
 /**
- * \fn virtual void IDeferredWorkQueue::Add(std::unique_ptr<DeferredWorkPackage> spDWP)
+ * \fn void IDeferredWorkQueue::Add(std::unique_ptr<gpcc::execution::async::DeferredWorkPackage> spDWP)
  *
  * \brief Adds an _dynamic_ deferred work package to the work queue.
  *
@@ -80,7 +80,7 @@ class IDeferredWorkQueue: public IWorkQueue
  */
 
 /**
- * \fn virtual void IDeferredWorkQueue::Add(DeferredWorkPackage & dwp)
+ * \fn void IDeferredWorkQueue::Add(gpcc::execution::async::DeferredWorkPackage & dwp)
  *
  * \brief Adds an _static_ deferred work package to the work queue.
  *
@@ -104,7 +104,7 @@ class IDeferredWorkQueue: public IWorkQueue
  */
 
 /**
- * \fn virtual void IDeferredWorkQueue::Remove(DeferredWorkPackage & dwp)
+ * \fn void IDeferredWorkQueue::Remove(gpcc::execution::async::DeferredWorkPackage & dwp)
  *
  * \brief Removes an _static_ deferred work package from the work queue.
  *

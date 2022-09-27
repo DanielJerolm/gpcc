@@ -66,7 +66,7 @@ class IObjectNotifiable
 };
 
 /**
- * \fn gpcc::cood::SDOAbortCode IObjectNotifiable::OnBeforeRead
+ * \fn gpcc::cood::SDOAbortCode IObjectNotifiable::OnBeforeRead(gpcc::cood::Object const * pObj, uint8_t const subindex, bool const completeAccess, bool const querySizeWillNotRead)
  * \brief This will be invoked before an object is read.
  *
  * Sub-classes of class [Object](@ref gpcc::cood::Object) may allow registration of an
@@ -125,7 +125,7 @@ class IObjectNotifiable
  */
 
 /**
- * \fn gpcc::cood::SDOAbortCode IObjectNotifiable::OnBeforeWrite
+ * \fn gpcc::cood::SDOAbortCode IObjectNotifiable::OnBeforeWrite(gpcc::cood::Object const * pObj, uint8_t const subindex, bool const completeAccess, uint8_t const valueWrittenToSI0, void const * pData)
  * \brief This will be invoked before data is written to an object.
  *
  * Sub-classes of class [Object](@ref gpcc::cood::Object) may allow registration of an
@@ -193,7 +193,7 @@ class IObjectNotifiable
  */
 
 /**
- * \fn void IObjectNotifiable::OnAfterWrite
+ * \fn void IObjectNotifiable::OnAfterWrite(gpcc::cood::Object const * pObj, uint8_t const subindex, bool const completeAccess)
  * \brief This will be invoked after a write to an object has taken place.
  *
  * Sub-classes of class [Object](@ref gpcc::cood::Object) may allow registration of an

@@ -183,6 +183,12 @@ Next to do:
 
 History:
 ===============================================================================
+2022-09-26
+- Unified doxygen documentation of pure virtual methods
+
+2022-09-24
+- Updated doxygen according to new structure with public headers and removed all doxygen warnings.
+
 2022-09-21
 - Headers restructured
 - Folder names all in lower case now

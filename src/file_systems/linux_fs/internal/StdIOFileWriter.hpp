@@ -26,6 +26,7 @@ namespace internal     {
 
 /**
  * \ingroup GPCC_FILESYSTEMS_LINUXFS_INTERNAL
+ * \class StdIOFileWriter StdIOFileWriter.hpp "src/file_systems/linux_fs/internal/StdIOFileWriter.hpp"
  * \brief Class used to create or overwrite a regular file and write to it via @ref gpcc::stream::IStreamWriter.
  *
  * An instance of this class is created by class @ref FileStorage if a new regular file shall be created or if an

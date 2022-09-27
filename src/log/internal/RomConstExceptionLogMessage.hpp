@@ -20,6 +20,7 @@ namespace internal {
 
 /**
  * \ingroup GPCC_LOG_INTERNAL
+ * \class RomConstExceptionLogMessage RomConstExceptionLogMessage.hpp "src/log/internal/RomConstExceptionLogMessage.hpp"
  * \brief Container for the ingredients of a log message composed of a c-string located in ROM/code memory and an
  *        exception conserved in an std::exception_ptr.
  *

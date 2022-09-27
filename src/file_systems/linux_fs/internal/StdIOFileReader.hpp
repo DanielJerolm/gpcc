@@ -26,6 +26,7 @@ namespace internal     {
 
 /**
  * \ingroup GPCC_FILESYSTEMS_LINUXFS_INTERNAL
+ * \class StdIOFileReader StdIOFileReader.hpp "src/file_systems/linux_fs/internal/StdIOFileReader.hpp"
  * \brief Class used to read data from a regular file via @ref gpcc::stream::IStreamReader.
  *
  * An instance of this class is created by class @ref FileStorage if a regular file shall be opened for reading.

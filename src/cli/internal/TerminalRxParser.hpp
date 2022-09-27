@@ -19,6 +19,7 @@ namespace internal {
 
 /**
  * \ingroup GPCC_CLI_INTERNALS
+ * \class TerminalRxParser TerminalRxParser.hpp "src/cli/internal/TerminalRxParser.hpp"
  * \brief Parser for data received from a terminal using VT100-encoding.
  *
  * This class is a helper for class @ref CLI.

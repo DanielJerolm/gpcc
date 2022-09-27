@@ -466,16 +466,17 @@
  *   class C
  *   {
  *     public:
- *       virtual void M(void) = 0;
+ *       virtual uint32_t M(uint8_t const in) noexcept = 0;
  *   }
  *
  *   /* <-- in real life, place a second '*' here to make this a doxygen comment
- *    * \fn C::M
+ *    * \fn uint32_t C:M(uint8_t const in)
  *    * \brief Brief documentation
  *    *
  *    * Details...
  *    */
  *   ~~~
+ *   The keywords `virtual`, `override`, and `noexcept` shall be omitted in \\fn.
  *
  * \subsection GCS_DOC_THREAD_SAFETY Thread-safety-classification
  * GPCC is designed to be used in a multi-threaded environment.\n

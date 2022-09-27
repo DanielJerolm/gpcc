@@ -23,6 +23,7 @@ namespace internal            {
 
 /**
  * \ingroup GPCC_RESOURCEMANAGEMENT_OBJECTS_INTERNALS
+ * \class HierarchicNamedRWLockNode HierarchicNamedRWLockNode.hpp "src/resource_management/objects/internal/HierarchicNamedRWLockNode.hpp"
  * \brief Class representing a node in the tree used by class @ref HierarchicNamedRWLock to manage read- and write-locks.
  *
  * # Tree structure

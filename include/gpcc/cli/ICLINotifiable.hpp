@@ -44,7 +44,7 @@ class ICLINotifiable
 };
 
 /**
- * \fn virtual void ICLINotifiable::OnBeforePasswordPrompt
+ * \fn void ICLINotifiable::OnBeforePasswordPrompt(gpcc::cli::CLI & cli)
  * \brief This is invoked directly before [CLI](@ref gpcc::cli::CLI) prints "Type 'login' or password>" to the terminal.
  *
  * This method could be used to display legal information:
@@ -81,7 +81,7 @@ class ICLINotifiable
  */
 
 /**
- * \fn virtual void ICLINotifiable::OnWrongPasswordEntered
+ * \fn void ICLINotifiable::OnWrongPasswordEntered(gpcc::cli::CLI & cli)
  * \brief This is invoked after a wrong password has been entered by the user and after
  * [CLI](@ref gpcc::cli::CLI) has printed "Wrong password." to the terminal.
  *
@@ -121,7 +121,7 @@ class ICLINotifiable
  */
 
 /**
- * \fn virtual void ICLINotifiable::OnLogin
+ * \fn void ICLINotifiable::OnLogin(gpcc::cli::CLI & cli)
  * \brief This is invoked directly after successful login before the command prompt is displayed.
  *
  * This method could be used to display a welcome screen and legal information:
@@ -170,7 +170,7 @@ class ICLINotifiable
  */
 
 /**
- * \fn virtual void ICLINotifiable::OnLogout
+ * \fn void ICLINotifiable::OnLogout(gpcc::cli::CLI & cli)
  * \brief This is invoked after logout.
  *
  * If there is no use for this method, than it can be left empty.
@@ -199,7 +199,7 @@ class ICLINotifiable
  */
 
 /**
- * \fn virtual void ICLINotifiable::OnCTRL_C
+ * \fn void ICLINotifiable::OnCTRL_C(gpcc::cli::CLI & cli)
  * \brief This is invoked if the user has pressed CTRL+C directly from the command prompt.
  *
  * This method can be used to trigger actions like application shutdown etc.\n

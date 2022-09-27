@@ -66,7 +66,7 @@ class ILogFacility
 };
 
 /**
- * \fn ILogFacility::Register(Logger& logger)
+ * \fn void ILogFacility::Register(gpcc::log::Logger& logger)
  * \brief Registers a [Logger](@ref gpcc::log::Logger) instance at the log facility.
  *
  * If default settings are deposited at the log facility, then the logger's log level will be setup according to
@@ -97,7 +97,7 @@ class ILogFacility
  */
 
 /**
- * \fn ILogFacility::Unregister(Logger& logger)
+ * \fn void ILogFacility::Unregister(gpcc::log::Logger& logger)
  * \brief Unregisters a [Logger](@ref gpcc::log::Logger) instance from the log facility.
  *
  * \pre   The [Logger](@ref gpcc::log::Logger) instance is registered at the log facility.
@@ -120,7 +120,7 @@ class ILogFacility
  */
 
 /**
- * \fn ILogFacility::Register(Backend& backend)
+ * \fn void ILogFacility::Register(gpcc::log::Backend& backend)
  * \brief Registers a back-end at the log facility.
  *
  * - - -
@@ -144,7 +144,7 @@ class ILogFacility
  */
 
 /**
- * \fn ILogFacility::Unregister(Backend& backend)
+ * \fn void ILogFacility::Unregister(gpcc::log::Backend& backend)
  * \brief Unregisters a back-end from the log facility.
  *
  * \pre   The [Backend](@ref gpcc::log::Backend) instance is registered at the log facility.
@@ -168,7 +168,7 @@ class ILogFacility
  */
 
 /**
- * \fn ILogFacility::Log
+ * \fn void ILogFacility::Log(std::unique_ptr<gpcc::log::internal::LogMessage> spMsg)
  * \brief Passes a log message to the log facility for logging.
  *
  * This is intended to be invoked by [Logger](@ref gpcc::log::Logger) instances only.
@@ -196,7 +196,7 @@ class ILogFacility
  */
 
 /**
- * \fn ILogFacility::ReportLogMessageCreationFailed
+ * \fn void ILogFacility::ReportLogMessageCreationFailed(void)
  * \brief Reports that a [Logger](@ref gpcc::log::Logger) instance or the user of a [Logger](@ref gpcc::log::Logger)
  *        instance tried to log a message, but failed due to an error (e.g. out-of-memory condition).
  *

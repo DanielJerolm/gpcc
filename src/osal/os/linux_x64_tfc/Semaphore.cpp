@@ -208,7 +208,7 @@ void Semaphore::Wait(void)
 }
 
 /**
- * \brief Signals the condition variable @ref freeCV
+ * \brief Signals the condition variable @ref spFreeCV
  *
  * - - -
  *

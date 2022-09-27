@@ -94,7 +94,7 @@ class StreamWriterBase: public IStreamWriter
 };
 
 /**
- * \fn virtual void StreamWriterBase::Push(char c)
+ * \fn void StreamWriterBase::Push(char c)
  *
  * \brief Pushes one byte of data onto the stream.
  *
@@ -129,7 +129,7 @@ class StreamWriterBase: public IStreamWriter
  * \param c Byte of data that shall be pushed onto the stream.
  */
 /**
- * \fn virtual void StreamWriterBase::Push(void const * pData, size_t n)
+ * \fn void StreamWriterBase::Push(void const * pData, size_t n)
  *
  * \brief Pushes multiple bytes of byte-based-data onto the stream.
  *
@@ -169,7 +169,7 @@ class StreamWriterBase: public IStreamWriter
  * _yet been written to the stream._
  */
 /**
- * \fn virtual void StreamWriterBase::PushBits(uint8_t bits, uint_fast8_t n)
+ * \fn void StreamWriterBase::PushBits(uint8_t bits, uint_fast8_t n)
  *
  * \brief Pushes up to 8 bits of data onto the stream.
  *

@@ -24,6 +24,7 @@ namespace internal
 
 /**
  * \ingroup GPCC_RESOURCEMANAGEMENT_OBJECTS_INTERNALS
+ * \class NamedRWLockEntry NamedRWLockEntry.hpp "src/resource_management/objects/internal/NamedRWLockEntry.hpp"
  * \brief Simple single-writer-/multiple-reader-lock for one instance of a named resource.
  *
  * Instances of this class offer arbitration of access to single resources (objects, files, or similar).

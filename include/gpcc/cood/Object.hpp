@@ -366,7 +366,7 @@ class Object
 };
 
 /**
- * \fn Object::GetObjectCode
+ * \fn gpcc::cood::Object::ObjectCode Object::GetObjectCode(void) const
  * \brief Retrieves the object code of the object.
  *
  * - - -
@@ -387,7 +387,7 @@ class Object
  */
 
 /**
- * \fn Object::GetObjectDataType
+ * \fn gpcc::cood::DataType Object::GetObjectDataType(void) const
  * \brief Retrieves the data type of the object.
  *
  * This will always return a _true_ CANopen data type.\n
@@ -412,7 +412,7 @@ class Object
  */
 
 /**
- * \fn Object::GetObjectName
+ * \fn std::string Object::GetObjectName(void) const
  * \brief Retrieves the name/description of the object.
  *
  * - - -
@@ -435,7 +435,7 @@ class Object
  */
 
 /**
- * \fn Object::GetMaxNbOfSubindices
+ * \fn uint16_t Object::GetMaxNbOfSubindices(void) const
  * \brief Retrieves the maximum number of subindices (incl. subindex 0).
  *
  * Objects of type ARRAY and RECORD may have a non-const subindex 0. This means that the value of
@@ -466,7 +466,7 @@ class Object
  */
 
 /**
- * \fn Object::IsSubIndexEmpty
+ * \fn bool Object::IsSubIndexEmpty(uint8_t const subIdx) const
  * \brief Retrieves if a subindex is empty.
  *
  * - - -
@@ -493,7 +493,7 @@ class Object
  */
 
 /**
- * \fn Object::GetSubIdxDataType
+ * \fn gpcc::cood::DataType Object::GetSubIdxDataType(uint8_t const subIdx) const
  * \brief Retrieves the CANopen data type of a subindex.
  *
  * This will always return a _true_ CANopen data type.\n
@@ -523,7 +523,7 @@ class Object
  */
 
 /**
- * \fn Object::GetSubIdxAttributes
+ * \fn gpcc::cood::Object::attr_t Object::GetSubIdxAttributes(uint8_t const subIdx) const
  * \brief Retrieves the attributes of a subindex.
  *
  * - - -
@@ -549,7 +549,7 @@ class Object
  */
 
 /**
- * \fn Object::GetSubIdxMaxSize
+ * \fn size_t Object::GetSubIdxMaxSize(uint8_t const subIdx) const
  * \brief Retrieves the maximum size of a subindex in bit.
  *
  * The _maximum size_ of a subindex is the maximum possible value for the _actual size_ of a subindex.
@@ -591,7 +591,7 @@ class Object
  */
 
 /**
- * \fn Object::GetSubIdxName
+ * \fn std::string Object::GetSubIdxName(uint8_t const subIdx) const
  * \brief Retrieves the name/description of a subindex.
  *
  * - - -
@@ -620,7 +620,7 @@ class Object
 
 
 /**
- * \fn Object::GetAppSpecificMetaDataSize
+ * \fn size_t Object::GetAppSpecificMetaDataSize(uint8_t const subIdx) const
  * \brief Retrieves the size of the application-specific meta data of a specific subindex.
  *
  * - - -
@@ -649,7 +649,7 @@ class Object
 
 
 /**
- * \fn std::vector<uint8_t> Object::GetAppSpecificMetaData
+ * \fn std::vector<uint8_t> Object::GetAppSpecificMetaData(uint8_t const subIdx) const
  * \brief Retrieves the application-specific meta data of a specific subindex.
  *
  * - - -
@@ -681,7 +681,7 @@ class Object
 
 
 /**
- * \fn Object::LockData
+ * \fn gpcc::osal::MutexLocker Object::LockData(void) const
  * \brief Locks the mutex used to protect the application data represented by the CANopen object.
  *
  * If there is no mutex, then the returned [MutexLocker](@ref gpcc::osal::MutexLocker) will behave passive.
@@ -704,7 +704,7 @@ class Object
  */
 
 /**
- * \fn Object::GetObjectStreamSize
+ * \fn size_t Object::GetObjectStreamSize(bool const SI016Bits) const
  * \brief Retrieves the number of bits occupied by the whole object if it would be stored in
  *        CANopen format into a [IStreamWriter](@ref gpcc::stream::IStreamWriter) using "complete access".
  *
@@ -741,7 +741,7 @@ class Object
  */
 
 /**
- * \fn Object::GetNbOfSubIndices
+ * \fn uint16_t Object::GetNbOfSubIndices(void) const
  * \brief Retrieves the number of subindices (incl. subindex 0).
  *
  * Note that the number of subindices of ARRAY and RECORD objects may change dynamically, e.g. if the object allows
@@ -772,7 +772,7 @@ class Object
  */
 
 /**
- * \fn Object::GetSubIdxActualSize
+ * \fn size_t Object::GetSubIdxActualSize(uint8_t const subIdx) const
  * \brief Retrieves the actual size of a subindex in bit.
  *
  * The _actual size_ of a subindex is the number of bits occupied by a subindex, if it would be stored in
@@ -821,7 +821,7 @@ class Object
  */
 
 /**
- * \fn Object::Read
+ * \fn gpcc::cood::SDOAbortCode Object::Read(uint8_t const subIdx, attr_t const permissions, gpcc::stream::IStreamWriter & isw) const
  * \brief Reads the native data of one subindex into an [IStreamWriter](@ref gpcc::stream::IStreamWriter) using
  *        CANopen encoding.
  *
@@ -875,7 +875,7 @@ class Object
  */
 
 /**
- * \fn Object::Write
+ * \fn gpcc::cood::SDOAbortCode Object::Write(uint8_t const subIdx, attr_t const permissions, gpcc::stream::IStreamReader & isr)
  * \brief Writes CANopen encoded data read from an [IStreamReader](@ref gpcc::stream::IStreamReader) into one subindex using
  *        native encoding.
  *
@@ -938,7 +938,7 @@ class Object
  */
 
 /**
- * \fn Object::CompleteRead
+ * \fn gpcc::cood::SDOAbortCode Object::CompleteRead(bool const inclSI0, bool const SI016Bits, attr_t const permissions, gpcc::stream::IStreamWriter & isw) const
  * \brief Reads the complete object (native format) and stores the read data into an
  *        [IStreamWriter](@ref gpcc::stream::IStreamWriter) using CANopen encoding.
  *
@@ -1007,7 +1007,7 @@ class Object
  */
 
 /**
- * \fn Object::CompleteWrite
+ * \fn gpcc::cood::SDOAbortCode Object::CompleteWrite(bool const inclSI0, bool const SI016Bits, attr_t const permissions, gpcc::stream::IStreamReader & isr, gpcc::stream::IStreamReader::RemainingNbOfBits const ernob)
  * \brief Writes CANopen encoded data read from an [IStreamReader](@ref gpcc::stream::IStreamReader) to the complete
  *        object in native format.
  *

@@ -25,6 +25,7 @@ namespace internal {
 
 /**
  * \ingroup GPCC_LOG_INTERNAL
+ * \class LogMessage LogMessage.hpp "src/log/internal/LogMessage.hpp"
  * \brief Base class for log message containers.
  *
  * Classes derived from this implement containers for log messages.
@@ -116,7 +117,7 @@ inline LogType LogMessage::GetLogType(void) const noexcept
 }
 
 /**
- * \fn LogMessage::BuildText
+ * \fn std::string LogMessage::BuildText(void) const
  * \brief Creates an std::string containing the log message build from the ingredients stored in the
  *        @ref LogMessage sub-class.
  *

@@ -65,7 +65,7 @@ class IWorkQueue
 };
 
 /**
- * \fn virtual void IWorkQueue::Add(std::unique_ptr<WorkPackage> spWP)
+ * \fn void IWorkQueue::Add(std::unique_ptr<gpcc::execution::async::WorkPackage> spWP)
  *
  * \brief Adds an _dynamic_ work package to the work queue.
  *
@@ -89,7 +89,7 @@ class IWorkQueue
  */
 
 /**
- * \fn virtual void IWorkQueue::Add(WorkPackage & wp)
+ * \fn void IWorkQueue::Add(gpcc::execution::async::WorkPackage & wp)
  *
  * \brief Adds an _static_ work package to the work queue.
  *
@@ -113,7 +113,7 @@ class IWorkQueue
  */
 
 /**
- * \fn virtual void IWorkQueue::InsertAtHeadOfList(std::unique_ptr<WorkPackage> spWP)
+ * \fn void IWorkQueue::InsertAtHeadOfList(std::unique_ptr<gpcc::execution::async::WorkPackage> spWP)
  *
  * \brief Inserts an _dynamic_ work package at the head of the work queue.
  *
@@ -141,7 +141,7 @@ class IWorkQueue
  */
 
 /**
- * \fn virtual void IWorkQueue::InsertAtHeadOfList(WorkPackage & wp)
+ * \fn void IWorkQueue::InsertAtHeadOfList(gpcc::execution::async::WorkPackage & wp)
  *
  * \brief Inserts an _static_ work package at the head of the work queue.
  *
@@ -169,7 +169,7 @@ class IWorkQueue
  */
 
 /**
- * \fn virtual void IWorkQueue::Remove(WorkPackage & wp)
+ * \fn void IWorkQueue::Remove(gpcc::execution::async::WorkPackage & wp)
  *
  * \brief Removes an _static_ work package from the work queue.
  *
@@ -202,7 +202,7 @@ class IWorkQueue
  */
 
 /**
- * \fn virtual void IWorkQueue::Remove(void const * const pOwnerObject)
+ * \fn void IWorkQueue::Remove(void const * const pOwnerObject)
  *
  * \brief Removes all work packages of an specific owner from the work queue.
  *
@@ -239,7 +239,7 @@ class IWorkQueue
  */
 
 /**
- * \fn virtual void IWorkQueue::Remove(void const * const pOwnerObject, uint32_t const ownerID)
+ * \fn void IWorkQueue::Remove(void const * const pOwnerObject, uint32_t const ownerID)
  *
  * \brief Removes all work packages of an specific owner and with an specific ownerID from the work queue.
  *
@@ -284,7 +284,7 @@ class IWorkQueue
  */
 
 /**
- * \fn virtual void IWorkQueue::WaitUntilCurrentWorkPackageHasBeenExecuted(void const * const pOwnerObject)
+ * \fn void IWorkQueue::WaitUntilCurrentWorkPackageHasBeenExecuted(void const * const pOwnerObject)
  *
  * \brief Blocks the calling thread until the current work package has been executed. The current thread is only
  * blocked if there is a work package currently executed and if the work package belongs to an specific owner.
@@ -322,7 +322,7 @@ class IWorkQueue
  */
 
 /**
- * \fn virtual bool IWorkQueue::IsAnyInQueue(void const * const pOwnerObject) const
+ * \fn bool IWorkQueue::IsAnyInQueue(void const * const pOwnerObject) const
  *
  * \brief Checks if any work package enqueued by an specific owner is still in the work queue.
  *
@@ -349,7 +349,7 @@ class IWorkQueue
  */
 
 /**
- * \fn virtual void IWorkQueue::FlushNonDeferredWorkPackages(void)
+ * \fn void IWorkQueue::FlushNonDeferredWorkPackages(void)
  *
  * \brief Blocks the calling thread until all work packages (_non deferred only!_) currently enqueued in
  * the work queue have been executed.

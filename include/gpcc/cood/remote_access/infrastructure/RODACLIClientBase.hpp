@@ -210,7 +210,7 @@ class RODACLIClientBase : private IRemoteObjectDictionaryAccessNotifiable
 
 
 /**
- * \fn RODACLIClientBase::AttributesToStringHook
+ * \fn std::string RODACLIClientBase::AttributesToStringHook(gpcc::cood::Object::attr_t const attributes)
  * \brief Converts object attributes into a human-readable string.
  *
  * Depending on the application of the object dictionary (e.g. EtherCAT or CANopen), the
@@ -250,7 +250,7 @@ class RODACLIClientBase : private IRemoteObjectDictionaryAccessNotifiable
  */
 
 /**
- * \fn RODACLIClientBase::AppSpecificMetaDataToStringHook
+ * \fn std::string RODACLIClientBase::AppSpecificMetaDataToStringHook(std::vector<uint8_t> const & data)
  * \brief Converts application-specific meta data into a human-readable string.
  *
  * Depending on the application of the object dictionary, application-specific meta data may be attached to some or

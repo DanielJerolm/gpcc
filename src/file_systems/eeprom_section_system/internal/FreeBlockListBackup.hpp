@@ -27,6 +27,7 @@ namespace internal
 
 /**
  * \ingroup GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_INTERNAL
+ * \class FreeBlockListBackup FreeBlockListBackup.hpp "src/file_systems/eeprom_section_system/internal/FreeBlockListBackup.hpp"
  * \brief Snapshot of the state of the free-block lists of an @ref EEPROMSectionSystem instance.
  *
  * _Implicit capabilities: copy-construction, copy-assignment, move-construction, move-assignment_

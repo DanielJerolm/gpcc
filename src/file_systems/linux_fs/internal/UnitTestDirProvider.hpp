@@ -22,6 +22,7 @@ namespace internal     {
 
 /**
  * \ingroup GPCC_FILESYSTEMS_LINUXFS_INTERNAL
+ * \class UnitTestDirProvider UnitTestDirProvider.hpp "src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
  * \brief Creates (and finally removes) a temporary directory that can be used by unit tests
  *        to create files and directories.
  *

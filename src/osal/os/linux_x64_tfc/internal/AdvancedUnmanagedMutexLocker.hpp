@@ -23,6 +23,7 @@ namespace internal {
 
 /**
  * \ingroup GPCC_TIME_FLOW_CONTROL
+ * \class AdvancedUnmanagedMutexLocker AdvancedUnmanagedMutexLocker.hpp "src/osal/os/linux_x64_tfc/internal/AdvancedUnmanagedMutexLocker.hpp"
  * \brief Automatic locker/unlocker for unmanaged mutexes (class @ref UnmanagedMutex).
  *
  * This class provides the same functionality like class @ref AdvancedMutexLocker, but this one is intended

@@ -19,6 +19,7 @@ namespace internal {
 
 /**
  * \ingroup GPCC_TIME_FLOW_CONTROL
+ * \class ThreadBlockerBase ThreadBlockerBase.hpp "src/osal/os/linux_x64_tfc/internal/ThreadBlockerBase.hpp"
  * \brief Base class for all ThreadBlocker-implementations.
  *
  * This is the base class for class @ref ThreadBlocker and class @ref TimeLimitedThreadBlocker.
@@ -51,7 +52,7 @@ class ThreadBlockerBase
 };
 
 /**
- * \fn virtual void ThreadBlockerBase::Signal(void) = 0
+ * \fn void ThreadBlockerBase::Signal(void)
  * \brief Signals that the blocked thread (if any) is allowed to continue.
  *
  * After calling this, any subsequent call to `Block()` will not block the calling thread any more.\n

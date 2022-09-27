@@ -1138,7 +1138,7 @@ void EEPROMSectionSystem::Mount_LoadAndCheckSecSysInfoBlock(void* const pMem) co
  *
  * \param pMem
  * Pointer to a buffer into which the Section System Info Block shall be loaded.\n
- * The buffer must have a capacity of at least the block size of the underlying @ref storage.
+ * The buffer must have a capacity of at least the block size of the underlying @ref spStorage.
  */
 {
   // load section system info block
@@ -1212,7 +1212,7 @@ void EEPROMSectionSystem::Mount_ProcessFreeBlock(uint16_t const currIndex, void*
  * \param pMem
  * Pointer to a memory block. It must contain the block referenced by `currIndex`.\n
  * The memory will be used by this method as a buffer for loading further blocks.\n
- * The buffer must have a capacity of at least the block size of the underlying @ref storage.
+ * The buffer must have a capacity of at least the block size of the underlying @ref spStorage.
  * \param BfUsedUnusedBlocks
  * Reference to BitField `BfUsedUnusedBlocks` used in @ref MountStep2().
  * \param BfGarbageBlocks
@@ -1323,7 +1323,7 @@ void EEPROMSectionSystem::Mount_ProcessSectionHead(uint16_t currIndex, void* con
  * \param pMem
  * Pointer to a buffer. It must contain the block referenced by `currIndex`.\n
  * The buffer will be used by this method as a buffer for loading further blocks.\n
- * The buffer must have a capacity of at least the block size of the underlying @ref storage.
+ * The buffer must have a capacity of at least the block size of the underlying @ref spStorage.
  * \param pSecName
  * Pointer to a memory block that can be used by this method as a buffer for section names.
  * The referenced memory block must have a sufficient capacity to store a section name
@@ -1584,7 +1584,7 @@ void EEPROMSectionSystem::Mount_CheckLastFreeBlock(void* const pMem)
  *
  * \param pMem
  * Pointer to a memory block that can be used by this method as an buffer for internal stuff.\n
- * The referenced memory must have a capacity of at least the block size of the underlying @ref storage.
+ * The referenced memory must have a capacity of at least the block size of the underlying @ref spStorage.
  */
 {
   // single linked list of free blocks not empty?
@@ -1637,7 +1637,7 @@ void EEPROMSectionSystem::Mount_CollectGarbageBlocks(void* const pMem, container
  *
  * \param pMem
  * Pointer to the memory block used in @ref MountStep2(). \n
- * The referenced memory must have a capacity of at least the block size of the underlying @ref storage. \n
+ * The referenced memory must have a capacity of at least the block size of the underlying @ref spStorage. \n
  * The address must be aligned to a 16bit boundary.\n
  * The memory will be used as temporary storage for internal purposes of this method.
  * \param BfUsedUnusedBlocks
@@ -1829,8 +1829,8 @@ uint16_t EEPROMSectionSystem::LoadNextBlockOfSection(void* const pMem) const
  * \param pMem
  * Pointer to a buffer containing the current block. This must be either a section head
  * (BlockTypes::sectionHead) or a data block (BlockTypes::sectionData).\n
- * If there is a next block, then it will be loaded from the @ref storage into the referenced buffer.\n
- * The buffer must have a capacity of at least the block size of the underlying @ref storage.
+ * If there is a next block, then it will be loaded from the @ref spStorage into the referenced buffer.\n
+ * The buffer must have a capacity of at least the block size of the underlying @ref spStorage.
  * \return
  * Block index of the next block.\n
  * NOBLOCK, if there is no next block.
@@ -1900,7 +1900,7 @@ uint16_t EEPROMSectionSystem::FindAnySectionHead(uint16_t const startBlockIndex,
  * Index where the search shall start at.
  * \param pMem
  * Pointer to a buffer into which the section head shall be loaded.\n
- * The buffer must have a capacity of at least the block size of the underlying @ref storage.
+ * The buffer must have a capacity of at least the block size of the underlying @ref spStorage.
  * \return
  * Index of the section head.\n
  * NOBLOCK, if no section head is found.
@@ -1963,7 +1963,7 @@ uint16_t EEPROMSectionSystem::FindSectionHead(uint16_t const startBlockIndex, ch
  * Hash of the section's name.
  * \param pMem
  * Pointer to a buffer into which the section head shall be loaded in case of a match.\n
- * The buffer must have a capacity of at least the block size of the underlying @ref storage. \n
+ * The buffer must have a capacity of at least the block size of the underlying @ref spStorage. \n
  * Note that even in case of no match the buffer may have been modified by this method.
  * \return
  * Index of the matching section head.\n
@@ -2084,7 +2084,7 @@ uint16_t EEPROMSectionSystem::FindSectionHeadByNextBlock(uint16_t const startBlo
  * Value of the nextBlock-attribute we are looking for.
  * \param pMem
  * Pointer to a buffer into which the matching section head shall be loaded.\n
- * The buffer must have a capacity of at least the block size of the underlying @ref storage. \n
+ * The buffer must have a capacity of at least the block size of the underlying @ref spStorage. \n
  * Note that even in case of no match the buffer may have been modified by this method.
  * \return
  * Index of the matching section head.\n
@@ -2221,7 +2221,7 @@ uint16_t EEPROMSectionSystem::LoadNextFreeBlock(void* const pMem) const
  * \param pMem
  * Pointer to a buffer that contains the current free block (BlockTypes::freeBlock).\n
  * The next free block (if any) will be loaded into this buffer.\n
- * The buffer must have a capacity of at least the block size of the underlying @ref storage.
+ * The buffer must have a capacity of at least the block size of the underlying @ref spStorage.
  * \return
  * Index of the next free block.\n
  * NOBLOCK if there is no next free block.
@@ -2265,7 +2265,7 @@ void EEPROMSectionSystem::AddChainOfBlocksToListOfFreeBlocks(uint16_t const star
  * by 'reservedBlockIndex' may have the type BlockTypes::freeBlock without causing an error, even
  * if it is the first block (parameter `startIndex`).
  *
- * To reduce the number of writes to the underlying @ref storage, blocks are appended to the
+ * To reduce the number of writes to the underlying @ref spStorage, blocks are appended to the
  * end of the list of free blocks in chunks of eight.
  *
  * ---
@@ -2300,7 +2300,7 @@ void EEPROMSectionSystem::AddChainOfBlocksToListOfFreeBlocks(uint16_t const star
  * even if it is the first block (startIndex).
  * \param pMem
  * Pointer to a buffer that can be used internally by this method.\n
- * The buffer must have a capacity of at least the block size of the underlying @ref storage.
+ * The buffer must have a capacity of at least the block size of the underlying @ref spStorage.
  * \param mutexLocked
  * Indicates if @ref mutex is already locked by the calling method or not:\n
  * true  = @ref mutex is already locked\n
@@ -2400,14 +2400,14 @@ void EEPROMSectionSystem::AddBlockToListOfFreeBlocks(uint16_t const blockIndex, 
  *
  * __Exception safety:__\n
  * Basic exception safety:
- * - the block referenced by "blockIndex" may be left with undefined content in @ref storage (_Section System is not_
+ * - the block referenced by "blockIndex" may be left with undefined content in @ref spStorage (_Section System is not_
  *   _considered corrupted in this case_).
  * - the Section System may be corrupted (free block list).
  * - @ref state is set to @ref States::defect, if the Section System is corrupted.
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the block referenced by "blockIndex" may be left with undefined content in @ref storage (_Section System is not_
+ * - the block referenced by "blockIndex" may be left with undefined content in @ref spStorage (_Section System is not_
  *   _considered corrupted in this case_).
  * - the Section System may be corrupted (free block list).
  * - @ref state is set to @ref States::defect, if the Section System is corrupted.
@@ -2420,9 +2420,9 @@ void EEPROMSectionSystem::AddBlockToListOfFreeBlocks(uint16_t const blockIndex, 
  * If the current value of the field "totalNbOfWrites" of the block that shall be appended to
  * the end of the list of free blocks is known, then this pointer shall point to a variable
  * containing the value.\n
- * Otherwise this shall be `nullptr` and this method will load the value from the @ref storage.
+ * Otherwise this shall be `nullptr` and this method will load the value from the @ref spStorage.
  * Note that there are no data integrity checks (even not CRC) included, if this method loads the value.
- * Providing a valid pointer safes one read access from the @ref storage.
+ * Providing a valid pointer safes one read access from the @ref spStorage.
  * \param mutexLocked
  * Indicates if @ref mutex is already locked by the calling method or not:\n
  * true  = @ref mutex is already locked\n
@@ -2508,14 +2508,14 @@ void EEPROMSectionSystem::AddBlocksToListOfFreeBlocks(uint16_t const * const pBl
  *
  * __Exception safety:__\n
  * Basic exception safety:
- * - the blocks in "pBlockIndexList" may be left with undefined content in @ref storage (_Section System is not_
+ * - the blocks in "pBlockIndexList" may be left with undefined content in @ref spStorage (_Section System is not_
  *   _considered corrupted in this case_).
  * - the Section System may be corrupted (free block list).
  * - @ref state is set to @ref States::defect, if the Section System is corrupted.
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is safe, but:
- * - the blocks in "pBlockIndexList" may be left with undefined content in @ref storage (_Section System is not_
+ * - the blocks in "pBlockIndexList" may be left with undefined content in @ref spStorage (_Section System is not_
  *   _considered corrupted in this case_).
  * - the Section System may be corrupted (free block list).
  * - @ref state is set to @ref States::defect, if the Section System is corrupted.
@@ -2798,7 +2798,7 @@ bool EEPROMSectionSystem::GetBlocksFromListOfFreeBlocks(uint16_t* pBlockIndexLis
 
 void EEPROMSectionSystem::StoreBlock(uint16_t const blockIndex, void* const pMem, bool const mutexLocked)
 /**
- * \brief Stores an block into the underlying @ref storage.
+ * \brief Stores an block into the underlying @ref spStorage.
  *
  * This is a helper for class @ref internal::SectionWriter.
  *

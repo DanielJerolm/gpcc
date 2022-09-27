@@ -20,6 +20,7 @@ namespace internal  {
 
 /**
  * \ingroup GPCC_COOD_CLI_INTERNAL
+ * \class CAWriteArgsParser CAWriteArgsParser.hpp "src/cood/cli/internal/CAWriteArgsParser.hpp"
  * \brief Parses the arguments passed to a CLI command that shall write a CANopen object using complete access.
  *
  * The following information is extracted from the args:

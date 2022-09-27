@@ -232,7 +232,7 @@ class IStreamReader
 };
 
 /**
- * \fn IStreamReader& IStreamReader::operator>> (uint8_t & value)
+ * \fn gpcc::stream::IStreamReader& IStreamReader::operator>> (uint8_t & value)
  *
  * \brief Reads one element of data from the stream.
  *
@@ -268,51 +268,51 @@ class IStreamReader
  * \return Reference to this.
  */
 /**
- * \fn IStreamReader& IStreamReader::operator>> (uint16_t & value)
+ * \fn gpcc::stream::IStreamReader& IStreamReader::operator>> (uint16_t & value)
  * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
- * \fn IStreamReader& IStreamReader::operator>> (uint32_t & value)
+ * \fn gpcc::stream::IStreamReader& IStreamReader::operator>> (uint32_t & value)
  * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
- * \fn IStreamReader& IStreamReader::operator>> (uint64_t & value)
+ * \fn gpcc::stream::IStreamReader& IStreamReader::operator>> (uint64_t & value)
  * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
- * \fn IStreamReader& IStreamReader::operator>> (int8_t & value)
+ * \fn gpcc::stream::IStreamReader& IStreamReader::operator>> (int8_t & value)
  * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
- * \fn IStreamReader& IStreamReader::operator>> (int16_t & value)
+ * \fn gpcc::stream::IStreamReader& IStreamReader::operator>> (int16_t & value)
  * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
- * \fn IStreamReader& IStreamReader::operator>> (int32_t & value)
+ * \fn gpcc::stream::IStreamReader& IStreamReader::operator>> (int32_t & value)
  * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
- * \fn IStreamReader& IStreamReader::operator>> (int64_t & value)
+ * \fn gpcc::stream::IStreamReader& IStreamReader::operator>> (int64_t & value)
  * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
- * \fn IStreamReader& IStreamReader::operator>> (float & value)
+ * \fn gpcc::stream::IStreamReader& IStreamReader::operator>> (float & value)
  * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
- * \fn IStreamReader& IStreamReader::operator>> (double & value)
+ * \fn gpcc::stream::IStreamReader& IStreamReader::operator>> (double & value)
  * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
- * \fn IStreamReader& IStreamReader::operator>> (bool & value)
+ * \fn gpcc::stream::IStreamReader& IStreamReader::operator>> (bool & value)
  * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
- * \fn IStreamReader& IStreamReader::operator>> (char & value)
+ * \fn gpcc::stream::IStreamReader& IStreamReader::operator>> (char & value)
  * \copydoc gpcc::stream::IStreamReader::operator>> (uint8_t&)
  */
 /**
- * \fn IStreamReader& IStreamReader::operator>> (std::string & value)
+ * \fn gpcc::stream::IStreamReader& IStreamReader::operator>> (std::string & value)
  *
  * \brief Reads a null-terminated string from the stream.
  *
@@ -349,7 +349,7 @@ class IStreamReader
  */
 
 /**
- * \fn IStreamReader::States IStreamReader::GetState(void) const
+ * \fn gpcc::stream::IStreamReader::States IStreamReader::GetState(void) const
  *
  * \brief Retrieves the actual state of the stream reader.
  *
@@ -370,7 +370,7 @@ class IStreamReader
  */
 
 /**
- * \fn IStreamReader::Endian IStreamReader::GetEndian(void) const
+ * \fn gpcc::stream::IStreamReader::Endian IStreamReader::GetEndian(void) const
  *
  * \brief Retrieves the endian of the data encoded in the stream.
  *
@@ -451,7 +451,7 @@ class IStreamReader
  */
 
 /**
- * \fn IStreamReader::EnsureAllDataConsumed
+ * \fn void IStreamReader::EnsureAllDataConsumed(RemainingNbOfBits const expectation) const
  * \brief Checks if a specific number of bits is remaining to be read and throws if the result is negative.
  *
  * This is intended to be used to check if the expected amounth of data has been read from the stream.
@@ -526,7 +526,7 @@ class IStreamReader
  */
 
 /**
- * \fn IStreamReader::Skip
+ * \fn void IStreamReader::Skip(size_t nBits)
  * \brief Skips a given number of bits in the stream.
  *
  * \pre The stream must be in state [States::open](@ref gpcc::stream::IStreamReader::States::open).

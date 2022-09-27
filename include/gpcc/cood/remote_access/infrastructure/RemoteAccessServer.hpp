@@ -167,7 +167,7 @@ class RemoteAccessServer : public IRemoteObjectDictionaryAccess
 
 
 /**
- * \fn void RemoteAccessServer::RequestWorkInvocationHook
+ * \fn void RemoteAccessServer::RequestWorkInvocationHook(void)
  * \brief Requests invocation of [Work()](@ref gpcc::cood::RemoteAccessServer::Work) by the derived class.
  *
  * This may be invoked in the context of any thread, especially from [Work()](@ref gpcc::cood::RemoteAccessServer::Work)

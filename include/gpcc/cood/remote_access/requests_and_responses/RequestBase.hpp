@@ -209,7 +209,7 @@ inline size_t RequestBase::GetMaxResponseSize(void) const
 }
 
 /**
- * \fn RequestBase::ToString
+ * \fn std::string RequestBase::ToString(void) const
  * \brief Creates a human-readable text-representation of the remote access request.
  *
  * - - -

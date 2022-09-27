@@ -149,7 +149,7 @@ class ResponseBase
 };
 
 /**
- * \fn ResponseBase::ToString
+ * \fn std::string ResponseBase::ToString(void) const
  * \brief Creates a human-readable text-representation of the remote access response object.
  *
  * - - -

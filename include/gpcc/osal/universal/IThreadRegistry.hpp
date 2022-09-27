@@ -90,7 +90,7 @@ class IThreadRegistry
 };
 
 /**
- * \fn IThreadRegistry::Lock(void)
+ * \fn gpcc::osal::MutexLocker IThreadRegistry::Lock(void)
  * \brief Locks the thread registry's internal mutex using a @ref MutexLocker. This blocks until the lock is acquired.
  *
  * The thread registry's internal mutex must be locked when invoking any of the public methods
@@ -149,7 +149,7 @@ class IThreadRegistry
  */
 
 /**
- * \fn IThreadRegistry::GetNbOfThreads(void) const
+ * \fn size_t IThreadRegistry::GetNbOfThreads(void) const
  * \brief Retrieves the number of registered @ref Thread instances.
  *
  * __Thread safety:__\n
@@ -168,7 +168,7 @@ class IThreadRegistry
  */
 
 /**
- * \fn IThreadRegistry::ThreadListBegin(void) const
+ * \fn gpcc::osal::IThreadRegistry::iterator IThreadRegistry::ThreadListBegin(void) const
  * \brief Returns an iterator referencing to the first registered @ref Thread instance.
  *
  * __Thread safety:__\n
@@ -189,7 +189,7 @@ class IThreadRegistry
  */
 
 /**
- * \fn IThreadRegistry::ThreadListEnd(void) const
+ * \fn gpcc::osal::IThreadRegistry::iterator IThreadRegistry::ThreadListEnd(void) const
  * \brief Returns an iterator referencing beyond the end of the list of registered @ref Thread instances.
  *
  * __Thread safety:__\n

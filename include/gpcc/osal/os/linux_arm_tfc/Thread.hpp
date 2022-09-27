@@ -393,11 +393,11 @@ class Thread final
 
 
     /// Mutex protecting access to object's internals.
-    /** Locking order: @ref joinMutex -> @ref mutex */
+    /** Locking order: @ref spJoinMutex -> @ref spMutex */
     std::unique_ptr<internal::UnmanagedMutex> mutable spMutex;
 
     /// Mutex used to make @ref Join() thread-safe and to prevent any race between @ref Start() and @ref Join().
-    /** Locking order: @ref joinMutex -> @ref mutex */
+    /** Locking order: @ref spJoinMutex -> @ref spMutex */
     std::unique_ptr<internal::UnmanagedMutex> spJoinMutex;
 
 
@@ -407,20 +407,20 @@ class Thread final
     tEntryFunction entryFunction;
 
     /// Current state of the thread managed by this object.
-    /** @ref mutex is required. */
+    /** @ref spMutex is required. */
     ThreadState threadState;
 
     /// Condition variable signaled when @ref threadState is set to @ref ThreadState::running.
-    /** This is to be used in conjunction with @ref mutex. */
+    /** This is to be used in conjunction with @ref spMutex. */
     std::unique_ptr<internal::UnmanagedConditionVariable> spThreadStateRunningCondVar;
 
     /// pthread-handle referencing the thread managed by this object.
-    /** @ref mutex is required.\n
+    /** @ref spMutex is required.\n
         This only contains a valid value if @ref threadState does not equal @ref ThreadState::noThreadOrJoined. */
     pthread_t thread_id;
 
     /// Flag indicating if a thread is waiting for joining with the managed thread.
-    /** @ref mutex is required. */
+    /** @ref spMutex is required. */
     bool threadWaitingForJoin;
 
     /// Flag controlling if thread cancellation is currently enabled or disabled.

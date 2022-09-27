@@ -38,6 +38,8 @@ Class documentation for normal classes and for provided interfaces
 ------------------------------------------------------------------
 /**
  * \ingroup <group_name>
+ * [If this is a private header:
+ * \class <class name> <class name>.hpp "<path_relative_to_gpcc>/<class name>.hpp"]
  * \brief <Brief description.>
  *
  * <Detailed description.>
@@ -54,6 +56,9 @@ Method documentation for normal classes and for provided interfaces
 (also applicable to static and global non-member-functions)
 -------------------------------------------------------------------
 /**
+ * [\fn <full function declaration on a single line, incl. return value and arguments>
+ *  (In case of a pure virtual function only!
+ *   "virtual", "override", and "noexcept" shall be omitted. Details and example: See GPCC coding style)]
  * \brief <Brief documentation.>
  *
  * <Detailed documentation.>
@@ -112,6 +117,8 @@ Class documentation for required interfaces intended to receive notifications
 -----------------------------------------------------------------------------
 /**
  * \ingroup <group_name>
+ * [If this is a private header:
+ * \class <class name> <class name>.hpp "<path_relative_to_gpcc>/<class name>.hpp"]
  * \brief <Interface which must be implemented by ... in order to ...>
  *
  * <Detailed description.>
@@ -129,6 +136,9 @@ Class documentation for required interfaces intended to receive notifications
 Method documentation for required interfaces intended to receive notifications
 ------------------------------------------------------------------------------
 /**
+ * [\fn <full function declaration on a single line, incl. return value and arguments>
+ *  (In case of a pure virtual function only!
+ *   "virtual", "override", and "noexcept" shall be omitted. Details and example: See GPCC coding style)]
  * \brief <Brief documentation.>
  *
  * <Detailed documentation.>

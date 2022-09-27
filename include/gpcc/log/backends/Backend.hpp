@@ -66,7 +66,7 @@ class Backend
 };
 
 /**
- * \fn Backend::Process
+ * \fn void Backend::Process(std::string const & msg, gpcc::log::LogType const type)
  * \brief Processes a log message.
  *
  * - - -

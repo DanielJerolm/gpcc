@@ -50,7 +50,7 @@ class ITerminal
 };
 
 /**
- * \fn ITerminal::Read
+ * \fn size_t ITerminal::Read(char * pBuffer, size_t bufferSize, uint16_t timeout_ms)
  * \brief Reads user input from the terminal.
  *
  * This method shall block until either at least one character of user input has been
@@ -101,7 +101,7 @@ class ITerminal
  */
 
 /**
- * \fn ITerminal::Flush
+ * \fn void ITerminal::Flush(void)
  * \brief Flushes any input from the terminal and related input buffers.
  *
  * This method shall flush any input from the terminal's buffers and it shall return without blocking.
@@ -128,7 +128,7 @@ class ITerminal
  */
 
 /**
- * \fn ITerminal::Write
+ * \fn void ITerminal::Write(char const * pBuffer, size_t s)
  * \brief Writes data to the terminal.
  *
  * This method is used by class [CLI](@ref gpcc::cli::CLI) to send data to the terminal. The data may

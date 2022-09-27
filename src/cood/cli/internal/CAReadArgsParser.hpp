@@ -20,6 +20,7 @@ namespace internal  {
 
 /**
  * \ingroup GPCC_COOD_CLI_INTERNAL
+ * \class CAReadArgsParser CAReadArgsParser.hpp "src/cood/cli/internal/CAReadArgsParser.hpp"
  * \brief Parses the arguments passed to a CLI command that shall read a CANopen object using complete access.
  *
  * The following information is extracted from the args:

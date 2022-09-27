@@ -28,6 +28,7 @@ namespace internal
 
 /**
  * \ingroup GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_INTERNAL
+ * \class SectionReader SectionReader.hpp "src/file_systems/eeprom_section_system/internal/SectionReader.hpp"
  * \brief Class used to read data from an existing section via @ref gpcc::stream::IStreamReader.
  *
  * An instance of this class is created by class @ref EEPROMSectionSystem if a section shall

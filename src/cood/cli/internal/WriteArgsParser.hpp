@@ -24,6 +24,7 @@ namespace internal  {
 
 /**
  * \ingroup GPCC_COOD_CLI_INTERNAL
+ * \class WriteArgsParser WriteArgsParser.hpp "src/cood/cli/internal/WriteArgsParser.hpp"
  * \brief Parses the arguments passed to a CLI command that shall write a subindex of a CANopen object.
  *
  * The following information is extracted from the args:

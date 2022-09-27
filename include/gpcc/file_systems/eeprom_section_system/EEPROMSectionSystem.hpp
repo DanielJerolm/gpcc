@@ -282,12 +282,12 @@ class EEPROMSectionSystem: public IFileStorage
     /** The mutex is required for accessing the following attributes:
         - @ref state
         - @ref sectionLockManager
-        - @ref storage :\n
+        - @ref spStorage :\n
           + Reading any block
           + Writing any block
           + Writing multiple blocks which make up a transaction, e.g. rename/overwrite a section or
             manipulation of free-block lists
-          + any manipulation on free blocks; @ref storage content must be kept in sync with
+          + any manipulation on free blocks; @ref spStorage content must be kept in sync with
             @ref nFreeBlocks, @ref freeBlockListHeadIdx, and @ref freeBlockListEndIdx.
         - @ref nFreeBlocks
         - @ref freeBlockListHeadIdx
@@ -300,9 +300,9 @@ class EEPROMSectionSystem: public IFileStorage
 
     /// Section Lock Manager.
     /** @ref mutex is required.
-        Any modifying operation on @ref storage (creation, modification, deletion of sections)
+        Any modifying operation on @ref spStorage (creation, modification, deletion of sections)
         requires acquisition of write-locks on all involved sections before the operation starts.\n
-        Any non-modifying operation on @ref storage (open sections for reading) requires acquisition
+        Any non-modifying operation on @ref spStorage (open sections for reading) requires acquisition
         of a read-lock for the section before the operation starts. */
     mutable resource_management::objects::SmallDynamicNamedRWLock sectionLockManager;
 
@@ -312,7 +312,7 @@ class EEPROMSectionSystem: public IFileStorage
         state @ref States::not_mounted. */
     std::unique_ptr<internal::BlockAccessor> spStorage;
 
-    /// Number of free blocks in @ref storage.
+    /// Number of free blocks in @ref spStorage.
     /** @ref mutex is required. */
     uint16_t nFreeBlocks;
 

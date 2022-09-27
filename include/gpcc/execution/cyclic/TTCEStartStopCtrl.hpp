@@ -216,7 +216,7 @@ class TTCEStartStopCtrl
 };
 
 /**
- * \fn virtual uint8_t TTCEStartStopCtrl::OnBeforeRestartAfterLossOfLock(void)
+ * \fn uint8_t TTCEStartStopCtrl::OnBeforeRestartAfterLossOfLock(void)
  * \brief This is invoked directly before the managed [TriggeredThreadedCyclicExec](@ref gpcc::execution::cyclic::TriggeredThreadedCyclicExec)
  *        instance is restarted automatically after a loss of lock of the PLL.
  *
@@ -258,7 +258,7 @@ class TTCEStartStopCtrl
  */
 
 /**
- * \fn virtual void TTCEStartStopCtrl::OnStateSwitchedTo_Stopped(TriggeredThreadedCyclicExec::StopReasons const stopReason)
+ * \fn void TTCEStartStopCtrl::OnStateSwitchedTo_Stopped(TriggeredThreadedCyclicExec::StopReasons const stopReason)
  * \brief This is invoked after @ref TTCEStartStopCtrl has entered state @ref States::stopped.
  *
  * Derived classes may overwrite this to get informed when the managed
@@ -292,7 +292,7 @@ class TTCEStartStopCtrl
  */
 
 /**
- * \fn virtual void TTCEStartStopCtrl::OnStateSwitchedTo_Starting(void)
+ * \fn void TTCEStartStopCtrl::OnStateSwitchedTo_Starting(void)
  * \brief This is called after @ref TTCEStartStopCtrl has entered state @ref States::starting.
  *
  * Derived classes may overwrite this to get informed _after_ start of sampling has been requested
@@ -313,7 +313,7 @@ class TTCEStartStopCtrl
  */
 
 /**
- * \fn virtual void TTCEStartStopCtrl::OnStateSwitchedTo_Running(void)
+ * \fn void TTCEStartStopCtrl::OnStateSwitchedTo_Running(void)
  * \brief This is called after @ref TTCEStartStopCtrl has entered state @ref States::running.
  *
  * Derived classes may overwrite this to get informed when the managed
@@ -336,7 +336,7 @@ class TTCEStartStopCtrl
  */
 
 /**
- * \fn virtual void TTCEStartStopCtrl::OnStateSwitchedTo_StopPending(void)
+ * \fn void TTCEStartStopCtrl::OnStateSwitchedTo_StopPending(void)
  * \brief This is called after the @ref TTCEStartStopCtrl has entered state @ref States::stopPending.
  *
  * Derived classes may overwrite this to get informed _after_ stop of sampling has been requested
@@ -356,7 +356,7 @@ class TTCEStartStopCtrl
  */
 
 /**
- * \fn virtual void TTCEStartStopCtrl::OnStateSwitchedTo_StoppedStopPending(TriggeredThreadedCyclicExec::StopReasons const stopReason)
+ * \fn void TTCEStartStopCtrl::OnStateSwitchedTo_StoppedStopPending(TriggeredThreadedCyclicExec::StopReasons const stopReason)
  * \brief This is called after @ref TTCEStartStopCtrl has entered state @ref States::stoppedStopPending.
  *
  * Derived classes may overwrite this to get informed if the managed
@@ -390,7 +390,7 @@ class TTCEStartStopCtrl
  */
 
 /**
- * \fn virtual void TTCEStartStopCtrl::OnBadAllocWQ(void)
+ * \fn void TTCEStartStopCtrl::OnBadAllocWQ(void)
  * \brief This is invoked if an out-of-memory error occurred within @ref OnTTCEStateChange().
  *
  * The @ref TTCEStartStopCtrl receives state change notifications from the managed

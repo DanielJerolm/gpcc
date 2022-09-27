@@ -130,7 +130,7 @@ class CLIAdapterBase
 };
 
 /**
- * \fn gpcc::cood::Object::attr_t CLIAdapterBase::BeginAccessHook
+ * \fn gpcc::cood::Object::attr_t CLIAdapterBase::BeginAccessHook(void)
  * \brief This is invoked before a read/write access to the object dictionary takes place.
  *
  * Subclasses implementing this method shall:
@@ -160,7 +160,7 @@ class CLIAdapterBase
  */
 
 /**
- * \fn void CLIAdapterBase::EndAccessHook
+ * \fn void CLIAdapterBase::EndAccessHook(void)
  * \brief This is invoked after a read/write access to the object dictionary has taken place.
  *
  * This is the counterpart to [BeginAccessHook()](@ref gpcc::cood::CLIAdapterBase::BeginAccessHook).
@@ -182,7 +182,7 @@ class CLIAdapterBase
  */
 
 /**
- * \fn std::string CLIAdapterBase::AttributesToStringHook
+ * \fn std::string CLIAdapterBase::AttributesToStringHook(gpcc::cood::Object::attr_t const attributes)
  * \brief Converts object attributes into a human-readable string.
  *
  * Depending on the application of the object dictionary (e.g. EtherCAT or CANopen), the
@@ -224,7 +224,7 @@ class CLIAdapterBase
  */
 
 /**
- * \fn std::string CLIAdapterBase::AppSpecificMetaDataToStringHook
+ * \fn std::string CLIAdapterBase::AppSpecificMetaDataToStringHook(std::vector<uint8_t> const & data)
  * \brief Converts application-specific meta data into a human-readable string.
  *
  * Depending on the application of the object dictionary, application-specific meta data may be attached to some or

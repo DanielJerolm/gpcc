@@ -55,7 +55,7 @@ class IRemoteObjectDictionaryAccessNotifiable
 };
 
 /**
- * \fn IRemoteObjectDictionaryAccessNotifiable::OnReady
+ * \fn void IRemoteObjectDictionaryAccessNotifiable::OnReady(size_t const maxRequestSize, size_t const maxResponseSize)
  * \brief Indicates, that the [IRemoteObjectDictionaryAccess](@ref gpcc::cood::IRemoteObjectDictionaryAccess)
  *        interface is ready to accept remote access requests and informs about maximum permitted message sizes.
  *
@@ -109,7 +109,7 @@ class IRemoteObjectDictionaryAccessNotifiable
  */
 
 /**
- * \fn IRemoteObjectDictionaryAccessNotifiable::OnDisconnected
+ * \fn void IRemoteObjectDictionaryAccessNotifiable::OnDisconnected(void)
  * \brief Indicates, that the [IRemoteObjectDictionaryAccess](@ref gpcc::cood::IRemoteObjectDictionaryAccess)
  *        interface has been disconnected from the remote access server.
  *
@@ -160,7 +160,7 @@ class IRemoteObjectDictionaryAccessNotifiable
  */
 
 /**
- * \fn IRemoteObjectDictionaryAccessNotifiable::OnRequestProcessed
+ * \fn void IRemoteObjectDictionaryAccessNotifiable::OnRequestProcessed(std::unique_ptr<gpcc::cood::ResponseBase> spResponse)
  * \brief Passes a response to the client.
  *
  * - - -
@@ -188,7 +188,7 @@ class IRemoteObjectDictionaryAccessNotifiable
  */
 
 /**
- * \fn IRemoteObjectDictionaryAccessNotifiable::LoanExecutionContext
+ * \fn void IRemoteObjectDictionaryAccessNotifiable::LoanExecutionContext(void)
  * \brief This is invoked upon request via
  *        [IRemoteObjectDictionaryAccess::RequestExecutionContext()](@ref gpcc::cood::IRemoteObjectDictionaryAccess::RequestExecutionContext).
  *
