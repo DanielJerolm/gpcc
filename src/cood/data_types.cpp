@@ -1,39 +1,22 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2018, 2020, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2018 Daniel Jerolm
 */
 
-#include "data_types.hpp"
-#include "exceptions.hpp"
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
-#include "gpcc/src/string/tools.hpp"
-#include <cstdio>
+#include <gpcc/cood/data_types.hpp>
+#include <gpcc/cood/exceptions.hpp>
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
+#include <gpcc/string/tools.hpp>
 #include <exception>
 #include <limits>
 #include <stdexcept>
+#include <cstdio>
 
 namespace gpcc {
 namespace cood {
@@ -435,7 +418,7 @@ DataType ToDataType(uint16_t const value)
 
 /**
  * \ingroup GPCC_COOD_DATATYPES
- * \brief Reads the data of one subindex (encoded in CANopen format) from an @ref gpcc::Stream::IStreamReader and
+ * \brief Reads the data of one subindex (encoded in CANopen format) from an @ref gpcc::stream::IStreamReader and
  *        generates a human-readable string representation of the data value.
  *
  * - - -
@@ -459,7 +442,7 @@ DataType ToDataType(uint16_t const value)
  * - - -
  *
  * \param sr
- * Reference to an @ref gpcc::Stream::IStreamReader from which the CANopen encoded data shall be read.
+ * Reference to an @ref gpcc::stream::IStreamReader from which the CANopen encoded data shall be read.
  *
  * \param sizeInBit
  * Size (in bit) of the CANopen encoded data to be read from `sr`.\n
@@ -483,7 +466,7 @@ DataType ToDataType(uint16_t const value)
  * \return
  * The generated human-readable string.
  */
-std::string CANopenEncodedDataToString(gpcc::Stream::IStreamReader& sr, size_t const sizeInBit, DataType const type)
+std::string CANopenEncodedDataToString(gpcc::stream::IStreamReader& sr, size_t const sizeInBit, DataType const type)
 {
   // check sizeInBit
   switch (type)
@@ -698,7 +681,7 @@ std::string CANopenEncodedDataToString(gpcc::Stream::IStreamReader& sr, size_t c
 /**
  * \ingroup GPCC_COOD_DATATYPES
  * \brief Converts a human-readable string representation of the data of one subindex into CANopen encoded data and
- *        writes the CANopen encoded data into an @ref gpcc::Stream::IStreamWriter.
+ *        writes the CANopen encoded data into an @ref gpcc::stream::IStreamWriter.
  *
  * This function is intended to process user input. It is aware of all sort of erroneous input strings.
  *
@@ -783,9 +766,9 @@ std::string CANopenEncodedDataToString(gpcc::Stream::IStreamReader& sr, size_t c
  * any query on class @ref Object.
  *
  * \param sw
- * The CANopen encoded data will be written into the referenced @ref gpcc::Stream::IStreamWriter.
+ * The CANopen encoded data will be written into the referenced @ref gpcc::stream::IStreamWriter.
  */
-void StringToCANOpenEncodedData(std::string const & s, size_t const sizeInBit, DataType const type, gpcc::Stream::IStreamWriter& sw)
+void StringToCANOpenEncodedData(std::string const & s, size_t const sizeInBit, DataType const type, gpcc::stream::IStreamWriter& sw)
 {
   // check sizeInBit
   switch (type)
@@ -963,7 +946,7 @@ void StringToCANOpenEncodedData(std::string const & s, size_t const sizeInBit, D
       case DataType::bit7:
       case DataType::bit8:
       {
-        uint8_t const bits = gpcc::string::AnyStringToU8(s);
+        uint8_t const bits = gpcc::string::AnyNumberToU8(s);
         if (bits > ((1UL << sizeInBit) - 1U))
           throw std::invalid_argument("Value too large");
 

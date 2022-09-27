@@ -1,40 +1,23 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2011-2017, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2011 Daniel Jerolm
 */
 
+#include "UUT_TriggeredThreadedCyclicExec.hpp"
+#include <gpcc/osal/Thread.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/time/TimeSpan.hpp>
 #include "Trace.hpp"
 #include "TriggerProvider.hpp"
-#include "UUT_TriggeredThreadedCyclicExec.hpp"
-#include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/time/TimeSpan.hpp"
 #include "gtest/gtest.h"
 #include <stdexcept>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 // Universal timeout when waiting for things that will happen (of course if the UUT behaves as expected)
 #define GENERAL_TIMEOUT_MS 500
@@ -138,7 +121,7 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, SamplingOff_NoT
   for (size_t i = 0U; i < 3U; i++)
   {
     ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
-    triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::Timeout, false);
+    triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::Timeout, false);
   }
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
 
@@ -158,7 +141,7 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, SamplingOff_Tri
   for (size_t i = 0U; i < 3U; i++)
   {
     ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
-    triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+    triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   }
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
 
@@ -178,7 +161,7 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, SamplingOff_Tri
   for (size_t i = 0U; i < 3U; i++)
   {
     ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
-    triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::AlreadySignalled, false);
+    triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::AlreadySignalled, false);
   }
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
 
@@ -198,41 +181,41 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, TurnOn_OperateN
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
   uut.RequestStartSampling(0U);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
   uut.RequestStopSampling();
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -289,36 +272,36 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, ImmediateTurnOn
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
 
   uut.RequestStartSampling(0U);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
   uut.RequestStopSampling();
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -372,48 +355,48 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, StartDelay)
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
 
   uut.RequestStartSampling(3U);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
   uut.RequestStopSampling();
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -472,36 +455,36 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, Overrun_AllStat
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
 
   uut.RequestStartSampling(0U);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::AlreadySignalled, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::AlreadySignalled, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::AlreadySignalled, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::AlreadySignalled, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::AlreadySignalled, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::AlreadySignalled, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::AlreadySignalled, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::AlreadySignalled, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::AlreadySignalled, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::AlreadySignalled, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
   uut.RequestStopSampling();
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::AlreadySignalled, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::AlreadySignalled, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::AlreadySignalled, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::AlreadySignalled, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -554,45 +537,45 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, SampleReturnsFa
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
   uut.RequestStartSampling(0U);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
   uut.SetSampleRetVal(false);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -650,46 +633,46 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, PllLossOfLockIn
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
   uut.RequestStartSampling(0U);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
   uut.SetIsPllRunningRetVal(false);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
   uut.SetIsPllRunningRetVal(true);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -749,46 +732,46 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, RemainInWaitLoc
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
 
   uut.RequestStartSampling(0U);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
   uut.SetIsPllRunningRetVal(true);
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
   uut.RequestStopSampling();
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -848,25 +831,25 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, RequestStopWhil
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
   uut.RequestStartSampling(5U);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
   uut.RequestStopSampling();
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -903,28 +886,28 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, RequestStopWhil
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
 
   uut.RequestStartSampling(0U);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
   uut.RequestStopSampling();
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -964,77 +947,77 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, RestartAfterSto
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
   uut.RequestStartSampling(0U);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
   uut.RequestStopSampling();
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
 
 
   uut.RequestStartSampling(0U);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
   uut.RequestStopSampling();
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -1119,41 +1102,41 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, TriggerTimeoutI
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
   uut.RequestStartSampling(0U);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::Timeout, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::Timeout, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
   uut.RequestStopSampling();
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -1210,27 +1193,27 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, TriggerTimeoutI
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
 
   uut.RequestStartSampling(0U);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::Timeout, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::Timeout, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -1271,35 +1254,35 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, TriggerTimeoutI
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
 
   uut.RequestStartSampling(0U);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::Timeout, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::Timeout, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -1351,41 +1334,41 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, ThreadTerminati
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
   uut.RequestStartSampling(0U);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
   uut.RequestStopSampling();
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -1395,7 +1378,7 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, ThreadTerminati
   // OSAL implementations where ConVar Wait is not a cancellation point need an extra trigger...
   try
   {
-    triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+    triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   }
   catch (std::exception const &)
   {
@@ -1410,36 +1393,36 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, ThreadTerminati
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
   uut.RequestStartSampling(0U);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
   uut.RequestStopSampling();
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -1526,43 +1509,43 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, RequestStartTwi
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
   uut.RequestStartSampling(0U);
   EXPECT_THROW(uut.RequestStartSampling(2U), std::logic_error);
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
   uut.RequestStopSampling();
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -1617,43 +1600,43 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, RequestStopTwic
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
   uut.RequestStartSampling(0U);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
   uut.RequestStopSampling();
   EXPECT_THROW(uut.RequestStopSampling(), std::logic_error);
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -1709,18 +1692,18 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, StopCancelsStar
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
   uut.RequestStartSampling(5U);
   uut.RequestStopSampling();
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -1751,17 +1734,17 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, StopInStop)
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
   uut.RequestStopSampling();
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
@@ -1791,47 +1774,47 @@ TEST_F(gpcc_execution_cyclic_TriggeredThreadedCyclicExec_TestsF, StartWhenNotInS
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
   uut.RequestStartSampling(0U);
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::starting, uut.GetCurrentState());
 
   ASSERT_THROW(uut.RequestStartSampling(0U), std::logic_error);
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::waitLock, uut.GetCurrentState());
 
   ASSERT_THROW(uut.RequestStartSampling(0U), std::logic_error);
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
   ASSERT_THROW(uut.RequestStartSampling(0U), std::logic_error);
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::running, uut.GetCurrentState());
 
   uut.RequestStopSampling();
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 
-  triggerProvider.Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK, false);
+  triggerProvider.Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK, false);
   ASSERT_TRUE(triggerProvider.WaitForThread(GENERAL_TIMEOUT_MS));
   ASSERT_EQ(TriggeredThreadedCyclicExec::States::stopped, uut.GetCurrentState());
 

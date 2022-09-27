@@ -1,51 +1,34 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2011-2017, 2021, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2011 Daniel Jerolm
 */
 
 #if defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(__DOXYGEN__)
 
-#include "FileStorage.hpp"
+#include <gpcc/file_systems/linux_fs/FileStorage.hpp>
+#include <gpcc/file_systems/exceptions.hpp>
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/string/tools.hpp>
 #include "internal/StdIOFileReader.hpp"
 #include "internal/StdIOFileWriter.hpp"
 #include "internal/tools.hpp"
-#include "gpcc/src/file_systems/exceptions.hpp"
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/string/tools.hpp"
 #include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/statfs.h>
 #include <unistd.h>
-#include <cerrno>
-#include <cstdio>
 #include <stdexcept>
 #include <system_error>
+#include <cerrno>
+#include <cstdio>
 
 namespace gpcc         {
 namespace file_systems {
@@ -112,7 +95,7 @@ FileStorage::~FileStorage(void)
 }
 
 /// \copydoc IFileStorage::Open
-std::unique_ptr<Stream::IStreamReader> FileStorage::Open(std::string const & name)
+std::unique_ptr<stream::IStreamReader> FileStorage::Open(std::string const & name)
 {
   BasicCheckName(name);
 
@@ -132,7 +115,7 @@ std::unique_ptr<Stream::IStreamReader> FileStorage::Open(std::string const & nam
     fileLockManager.ReleaseReadLock(lockID);
   };
 
-  auto spISR = std::unique_ptr<Stream::IStreamReader>(new internal::StdIOFileReader(fullName, *this, lockID));
+  auto spISR = std::unique_ptr<stream::IStreamReader>(new internal::StdIOFileReader(fullName, *this, lockID));
 
   ON_SCOPE_EXIT_DISMISS();
 
@@ -140,7 +123,7 @@ std::unique_ptr<Stream::IStreamReader> FileStorage::Open(std::string const & nam
 }
 
 /// \copydoc IFileStorage::Create
-std::unique_ptr<Stream::IStreamWriter> FileStorage::Create(std::string const & name, bool const overwriteIfExisting)
+std::unique_ptr<stream::IStreamWriter> FileStorage::Create(std::string const & name, bool const overwriteIfExisting)
 {
   FullCheckFileName(name);
 
@@ -160,7 +143,7 @@ std::unique_ptr<Stream::IStreamWriter> FileStorage::Create(std::string const & n
     fileLockManager.ReleaseWriteLock(lockID);
   };
 
-  auto spISW = std::unique_ptr<Stream::IStreamWriter>(new internal::StdIOFileWriter(fullName, overwriteIfExisting, *this, lockID));
+  auto spISW = std::unique_ptr<stream::IStreamWriter>(new internal::StdIOFileWriter(fullName, overwriteIfExisting, *this, lockID));
 
   ON_SCOPE_EXIT_DISMISS();
 

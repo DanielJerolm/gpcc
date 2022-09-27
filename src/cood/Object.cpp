@@ -1,35 +1,18 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2018, 2020, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2018 Daniel Jerolm
 */
 
-#include "Object.hpp"
-#include "exceptions.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
+#include <gpcc/cood/Object.hpp>
+#include <gpcc/cood/exceptions.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
 #include <cstring>
 
 namespace gpcc {
@@ -418,7 +401,7 @@ size_t Object::DetermineSizeOfCANopenEncodedData(void const * const pNativeData,
 }
 
 /**
- * \brief Converts native data into CANopen format and writes it into an [IStreamWriter](@ref gpcc::Stream::IStreamWriter).
+ * \brief Converts native data into CANopen format and writes it into an [IStreamWriter](@ref gpcc::stream::IStreamWriter).
  *
  * - - -
  *
@@ -439,7 +422,7 @@ size_t Object::DetermineSizeOfCANopenEncodedData(void const * const pNativeData,
  *
  * \param pNativeData
  * Pointer to the native data that shall be converted into CANopen format and written into the
- * [IStreamWriter](@ref gpcc::Stream::IStreamWriter).\n
+ * [IStreamWriter](@ref gpcc::stream::IStreamWriter).\n
  * \n
  * Depending on parameter 'type', `pNativeData` will be casted to a pointer to a specific C/C++ data type
  * interpreted in the machine's native format. The documentation of the @ref DataType enumeration contains a list
@@ -472,7 +455,7 @@ size_t Object::DetermineSizeOfCANopenEncodedData(void const * const pNativeData,
  *
  * \param out
  * The native data will be converted into CANopen format and written into the referenced
- * [IStreamWriter](@ref gpcc::Stream::IStreamWriter).\n
+ * [IStreamWriter](@ref gpcc::stream::IStreamWriter).\n
  * [Object::DetermineSizeOfCANopenEncodedData()](@ref gpcc::cood::Object::DetermineSizeOfCANopenEncodedData)
  * can be used to preview the size of the data that will be written.
  */
@@ -480,7 +463,7 @@ void Object::NativeDataToCANopenEncodedData(void const * const pNativeData,
                                             DataType const type,
                                             uint16_t const nDataElements,
                                             bool const completeAccess,
-                                            gpcc::Stream::IStreamWriter & out)
+                                            gpcc::stream::IStreamWriter & out)
 {
   if (pNativeData == nullptr)
     throw std::invalid_argument("Object::NativeDataToCANopenEncodedData: pNativeData is nullptr");
@@ -623,7 +606,7 @@ void Object::NativeDataToCANopenEncodedData(void const * const pNativeData,
 }
 
 /**
- * \brief Reads data in CANopen format from an @ref gpcc::Stream::IStreamReader and converts it to native data.
+ * \brief Reads data in CANopen format from an @ref gpcc::stream::IStreamReader and converts it to native data.
  *
  * - - -
  *
@@ -645,7 +628,7 @@ void Object::NativeDataToCANopenEncodedData(void const * const pNativeData,
  * - - -
  *
  * \param in
- * @ref gpcc::Stream::IStreamReader from which the data shall be read. The data shall be encoded in CANopen format.
+ * @ref gpcc::stream::IStreamReader from which the data shall be read. The data shall be encoded in CANopen format.
  *
  * \param type
  * CANopen type of data.
@@ -664,7 +647,7 @@ void Object::NativeDataToCANopenEncodedData(void const * const pNativeData,
  *         data have been read)
  *
  * \param pNativeData
- * Pointer to the memory location where the data read from the @ref gpcc::Stream::IStreamReader shall be written
+ * Pointer to the memory location where the data read from the @ref gpcc::stream::IStreamReader shall be written
  * to after conversion to native format.\n
  * \n
  * Depending on parameter 'type', `pNativeData` will be casted to a pointer to a specific C/C++ data type
@@ -677,7 +660,7 @@ void Object::NativeDataToCANopenEncodedData(void const * const pNativeData,
  * \n
  * Unused bytes in VISIBLE_STRING data will be filled with zeros.
  */
-void Object::CANopenEncodedDataToNativeData(gpcc::Stream::IStreamReader & in,
+void Object::CANopenEncodedDataToNativeData(gpcc::stream::IStreamReader & in,
                                             DataType const type,
                                             uint16_t const nDataElements,
                                             bool const completeAccess,
@@ -790,7 +773,7 @@ void Object::CANopenEncodedDataToNativeData(gpcc::Stream::IStreamReader & in,
           while (n != 0U)
           {
             char c;
-            if (in.GetState() != gpcc::Stream::IStreamReader::States::empty)
+            if (in.GetState() != gpcc::stream::IStreamReader::States::empty)
               c = in.Read_char();
             else
               c = 0;
@@ -801,7 +784,7 @@ void Object::CANopenEncodedDataToNativeData(gpcc::Stream::IStreamReader & in,
               memset(pND, 0x00, n);
 
               // skip the rest, but be aware of the end of the stream
-              while ((in.GetState() != gpcc::Stream::IStreamReader::States::empty) && (--n != 0U))
+              while ((in.GetState() != gpcc::stream::IStreamReader::States::empty) && (--n != 0U))
               {
                 in.Skip(8U);
               }

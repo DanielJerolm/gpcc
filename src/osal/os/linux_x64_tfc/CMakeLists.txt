@@ -4,15 +4,15 @@
 # -------------------------------------
 target_sources(${PROJECT_NAME}
                PRIVATE
-               ${CMAKE_CURRENT_LIST_DIR}/ConditionVariable.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Mutex.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Panic.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Semaphore.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/Thread.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/internal/AdvancedUnmanagedMutexLocker.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/internal/TFCCore.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/internal/ThreadBlocker.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/internal/TimeLimitedThreadBlocker.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/internal/UnmanagedConditionVariable.cpp
-               ${CMAKE_CURRENT_LIST_DIR}/internal/UnmanagedMutex.cpp
+               ConditionVariable.cpp
+               Mutex.cpp
+               Panic.cpp
+               Semaphore.cpp
+               Thread.cpp
+               internal/AdvancedUnmanagedMutexLocker.cpp
+               internal/TFCCore.cpp
+               internal/ThreadBlocker.cpp
+               internal/TimeLimitedThreadBlocker.cpp
+               internal/UnmanagedConditionVariable.cpp
+               internal/UnmanagedMutex.cpp
               )

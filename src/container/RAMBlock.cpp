@@ -1,34 +1,17 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2011-2017, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "RAMBlock.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
+#include <gpcc/container/RAMBlock.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
 #include <stdexcept>
 #include <cstring>
 
@@ -91,7 +74,7 @@ RAMBlock::RAMBlock(size_t const size, uint8_t const v)
 
 /**
  * \brief Constructor. The RAMBlock's storage will be initialized with data read from an
- *        [IStreamReader](@ref gpcc::Stream::IStreamReader) interface.
+ *        [IStreamReader](@ref gpcc::stream::IStreamReader) interface.
  *
  * - - -
  *
@@ -112,7 +95,7 @@ RAMBlock::RAMBlock(size_t const size, uint8_t const v)
  * \param sr
  * `size` bytes will be read from this and used to initialize the RAMBlock's storage.
  */
-RAMBlock::RAMBlock(size_t const size, gpcc::Stream::IStreamReader& sr)
+RAMBlock::RAMBlock(size_t const size, gpcc::stream::IStreamReader& sr)
 : IRandomAccessStorage()
 , apiMutex()
 , storage(size)
@@ -410,7 +393,7 @@ RAMBlock& RAMBlock::operator=(std::vector<uint8_t> && rhv)
  * \brief Retrieves the dirty-state of the RAMBlock instance.
  *
  * The RAMBlock's dirty flag will be set on any write to the RAMBlock through the
- * [IRandomAccessStorage](@ref gpcc::StdIf::IRandomAccessStorage) interface.
+ * [IRandomAccessStorage](@ref gpcc::stdif::IRandomAccessStorage) interface.
  *
  * The dirty-flag can be cleared using any of the following methods:
  * - @ref ClearDirtyFlag()
@@ -514,7 +497,7 @@ std::vector<uint8_t> RAMBlock::GetDataAndClearDirtyFlag(void)
 }
 
 /**
- * \brief Writes the content of the RAMBlock's storage into a [IStreamWriter](@ref gpcc::Stream::IStreamWriter) and
+ * \brief Writes the content of the RAMBlock's storage into a [IStreamWriter](@ref gpcc::stream::IStreamWriter) and
  *        clears the RAMBlock's dirty flag.
  *
  * Both operations are carried out atomically.
@@ -538,31 +521,31 @@ std::vector<uint8_t> RAMBlock::GetDataAndClearDirtyFlag(void)
  *
  * \param sw
  * The content of the RAMBlock's storage will be written into this.\n
- * The storage behind the [IStreamWriter](@ref gpcc::Stream::IStreamWriter) must have a capacity equal to larger than
+ * The storage behind the [IStreamWriter](@ref gpcc::stream::IStreamWriter) must have a capacity equal to larger than
  * the size of the RAMBlock's storage.
  */
-void RAMBlock::WriteToStreamAndClearDirtyFlag(gpcc::Stream::IStreamWriter& sw)
+void RAMBlock::WriteToStreamAndClearDirtyFlag(gpcc::stream::IStreamWriter& sw)
 {
   gpcc::osal::MutexLocker apiMutexLocker(apiMutex);
   sw.Write_uint8(storage.data(), storage.size());
   dirty = false;
 }
 
-// <-- gpcc::StdIf::IRandomAccessStorage
-/// \copydoc gpcc::StdIf::IRandomAccessStorage::GetSize
+// <-- gpcc::stdif::IRandomAccessStorage
+/// \copydoc gpcc::stdif::IRandomAccessStorage::GetSize
 size_t RAMBlock::GetSize(void) const
 {
   gpcc::osal::MutexLocker apiMutexLocker(apiMutex);
   return storage.size();
 }
 
-/// \copydoc gpcc::StdIf::IRandomAccessStorage::GetPageSize
+/// \copydoc gpcc::stdif::IRandomAccessStorage::GetPageSize
 size_t RAMBlock::GetPageSize(void) const
 {
   return 0;
 }
 
-/// \copydoc gpcc::StdIf::IRandomAccessStorage::Read
+/// \copydoc gpcc::stdif::IRandomAccessStorage::Read
 void RAMBlock::Read(uint32_t address, size_t n, void* pBuffer) const
 {
   if (pBuffer == nullptr)
@@ -574,7 +557,7 @@ void RAMBlock::Read(uint32_t address, size_t n, void* pBuffer) const
     memcpy(pBuffer, storage.data() + address, n);
 }
 
-/// \copydoc gpcc::StdIf::IRandomAccessStorage::Write
+/// \copydoc gpcc::stdif::IRandomAccessStorage::Write
 void RAMBlock::Write(uint32_t address, size_t n, void const * pBuffer)
 {
   if (pBuffer == nullptr)
@@ -589,14 +572,14 @@ void RAMBlock::Write(uint32_t address, size_t n, void const * pBuffer)
   }
 }
 
-/// \copydoc gpcc::StdIf::IRandomAccessStorage::WriteAndCheck
+/// \copydoc gpcc::stdif::IRandomAccessStorage::WriteAndCheck
 bool RAMBlock::WriteAndCheck(uint32_t address, size_t n, void const * pBuffer, void* pAuxBuffer)
 {
   (void)pAuxBuffer;
   Write(address, n, pBuffer);
   return true;
 }
-// --> gpcc::StdIf::IRandomAccessStorage
+// --> gpcc::stdif::IRandomAccessStorage
 
 /**
  * \brief Checks if a memory range specified by a given address and size is completely inside the memory range

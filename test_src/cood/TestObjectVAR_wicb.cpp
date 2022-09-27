@@ -1,36 +1,19 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2018, 2020-2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2018 Daniel Jerolm
 */
 
-#include "gpcc/src/cood/ObjectVAR_wicb.hpp"
-#include "gpcc/src/cood/exceptions.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/Stream/MemStreamReader.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
-#include "gpcc/src/Stream/StreamErrors.hpp"
+#include <gpcc/cood/ObjectVAR_wicb.hpp>
+#include <gpcc/cood/exceptions.hpp>
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/stream/MemStreamReader.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
+#include <gpcc/stream/stream_errors.hpp>
 #include "IObjectNotifiableMock.hpp"
 #include "gtest/gtest.h"
 #include <memory>
@@ -40,7 +23,7 @@ namespace gpcc_tests {
 namespace cood       {
 
 using namespace gpcc::cood;
-using namespace gpcc::Stream;
+using namespace gpcc::stream;
 
 using namespace testing;
 
@@ -1635,7 +1618,7 @@ TEST_F(gpcc_cood_ObjectVAR_wicb_TestsF, Write_VISIBLE_STRING_empty_A)
 
   auto locker(spUUT->LockData());
 
-  gpcc::Stream::MemStreamReader sr(nullptr, 0, gpcc::Stream::IStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader sr(nullptr, 0, gpcc::stream::IStreamReader::Endian::Little);
   EXPECT_EQ(spUUT->Write(0U, Object::attr_ACCESS_WR_PREOP, sr), SDOAbortCode::OK);
 
   EXPECT_EQ(pv[0], 0);
@@ -2471,7 +2454,7 @@ TEST_F(gpcc_cood_ObjectVAR_wicb_TestsF, Write_StreamReaderEmpty)
   readBuffer[2] = 0x13U;
   readBuffer[3] = 0x45U;
 
-  auto sr = gpcc::Stream::MemStreamReader(nullptr, 0U, gpcc::Stream::IStreamReader::Endian::Little);
+  auto sr = gpcc::stream::MemStreamReader(nullptr, 0U, gpcc::stream::IStreamReader::Endian::Little);
   auto const retVal = spUUT->Write(0U, Object::attr_ACCESS_WR_PREOP, sr);
   ASSERT_EQ(SDOAbortCode::DataTypeMismatchTooSmall, retVal);
 

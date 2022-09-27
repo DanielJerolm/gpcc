@@ -1,32 +1,15 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2011-2017, 2021, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "tools.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
+#include <gpcc/string/tools.hpp>
+#include <gpcc/raii/scope_guard.hpp>
 #include <iomanip>
 #include <limits>
 #include <sstream>
@@ -1577,6 +1560,85 @@ int32_t DecimalToI32(std::string const & s)
  * This function is intended to be used in function interpreting user input. It provides
  * maximum flexibility to the user when a `uint8_t` shall be entered.
  *
+ * If single ASCII characters shall be accepted, consider using @ref AnyStringToU8().
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::out_of_range       Result does not fit into `uint8_t`.
+ *
+ * \throws std::invalid_argument   `s` is invalid.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String that shall be converted to an `uint8_t`.
+ * \return
+ * `uint8_t` value.
+ */
+uint8_t AnyNumberToU8(std::string const & s)
+{
+  long value;
+  size_t n;
+  if (StartsWith(s, " "))
+  {
+    throw std::invalid_argument("AnyNumberToU8");
+  }
+  else if (StartsWith(s, "0x"))
+  {
+    value = std::stol(s, &n, 16);
+
+    if (n != s.size())
+      throw std::invalid_argument("AnyNumberToU8");
+  }
+  else if (StartsWith(s, "0b"))
+  {
+    value = std::stol(s.substr(2), &n, 2);
+
+    if (n != s.size() - 2U)
+      throw std::invalid_argument("AnyNumberToU8");
+  }
+  else if (StartsWith(s, "-"))
+  {
+    throw std::invalid_argument("AnyNumberToU8");
+  }
+  else
+  {
+    value = std::stol(s, &n, 10);
+
+    if (n != s.size())
+      throw std::invalid_argument("AnyNumberToU8");
+  }
+
+  if ((value < std::numeric_limits<uint8_t>::min()) || (value > std::numeric_limits<uint8_t>::max()))
+    throw std::out_of_range("AnyNumberToU8");
+
+  return static_cast<uint8_t>(value);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing any valid number representation (incl. single ASCII characters) into a value of
+ *        type `uint8_t`.
+ *
+ * The function accepts the following textual representations of data of type `uint8_t`:
+ * - Hex values: 0x12, 0xAB, 0xab; Range: 0x00..0xFF
+ * - Binary values: 0b00001000; Range: 0b00000000..0b11111111
+ * - Integer numbers: 1, 3, 5; Range: 0..255
+ * - Single ASCII characters in '': 'a', 'b', ''' -> '
+ * - Leading and trailing space characters are not allowed
+ *
+ * This function is intended to be used in function interpreting user input. It provides
+ * maximum flexibility to the user when a `uint8_t` shall be entered.
+ *
  * - - -
  *
  * __Thread safety:__\n
@@ -1624,6 +1686,13 @@ uint8_t AnyStringToU8(std::string const & s)
   else if (StartsWith(s, "-"))
   {
     throw std::invalid_argument("AnyStringToU8");
+  }
+  else if (StartsWith(s, "'"))
+  {
+    if ((s.length() != 3U) || (s[2] != '\''))
+      throw std::invalid_argument("AnyStringToU8");
+
+    return s[1];
   }
   else
   {

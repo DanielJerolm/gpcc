@@ -4,6 +4,15 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
+- Bugfix: AnyStringToU32 should be AnyNumberToU32
+
+- Options for enhancements identified during header restructuring:
+  - [  ] Simplify TestBlockAccessor (long namespaces)
+  - [  ] Simplify TestEEPROMSectionSystem (long namespaces)
+  - [  ] IRandomAccessStorageCLI.cpp
+         Provide more String2X functions and use them in CliCmdReadIRandomAccessStorage() and
+         CliCmdWriteIRandomAccessStorage()
+
 
 - COOD remote access
   ==================
@@ -100,6 +109,10 @@ Next to do:
 
 - cleanup osal/universal
 
+- cleanup resource_management
+  - Coding & doc style
+  - Some internals are referenced by unique_ptr and are not a part. Stay with this or make parts?
+
 - Review text messages passed to exception's ctors
   (grep -n -r "throw .*\(.*\);")
 
@@ -169,6 +182,34 @@ Next to do:
 
 History:
 ===============================================================================
+2022-09-27
+- Moved cmake files into gpcc/cmake
+
+2022-09-26
+- Unified doxygen documentation of pure virtual methods
+
+2022-09-24
+- Updated doxygen according to new structure with public headers and removed all doxygen warnings.
+
+2022-09-21
+- Headers restructured
+- Folder names all in lower case now
+- Namespace names all in lower case now
+- Order of #includes meets coding style
+
+2022-08-20
+- Update doxygen scripts and checked that all doc builds with zero errors
+
+2022-08-19
+- Checked against old CMAKE project files: All unittest-cases are build and executed.
+
+2022-08-17
+- Changed license to Mozilla Public License 2.0
+
+2022-08-12
+- Enhanced cmake files
+- Fixed includes in time/chibios_arm
+
 2022-06-09
 - Enhanced OSAL for ChibiOS/RT: Access to ChibiOS internals replaced by call to API function
 - Bugfix: Selection of 32/64bit specific code in RODACLIClientBase.cpp

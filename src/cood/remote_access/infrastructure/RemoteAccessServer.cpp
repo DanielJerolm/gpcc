@@ -1,53 +1,36 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2021, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "RemoteAccessServer.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectInfoRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ObjectInfoResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/PingRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/PingResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReadRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ReadRequestResponse.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/RequestBase.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/ResponseBase.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/WriteRequest.hpp"
-#include "gpcc/src/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp"
-#include "gpcc/src/cood/remote_access/roda_itf/exceptions.hpp"
-#include "gpcc/src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiable.hpp"
-#include "gpcc/src/cood/IObjectAccess.hpp"
-#include "gpcc/src/cood/Object.hpp"
-#include "gpcc/src/log/Logger.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/Stream/MemStreamReader.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
+#include <gpcc/cood/remote_access/infrastructure/RemoteAccessServer.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/PingRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/PingResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReadRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReadRequestResponse.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/RequestBase.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ResponseBase.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/WriteRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp>
+#include <gpcc/cood/remote_access/roda_itf/exceptions.hpp>
+#include <gpcc/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiable.hpp>
+#include <gpcc/cood/IObjectAccess.hpp>
+#include <gpcc/cood/Object.hpp>
+#include <gpcc/log/Logger.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/stream/MemStreamReader.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
 #include <exception>
 #include <stdexcept>
 
@@ -993,9 +976,9 @@ void RemoteAccessServer::ServeReadRequest(ReadRequest & request)
         {
           // create a container for the data and a MemStreamWriter
           std::vector<uint8_t> data(sizeInByte);
-          gpcc::Stream::MemStreamWriter msw(data.data(),
+          gpcc::stream::MemStreamWriter msw(data.data(),
                                             data.size(),
-                                            gpcc::Stream::MemStreamWriter::Endian::Little);
+                                            gpcc::stream::MemStreamWriter::Endian::Little);
 
           // do the actual read
           SDOAbortCode result;
@@ -1080,9 +1063,9 @@ void RemoteAccessServer::ServeWriteRequest(WriteRequest & request)
     auto spObject = od.GetObject(request.GetIndex());
     if (spObject)
     {
-      gpcc::Stream::MemStreamReader msr(request.GetData().data(),
+      gpcc::stream::MemStreamReader msr(request.GetData().data(),
                                         request.GetData().size(),
-                                        gpcc::Stream::MemStreamReader::Endian::Little);
+                                        gpcc::stream::MemStreamReader::Endian::Little);
 
       bool const completeAccess = (request.GetAccessType() != WriteRequest::AccessType::singleSubindex);
 
@@ -1100,7 +1083,7 @@ void RemoteAccessServer::ServeWriteRequest(WriteRequest & request)
         bool const si0_16bit = (request.GetAccessType() == WriteRequest::AccessType::completeAccess_SI0_16bit);
 
         result = spObject->CompleteWrite(inclSI0, si0_16bit, request.GetPermissions(),
-                                         msr, gpcc::Stream::IStreamReader::RemainingNbOfBits::sevenOrLess);
+                                         msr, gpcc::stream::IStreamReader::RemainingNbOfBits::sevenOrLess);
       }
 
       spResponse->SetResult(result);

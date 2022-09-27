@@ -1,35 +1,18 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2011-2017, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "TriggeredThreadedCyclicExec.hpp"
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/StdIf/IIRQ2ThreadWakeup.hpp"
+#include <gpcc/execution/cyclic/TriggeredThreadedCyclicExec.hpp>
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/stdif/notify/IIRQ2ThreadWakeup.hpp>
 #include <stdexcept>
 
 namespace gpcc {
@@ -58,7 +41,7 @@ namespace cyclic {
  * _The referenced string must not change during lifetime of the TriggeredThreadedCyclicExec object._\n
  * _nullptr is not allowed._
  * \param _trigger
- * Reference to an [IIRQ2ThreadWakeup](@ref gpcc::StdIf::IIRQ2ThreadWakeup) subclass instance that shall be
+ * Reference to an [IIRQ2ThreadWakeup](@ref gpcc::stdif::IIRQ2ThreadWakeup) subclass instance that shall be
  * used to deliver the cyclic trigger.
  * \param _timeout
  * Reference to a [TimeSpan](@ref gpcc::time::TimeSpan) instance providing the timeout for monitoring the cyclic
@@ -72,7 +55,7 @@ namespace cyclic {
  * _A copy is generated._
  */
 TriggeredThreadedCyclicExec::TriggeredThreadedCyclicExec(char const * const pThreadName,
-                                                         StdIf::IIRQ2ThreadWakeup & _trigger,
+                                                         stdif::IIRQ2ThreadWakeup & _trigger,
                                                          time::TimeSpan const & _timeout,
                                                          tIsPllLocked const & _isPllLockedFunc)
 : trigger(_trigger)
@@ -400,9 +383,9 @@ void* TriggeredThreadedCyclicExec::InternalThreadEntry(void)
     while (!thread.IsCancellationPending())
     {
       // wait for trigger
-      StdIf::IIRQ2ThreadWakeup::Result const result = trigger.WaitWithTimeout(timeout);
-      bool const overrun = (result == StdIf::IIRQ2ThreadWakeup::Result::AlreadySignalled);
-      bool const timeout = (result == StdIf::IIRQ2ThreadWakeup::Result::Timeout);
+      stdif::IIRQ2ThreadWakeup::Result const result = trigger.WaitWithTimeout(timeout);
+      bool const overrun = (result == stdif::IIRQ2ThreadWakeup::Result::AlreadySignalled);
+      bool const timeout = (result == stdif::IIRQ2ThreadWakeup::Result::Timeout);
 
       mutexLocker.Relock();
 

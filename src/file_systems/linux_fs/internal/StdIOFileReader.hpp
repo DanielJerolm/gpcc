@@ -1,28 +1,11 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2011-2020, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2011 Daniel Jerolm
 */
 
 #if defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(__DOXYGEN__)
@@ -30,7 +13,7 @@
 #ifndef STDIOFILEREADER_HPP_201805181928
 #define STDIOFILEREADER_HPP_201805181928
 
-#include "gpcc/src/Stream/StreamReaderBase.hpp"
+#include <gpcc/stream/StreamReaderBase.hpp>
 #include <cstdio>
 
 namespace gpcc         {
@@ -43,15 +26,16 @@ namespace internal     {
 
 /**
  * \ingroup GPCC_FILESYSTEMS_LINUXFS_INTERNAL
- * \brief Class used to read data from a regular file via @ref gpcc::Stream::IStreamReader.
+ * \class StdIOFileReader StdIOFileReader.hpp "src/file_systems/linux_fs/internal/StdIOFileReader.hpp"
+ * \brief Class used to read data from a regular file via @ref gpcc::stream::IStreamReader.
  *
  * An instance of this class is created by class @ref FileStorage if a regular file shall be opened for reading.
- * This class offers read access via @ref gpcc::Stream::IStreamReader and manages all read accesses to the storage.
+ * This class offers read access via @ref gpcc::stream::IStreamReader and manages all read accesses to the storage.
  * All read accesses are done using buffered I/O operations. Finally this class takes care for unlocking of the
  * opened file at the @ref FileStorage instance.
- * [IStreamReader::RemainingBytes()](@ref gpcc::Stream::IStreamReader::RemainingBytes()) is not supported.
+ * [IStreamReader::RemainingBytes()](@ref gpcc::stream::IStreamReader::RemainingBytes()) is not supported.
  *
- * After construction, the object is ready to read data from the file via the @ref gpcc::Stream::IStreamWriter
+ * After construction, the object is ready to read data from the file via the @ref gpcc::stream::IStreamWriter
  * interface.
  *
  * # Internals
@@ -105,7 +89,7 @@ namespace internal     {
  * __Thread safety:__\n
  * Not thread safe, but non-modifying concurrent access is safe.
  */
-class StdIOFileReader final : public Stream::StreamReaderBase
+class StdIOFileReader final : public stream::StreamReaderBase
 {
   public:
     StdIOFileReader(std::string const & fileName, FileStorage & _fileStorage, std::string const & _unlockID);

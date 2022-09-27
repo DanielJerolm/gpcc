@@ -1,34 +1,16 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2011-2018 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2011 Daniel Jerolm
 */
 
-
-#include "gpcc/src/container/RAMBlock.hpp"
-#include "gpcc/src/Stream/MemStreamReader.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
+#include <gpcc/container/RAMBlock.hpp>
+#include <gpcc/stream/MemStreamReader.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
 #include "gtest/gtest.h"
 #include <iostream>
 #include <memory>
@@ -149,23 +131,23 @@ TEST(gpcc_container_RAMBlock_Tests, Construction_FromIStreamReader)
       }
     };
 
-  gpcc::Stream::MemStreamReader msr(data.data(), data.size(), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(data.data(), data.size(), gpcc::stream::MemStreamReader::Endian::Little);
 
   spUUT.reset(new RAMBlock(0, msr));
   Check(0);
   EXPECT_EQ(64U, msr.RemainingBytes());
 
-  msr = gpcc::Stream::MemStreamReader(data.data(), data.size(), gpcc::Stream::MemStreamReader::Endian::Little);
+  msr = gpcc::stream::MemStreamReader(data.data(), data.size(), gpcc::stream::MemStreamReader::Endian::Little);
   spUUT.reset(new RAMBlock(1, msr));
   Check(1);
   EXPECT_EQ(64U - 1U, msr.RemainingBytes());
 
-  msr = gpcc::Stream::MemStreamReader(data.data(), data.size(), gpcc::Stream::MemStreamReader::Endian::Little);
+  msr = gpcc::stream::MemStreamReader(data.data(), data.size(), gpcc::stream::MemStreamReader::Endian::Little);
   spUUT.reset(new RAMBlock(10, msr));
   Check(10);
   EXPECT_EQ(64U - 10U, msr.RemainingBytes());
 
-  msr = gpcc::Stream::MemStreamReader(data.data(), data.size(), gpcc::Stream::MemStreamReader::Endian::Little);
+  msr = gpcc::stream::MemStreamReader(data.data(), data.size(), gpcc::stream::MemStreamReader::Endian::Little);
   spUUT.reset(new RAMBlock(64, msr));
   Check(64);
   EXPECT_EQ(64U - 64U, msr.RemainingBytes());
@@ -180,10 +162,10 @@ TEST(gpcc_container_RAMBlock_Tests, Construction_FromIStreamReader_Fail)
   for (uint_fast8_t i = 0; i < 64; i++)
     data.push_back(i);
 
-  gpcc::Stream::MemStreamReader msr(data.data(), data.size(), gpcc::Stream::MemStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader msr(data.data(), data.size(), gpcc::stream::MemStreamReader::Endian::Little);
 
   ASSERT_THROW(spUUT.reset(new RAMBlock(65, msr)), std::exception);
-  EXPECT_EQ(gpcc::Stream::MemStreamReader::States::error, msr.GetState());
+  EXPECT_EQ(gpcc::stream::MemStreamReader::States::error, msr.GetState());
 }
 
 TEST(gpcc_container_RAMBlock_Tests, Construction_CopyFromVector_ZeroSize)
@@ -771,7 +753,7 @@ TEST(gpcc_container_RAMBlock_Tests, GetDataAndClearDirtyFlag_NonZeroSize)
 TEST(gpcc_container_RAMBlock_Tests, WriteToStreamAndClearDirtyFlag_ZeroSize)
 {
   uint8_t buffer[32];
-  gpcc::Stream::MemStreamWriter msw(buffer, sizeof(buffer), gpcc::Stream::IStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(buffer, sizeof(buffer), gpcc::stream::IStreamWriter::Endian::Little);
 
   RAMBlock uut(0);
 
@@ -791,7 +773,7 @@ TEST(gpcc_container_RAMBlock_Tests, WriteToStreamAndClearDirtyFlag_ZeroSize)
 TEST(gpcc_container_RAMBlock_Tests, WriteToStreamAndClearDirtyFlag_NonZeroSize)
 {
   uint8_t buffer[32];
-  gpcc::Stream::MemStreamWriter msw(buffer, sizeof(buffer), gpcc::Stream::IStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(buffer, sizeof(buffer), gpcc::stream::IStreamWriter::Endian::Little);
 
   std::vector<uint8_t> data = {1U, 55U, 9U};
   RAMBlock uut(data);

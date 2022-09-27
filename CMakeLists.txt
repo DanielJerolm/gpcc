@@ -67,7 +67,7 @@
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(gpcc LANGUAGES CXX)
 
-include(common.cmake)
+include(cmake/common.cmake)
 
 # ---------------------------------------------------------------------------------------------------------------------
 # User setting "GPCC_TargetEnvironment"
@@ -134,10 +134,4 @@ endif()
 # ---------------------------------------------------------------------------------------------------------------------
 # Continue in cmake files specific to the target environment
 # ---------------------------------------------------------------------------------------------------------------------
-if(${GPCC_TargetEnvironment} STREQUAL "productive")
-  include(CMakeLists.productive.cmake)
-elseif(${GPCC_TargetEnvironment} STREQUAL "unittest")
-  include(CMakeLists.unittest.cmake)
-else()
-  message(FATAL_ERROR "Error: Value of 'GPCC_TargetEnvironment' not supported.")
-endif()
+include(cmake/CMakeLists.${GPCC_TargetEnvironment}.cmake)

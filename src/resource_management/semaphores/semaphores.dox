@@ -1,0 +1,20 @@
+/*
+    General Purpose Class Collection (GPCC)
+
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
+
+    Copyright (C) 2021 Daniel Jerolm
+*/
+
+/**
+ * @ingroup GPCC_RESOURCEMANAGEMENT
+ * @defgroup GPCC_RESOURCEMANAGEMENT_SEMAPHORES Semaphores
+ *
+ * \brief Special implementations of semaphores.
+ *
+ *
+ * In addition to the basic semaphore @ref gpcc::osal::Semaphore provided by the @ref GPCC_OSAL, the semaphores provided
+ * in this module offer special implementations like non-blocking semaphore wait/decrement-operation.
+ */

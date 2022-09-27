@@ -1,0 +1,26 @@
+/*
+    General Purpose Class Collection (GPCC)
+
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
+
+    Copyright (C) 2019 Daniel Jerolm
+*/
+
+/**
+ * @ingroup GPCC_FILESYSTEMS
+ * @defgroup GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM EEPROM Section System for File I/O on embedded platforms
+ *
+ * \brief Classes for implementing an power-fail-safe and thread-safe file system in an EEPROM or similar device.
+ */
+
+ /**
+ * @ingroup GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM
+ * @defgroup GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_EXCEPTIONS Exceptions
+ *
+ * \brief Exceptions thrown by class [EEPROMSectionSystem](@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem).
+ *
+ * \htmlonly <style>div.image img[src="file_systems/eeprom_section_system/Exceptions.jpg"]{width:80%;}</style> \endhtmlonly
+ * \image html "file_systems/eeprom_section_system/Exceptions.jpg" "EEPROM Section System related exceptions"
+ */

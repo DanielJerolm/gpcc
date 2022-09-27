@@ -1,28 +1,11 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2021, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2021 Daniel Jerolm
 */
 
 #ifndef TESTBENCHBASE_HPP_202008192205
@@ -30,18 +13,18 @@
 
 #ifndef SKIP_TFC_BASED_TESTS
 
-#include "gpcc/src/cood/Object.hpp"
-#include "gpcc/src/cood/ObjectRECORD.hpp"
-#include "gpcc/src/cood/ObjectDictionary.hpp"
-#include "gpcc/src/cood/sdo_abort_codes.hpp"
-#include "gpcc/src/log/logfacilities/ThreadedLogFacility.hpp"
-#include "gpcc/src/log/Logger.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/test_src/log/backends/Backend_Recorder.hpp"
-#include <cstddef>
-#include <cstdint>
+#include <gpcc/cood/Object.hpp>
+#include <gpcc/cood/ObjectRECORD.hpp>
+#include <gpcc/cood/ObjectDictionary.hpp>
+#include <gpcc/cood/sdo_abort_codes.hpp>
+#include <gpcc/log/logfacilities/ThreadedLogFacility.hpp>
+#include <gpcc/log/Logger.hpp>
+#include <gpcc/osal/Mutex.hpp>
+#include "test_src/log/backends/Backend_Recorder.hpp"
 #include <string>
 #include <vector>
+#include <cstddef>
+#include <cstdint>
 
 namespace gpcc {
 namespace cood {
@@ -211,7 +194,7 @@ class TestbenchBase
 };
 
 /**
- * \fn TestbenchBase::StartUUT
+ * \fn void TestbenchBase::StartUUT(void)
  * \brief Starts the UUT (unit under test).
  *
  * Usually "UUT" refers to the component providing the
@@ -240,7 +223,7 @@ class TestbenchBase
  */
 
 /**
- * \fn TestbenchBase::StopUUT
+ * \fn void TestbenchBase::StopUUT(void)
  * \brief Stops the UUT (unit under test).
  *
  * This method shall stop the UUT and -in some cases- additional components closely coupled to the UUT.\n
@@ -264,7 +247,7 @@ class TestbenchBase
  */
 
 /**
- * \fn TestbenchBase::GetUUT
+ * \fn gpcc::cood::IRemoteObjectDictionaryAccess & TestbenchBase::GetUUT(void)
  * \brief Retrieves a pointer to the RODA-interface offered by the UUT.
  *
  * - - -
@@ -285,7 +268,7 @@ class TestbenchBase
  */
 
 /**
- * \fn TestbenchBase::GetOnReadyTimeout_ms
+ * \fn uint32_t TestbenchBase::GetOnReadyTimeout_ms(void) const
  * \brief Retrieves the recommended timeout (in ms) for waiting for the OnReady(...)-callback.
  *
  * - - -
@@ -306,7 +289,7 @@ class TestbenchBase
  */
 
 /**
- * \fn TestbenchBase::GetMinimumResponseTime_ms
+ * \fn uint32_t TestbenchBase::GetMinimumResponseTime_ms(void) const
  * \brief Retrieves the minimum time span (in ms) between sending a request and reception of the response.
  *
  * - - -
@@ -329,7 +312,7 @@ class TestbenchBase
  */
 
 /**
- * \fn TestbenchBase::GetResponseTimeout_ms
+ * \fn uint32_t TestbenchBase::GetResponseTimeout_ms(void) const
  * \brief Retrieves the recommended timeout (in ms) for waiting for a response.
  *
  * Assumption: There is only one request and there are no responses in the pipe.
@@ -353,7 +336,7 @@ class TestbenchBase
  */
 
 /**
- * \fn TestbenchBase::GetTimeUntilMiddleOfTransmittingRequest_ms
+ * \fn uint32_t TestbenchBase::GetTimeUntilMiddleOfTransmittingRequest_ms(void) const
  * \brief Retrieves the time span since call to `Send(...)` until the request has travelled half-way to the server when
  *        the ideal time point has come to test disconnection.
  *
@@ -377,7 +360,7 @@ class TestbenchBase
  */
 
 /**
- * \fn TestbenchBase::GetTimeUntilMiddleOfProcessing_ms
+ * \fn uint32_t TestbenchBase::GetTimeUntilMiddleOfProcessing_ms(void) const
  * \brief Retrieves the time span since call to `Send(...)` until middle of processing when the ideal time point has
  *        come to test disconnection.
  *
@@ -401,7 +384,7 @@ class TestbenchBase
  */
 
 /**
- * \fn TestbenchBase::GetTimeUntilMiddleOfTransmittingResponse_ms
+ * \fn uint32_t TestbenchBase::GetTimeUntilMiddleOfTransmittingResponse_ms(void) const
  * \brief Retrieves the time span since call to `Send(...)` until the response has travelled half-way from the server
  *        back to the client when the ideal time point has come to test disconnection.
  *
@@ -425,7 +408,7 @@ class TestbenchBase
  */
 
 /**
- * \fn TestbenchBase::GetExpectedMaxRequestSize
+ * \fn size_t TestbenchBase::GetExpectedMaxRequestSize(void) const
  * \brief Retrieves the expected value of the maximum permitted request size passed to
  *        [IRemoteObjectDictionaryAccessNotifiable::OnReady(...)](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnReady).
  *
@@ -448,7 +431,7 @@ class TestbenchBase
  */
 
 /**
- * \fn TestbenchBase::GetExpectedMaxResponseSize
+ * \fn size_t TestbenchBase::GetExpectedMaxResponseSize(void) const
  * \brief Retrieves the expected value of the maximum permitted response size passed to
  *        [IRemoteObjectDictionaryAccessNotifiable::OnReady(...)](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnReady).
  *

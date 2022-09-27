@@ -1,28 +1,11 @@
 /*
     General Purpose Class Collection (GPCC)
+
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
+
     Copyright (C) 2019 Daniel Jerolm
-
-    This file is part of the General Purpose Class Collection (GPCC).
-
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
 */
 
 /**
@@ -50,8 +33,8 @@
  *
  * The [IFileStorage](@ref gpcc::file_systems::IFileStorage) interface allows to create, open, delete, rename and
  * enumerate files and to measure file sizes independent of the underlying type of file system and storage device.
- * Read- and write-access to files is offered through [IStreamReader](@ref gpcc::Stream::IStreamReader) and
- * [IStreamWriter](@ref gpcc::Stream::IStreamWriter) interfaces.
+ * Read- and write-access to files is offered through [IStreamReader](@ref gpcc::stream::IStreamReader) and
+ * [IStreamWriter](@ref gpcc::stream::IStreamWriter) interfaces.
  *
  * The [IFileAndDirectoryStorage](@ref gpcc::file_systems::IFileAndDirectoryStorage) interface is derived from the
  * [IFileStorage](@ref gpcc::file_systems::IFileStorage) interface and extends it by the following functionality:
@@ -122,7 +105,7 @@
  *
  * ## IStreamReader::RemainingBytes()
  * Not all classes offering the [IFileStorage](@ref gpcc::file_systems::IFileStorage) interface support
- * [IStreamReader::RemainingBytes()](@ref gpcc::Stream::IStreamReader::RemainingBytes()) when reading files.
+ * [IStreamReader::RemainingBytes()](@ref gpcc::stream::IStreamReader::RemainingBytes()) when reading files.
  *
  * For details, please refer to the documentation of the class realizing the [IFileStorage](@ref gpcc::file_systems::IFileStorage)
  * and [IFileAndDirectoryStorage](@ref gpcc::file_systems::IFileAndDirectoryStorage) interfaces for your particular
@@ -144,12 +127,12 @@
  *
  * ## File system implementations offered by GPCC
  * ### EEPROM Section System
- * Class @ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem offers a 100% random-power-fail-safe
+ * Class @ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem offers a 100% random-power-fail-safe
  * file system that can be placed on top of any EEPROM device and some flash devices with capacities in the range
  * of 32kB up to 512kB. It is designed for minimum memory foot-print and maximum data integrity. Almost any storage
- * device which is accessible via the [IRandomAccessStorage](@ref gpcc::StdIf::IRandomAccessStorage) interface can
+ * device which is accessible via the [IRandomAccessStorage](@ref gpcc::stdif::IRandomAccessStorage) interface can
  * be used. Directories are not supported. For details, please refer to class
- * [EEPROMSectionSystem](@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem).
+ * [EEPROMSectionSystem](@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem).
  *
  * ## Future
  * Future implementations for MS Windows, or large flash devices on ChibiOS-based embedded platforms may follow.

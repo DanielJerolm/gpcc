@@ -1,36 +1,19 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2018, 2020-2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2018 Daniel Jerolm
 */
 
-#include "gpcc/src/cood/ObjectARRAY_wicb.hpp"
-#include "gpcc/src/cood/exceptions.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/Stream/MemStreamReader.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
-#include "gpcc/src/Stream/StreamErrors.hpp"
+#include <gpcc/cood/ObjectARRAY_wicb.hpp>
+#include <gpcc/cood/exceptions.hpp>
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/stream/MemStreamReader.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
+#include <gpcc/stream/stream_errors.hpp>
 #include "IObjectNotifiableMock.hpp"
 #include "gtest/gtest.h"
 #include <limits>
@@ -42,7 +25,7 @@ namespace gpcc_tests {
 namespace cood       {
 
 using namespace gpcc::cood;
-using namespace gpcc::Stream;
+using namespace gpcc::stream;
 
 using namespace testing;
 
@@ -101,8 +84,8 @@ class gpcc_cood_ObjectARRAY_wicb_TestsF: public Test
     uint8_t writeBuffer[1022];
 
     // Stream reader/writer for the buffers above
-    gpcc::Stream::MemStreamReader readBufferReader;
-    gpcc::Stream::MemStreamWriter writeBufferWriter;
+    gpcc::stream::MemStreamReader readBufferReader;
+    gpcc::stream::MemStreamWriter writeBufferWriter;
 
     // Random number generator
     std::default_random_engine dre;
@@ -122,8 +105,8 @@ gpcc_cood_ObjectARRAY_wicb_TestsF::gpcc_cood_ObjectARRAY_wicb_TestsF(void)
 , cbm()
 , readBuffer()
 , writeBuffer()
-, readBufferReader(&readBuffer, sizeof(readBuffer), gpcc::Stream::MemStreamReader::Endian::Little)
-, writeBufferWriter(&writeBuffer, sizeof(writeBuffer), gpcc::Stream::MemStreamWriter::Endian::Little)
+, readBufferReader(&readBuffer, sizeof(readBuffer), gpcc::stream::MemStreamReader::Endian::Little)
+, writeBufferWriter(&writeBuffer, sizeof(writeBuffer), gpcc::stream::MemStreamWriter::Endian::Little)
 , dre(1)
 , spUUT()
 {
@@ -1401,12 +1384,12 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, Read_isw_insufficientCapacity)
   EXPECT_CALL(cbm, OnBeforeRead(spUUT.get(), 7U, false, false)).Times(1).WillRepeatedly(Return(SDOAbortCode::OK));
 
   writeBufferWriter.Close();
-  gpcc::Stream::MemStreamWriter msw(writeBuffer, 2U, gpcc::Stream::IStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(writeBuffer, 2U, gpcc::stream::IStreamWriter::Endian::Little);
 
   auto locker(spUUT->LockData());
   data_ui32[6] = 0xABCDEF00UL;
 
-  EXPECT_THROW(spUUT->Read(7U, Object::attr_ACCESS_RD_PREOP, msw), gpcc::Stream::FullError);
+  EXPECT_THROW(spUUT->Read(7U, Object::attr_ACCESS_RD_PREOP, msw), gpcc::stream::FullError);
 
   msw.Close();
 }
@@ -1417,12 +1400,12 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, Read_isw_full)
   EXPECT_CALL(cbm, OnBeforeRead(spUUT.get(), 7U, false, false)).Times(1).WillRepeatedly(Return(SDOAbortCode::OK));
 
   writeBufferWriter.Close();
-  gpcc::Stream::MemStreamWriter msw(writeBuffer, 0U, gpcc::Stream::IStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(writeBuffer, 0U, gpcc::stream::IStreamWriter::Endian::Little);
 
   auto locker(spUUT->LockData());
   data_ui32[6] = 0xABCDEF00UL;
 
-  EXPECT_THROW(spUUT->Read(7U, Object::attr_ACCESS_RD_PREOP, msw), gpcc::Stream::FullError);
+  EXPECT_THROW(spUUT->Read(7U, Object::attr_ACCESS_RD_PREOP, msw), gpcc::stream::FullError);
 
   msw.Close();
 }
@@ -1437,7 +1420,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, Read_isw_closed)
   auto locker(spUUT->LockData());
   data_ui32[6] = 0xABCDEF00UL;
 
-  EXPECT_THROW(spUUT->Read(7U, Object::attr_ACCESS_RD_PREOP, writeBufferWriter), gpcc::Stream::ClosedError);
+  EXPECT_THROW(spUUT->Read(7U, Object::attr_ACCESS_RD_PREOP, writeBufferWriter), gpcc::stream::ClosedError);
 }
 
 TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, Write_SI0_OK)
@@ -1567,7 +1550,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, Write_SI0_StreamEmpty)
 
   auto locker(spUUT->LockData());
 
-  gpcc::Stream::MemStreamReader sr(nullptr, 0, gpcc::Stream::IStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader sr(nullptr, 0, gpcc::stream::IStreamReader::Endian::Little);
   EXPECT_EQ(spUUT->Write(0U, Object::attr_ACCESS_WR_PREOP, sr), SDOAbortCode::DataTypeMismatchTooSmall);
 }
 
@@ -1579,7 +1562,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, Write_SI0_StreamClosed)
 
   auto sr = readBufferReader.SubStream(2U);
   sr.Close();
-  EXPECT_THROW(spUUT->Write(0U, Object::attr_ACCESS_WR_PREOP, sr), gpcc::Stream::ClosedError);
+  EXPECT_THROW(spUUT->Write(0U, Object::attr_ACCESS_WR_PREOP, sr), gpcc::stream::ClosedError);
 }
 
 TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, Write_SI0_StreamNotEmpty)
@@ -1985,7 +1968,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, Write_StreamEmpty)
 
   auto locker(spUUT->LockData());
 
-  gpcc::Stream::MemStreamReader sr(nullptr, 0, gpcc::Stream::IStreamReader::Endian::Little);
+  gpcc::stream::MemStreamReader sr(nullptr, 0, gpcc::stream::IStreamReader::Endian::Little);
   EXPECT_EQ(spUUT->Write(1U, Object::attr_ACCESS_WR_PREOP, sr), SDOAbortCode::DataTypeMismatchTooSmall);
 
   for (uint_fast8_t i = 0U; i <= 254U; i++)
@@ -2017,7 +2000,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, Write_StreamClosed)
 
   auto sr = readBufferReader.SubStream(2U);
   sr.Close();
-  EXPECT_THROW(spUUT->Write(1U, Object::attr_ACCESS_WR_PREOP, sr), gpcc::Stream::ClosedError);
+  EXPECT_THROW(spUUT->Write(1U, Object::attr_ACCESS_WR_PREOP, sr), gpcc::stream::ClosedError);
 
   for (uint_fast8_t i = 0U; i <= 254U; i++)
   {
@@ -3173,11 +3156,11 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Read_isw_insufficientCapacity)
 
   for (uint_fast8_t i = 0; i <= 4; i++)
   {
-    gpcc::Stream::MemStreamWriter msw(writeBuffer, i, gpcc::Stream::IStreamWriter::Endian::Little);
+    gpcc::stream::MemStreamWriter msw(writeBuffer, i, gpcc::stream::IStreamWriter::Endian::Little);
 
     auto locker(spUUT->LockData());
 
-    EXPECT_THROW(spUUT->CompleteRead(true, true, Object::attr_ACCESS_RD_PREOP, msw), gpcc::Stream::FullError);
+    EXPECT_THROW(spUUT->CompleteRead(true, true, Object::attr_ACCESS_RD_PREOP, msw), gpcc::stream::FullError);
 
     msw.Close();
   }
@@ -3207,7 +3190,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_UNSIGNED8_SI0_16bit_modified)
   readBuffer[1] = 0U;
 
   auto sr = readBufferReader.SubStream(12);
-  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
+  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
 
   // check data
   for (uint_fast8_t i = 0U; i < 10U; i++)
@@ -3245,7 +3228,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_UNSIGNED8_SI0_8bit_modified)
   readBuffer[0] = 10U;
 
   auto sr = readBufferReader.SubStream(11);
-  EXPECT_EQ(spUUT->CompleteWrite(true, false, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
+  EXPECT_EQ(spUUT->CompleteWrite(true, false, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
 
   // check data
   for (uint_fast8_t i = 0U; i < 10U; i++)
@@ -3282,7 +3265,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_UNSIGNED8_ExclSI0)
   Randomize_readbuffer();
 
   auto sr = readBufferReader.SubStream(100);
-  EXPECT_EQ(spUUT->CompleteWrite(false, false, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
+  EXPECT_EQ(spUUT->CompleteWrite(false, false, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
 
   // check data
   for (uint_fast8_t i = 0U; i < 100U; i++)
@@ -3321,7 +3304,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_UNSIGNED8_SI0_16bit_not_modif
   readBuffer[1] = 0U;
 
   auto sr = readBufferReader.SubStream(102);
-  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
+  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
 
   // check data
   for (uint_fast8_t i = 0U; i < 100U; i++)
@@ -3352,7 +3335,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_UNSIGNED8_SI0_noPerm_not_modi
   readBuffer[1] = 0U;
 
   auto sr = readBufferReader.SubStream(102);
-  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_OP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::AttemptToWriteRdOnlyObject);
+  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_OP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::AttemptToWriteRdOnlyObject);
 
   // check data
   for (uint_fast8_t i = 0U; i < 100U; i++)
@@ -3382,7 +3365,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_UNSIGNED8_Data_noPerm)
   readBuffer[1] = 0U;
 
   auto sr = readBufferReader.SubStream(102);
-  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_SAFEOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::AttemptToWriteRdOnlyObject);
+  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_SAFEOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::AttemptToWriteRdOnlyObject);
 
   // check data
   for (uint_fast8_t i = 0U; i < 100U; i++)
@@ -3420,7 +3403,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_UNSIGNED8_SI0RO_16bit_not_mod
   readBuffer[1] = 0U;
 
   auto sr = readBufferReader.SubStream(102);
-  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
+  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
 
   // check data
   for (uint_fast8_t i = 0U; i < 100U; i++)
@@ -3451,7 +3434,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_UNSIGNED8_SI0RO_16bit_modifie
   readBuffer[1] = 0U;
 
   auto sr = readBufferReader.SubStream(101);
-  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::UnsupportedAccessToObject);
+  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::UnsupportedAccessToObject);
 
   // check data
   for (uint_fast8_t i = 0U; i < 100U; i++)
@@ -3481,7 +3464,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_UNSIGNED8_SI0_MinViolation)
   readBuffer[1] = 0U;
 
   auto sr = readBufferReader.SubStream(51);
-  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::ValueTooLow);
+  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::ValueTooLow);
 
   // check data
   for (uint_fast8_t i = 0U; i < 100U; i++)
@@ -3511,7 +3494,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_UNSIGNED8_SI0_MaxViolation)
   readBuffer[1] = 0U;
 
   auto sr = readBufferReader.SubStream(203);
-  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::ValueTooHigh);
+  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::ValueTooHigh);
 
   // check data
   for (uint_fast8_t i = 0U; i < 100U; i++)
@@ -3549,7 +3532,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_UNSIGNED8_dataPureRO)
   readBuffer[1] = 0U;
 
   auto sr = readBufferReader.SubStream(92);
-  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
+  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
 
   // check data
   for (uint_fast8_t i = 0U; i < 90U; i++)
@@ -3588,7 +3571,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_BIT1_dataPureRO)
   readBuffer[1] = 0U;
 
   auto sr = readBufferReader.SubStream(5);
-  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
+  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
 
   // check data
   for (uint_fast8_t i = 0U; i < 3U; i++)
@@ -3635,7 +3618,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_UNSIGNED32_SI0_16bit_modified
   readBuffer[9] = 0xF1U;
 
   auto sr = readBufferReader.SubStream(10);
-  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
+  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
 
   // check data
   EXPECT_EQ(((pv[0] >>  0U) & 0xFFU), readBuffer[2]);
@@ -3695,7 +3678,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_UNSIGNED32_SI0_8bit_modified)
   readBuffer[8] = 0xF1U;
 
   auto sr = readBufferReader.SubStream(9);
-  EXPECT_EQ(spUUT->CompleteWrite(true, false, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
+  EXPECT_EQ(spUUT->CompleteWrite(true, false, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
 
   // check data
   EXPECT_EQ(((pv[0] >>  0U) & 0xFFU), readBuffer[1]);
@@ -3754,7 +3737,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_UNSIGNED32_ExclSI0)
   readBuffer[7] = 0xF1U;
 
   auto sr = readBufferReader.SubStream(8);
-  EXPECT_EQ(spUUT->CompleteWrite(false, false, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
+  EXPECT_EQ(spUUT->CompleteWrite(false, false, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
 
   // check data
   EXPECT_EQ(((pv[0] >>  0U) & 0xFFU), readBuffer[0]);
@@ -3808,7 +3791,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_BIT1_SI0_16bit_modified)
   readBuffer[3] = 0xFFU;
 
   auto sr = readBufferReader.SubStream(4);
-  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::four), SDOAbortCode::OK);
+  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::four), SDOAbortCode::OK);
 
   // check data
   EXPECT_EQ(data_bitX[0], 0x69U);
@@ -3846,7 +3829,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_BIT6_SI0_16bit_modified)
   readBuffer[4] = 0xFFU;
 
   auto sr = readBufferReader.SubStream(5);
-  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::six), SDOAbortCode::OK);
+  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::six), SDOAbortCode::OK);
 
   // check data
   EXPECT_EQ(data_bitX[0], 0x69U);
@@ -3885,7 +3868,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_BIT8_SI0_16bit_modified)
   readBuffer[4] = 0xFFU;
 
   auto sr = readBufferReader.SubStream(5);
-  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
+  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::OK);
 
   // check data
   EXPECT_EQ(data_bitX[0], 0x69U);
@@ -3924,7 +3907,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_BOOLEAN_NATIVE_BIT1_SI0_16bit
   readBuffer[3] = 0xFFU;
 
   auto sr = readBufferReader.SubStream(4);
-  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::four), SDOAbortCode::OK);
+  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::four), SDOAbortCode::OK);
 
   // check data
   EXPECT_EQ(data_bitX[0], 0x69U);
@@ -3952,7 +3935,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_UNSIGNED8_isr_notEnoughData)
   readBuffer[1] = 0U;
 
   auto sr = readBufferReader.SubStream(11);
-  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::DataTypeMismatchTooSmall);
+  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::DataTypeMismatchTooSmall);
 
   // check data
   for (uint_fast8_t i = 0U; i < 10U; i++)
@@ -3983,7 +3966,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_UNSIGNED8_isr_closed)
 
   auto sr = readBufferReader.SubStream(11);
   sr.Close();
-  EXPECT_THROW(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), gpcc::Stream::ClosedError);
+  EXPECT_THROW(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), gpcc::stream::ClosedError);
 
   // check data
   for (uint_fast8_t i = 0U; i < 10U; i++)
@@ -4013,7 +3996,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_UNSIGNED8_ernobMismatch)
   readBuffer[1] = 0U;
 
   auto sr = readBufferReader.SubStream(12);
-  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::one), SDOAbortCode::DataTypeMismatchTooLong);
+  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::one), SDOAbortCode::DataTypeMismatchTooLong);
 
   // check data
   for (uint_fast8_t i = 0U; i < 10U; i++)
@@ -4050,7 +4033,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_BeforeWriteCallbackDoesNotAgr
   readBuffer[1] = 0U;
 
   auto sr = readBufferReader.SubStream(12);
-  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::GeneralError);
+  EXPECT_EQ(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), SDOAbortCode::GeneralError);
 
   // check data
   for (uint_fast8_t i = 0U; i < 10U; i++)
@@ -4088,7 +4071,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_TestsF, CA_Write_BeforeWriteCallbackThrows)
   readBuffer[1] = 0U;
 
   auto sr = readBufferReader.SubStream(12);
-  EXPECT_THROW(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero), std::runtime_error);
+  EXPECT_THROW(spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero), std::runtime_error);
 
   // check data
   for (uint_fast8_t i = 0U; i < 10U; i++)
@@ -4129,7 +4112,7 @@ TEST_F(gpcc_cood_ObjectARRAY_wicb_DeathTestsF, CA_Write_AfterWriteCallbackThrows
     auto sr = readBufferReader.SubStream(12U);
 
     // leathal call:
-    (void)spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::Stream::IStreamReader::RemainingNbOfBits::zero);
+    (void)spUUT->CompleteWrite(true, true, Object::attr_ACCESS_WR_PREOP, sr, gpcc::stream::IStreamReader::RemainingNbOfBits::zero);
   };
 
   EXPECT_DEATH(test(), ".*After-write-callback threw.*");

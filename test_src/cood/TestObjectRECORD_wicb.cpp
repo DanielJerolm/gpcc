@@ -1,38 +1,21 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2018, 2020-2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2018 Daniel Jerolm
 */
 
-#include "gpcc/src/cood/ObjectRECORD_wicb.hpp"
-#include "gpcc/src/cood/exceptions.hpp"
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/Stream/MemStreamReader.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
-#include "gpcc/src/Stream/StreamErrors.hpp"
+#include <gpcc/cood/ObjectRECORD_wicb.hpp>
+#include <gpcc/cood/exceptions.hpp>
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/stream/MemStreamReader.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
+#include <gpcc/stream/stream_errors.hpp>
 #include "IObjectNotifiableMock.hpp"
 #include "gtest/gtest.h"
 #include <memory>
@@ -42,7 +25,7 @@ namespace gpcc_tests {
 namespace cood       {
 
 using namespace gpcc::cood;
-using namespace gpcc::Stream;
+using namespace gpcc::stream;
 
 using namespace testing;
 
@@ -97,8 +80,8 @@ class gpcc_cood_ObjectRECORD_wicb_TestsF: public Test
     uint8_t writeBuffer[1022];
 
     // Stream reader/writer for the buffers above
-    gpcc::Stream::MemStreamReader readBufferReader;
-    gpcc::Stream::MemStreamWriter writeBufferWriter;
+    gpcc::stream::MemStreamReader readBufferReader;
+    gpcc::stream::MemStreamWriter writeBufferWriter;
 
     // ...and finally the UUT
     std::unique_ptr<ObjectRECORD_wicb> spUUT;
@@ -228,8 +211,8 @@ gpcc_cood_ObjectRECORD_wicb_TestsF::gpcc_cood_ObjectRECORD_wicb_TestsF(void)
 , cbm()
 , readBuffer()
 , writeBuffer()
-, readBufferReader(&readBuffer, sizeof(readBuffer), gpcc::Stream::MemStreamReader::Endian::Little)
-, writeBufferWriter(&writeBuffer, sizeof(writeBuffer), gpcc::Stream::MemStreamWriter::Endian::Little)
+, readBufferReader(&readBuffer, sizeof(readBuffer), gpcc::stream::MemStreamReader::Endian::Little)
+, writeBufferWriter(&writeBuffer, sizeof(writeBuffer), gpcc::stream::MemStreamWriter::Endian::Little)
 , spUUT()
 {
   strcpy(data.data_visiblestring, "Test!");
@@ -2237,7 +2220,7 @@ TEST_F(gpcc_cood_ObjectRECORD_wicb_TestsF, Write_Gap_StreamReaderEmpty)
 
   auto locker(spUUT->LockData());
 
-  auto sr = gpcc::Stream::MemStreamReader(nullptr, 0U, gpcc::Stream::IStreamReader::Endian::Little);
+  auto sr = gpcc::stream::MemStreamReader(nullptr, 0U, gpcc::stream::IStreamReader::Endian::Little);
   EXPECT_EQ(spUUT->Write(4U, Object::attr_ACCESS_WR_PREOP, sr), SDOAbortCode::DataTypeMismatchTooSmall);
 }
 
@@ -2284,7 +2267,7 @@ TEST_F(gpcc_cood_ObjectRECORD_wicb_TestsF, Write_StreamReaderEmpty)
 
   auto locker(spUUT->LockData());
 
-  auto sr = gpcc::Stream::MemStreamReader(nullptr, 0U, gpcc::Stream::IStreamReader::Endian::Little);
+  auto sr = gpcc::stream::MemStreamReader(nullptr, 0U, gpcc::stream::IStreamReader::Endian::Little);
   EXPECT_EQ(spUUT->Write(4U, Object::attr_ACCESS_WR_PREOP, sr), SDOAbortCode::DataTypeMismatchTooSmall);
 
   EXPECT_EQ(data.data_ui32a, 0U);
@@ -3062,7 +3045,7 @@ TEST_F(gpcc_cood_ObjectRECORD_wicb_TestsF, CompleteRead_NotEnoughSpaceInStreamWr
   writeBufferWriter.Close();
 
   MemStreamWriter msw(writeBuffer, 12U, IStreamWriter::Endian::Little);
-  EXPECT_THROW(spUUT->CompleteRead(true, true, Object::attr_ACCESS_RD_PREOP, msw), gpcc::Stream::FullError);
+  EXPECT_THROW(spUUT->CompleteRead(true, true, Object::attr_ACCESS_RD_PREOP, msw), gpcc::stream::FullError);
 }
 
 TEST_F(gpcc_cood_ObjectRECORD_wicb_TestsF, CompleteRead_StreamWriterInErrorState)
@@ -3097,10 +3080,10 @@ TEST_F(gpcc_cood_ObjectRECORD_wicb_TestsF, CompleteRead_StreamWriterInErrorState
   writeBufferWriter.Close();
 
   MemStreamWriter msw(writeBuffer, 2U, IStreamWriter::Endian::Little);
-  ASSERT_THROW(msw.Write_uint32(0), gpcc::Stream::FullError);
+  ASSERT_THROW(msw.Write_uint32(0), gpcc::stream::FullError);
   ASSERT_EQ(msw.GetState(), IStreamWriter::States::error);
 
-  EXPECT_THROW(spUUT->CompleteRead(true, true, Object::attr_ACCESS_RD_PREOP, msw), gpcc::Stream::ErrorStateError);
+  EXPECT_THROW(spUUT->CompleteRead(true, true, Object::attr_ACCESS_RD_PREOP, msw), gpcc::stream::ErrorStateError);
 }
 
 TEST_F(gpcc_cood_ObjectRECORD_wicb_TestsF, CompleteWrite_A_SI0_16bit)

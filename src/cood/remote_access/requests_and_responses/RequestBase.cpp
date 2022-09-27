@@ -1,40 +1,23 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2021, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "RequestBase.hpp"
-#include "ObjectEnumRequest.hpp"
-#include "ObjectInfoRequest.hpp"
-#include "PingRequest.hpp"
-#include "ReadRequest.hpp"
-#include "ResponseBase.hpp"
-#include "WriteRequest.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/RequestBase.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/PingRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ReadRequest.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ResponseBase.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/WriteRequest.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
 #include <stdexcept>
 
 namespace gpcc {
@@ -100,7 +83,7 @@ RequestBase::~RequestBase(void)
  * \return
  * Instance of a sub-class of class @ref RequestBase, created from information consumed from `sr`.
  */
-std::unique_ptr<RequestBase> RequestBase::FromBinary(gpcc::Stream::IStreamReader & sr)
+std::unique_ptr<RequestBase> RequestBase::FromBinary(gpcc::stream::IStreamReader & sr)
 {
   // check version
   auto const _version = sr.Read_uint8();
@@ -201,7 +184,7 @@ size_t RequestBase::GetBinarySize(void) const
  * \param sw
  * The binary data is written into the referenced stream.
  */
-void RequestBase::ToBinary(gpcc::Stream::IStreamWriter & sw) const
+void RequestBase::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   // to be read by FromBinary()
   sw.Write_uint8(version);
@@ -383,7 +366,7 @@ RequestBase::RequestBase(RequestTypes const _type, size_t const _maxResponseSize
 
 /**
  * \brief Constructor. Creates a @ref RequestBase object from data read from an
- *        [IStreamReader](@ref gpcc::Stream::IStreamReader) containing a serialized @ref RequestBase object.
+ *        [IStreamReader](@ref gpcc::stream::IStreamReader) containing a serialized @ref RequestBase object.
  *
  * - - -
  *
@@ -408,7 +391,7 @@ RequestBase::RequestBase(RequestTypes const _type, size_t const _maxResponseSize
  * \param versionOnHand
  * Version of serialized object read from `sr`.
  */
-RequestBase::RequestBase(RequestTypes const _type, gpcc::Stream::IStreamReader & sr, uint8_t const versionOnHand)
+RequestBase::RequestBase(RequestTypes const _type, gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand)
 : type(_type)
 , pPrevInIntrusiveDList(nullptr)
 , pNextInIntrusiveDList(nullptr)

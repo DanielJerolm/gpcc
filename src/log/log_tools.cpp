@@ -1,34 +1,17 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2011-2020, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "log_tools.hpp"
-#include "gpcc/src/file_systems/IFileStorage.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/log/log_tools.hpp>
+#include <gpcc/file_systems/IFileStorage.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/string/tools.hpp>
 #include <stdexcept>
 #include <cstdint>
 
@@ -53,7 +36,7 @@ namespace log  {
  * This is thread-safe.
  *
  * __Exception safety:__\n
- * Strong guarantee, if [EEPROMSectionSystem](@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem) is
+ * Strong guarantee, if [EEPROMSectionSystem](@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem) is
  * the underlying file system implementation.\n
  * Basic guarantee for other file system implementations:\n
  * - An incomplete file may be created
@@ -154,7 +137,7 @@ std::vector<ILogFacilityCtrl::tLogSrcConfig> ReadLogSrcConfigFromFile(file_syste
   }
 
   // cross-check: file must be empty after loading all items
-  if (f->GetState() != gpcc::Stream::IStreamReader::States::empty)
+  if (f->GetState() != gpcc::stream::IStreamReader::States::empty)
     throw std::runtime_error("Inconsistent file content");
 
   // close file
@@ -190,7 +173,7 @@ std::vector<ILogFacilityCtrl::tLogSrcConfig> ReadLogSrcConfigFromFile(file_syste
  * This is thread-safe.
  *
  * __Exception safety:__\n
- * Strong guarantee, if [EEPROMSectionSystem](@ref gpcc::file_systems::EEPROMSectionSystem::EEPROMSectionSystem) is
+ * Strong guarantee, if [EEPROMSectionSystem](@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem) is
  * the underlying file system implementation.\n
  * Basic guarantee for other file system implementations:\n
  * - An incomplete file may be created
@@ -295,7 +278,7 @@ std::vector<ILogFacilityCtrl::tLogSrcConfig> ReadLogSrcConfigFromTextFile(file_s
   ON_SCOPE_EXIT(closeFile) { try { f->Close(); } catch (std::exception const &) { /* intentionally empty */ } };
 
   // loop and read lines from file until EOF
-  while (f->GetState() != gpcc::Stream::IStreamReader::States::empty)
+  while (f->GetState() != gpcc::stream::IStreamReader::States::empty)
   {
     std::string line = f->Read_line();
 

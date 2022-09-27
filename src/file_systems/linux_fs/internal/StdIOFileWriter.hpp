@@ -1,28 +1,11 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2011-2020, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2011 Daniel Jerolm
 */
 
 #if defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(__DOXYGEN__)
@@ -30,7 +13,7 @@
 #ifndef STDIOFILEWRITER_HPP_201805182120
 #define STDIOFILEWRITER_HPP_201805182120
 
-#include "gpcc/src/Stream/StreamWriterBase.hpp"
+#include <gpcc/stream/StreamWriterBase.hpp>
 #include <cstdio>
 
 namespace gpcc         {
@@ -43,18 +26,19 @@ namespace internal     {
 
 /**
  * \ingroup GPCC_FILESYSTEMS_LINUXFS_INTERNAL
- * \brief Class used to create or overwrite a regular file and write to it via @ref gpcc::Stream::IStreamWriter.
+ * \class StdIOFileWriter StdIOFileWriter.hpp "src/file_systems/linux_fs/internal/StdIOFileWriter.hpp"
+ * \brief Class used to create or overwrite a regular file and write to it via @ref gpcc::stream::IStreamWriter.
  *
  * An instance of this class is created by class @ref FileStorage if a new regular file shall be created or if an
  * existing regular file shall be overwritten. This class offers write access to the new file via
- * @ref gpcc::Stream::IStreamWriter and manages all write accesses to the storage. All write accesses are done
+ * @ref gpcc::stream::IStreamWriter and manages all write accesses to the storage. All write accesses are done
  * using buffered I/O operations. Finally this class takes care for unlocking of the file at the @ref FileStorage
  * instance.
  *
- * After construction, the object is ready to receive data written via the @ref gpcc::Stream::StreamWriterBase
+ * After construction, the object is ready to receive data written via the @ref gpcc::stream::StreamWriterBase
  * interface.
  *
- * [IStreamWriter::RemainingCapacity()](@ref gpcc::Stream::IStreamWriter::RemainingCapacity()) is not supported.
+ * [IStreamWriter::RemainingCapacity()](@ref gpcc::stream::IStreamWriter::RemainingCapacity()) is not supported.
  *
  * # Internals
  * Byte-based data is immediately written to the underlying file referenced by `fd`. However, all writes are
@@ -70,7 +54,7 @@ namespace internal     {
  * __Thread safety:__\n
  * Not thread safe, but non-modifying concurrent access is safe.
  */
-class StdIOFileWriter final : public gpcc::Stream::StreamWriterBase
+class StdIOFileWriter final : public gpcc::stream::StreamWriterBase
 {
   public:
     StdIOFileWriter(std::string const & fileName, bool const overwriteIfExist, FileStorage & _fileStorage, std::string const & _unlockID);

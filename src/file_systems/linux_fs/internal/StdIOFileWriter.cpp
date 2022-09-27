@@ -1,39 +1,22 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2011-2017, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2011 Daniel Jerolm
 */
 
 #if defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(__DOXYGEN__)
 
 #include "StdIOFileWriter.hpp"
+#include <gpcc/file_systems/exceptions.hpp>
+#include <gpcc/file_systems/linux_fs/FileStorage.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/stream/stream_errors.hpp>
 #include "tools.hpp"
-#include "gpcc/src/file_systems/exceptions.hpp"
-#include "gpcc/src/file_systems/linux_fs/FileStorage.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/Stream/StreamErrors.hpp"
 #include <stdexcept>
 #include <system_error>
 #include <cerrno>
@@ -181,13 +164,13 @@ StdIOFileWriter::~StdIOFileWriter(void)
   }
 }
 
-/// \copydoc gpcc::Stream::IStreamWriter::IsRemainingCapacitySupported(void) const
+/// \copydoc gpcc::stream::IStreamWriter::IsRemainingCapacitySupported(void) const
 bool StdIOFileWriter::IsRemainingCapacitySupported(void) const
 {
   return false;
 }
 
-/// \copydoc gpcc::Stream::IStreamWriter::RemainingCapacity(void) const
+/// \copydoc gpcc::stream::IStreamWriter::RemainingCapacity(void) const
 size_t StdIOFileWriter::RemainingCapacity(void) const
 {
   switch (state)
@@ -200,16 +183,16 @@ size_t StdIOFileWriter::RemainingCapacity(void) const
       throw std::logic_error("StdIOFileWriter::RemainingCapacity: Unused state (States::full) encountered");
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   }
 
   PANIC();
 }
 
-/// \copydoc gpcc::Stream::IStreamWriter::GetNbOfCachedBits
+/// \copydoc gpcc::stream::IStreamWriter::GetNbOfCachedBits
 uint_fast8_t StdIOFileWriter::GetNbOfCachedBits(void) const
 {
   switch (state)
@@ -222,16 +205,16 @@ uint_fast8_t StdIOFileWriter::GetNbOfCachedBits(void) const
       throw std::logic_error("StdIOFileWriter::GetNbOfCachedBits: Unused state (States::full) encountered");
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   }
 
   PANIC();
 }
 
-/// \copydoc gpcc::Stream::IStreamWriter::Close
+/// \copydoc gpcc::stream::IStreamWriter::Close
 void StdIOFileWriter::Close(void)
 {
   switch (state)
@@ -255,7 +238,7 @@ void StdIOFileWriter::Close(void)
   } // switch (state)
 }
 
-/// \copydoc gpcc::Stream::StreamWriterBase::Push(char c)
+/// \copydoc gpcc::stream::StreamWriterBase::Push(char c)
 void StdIOFileWriter::Push(char c)
 {
   if (nbOfBitsWritten != 0)
@@ -270,7 +253,7 @@ void StdIOFileWriter::Push(char c)
         state = States::error;
 
         if (errno == ENOSPC)
-          throw Stream::FullError();
+          throw stream::FullError();
         else
           ThrowIOError("StdIOFileWriter::Push: \"fputc\" failed", errno);
       }
@@ -283,14 +266,14 @@ void StdIOFileWriter::Push(char c)
       throw std::logic_error("StdIOFileWriter::Push: Unused state (States::full) encountered");
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 }
 
-/// \copydoc gpcc::Stream::StreamWriterBase::Push(void const * pData, size_t n)
+/// \copydoc gpcc::stream::StreamWriterBase::Push(void const * pData, size_t n)
 void StdIOFileWriter::Push(void const * pData, size_t n)
 {
   if (n == 0)
@@ -308,7 +291,7 @@ void StdIOFileWriter::Push(void const * pData, size_t n)
         state = States::error;
 
         if (errno == ENOSPC)
-          throw Stream::FullError();
+          throw stream::FullError();
         else
           ThrowIOError("StdIOFileWriter::Push: \"fwrite\" failed", errno);
       }
@@ -321,14 +304,14 @@ void StdIOFileWriter::Push(void const * pData, size_t n)
       throw std::logic_error("StdIOFileWriter::Push: Unused state (States::full) encountered");
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 }
 
-/// \copydoc gpcc::Stream::StreamWriterBase::PushBits(uint8_t bits, uint_fast8_t n)
+/// \copydoc gpcc::stream::StreamWriterBase::PushBits(uint8_t bits, uint_fast8_t n)
 void StdIOFileWriter::PushBits(uint8_t bits, uint_fast8_t n)
 {
   if (n == 0)
@@ -357,7 +340,7 @@ void StdIOFileWriter::PushBits(uint8_t bits, uint_fast8_t n)
           state = States::error;
 
           if (errno == ENOSPC)
-            throw Stream::FullError();
+            throw stream::FullError();
           else
             ThrowIOError("StdIOFileWriter::PushBits: \"fputc\" failed", errno);
         }
@@ -378,10 +361,10 @@ void StdIOFileWriter::PushBits(uint8_t bits, uint_fast8_t n)
       throw std::logic_error("StdIOFileWriter::PushBits: Unused state (States::full) encountered");
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 }
 
@@ -397,10 +380,10 @@ void StdIOFileWriter::PushBits(uint8_t bits, uint_fast8_t n)
  * Basic guarantee:
  * - the stream enters state @ref States::error, if the stream cannot be recovered (e.g. undo a write)
  *
- * \throws IOError           [Details](@ref gpcc::Stream::IOError)
- * \throws FullError         [Details](@ref gpcc::Stream::FullError)
- * \throws ClosedError       [Details](@ref gpcc::Stream::ClosedError)
- * \throws ErrorStateError   [Details](@ref gpcc::Stream::ErrorStateError)
+ * \throws IOError           [Details](@ref gpcc::stream::IOError)
+ * \throws FullError         [Details](@ref gpcc::stream::FullError)
+ * \throws ClosedError       [Details](@ref gpcc::stream::ClosedError)
+ * \throws ErrorStateError   [Details](@ref gpcc::stream::ErrorStateError)
  *
  * __Thread cancellation safety:__\n
  * Basic guarantee:
@@ -420,7 +403,7 @@ void StdIOFileWriter::PushBitsPlusGap(void)
 }
 
 /**
- * \brief Throws a @ref gpcc::Stream::IOError plus a nested std::system_error.
+ * \brief Throws a @ref gpcc::stream::IOError plus a nested std::system_error.
  *
  * - - -
  *
@@ -436,7 +419,7 @@ void StdIOFileWriter::PushBitsPlusGap(void)
  * - - -
  *
  * \param pDescr
- * Pointer to a null-terminated c-string containing the text for the @ref gpcc::Stream::IOError exception.
+ * Pointer to a null-terminated c-string containing the text for the @ref gpcc::stream::IOError exception.
  * \param copyOfErrno
  * `errno` value for the nested std::system_error exception.
  */
@@ -448,7 +431,7 @@ void StdIOFileWriter::ThrowIOError(char const * const pDescr, int const copyOfEr
   }
   catch (std::exception const &)
   {
-    std::throw_with_nested(Stream::IOError(pDescr));
+    std::throw_with_nested(stream::IOError(pDescr));
   }
 }
 
@@ -469,8 +452,8 @@ void StdIOFileWriter::ThrowIOError(char const * const pDescr, int const copyOfEr
  *   the close-operation. However, the state of the file depends on the underlying
  *   operating system in this case.
  *
- * \throws IOError     [Details](@ref gpcc::Stream::IOError)
- * \throws FullError   [Details](@ref gpcc::Stream::FullError)
+ * \throws IOError     [Details](@ref gpcc::stream::IOError)
+ * \throws FullError   [Details](@ref gpcc::stream::FullError)
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is not allowed.\n
@@ -489,7 +472,7 @@ void StdIOFileWriter::CloseFile(void)
   if (fclose(fd) != 0)
   {
     if (errno == ENOSPC)
-      throw Stream::FullError();
+      throw stream::FullError();
     else
       ThrowIOError("StdIOFileWriter::CloseFile: \"fclose\" failed", errno);
   }
@@ -542,10 +525,10 @@ void StdIOFileWriter::CloseFileNoThrow(void) noexcept
  *   the close-operation. However, the state of the file depends on the underlying
  *   operating system in this case.
  *
- * \throws IOError           [Details](@ref gpcc::Stream::IOError)
- * \throws FullError         [Details](@ref gpcc::Stream::FullError)
- * \throws ClosedError       [Details](@ref gpcc::Stream::ClosedError)
- * \throws ErrorStateError   [Details](@ref gpcc::Stream::ErrorStateError)
+ * \throws IOError           [Details](@ref gpcc::stream::IOError)
+ * \throws FullError         [Details](@ref gpcc::stream::FullError)
+ * \throws ClosedError       [Details](@ref gpcc::stream::ClosedError)
+ * \throws ErrorStateError   [Details](@ref gpcc::stream::ErrorStateError)
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is not allowed.\n

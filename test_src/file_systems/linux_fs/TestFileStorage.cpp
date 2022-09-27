@@ -1,44 +1,27 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2011-2020, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2011 Daniel Jerolm
 */
 
 #if defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC)
 
-#include "gpcc/src/file_systems/linux_fs/FileStorage.hpp"
-#include "gpcc/src/file_systems/linux_fs/internal/tools.hpp"
-#include "gpcc/src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
-#include "gpcc/src/file_systems/exceptions.hpp"
-#include "gpcc/src/Stream/StreamErrors.hpp"
+#include <gpcc/file_systems/linux_fs/FileStorage.hpp>
+#include <gpcc/file_systems/exceptions.hpp>
+#include <gpcc/stream/stream_errors.hpp>
+#include "src/file_systems/linux_fs/internal/tools.hpp"
+#include "src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
 #include "gtest/gtest.h"
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <cerrno>
 #include <iostream>
 #include <stdexcept>
 #include <system_error>
+#include <cerrno>
 
 namespace gpcc_tests    {
 namespace file_systems  {
@@ -138,13 +121,13 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_DeathTestsF, Destruction_FileStill
 {
   ::testing::FLAGS_gtest_death_test_style = "fast";
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(55U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   EXPECT_DEATH(spUUT.reset(), ".*Not all files closed.*");
@@ -156,7 +139,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_DeathTestsF, Destruction_FileStill
 {
   ::testing::FLAGS_gtest_death_test_style = "fast";
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(55U);
 
@@ -169,7 +152,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Create_InvalidFileName1)
 {
   // This checks that file names violating the basic rules are not accepted
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
 
   ASSERT_THROW(spISW = spUUT->Create("-BadFile.txt", false), InvalidFileNameError);
   ASSERT_THROW(spISW = spUUT->Create("/GoodFile.txt", false), InvalidFileNameError);
@@ -182,7 +165,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Create_InvalidFileName2)
 
   CreateDir("-bad_folder_name");
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   ASSERT_NO_THROW(spISW = spUUT->Create("-bad_folder_name/GoodFile.txt", true));
   spISW->Close();
 }
@@ -220,7 +203,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Create_AttemptToOverwriteE
 {
   CreateDir("dir");
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   ASSERT_THROW(spISW = spUUT->Create("dir", false), FileAlreadyExistingError);
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Create_AttemptToOverwriteNotEmptyDir)
@@ -236,7 +219,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Create_AttemptToOverwriteN
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Create_DirectoryNotExisting)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   ASSERT_THROW(spISW = spUUT->Create("dir/Test.dat", true), NoSuchDirectoryError);
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Create_LockedByWriter)
@@ -244,7 +227,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Create_LockedByWriter)
   auto spISW1 = spUUT->Create("Test.dat", false);
   *spISW1 << std::string("Test");
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW2;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW2;
   ASSERT_THROW(spISW2 = spUUT->Create("Test.dat", true), FileAlreadyAccessedError);
   spISW1->Close();
 
@@ -383,7 +366,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileWriter_WriteBits4
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileWriter_Endian)
 {
   auto spISW = spUUT->Create("Test.dat", false);
-  EXPECT_EQ(gpcc::Stream::IStreamWriter::Endian::Little, spISW->GetEndian());
+  EXPECT_EQ(gpcc::stream::IStreamWriter::Endian::Little, spISW->GetEndian());
   spISW->Close();
   spISW.reset();
 }
@@ -403,7 +386,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileWriter_RemainingC
   EXPECT_THROW((void)spISW->RemainingCapacity(), std::logic_error);
 
   spISW->Close();
-  EXPECT_THROW((void)spISW->RemainingCapacity(), gpcc::Stream::ClosedError);
+  EXPECT_THROW((void)spISW->RemainingCapacity(), gpcc::stream::ClosedError);
 
   spISW.reset();
 }
@@ -411,7 +394,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileWriter_GetNbOfCac
 {
   auto spISW = spUUT->Create("Test.dat", false);
 
-  ASSERT_EQ(gpcc::Stream::IStreamWriter::States::open, spISW->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamWriter::States::open, spISW->GetState());
 
   spISW->Write_uint8(0xAB);
   EXPECT_EQ(0U, spISW->GetNbOfCachedBits());
@@ -434,19 +417,19 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileWriter_GetNbOfCac
 
   spISW->Close();
 
-  ASSERT_EQ(gpcc::Stream::IStreamWriter::States::closed, spISW->GetState());
-  EXPECT_THROW(spISW->GetNbOfCachedBits(), gpcc::Stream::ClosedError);
+  ASSERT_EQ(gpcc::stream::IStreamWriter::States::closed, spISW->GetState());
+  EXPECT_THROW(spISW->GetNbOfCachedBits(), gpcc::stream::ClosedError);
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileWriter_States)
 {
   auto spISW = spUUT->Create("Test.dat", false);
-  EXPECT_EQ(gpcc::Stream::IStreamWriter::States::open, spISW->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamWriter::States::open, spISW->GetState());
 
   spISW->Write_uint8(0x12U);
-  EXPECT_EQ(gpcc::Stream::IStreamWriter::States::open, spISW->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamWriter::States::open, spISW->GetState());
 
   spISW->Close();
-  EXPECT_EQ(gpcc::Stream::IStreamWriter::States::closed, spISW->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamWriter::States::closed, spISW->GetState());
 
   spISW.reset();
 }
@@ -454,7 +437,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Open_InvalidFileName1)
 {
   // This checks that file names violating the basic rules are not accepted
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
 
   ASSERT_THROW(spISR = spUUT->Open("/BadFile.txt"), InvalidFileNameError);
   ASSERT_THROW(spISR = spUUT->Open("BadFile.txt/"), InvalidFileNameError);
@@ -473,25 +456,25 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Open_InvalidFileName2)
   // This checks that file names violating the rules for portable file names (but not the "basic rules")
   // are accepted
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = spUUT->Open("-BadFile.txt"), NoSuchFileError);
   ASSERT_THROW(spISR = spUUT->Open("-BadFolder/file.txt"), NoSuchFileError);
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Open_FileNotExisting)
 {
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = spUUT->Open("NotExistingFile.dat"), NoSuchFileError);
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Open_DirNotExisting)
 {
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = spUUT->Open("NotExistingDir/File.dat"), NoSuchFileError);
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Open_Directory)
 {
   CreateDir("dir");
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
 
   ASSERT_THROW(spISR = spUUT->Open("dir"), NoSuchFileError);
 }
@@ -506,7 +489,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Open_LockedByWriter)
   spISW = spUUT->Create("Test.dat", true);
   *spISW << std::string("Test 2");
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = spUUT->Open("Test.dat"), FileAlreadyAccessedError);
 
   spISW->Close();
@@ -543,13 +526,13 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Open_LockedByReader)
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_DestroyReaderWithoutClose)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint32(0x12345678U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
   spISR.reset(); // note: no Close()
 
@@ -569,317 +552,317 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_EmptyFile)
   spISW.reset();
 
   auto spISR = spUUT->Open("Test.dat");
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadByteFromEmptyFile)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   uint8_t data;
-  ASSERT_THROW(*spISR >> data, gpcc::Stream::EmptyError);
+  ASSERT_THROW(*spISR >> data, gpcc::stream::EmptyError);
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_IsRemainingBytesSupported)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
   ASSERT_FALSE(spISR->IsRemainingBytesSupported());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_RemainingBytes)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x12U);
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
   EXPECT_THROW((void)spISR->RemainingBytes(), std::logic_error);
 
   spISR->Skip(8U);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   EXPECT_THROW((void)spISR->RemainingBytes(), std::logic_error);
 
-  ASSERT_THROW(spISR->Skip(8U), gpcc::Stream::EmptyError);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
-  EXPECT_THROW((void)spISR->RemainingBytes(), gpcc::Stream::ErrorStateError);
+  ASSERT_THROW(spISR->Skip(8U), gpcc::stream::EmptyError);
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
+  EXPECT_THROW((void)spISR->RemainingBytes(), gpcc::stream::ErrorStateError);
 
   spISR->Close();
-  EXPECT_THROW((void)spISR->RemainingBytes(), gpcc::Stream::ClosedError);
+  EXPECT_THROW((void)spISR->RemainingBytes(), gpcc::stream::ClosedError);
 
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadBytesFromEmptyFile)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   uint8_t data[2];
-  ASSERT_THROW(spISR->Read_uint8(data, 2U), gpcc::Stream::EmptyError);
+  ASSERT_THROW(spISR->Read_uint8(data, 2U), gpcc::stream::EmptyError);
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadBitFromEmptyFile)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   bool data;
-  ASSERT_THROW(data = spISR->Read_bit(), gpcc::Stream::EmptyError);
+  ASSERT_THROW(data = spISR->Read_bit(), gpcc::stream::EmptyError);
   (void)data;
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadBitsFromEmptyFile)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   uint8_t data;
-  ASSERT_THROW(data = spISR->Read_bits(3U), gpcc::Stream::EmptyError);
+  ASSERT_THROW(data = spISR->Read_bits(3U), gpcc::stream::EmptyError);
   (void)data;
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadManyBitsFromEmptyFile)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   uint8_t data[2];
-  ASSERT_THROW(spISR->Read_bits(data, 9U), gpcc::Stream::EmptyError);
+  ASSERT_THROW(spISR->Read_bits(data, 9U), gpcc::stream::EmptyError);
   (void)data;
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadByteAndFileBecomesEmpty)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(55U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   uint8_t data;
   *spISR >> data;
   EXPECT_EQ(55U, data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_Read2ByteAndFileBecomesEmpty)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(55U);
   spISW->Write_uint8(66U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   uint8_t data;
   *spISR >> data;
   EXPECT_EQ(55U, data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> data;
   EXPECT_EQ(66U, data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadBytesAndFileBecomesEmpty)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(55U);
   spISW->Write_uint8(66U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   uint8_t data[2];
   spISR->Read_uint8(data, 2U);
   EXPECT_EQ(55U, data[0]);
   EXPECT_EQ(66U, data[1]);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadBitsAndFileBecomesEmpty)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x55U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   bool data;
 
   *spISR >> data;
   EXPECT_TRUE(data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> data;
   EXPECT_FALSE(data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> data;
   EXPECT_TRUE(data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> data;
   EXPECT_FALSE(data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> data;
   EXPECT_TRUE(data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> data;
   EXPECT_FALSE(data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> data;
   EXPECT_TRUE(data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> data;
   EXPECT_FALSE(data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadByteAndBitsAndFileBecomesEmpty)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x33U);
   spISW->Write_uint8(0x55U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   uint8_t u8;
   *spISR >> u8;
   EXPECT_EQ(0x33U, u8);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   bool data;
 
   *spISR >> data;
   EXPECT_TRUE(data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> data;
   EXPECT_FALSE(data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> data;
   EXPECT_TRUE(data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> data;
   EXPECT_FALSE(data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> data;
   EXPECT_TRUE(data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> data;
   EXPECT_FALSE(data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> data;
   EXPECT_TRUE(data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   *spISR >> data;
   EXPECT_FALSE(data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadByte_ErrorOnlyFewBitsLeft)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   *spISW << static_cast<uint8_t>(1U);
   *spISW << static_cast<uint8_t>(2U);
@@ -888,7 +871,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadByte_E
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   uint8_t data;
@@ -900,23 +883,23 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadByte_E
   *spISR >> data;
   EXPECT_EQ(3U, data);
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   spISR->Read_bits(&data, 4U);
 
   EXPECT_EQ(0x0E, data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
-  EXPECT_THROW(*spISR >> data, gpcc::Stream::EmptyError);
+  EXPECT_THROW(*spISR >> data, gpcc::stream::EmptyError);
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadBytes_ErrorOnlyFewBitsLeft)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   *spISW << static_cast<uint8_t>(1U);
   *spISW << static_cast<uint8_t>(2U);
@@ -925,7 +908,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadBytes_
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   uint8_t data;
@@ -937,41 +920,41 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadBytes_
   *spISR >> data;
   EXPECT_EQ(3U, data);
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   spISR->Read_bits(&data, 4U);
 
   EXPECT_EQ(0x0EU, data);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   uint8_t data2[2];
-  EXPECT_THROW(spISR->Read_uint8(data2, 2U), gpcc::Stream::EmptyError);
+  EXPECT_THROW(spISR->Read_uint8(data2, 2U), gpcc::stream::EmptyError);
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadBits_ErrorEOF)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   uint8_t data;
   spISR->Read_bits(&data, 4U);
   EXPECT_EQ(0x02U, data);
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
-  EXPECT_THROW(spISR->Read_bits(&data, 8), gpcc::Stream::EmptyError);
+  EXPECT_THROW(spISR->Read_bits(&data, 8), gpcc::stream::EmptyError);
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
@@ -980,7 +963,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, ReadWriteBits_ProperInsert
 {
   uint8_t data = 0;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
 
   spISW->Write_uint8(0x12U);
@@ -1009,7 +992,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, ReadWriteBits_ProperInsert
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   bool bit;
@@ -1052,14 +1035,14 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, ReadWriteBits_ProperInsert
   *spISR >> data;
   EXPECT_EQ(0xEFU, data);
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, ReadWriteString_Basic)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   *spISW << std::string("Str1");
   *spISW << std::string("Str2");
@@ -1068,7 +1051,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, ReadWriteString_Basic)
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   std::string s;
@@ -1080,13 +1063,13 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, ReadWriteString_Basic)
   EXPECT_TRUE(s == "");
   *spISR >> s;
   EXPECT_TRUE(s == "Str3");
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, ReadWriteString_NoNullTerminator)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   *spISW << std::string("Str1");
   *spISW << std::string("Str2");
@@ -1094,7 +1077,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, ReadWriteString_NoNullTerm
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   std::string s;
@@ -1102,46 +1085,46 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, ReadWriteString_NoNullTerm
   EXPECT_TRUE(s == "Str1");
   *spISR >> s;
   EXPECT_TRUE(s == "Str2");
-  EXPECT_THROW(*spISR >> s, gpcc::Stream::EmptyError);
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  EXPECT_THROW(*spISR >> s, gpcc::stream::EmptyError);
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_EmptyErrorClosed)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   std::string s;
-  EXPECT_THROW(s = spISR->Read_line(), gpcc::Stream::EmptyError);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  EXPECT_THROW(s = spISR->Read_line(), gpcc::stream::EmptyError);
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
-  EXPECT_THROW(s = spISR->Read_line(), gpcc::Stream::ErrorStateError);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  EXPECT_THROW(s = spISR->Read_line(), gpcc::stream::ErrorStateError);
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
   spISR->Close();
 
-  EXPECT_THROW(s = spISR->Read_line(), gpcc::Stream::ClosedError);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  EXPECT_THROW(s = spISR->Read_line(), gpcc::stream::ClosedError);
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_DifferentLineEndings)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_string("Line1\nLine2\rLine3\r\nLine4");
   *spISW << static_cast<uint8_t>(0x55);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   uint8_t data;
@@ -1155,21 +1138,21 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_D
   ASSERT_TRUE(s == "Line4");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_EmptyStr_NUL_notEOF)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x00);
   *spISW << static_cast<uint8_t>(0x55);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   uint8_t data;
@@ -1177,21 +1160,21 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_E
   ASSERT_TRUE(s == "");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_EmptyStr_LF_notEOF)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_char('\n');
   *spISW << static_cast<uint8_t>(0x55);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   uint8_t data;
@@ -1199,21 +1182,21 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_E
   ASSERT_TRUE(s == "");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_EmptyStr_CR_notEOF)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_char('\r');
   *spISW << static_cast<uint8_t>(0x55);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   uint8_t data;
@@ -1221,14 +1204,14 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_E
   ASSERT_TRUE(s == "");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_EmptyStr_CRLF_notEOF)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_char('\r');
   spISW->Write_char('\n');
@@ -1236,7 +1219,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_E
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   uint8_t data;
@@ -1244,87 +1227,87 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_E
   ASSERT_TRUE(s == "");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_EmptyStr_NUL_EOF)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x00);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_EmptyStr_LF_EOF)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_char('\n');
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_EmptyStr_CR_EOF)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_char('\r');
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_EmptyStr_CRLF_EOF)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_char('\r');
   spISW->Write_char('\n');
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_NUL_notEOF)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_char('A');
   spISW->Write_uint8(0x00);
@@ -1332,7 +1315,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_N
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   uint8_t data;
@@ -1340,14 +1323,14 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_N
   ASSERT_TRUE(s == "A");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_LF_notEOF)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_char('A');
   spISW->Write_char('\n');
@@ -1355,7 +1338,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_L
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   uint8_t data;
@@ -1363,14 +1346,14 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_L
   ASSERT_TRUE(s == "A");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_CR_notEOF)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_char('A');
   spISW->Write_char('\r');
@@ -1378,7 +1361,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_C
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   uint8_t data;
@@ -1386,14 +1369,14 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_C
   ASSERT_TRUE(s == "A");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_CRLF_notEOF)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_char('A');
   spISW->Write_char('\r');
@@ -1402,7 +1385,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_C
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   uint8_t data;
@@ -1410,71 +1393,71 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_C
   ASSERT_TRUE(s == "A");
   *spISR >> data;
   ASSERT_EQ(0x55U, data);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_NUL_EOF)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_char('A');
   spISW->Write_uint8(0x00);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "A");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_LF_EOF)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_char('A');
   spISW->Write_char('\n');
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "A");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_CR_EOF)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_char('A');
   spISW->Write_char('\r');
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "A");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_CRLF_EOF)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_char('A');
   spISW->Write_char('\r');
@@ -1482,43 +1465,43 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_C
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "A");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileReader_ReadLine_NoTermCharAtEOF)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_char("ABC", 3);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   std::string s = spISR->Read_line();
   ASSERT_TRUE(s == "ABC");
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileWriter_WriteLine)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_line("ABC");
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   char buffer[4];
@@ -1529,19 +1512,19 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileWriter_WriteLine)
   EXPECT_EQ(buffer[2], 'C');
   EXPECT_EQ(buffer[3], '\n');
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileWriter_WriteLine_EmptyLine)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_line("");
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   char buffer[1];
@@ -1549,13 +1532,13 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIOFileWriter_WriteLine_
 
   EXPECT_EQ(buffer[0], '\n');
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, AlignToByteBoundary_OK)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
 
   spISW->Write_Bit(true);
@@ -1570,7 +1553,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, AlignToByteBoundary_OK)
 
   spISW->Close();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   EXPECT_EQ(0x01U, spISR->Read_uint8());
@@ -1578,39 +1561,39 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, AlignToByteBoundary_OK)
   EXPECT_EQ(0xF0U, spISR->Read_uint8());
   EXPECT_EQ(0xDEU, spISR->Read_uint8());
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, AlignToByteBoundary_StateClosed)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
 
   spISW->Write_uint32(0xDEADBEEFUL);
 
   spISW->Close();
 
-  EXPECT_THROW((void)spISW->AlignToByteBoundary(false), gpcc::Stream::ClosedError);
+  EXPECT_THROW((void)spISW->AlignToByteBoundary(false), gpcc::stream::ClosedError);
 
-  EXPECT_EQ(gpcc::Stream::IStreamWriter::States::closed, spISW->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamWriter::States::closed, spISW->GetState());
 
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   EXPECT_EQ(0xDEADBEEFUL, spISR->Read_uint32());
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, FillBitsAndBytes_OK)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
 
   spISW->FillBits(1, true);
@@ -1626,7 +1609,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, FillBitsAndBytes_OK)
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   EXPECT_EQ(0x3DU, spISR->Read_uint8());
@@ -1636,47 +1619,47 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, FillBitsAndBytes_OK)
   EXPECT_EQ(0x00U, spISR->Read_uint8());
   EXPECT_EQ(0x00U, spISR->Read_uint8());
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, FillBitsAndBytes_StateClosed)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
 
   spISW->Write_uint32(0xDEADBEEFUL);
 
   spISW->Close();
 
-  EXPECT_THROW(spISW->FillBits(1, true), gpcc::Stream::ClosedError);
-  EXPECT_THROW(spISW->FillBytes(1, 0x55U), gpcc::Stream::ClosedError);
+  EXPECT_THROW(spISW->FillBits(1, true), gpcc::stream::ClosedError);
+  EXPECT_THROW(spISW->FillBytes(1, 0x55U), gpcc::stream::ClosedError);
 
-  EXPECT_EQ(gpcc::Stream::IStreamWriter::States::closed, spISW->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamWriter::States::closed, spISW->GetState());
 
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   EXPECT_EQ(0xDEADBEEFUL, spISR->Read_uint32());
 
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_ZeroBits)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x57U);
   spISW->Write_uint8(0xE9U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   uint8_t u8;
@@ -1692,243 +1675,243 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_ZeroBits)
   ASSERT_EQ(0xE9U, u8);
 
   spISR->Skip(0U);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_BitsLeft_SkipSomeBits)
 {
   // There are 4 bits left that have not been read yet. We skip 3 of them.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
   spISR->Skip(3U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_bits(1U), 0x01U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_BitsAndOneByteLeft_SkipAllBits)
 {
   // There are 4 bits + 1 Byte left that have not been read yet. We skip 4 bits.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
   spISR->Skip(4U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_uint8(), 0xDBU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_BitsLeft_SkipAll)
 {
   // There are 4 bits left that have not been read yet. We skip them all.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
   spISR->Skip(4U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_BitsLeft_SkipAllPlusOne)
 {
   // There are 4 bits left that have not been read yet. We skip them all + 1.
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
-  ASSERT_THROW(spISR->Skip(5U), gpcc::Stream::EmptyError);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::error);
+  ASSERT_THROW(spISR->Skip(5U), gpcc::stream::EmptyError);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::error);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_BitsAndOneByteLeft_SkipAllBitsAndOneByte)
 {
   // There are 4 bits + 1 byte left that have not been read yet. We skip 12 bits.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
   spISR->Skip(12U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_BitsAndOneByteLeft_SkipAllBitsAndTwoByte)
 {
   // There are 4 bits + 1 byte left that have not been read yet. We skip 4+8+8=20 bits.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
-  ASSERT_THROW(spISR->Skip(20U), gpcc::Stream::EmptyError);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::error);
+  ASSERT_THROW(spISR->Skip(20U), gpcc::stream::EmptyError);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::error);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_BitsAndOneByteLeft_SkipAllBitsAndThreeByte)
 {
   // There are 4 bits + 1 byte left that have not been read yet. We skip 4+8+8+8=28 bits.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
-  ASSERT_THROW(spISR->Skip(28U), gpcc::Stream::EmptyError);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::error);
+  ASSERT_THROW(spISR->Skip(28U), gpcc::stream::EmptyError);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::error);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_BitsAndOneByteLeft_SkipAllBitsAndFourByte)
 {
   // There are 4 bits + 1 byte left that have not been read yet. We skip 4+8+8+8+8=36 bits.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
-  ASSERT_THROW(spISR->Skip(36U), gpcc::Stream::EmptyError);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::error);
+  ASSERT_THROW(spISR->Skip(36U), gpcc::stream::EmptyError);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::error);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_BitsAndOneByteLeft_SkipAllBitsAndOneByteAndOneBit)
 {
   // There are 4 bits + 1 byte left that have not been read yet. We skip 4+8+1 = 13 bits.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
-  ASSERT_THROW(spISR->Skip(13U), gpcc::Stream::EmptyError);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::error);
+  ASSERT_THROW(spISR->Skip(13U), gpcc::stream::EmptyError);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::error);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_BitsAndTwoByteLeft_SkipAllBitsAndOneByte)
 {
   // There are 4 bits + 2 byte left that have not been read yet. We skip 4+8=12 bits.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
@@ -1936,28 +1919,28 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_BitsAndTwoByteLeft_Sk
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
   spISR->Skip(12U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_uint8(), 0x36U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_BitsAndTwoByteLeft_SkipAllBitsAndOneByteAndOneBit)
 {
   // There are 4 bits + 2 byte left that have not been read yet. We skip 4+8+1=13 bits.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
@@ -1965,178 +1948,178 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_BitsAndTwoByteLeft_Sk
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
   spISR->Skip(13U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_bits(7U), 0x1BU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_OneByteLeft_Skip8Bits)
 {
   // There is 1 byte left that has not been read yet. We skip 8 bits.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(8U), 0x8AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
   spISR->Skip(8U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_OneByteLeft_Skip7Bits)
 {
   // There is 1 byte left that has not been read yet. We skip 7 bits.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0x80U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(8U), 0x8AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
   spISR->Skip(7U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_bit(), 0x01U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_OneByteLeft_Skip9Bits)
 {
   // There is 1 byte left that has not been read yet. We skip 9 bits.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0x80U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(8U), 0x8AU);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   // - precondition established -
 
-  ASSERT_THROW(spISR->Skip(9U), gpcc::Stream::EmptyError);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::error);
+  ASSERT_THROW(spISR->Skip(9U), gpcc::stream::EmptyError);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::error);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_TwoByteLeft_Skip8Bits)
 {
   // There are 2 bytes left that have not been read yet. We skip 8 bits.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0x80U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   // - precondition established -
 
   spISR->Skip(8U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_uint8(), 0x80U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_TwoByteLeft_Skip16Bits)
 {
   // There are 2 bytes left that have not been read yet. We skip 16 bits.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0x80U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   // - precondition established -
 
   spISR->Skip(16U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_TwoByteLeft_Skip9Bits)
 {
   // There are 2 bytes left that have not been read yet. We skip 9 bits.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0x80U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   // - precondition established -
 
   spISR->Skip(9U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_bits(7U), 0x40U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_ThreeByteLeft_Skip2Bytes)
 {
   // There are 3 bytes left that have not been read yet. We skip 16 bits.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x12U);
   spISW->Write_uint8(0x23U);
@@ -2144,25 +2127,25 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_ThreeByteLeft_Skip2By
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   // - precondition established -
 
   spISR->Skip(16U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_uint8(), 0x34U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_FourByteLeft_Skip3Bytes)
 {
   // There are 4 bytes left that have not been read yet. We skip 3 bytes.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x12U);
   spISW->Write_uint8(0x23U);
@@ -2171,25 +2154,25 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_FourByteLeft_Skip3Byt
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   // - precondition established -
 
   spISR->Skip(24U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_uint8(), 0x45U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_FiveByteLeft_Skip4Bytes)
 {
   // There are 5 bytes left that have not been read yet. We skip 4 bytes.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x12U);
   spISW->Write_uint8(0x23U);
@@ -2199,112 +2182,112 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_FiveByteLeft_Skip4Byt
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   // - precondition established -
 
   spISR->Skip(32U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::open);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
 
   ASSERT_EQ(spISR->Read_uint8(), 0x56U);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::empty);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::empty);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_OneByteLeft_Skip4Bytes)
 {
   // There are 5 bytes left that have not been read yet. We skip 4 bytes.
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   // - precondition established -
 
-  ASSERT_THROW(spISR->Skip(32U), gpcc::Stream::EmptyError);
-  ASSERT_EQ(spISR->GetState(), gpcc::Stream::IStreamReader::States::error);
+  ASSERT_THROW(spISR->Skip(32U), gpcc::stream::EmptyError);
+  ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::error);
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_EmptyStream)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_uint8(), 0xFAU);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::open, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
 
   ASSERT_EQ(spISR->Read_uint8(), 0x12U);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
-  ASSERT_THROW(spISR->Skip(1U), gpcc::Stream::EmptyError);
+  ASSERT_THROW(spISR->Skip(1U), gpcc::stream::EmptyError);
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
   spISR->Close();
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_ClosedStream)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
   spISR->Close();
 
-  ASSERT_THROW(spISR->Skip(1U), gpcc::Stream::ClosedError);
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_THROW(spISR->Skip(1U), gpcc::stream::ClosedError);
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Skip_StreamInErrorState)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   uint8_t au8[3];
-  ASSERT_THROW(spISR->Read_uint8(au8, 3), gpcc::Stream::EmptyError);
+  ASSERT_THROW(spISR->Read_uint8(au8, 3), gpcc::stream::EmptyError);
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
-  ASSERT_THROW(spISR->Skip(1U), gpcc::Stream::ErrorStateError);
+  ASSERT_THROW(spISR->Skip(1U), gpcc::stream::ErrorStateError);
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::error, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
   spISR->Close();
 
-  ASSERT_EQ(gpcc::Stream::IStreamReader::States::closed, spISR->GetState());
+  ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIoFileReader_EnsureAllDataConsumed_OK_1)
 {
-  using namespace gpcc::Stream;
+  using namespace gpcc::stream;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
@@ -2312,7 +2295,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIoFileReader_EnsureAllD
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   // (3 bytes left) -------------------------------------------------------------------------------------------
@@ -2457,16 +2440,16 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIoFileReader_EnsureAllD
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIoFileReader_EnsureAllDataConsumed_OK_2)
 {
-  using namespace gpcc::Stream;
+  using namespace gpcc::stream;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   // (2 bytes left) -------------------------------------------------------------------------------------------
@@ -2614,16 +2597,16 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIoFileReader_EnsureAllD
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIoFileReader_EnsureAllDataConsumed_ErrorState)
 {
-  using namespace gpcc::Stream;
+  using namespace gpcc::stream;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   // create error condition
@@ -2645,16 +2628,16 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIoFileReader_EnsureAllD
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, StdIoFileReader_EnsureAllDataConsumed_ClosedState)
 {
-  using namespace gpcc::Stream;
+  using namespace gpcc::stream;
 
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
   spISW = spUUT->Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   // create pre-condition
@@ -2758,7 +2741,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Delete_OK)
 
   spUUT->Delete("Test.dat");
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = spUUT->Open("Test.dat"), NoSuchFileError);
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Rename_InvalidFileName1)
@@ -2948,13 +2931,13 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, Rename_SameName_FileExisti
 
   spUUT->Rename("Test.dat", "Test.dat");
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("Test.dat");
 
   std::string s;
   *spISR >> s;
   EXPECT_TRUE(s == "Test");
-  EXPECT_EQ(gpcc::Stream::IStreamReader::States::empty, spISR->GetState());
+  EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 }
@@ -3184,8 +3167,8 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, DetermineSize_LockedByWrit
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, MultipleReadersAndWritersAtTheSameTime)
 {
-  std::unique_ptr<gpcc::Stream::IStreamWriter> spISW;
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   uint8_t u8;
   std::string s;
 
@@ -3384,7 +3367,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, DeleteDirectoryContent_Not
   EXPECT_TRUE(spUUT->IsDirectoryExisting("dir1"));
   EXPECT_FALSE(spUUT->IsDirectoryExisting("dir1/dir2"));
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   EXPECT_THROW(spISR = spUUT->Open("dir1/file1"), NoSuchFileError);
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, DeleteDirectoryContent_BaseDir)
@@ -3405,7 +3388,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, DeleteDirectoryContent_Bas
   EXPECT_FALSE(spUUT->IsDirectoryExisting("dir1"));
   EXPECT_FALSE(spUUT->IsDirectoryExisting("dir1/dir2"));
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   EXPECT_THROW(spISR = spUUT->Open("dir1/file1"), NoSuchFileError);
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, DeleteDirectoryContent_InvalidName1)
@@ -3429,7 +3412,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, DeleteDirectoryContent_Inv
   EXPECT_TRUE(spUUT->IsDirectoryExisting("dir1"));
   EXPECT_TRUE(spUUT->IsDirectoryExisting("dir1/dir2"));
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   spISR = spUUT->Open("dir1/file1");
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, DeleteDirectoryContent_InvalidName2)
@@ -3448,7 +3431,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, DeleteDirectoryContent_Inv
   spUUT->DeleteDirectoryContent("-dir1");
 
   EXPECT_TRUE(spUUT->IsDirectoryExisting("-dir1"));
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   ASSERT_THROW(spISR = spUUT->Open("-dir1/test_file.txt"), NoSuchFileError);
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, DeleteDirectoryContent_DirNotExisting)
@@ -3486,7 +3469,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, DeleteDirectoryContent_Fil
 
   spISW->Close();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   EXPECT_NO_THROW(spISR = spUUT->Open("dir1/file1"));
   ASSERT_NO_THROW(spISR = spUUT->Open("dir1/file2"));
 
@@ -3517,7 +3500,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, DeleteDirectoryContent_Fil
 
   spISW->Close();
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   EXPECT_NO_THROW(spISR = spUUT->Open("dir1/dir2/file1"));
   ASSERT_NO_THROW(spISR = spUUT->Open("dir1/dir2/file2"));
 
@@ -3575,7 +3558,7 @@ TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, DeleteDirectory_NotEmpty_C
 
   ASSERT_TRUE(spUUT->IsDirectoryExisting("dir1"));
 
-  std::unique_ptr<gpcc::Stream::IStreamReader> spISR;
+  std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   EXPECT_NO_THROW(spISR = spUUT->Open("dir1/test_file"));
 }
 TEST_F(gpcc_file_systems_linux_fs_FileStorage_TestsF, DeleteDirectory_DirNotExisting)

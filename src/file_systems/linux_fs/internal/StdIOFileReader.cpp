@@ -1,45 +1,28 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2011-2020, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2011 Daniel Jerolm
 */
 
 #if defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(__DOXYGEN__)
 
 #include "StdIOFileReader.hpp"
-#include "gpcc/src/file_systems/exceptions.hpp"
-#include "gpcc/src/file_systems/linux_fs/FileStorage.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/Stream/StreamErrors.hpp"
+#include <gpcc/file_systems/exceptions.hpp>
+#include <gpcc/file_systems/linux_fs/FileStorage.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/stream/stream_errors.hpp>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <limits>
 #include <stdexcept>
 #include <system_error>
 #include <cerrno>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 namespace gpcc         {
 namespace file_systems {
@@ -54,7 +37,7 @@ namespace internal     {
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws IOError                Reading from the file has failed ([details](@ref gpcc::Stream::IOError)).
+ * \throws IOError                Reading from the file has failed ([details](@ref gpcc::stream::IOError)).
  *
  * \throws NoSuchFileError        File is not existing ([details](@ref gpcc::file_systems::NoSuchFileError)).
  *
@@ -184,13 +167,13 @@ StdIOFileReader::~StdIOFileReader(void)
   }
 }
 
-/// \copydoc gpcc::Stream::IStreamReader::IsRemainingBytesSupported(void) const
+/// \copydoc gpcc::stream::IStreamReader::IsRemainingBytesSupported(void) const
 bool StdIOFileReader::IsRemainingBytesSupported(void) const
 {
   return false;
 }
 
-/// \copydoc gpcc::Stream::IStreamReader::RemainingBytes(void) const
+/// \copydoc gpcc::stream::IStreamReader::RemainingBytes(void) const
 size_t StdIOFileReader::RemainingBytes(void) const
 {
   switch (state)
@@ -201,16 +184,16 @@ size_t StdIOFileReader::RemainingBytes(void) const
       throw std::logic_error("StdIOFileReader::RemainingBytes: Operation not supported");
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   }
 
   PANIC();
 }
 
-/// \copydoc gpcc::Stream::IStreamReader::EnsureAllDataConsumed
+/// \copydoc gpcc::stream::IStreamReader::EnsureAllDataConsumed
 void StdIOFileReader::EnsureAllDataConsumed(RemainingNbOfBits const expectation) const
 {
   switch (state)
@@ -224,14 +207,14 @@ void StdIOFileReader::EnsureAllDataConsumed(RemainingNbOfBits const expectation)
           case RemainingNbOfBits::sevenOrLess:
           {
             if (feof(fd) == 0)
-              throw Stream::RemainingBitsError();
+              throw stream::RemainingBitsError();
             break;
           }
 
           case RemainingNbOfBits::moreThanSeven:
           {
             if (feof(fd) != 0)
-              throw Stream::RemainingBitsError();
+              throw stream::RemainingBitsError();
             break;
           }
 
@@ -245,7 +228,7 @@ void StdIOFileReader::EnsureAllDataConsumed(RemainingNbOfBits const expectation)
             // (0..7)
 
             if ((feof(fd) == 0) || (nbOfBitsInBitData != static_cast<uint8_t>(expectation)))
-              throw Stream::RemainingBitsError();
+              throw stream::RemainingBitsError();
             break;
           }
         } // switch (expectation)
@@ -254,14 +237,14 @@ void StdIOFileReader::EnsureAllDataConsumed(RemainingNbOfBits const expectation)
       } // case States::open / States::empty
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 }
 
-/// \copydoc gpcc::Stream::IStreamReader::Close(void)
+/// \copydoc gpcc::stream::IStreamReader::Close(void)
 void StdIOFileReader::Close(void)
 {
   if (state != States::closed)
@@ -279,7 +262,7 @@ void StdIOFileReader::Close(void)
   }
 }
 
-/// \copydoc gpcc::Stream::IStreamReader::Skip
+/// \copydoc gpcc::stream::IStreamReader::Skip
 void StdIOFileReader::Skip(size_t nBits)
 {
   if (nBits == 0U)
@@ -327,7 +310,7 @@ void StdIOFileReader::Skip(size_t nBits)
 
       // stream empty?
       if (feof(fd) != 0)
-        throw Stream::EmptyError();
+        throw stream::EmptyError();
 
       // calculate the number of bytes and bits to be skipped
       size_t             skip_bytes = nBits / 8U;
@@ -358,7 +341,7 @@ void StdIOFileReader::Skip(size_t nBits)
           ReadAheadNextByte();
 
           if (state == States::empty)
-            throw Stream::EmptyError();
+            throw stream::EmptyError();
         }
 
         ReadAheadNextByte();
@@ -371,7 +354,7 @@ void StdIOFileReader::Skip(size_t nBits)
 
         // stream empty?
         if (feof(fd) != 0)
-          throw Stream::EmptyError();
+          throw stream::EmptyError();
 
         // read one byte and skip bits
         bitData = nextByte >> skip_bits;
@@ -386,17 +369,17 @@ void StdIOFileReader::Skip(size_t nBits)
 
     case States::empty:
       state = States::error;
-      throw Stream::EmptyError();
+      throw stream::EmptyError();
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 }
 
-/// \copydoc gpcc::Stream::IStreamReader::Read_string(void)
+/// \copydoc gpcc::stream::IStreamReader::Read_string(void)
 std::string StdIOFileReader::Read_string(void)
 {
   std::string s;
@@ -419,7 +402,7 @@ std::string StdIOFileReader::Read_string(void)
         ThrowIOErrorPlusNestedSystemError("StdIOFileReader::Read_string: \"fgetc\" failed", errno);
 
       if (c != 0)
-        throw Stream::EmptyError();
+        throw stream::EmptyError();
 
       ReadAheadNextByte();
 
@@ -429,19 +412,19 @@ std::string StdIOFileReader::Read_string(void)
 
     case States::empty:
       state = States::error;
-      throw Stream::EmptyError();
+      throw stream::EmptyError();
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 
   return s;
 }
 
-/// \copydoc gpcc::Stream::IStreamReader::Read_line(void)
+/// \copydoc gpcc::stream::IStreamReader::Read_line(void)
 std::string StdIOFileReader::Read_line(void)
 {
   std::string s;
@@ -494,19 +477,19 @@ std::string StdIOFileReader::Read_line(void)
 
     case States::empty:
       state = States::error;
-      throw Stream::EmptyError();
+      throw stream::EmptyError();
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 
   return s;
 }
 
-/// \copydoc gpcc::Stream::StreamReaderBase::Pop(void)
+/// \copydoc gpcc::stream::StreamReaderBase::Pop(void)
 unsigned char StdIOFileReader::Pop(void)
 {
   DiscardBits();
@@ -531,19 +514,19 @@ unsigned char StdIOFileReader::Pop(void)
 
     case States::empty:
       state = States::error;
-      throw Stream::EmptyError();
+      throw stream::EmptyError();
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 
   PANIC();
 }
 
-/// \copydoc gpcc::Stream::StreamReaderBase::Pop(void* p, size_t n)
+/// \copydoc gpcc::stream::StreamReaderBase::Pop(void* p, size_t n)
 void StdIOFileReader::Pop(void* p, size_t n)
 {
   if (n == 0)
@@ -565,9 +548,9 @@ void StdIOFileReader::Pop(void* p, size_t n)
         if (ferror(fd) != 0)
           ThrowIOErrorPlusNestedSystemError("StdIOFileReader::Pop: \"fread\" failed", errno);
         else if (feof(fd) != 0)
-          throw Stream::EmptyError();
+          throw stream::EmptyError();
         else
-          throw Stream::IOError("StdIOFileReader::Pop: \"fread\" failed");
+          throw stream::IOError("StdIOFileReader::Pop: \"fread\" failed");
       }
 
       ReadAheadNextByte();
@@ -578,17 +561,17 @@ void StdIOFileReader::Pop(void* p, size_t n)
 
     case States::empty:
       state = States::error;
-      throw Stream::EmptyError();
+      throw stream::EmptyError();
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 }
 
-/// \copydoc gpcc::Stream::StreamReaderBase::PopBits(uint_fast8_t n)
+/// \copydoc gpcc::stream::StreamReaderBase::PopBits(uint_fast8_t n)
 uint8_t StdIOFileReader::PopBits(uint_fast8_t n)
 {
   if (n == 0)
@@ -609,7 +592,7 @@ uint8_t StdIOFileReader::PopBits(uint_fast8_t n)
         if (feof(fd) != 0)
         {
           state = States::error;
-          throw Stream::EmptyError();
+          throw stream::EmptyError();
         }
 
         data = static_cast<uint16_t>(static_cast<uint16_t>(nextByte) << nbOfBitsInBitData) | bitData;
@@ -644,13 +627,13 @@ uint8_t StdIOFileReader::PopBits(uint_fast8_t n)
 
     case States::empty:
       state = States::error;
-      throw Stream::EmptyError();
+      throw stream::EmptyError();
 
     case States::closed:
-      throw Stream::ClosedError();
+      throw stream::ClosedError();
 
     case States::error:
-      throw Stream::ErrorStateError();
+      throw stream::ErrorStateError();
   } // switch (state)
 
   PANIC();
@@ -696,7 +679,7 @@ void StdIOFileReader::DiscardBits(void) noexcept
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws IOError   Access to file has failed ([details](@ref gpcc::Stream::IOError)).
+ * \throws IOError   Access to file has failed ([details](@ref gpcc::stream::IOError)).
  *
  * __Thread cancellation safety:__\n
  * Strong guarantee.
@@ -721,7 +704,7 @@ void StdIOFileReader::UndoReadAhead(void)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws IOError   Access to file has failed ([details](@ref gpcc::Stream::IOError)).
+ * \throws IOError   Access to file has failed ([details](@ref gpcc::stream::IOError)).
  *
  * __Thread cancellation safety:__\n
  * Strong guarantee.
@@ -742,7 +725,7 @@ void StdIOFileReader::ReadAheadNextByte(void)
     }
     else
     {
-      throw Stream::IOError("StdIOFileReader::ReadAheadNextByte: \"fgetc\" failed");
+      throw stream::IOError("StdIOFileReader::ReadAheadNextByte: \"fgetc\" failed");
     }
   }
   else
@@ -752,7 +735,7 @@ void StdIOFileReader::ReadAheadNextByte(void)
 }
 
 /**
- * \brief Throws an @ref gpcc::Stream::IOError plus a nested std::system_error.
+ * \brief Throws an @ref gpcc::stream::IOError plus a nested std::system_error.
  *
  * - - -
  *
@@ -768,7 +751,7 @@ void StdIOFileReader::ReadAheadNextByte(void)
  * - - -
  *
  * \param pDescr
- * Pointer to a null-terminated c-string containing the text for the @ref gpcc::Stream::IOError exception.
+ * Pointer to a null-terminated c-string containing the text for the @ref gpcc::stream::IOError exception.
  * \param copyOfErrno
  * `errno` value for the nested std::system_error exception.
  */
@@ -780,7 +763,7 @@ void StdIOFileReader::ThrowIOErrorPlusNestedSystemError(char const * const pDesc
   }
   catch (std::exception const &)
   {
-    std::throw_with_nested(gpcc::Stream::IOError(pDescr));
+    std::throw_with_nested(gpcc::stream::IOError(pDescr));
   }
 }
 

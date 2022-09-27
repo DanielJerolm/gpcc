@@ -1,0 +1,20 @@
+/*
+    General Purpose Class Collection (GPCC)
+
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
+
+    Copyright (C) 2019 Daniel Jerolm
+*/
+
+/**
+ * @ingroup GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM
+ * @defgroup GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_CLI CLI Commands
+ *
+ * \brief CLI commands for an (EEPROMSectionSystem)[@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem).
+ *
+ * This group contains CLI commands that can be used to format, unmount, and mount an
+ * (EEPROMSectionSystem)[@ref gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem) instance.\n
+ * The supported CLI interface is @ref gpcc::cli::CLI.
+ */

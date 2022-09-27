@@ -1,44 +1,27 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2011-2017, 2021, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2011 Daniel Jerolm
 */
 
 #if defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(__DOXYGEN__)
 
 #include "tools.hpp"
-#include "gpcc/src/file_systems/exceptions.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/file_systems/exceptions.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/string/tools.hpp>
+#include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <dirent.h>
 #include <unistd.h>
-#include <cerrno>
-#include <cstdint>
 #include <stdexcept>
 #include <system_error>
+#include <cerrno>
+#include <cstdint>
 
 namespace gpcc         {
 namespace file_systems {

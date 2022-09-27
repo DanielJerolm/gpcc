@@ -1,37 +1,21 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2011-2019, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2011 Daniel Jerolm
 */
 
 #ifdef OS_LINUX_X64_TFC
 
-#include "Mutex.hpp"
-#include "Panic.hpp"
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
 #include "internal/TFCCore.hpp"
+#include "internal/UnmanagedConditionVariable.hpp"
 #include "internal/UnmanagedMutexLocker.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
 #include <pthread.h>
 
 namespace gpcc {
@@ -54,7 +38,7 @@ Mutex::Mutex(void)
 , thread_id()
 , nbOfblockedThreads(0)
 , blockedThreadIsGoingToWakeUp(false)
-, unlockedCV()
+, spUnlockedCV(std::make_unique<internal::UnmanagedConditionVariable>())
 {
 }
 
@@ -225,7 +209,7 @@ void Mutex::InternalLock(void)
     };
 
     while (locked)
-      unlockedCV.Wait(pTFCCore->GetBigLock());
+      spUnlockedCV->Wait(pTFCCore->GetBigLock());
 
     blockedThreadIsGoingToWakeUp = false;
   }
@@ -271,7 +255,7 @@ void Mutex::InternalUnlock(void)
   if (pthread_equal(thread_id, pthread_self()) == 0)
     Panic("Mutex::InternalUnlock: The calling thread is not the one which has locked the mutex");
 
-  unlockedCV.Signal();
+  spUnlockedCV->Signal();
   locked = false;
   if (nbOfblockedThreads != 0)
   {

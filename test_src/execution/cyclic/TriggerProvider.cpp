@@ -1,36 +1,19 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2011-2017, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2011 Daniel Jerolm
 */
 
 #include "TriggerProvider.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/time/TimePoint.hpp"
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/osal/Thread.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/time/TimePoint.hpp>
 #include <stdexcept>
 
 namespace gpcc_tests {
@@ -39,7 +22,7 @@ namespace cyclic {
 
 TriggerProvider::TriggerProvider(gpcc::time::TimeSpan const _expectedWaitWithTimeoutValue,
                                  uint32_t const _permanentTriggerSleep_ms)
-: gpcc::StdIf::IIRQ2ThreadWakeup()
+: gpcc::stdif::IIRQ2ThreadWakeup()
 , expectedWaitWithTimeoutValue(_expectedWaitWithTimeoutValue)
 , permanentTriggerSleep_ms(_permanentTriggerSleep_ms)
 , mutex()
@@ -48,7 +31,7 @@ TriggerProvider::TriggerProvider(gpcc::time::TimeSpan const _expectedWaitWithTim
 , continueFlag(false)
 , permanentContinue(false)
 , continueFlagSetConvar()
-, desiredReturnValue(gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK)
+, desiredReturnValue(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK)
 {
 }
 
@@ -74,7 +57,7 @@ bool TriggerProvider::WaitForThread(uint32_t const timeout_ms)
 
   return threadInWaitWithTimeout;
 }
-void TriggerProvider::Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result const _desiredReturnValue, bool const permanent)
+void TriggerProvider::Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result const _desiredReturnValue, bool const permanent)
 {
   gpcc::osal::MutexLocker mutexLocker(mutex);
 
@@ -90,24 +73,26 @@ void TriggerProvider::Trigger(gpcc::StdIf::IIRQ2ThreadWakeup::Result const _desi
   continueFlagSetConvar.Signal();
 }
 
-// --> gpcc::StdIf::IIRQ2ThreadWakeup
-void TriggerProvider::SignalFromISR(void) noexcept
+// --> gpcc::stdif::IIRQ2ThreadWakeup
+bool TriggerProvider::SignalFromISR(void) noexcept
 {
   gpcc::osal::Panic("Unexpected call to TriggerProvider::SignalFromISR");
+  return false;
 }
-void TriggerProvider::SignalFromThread(void)
+bool TriggerProvider::SignalFromThread(void)
 {
   gpcc::osal::Panic("Unexpected call to TriggerProvider::SignalFromThread");
+  return false;
 }
 
-gpcc::StdIf::IIRQ2ThreadWakeup::Result TriggerProvider::Wait(void)
+gpcc::stdif::IIRQ2ThreadWakeup::Result TriggerProvider::Wait(void)
 {
   gpcc::osal::Panic("Unexpected call to TriggerProvider::Wait");
 
   // never reached, but makes compiler happy
-  return gpcc::StdIf::IIRQ2ThreadWakeup::Result::OK;
+  return gpcc::stdif::IIRQ2ThreadWakeup::Result::OK;
 }
-gpcc::StdIf::IIRQ2ThreadWakeup::Result TriggerProvider::WaitWithTimeout(gpcc::time::TimeSpan const & timeout)
+gpcc::stdif::IIRQ2ThreadWakeup::Result TriggerProvider::WaitWithTimeout(gpcc::time::TimeSpan const & timeout)
 {
   if (timeout != expectedWaitWithTimeoutValue)
     gpcc::osal::Panic("TriggerProvider::WaitWithTimeout: UUT passed unexpected timeout value");
@@ -135,7 +120,7 @@ gpcc::StdIf::IIRQ2ThreadWakeup::Result TriggerProvider::WaitWithTimeout(gpcc::ti
   // leave WaitWithTimeout()
   return desiredReturnValue;
 }
-// <-- gpcc::StdIf::IIRQ2ThreadWakeup
+// <-- gpcc::stdif::IIRQ2ThreadWakeup
 
 } // namespace cyclic
 } // namespace execution

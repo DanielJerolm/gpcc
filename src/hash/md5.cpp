@@ -1,28 +1,11 @@
 /*
     General Purpose Class Collection (GPCC)
+
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
+
     Copyright (C) 2020 Daniel Jerolm
-
-    This file is part of the General Purpose Class Collection (GPCC).
-
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
 */
 
 /*
@@ -35,12 +18,12 @@
  * See https://tools.ietf.org/html/rfc1321 for details.
  */
 
-#include "md5.hpp"
-#include "gpcc/src/Compiler/definitions.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
-#include <cstring>
+#include <gpcc/hash/md5.hpp>
+#include <gpcc/compiler/definitions.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
 #include <stdexcept>
+#include <cstring>
 
 // Table T[i] containing 4294967296 * abs(sin(i)) with i in radians.
 // Values according to RFC1321.
@@ -482,7 +465,7 @@ std::vector<uint8_t> MD5Sum(void const * const pData, size_t const s)
   while (state != States::done);
 
   // build result
-  gpcc::Stream::MemStreamWriter msw(result.data(), result.size(), gpcc::Stream::MemStreamWriter::Endian::Little);
+  gpcc::stream::MemStreamWriter msw(result.data(), result.size(), gpcc::stream::MemStreamWriter::Endian::Little);
   msw.Write_uint32(A);
   msw.Write_uint32(B);
   msw.Write_uint32(C);

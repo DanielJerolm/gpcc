@@ -1,49 +1,32 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2019, 2021, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2019 Daniel Jerolm
 */
 
-#include "CLIAdapterBase.hpp"
-#include "string_conversion.hpp"
-#include "gpcc/src/cood/cli/internal/CAReadArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/CAWriteArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/EnumerateArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/InfoArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/ReadArgsParser.hpp"
-#include "gpcc/src/cood/cli/internal/WriteArgsParser.hpp"
-#include "gpcc/src/cood/IObjectAccess.hpp"
-#include "gpcc/src/cood/ObjectPtr.hpp"
-#include "gpcc/src/cli/exceptions.hpp"
-#include "gpcc/src/cli/CLI.hpp"
-#include "gpcc/src/cli/Command.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/Stream/MemStreamReader.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/cood/cli/CLIAdapterBase.hpp>
+#include <gpcc/cli/exceptions.hpp>
+#include <gpcc/cli/CLI.hpp>
+#include <gpcc/cli/Command.hpp>
+#include <gpcc/cood/cli/string_conversion.hpp>
+#include <gpcc/cood/IObjectAccess.hpp>
+#include <gpcc/cood/ObjectPtr.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/stream/MemStreamReader.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
+#include <gpcc/string/tools.hpp>
+#include "internal/CAReadArgsParser.hpp"
+#include "internal/CAWriteArgsParser.hpp"
+#include "internal/EnumerateArgsParser.hpp"
+#include "internal/InfoArgsParser.hpp"
+#include "internal/ReadArgsParser.hpp"
+#include "internal/WriteArgsParser.hpp"
 #include <functional>
 #include <iomanip>
 #include <limits>
@@ -577,7 +560,7 @@ void CLIAdapterBase::CLI_Read(std::string const & restOfLine)
     pData = new uint8_t[sizeInByte];
 
     // do the actual read
-    gpcc::Stream::MemStreamWriter msw(pData, sizeInByte, gpcc::Stream::IStreamWriter::nativeEndian);
+    gpcc::stream::MemStreamWriter msw(pData, sizeInByte, gpcc::stream::IStreamWriter::nativeEndian);
     result = objPtr->Read(subIdx, permissions, msw);
     msw.Close();
   }
@@ -592,7 +575,7 @@ void CLIAdapterBase::CLI_Read(std::string const & restOfLine)
   // ============================================
   // Print to CLI
   // ============================================
-  gpcc::Stream::MemStreamReader msr(pData, sizeInByte, gpcc::Stream::IStreamReader::nativeEndian);
+  gpcc::stream::MemStreamReader msr(pData, sizeInByte, gpcc::stream::IStreamReader::nativeEndian);
   auto str = CANopenEncodedDataToString(msr, sizeInBit, objPtr->GetSubIdxDataType(subIdx));
   msr.Close();
 
@@ -650,7 +633,7 @@ void CLIAdapterBase::CLI_Write(std::string const & restOfLine)
   // ============================================
   // Analyze args (second part: data)
   // ============================================
-  args.ExtractData(dataType, subIdxMaxSize, gpcc::Stream::IStreamWriter::nativeEndian);
+  args.ExtractData(dataType, subIdxMaxSize, gpcc::stream::IStreamWriter::nativeEndian);
 
   // ============================================
   // write to object
@@ -684,7 +667,7 @@ void CLIAdapterBase::CLI_Write(std::string const & restOfLine)
 
     // do the actual write
     auto const & data = args.GetData();
-    gpcc::Stream::MemStreamReader msr(data.data(), data.size(), gpcc::Stream::IStreamReader::nativeEndian);
+    gpcc::stream::MemStreamReader msr(data.data(), data.size(), gpcc::stream::IStreamReader::nativeEndian);
     result = objPtr->Write(subIdx, permissions, msr);
     msr.Close();
   }
@@ -763,7 +746,7 @@ void CLIAdapterBase::CLI_CARead(std::string const & restOfLine)
     pData = new uint8_t[sizeInByte];
 
     // do the actual read
-    gpcc::Stream::MemStreamWriter msw(pData, sizeInByte, gpcc::Stream::IStreamWriter::nativeEndian);
+    gpcc::stream::MemStreamWriter msw(pData, sizeInByte, gpcc::stream::IStreamWriter::nativeEndian);
     auto const result = objPtr->CompleteRead(true, false, permissions, msw);
     msw.Close();
 
@@ -777,7 +760,7 @@ void CLIAdapterBase::CLI_CARead(std::string const & restOfLine)
   // ============================================
   // Print to CLI
   // ============================================
-  gpcc::Stream::MemStreamReader msr(pData, sizeInByte, gpcc::Stream::IStreamReader::nativeEndian);
+  gpcc::stream::MemStreamReader msr(pData, sizeInByte, gpcc::stream::IStreamReader::nativeEndian);
 
   // extract value of SI0
   uint8_t const si0 = msr.Read_uint8();
@@ -907,7 +890,7 @@ void CLIAdapterBase::CLI_CAWrite(std::string const & restOfLine)
     auto locker = objPtr->LockData();
 
     // do the actual read
-    gpcc::Stream::MemStreamWriter msw(&currSI0, sizeof(currSI0), gpcc::Stream::IStreamWriter::nativeEndian);
+    gpcc::stream::MemStreamWriter msw(&currSI0, sizeof(currSI0), gpcc::stream::IStreamWriter::nativeEndian);
     auto const result = objPtr->Read(0U, permissions, msw);
     msw.Close();
 
@@ -961,7 +944,7 @@ void CLIAdapterBase::CLI_CAWrite(std::string const & restOfLine)
   // allocate memory
   size_t sizeInByte = (sizeInBit + 7U) / 8U;
   std::vector<uint8_t> data(sizeInByte);
-  gpcc::Stream::MemStreamWriter msw(data.data(), sizeInByte, gpcc::Stream::MemStreamWriter::nativeEndian);
+  gpcc::stream::MemStreamWriter msw(data.data(), sizeInByte, gpcc::stream::MemStreamWriter::nativeEndian);
 
   // ============================================
   // Fill buffer with write data entered by the user
@@ -1121,21 +1104,21 @@ void CLIAdapterBase::CLI_CAWrite(std::string const & restOfLine)
     auto locker = objPtr->LockData();
 
     // determine expected ernob
-    gpcc::Stream::MemStreamReader::RemainingNbOfBits ernob;
+    gpcc::stream::MemStreamReader::RemainingNbOfBits ernob;
     switch (sizeInBit % 8U)
     {
-      case 0U: ernob = gpcc::Stream::MemStreamReader::RemainingNbOfBits::zero; break;
-      case 1U: ernob = gpcc::Stream::MemStreamReader::RemainingNbOfBits::seven; break;
-      case 2U: ernob = gpcc::Stream::MemStreamReader::RemainingNbOfBits::six; break;
-      case 3U: ernob = gpcc::Stream::MemStreamReader::RemainingNbOfBits::five; break;
-      case 4U: ernob = gpcc::Stream::MemStreamReader::RemainingNbOfBits::four; break;
-      case 5U: ernob = gpcc::Stream::MemStreamReader::RemainingNbOfBits::three; break;
-      case 6U: ernob = gpcc::Stream::MemStreamReader::RemainingNbOfBits::two; break;
-      case 7U: ernob = gpcc::Stream::MemStreamReader::RemainingNbOfBits::one; break;
+      case 0U: ernob = gpcc::stream::MemStreamReader::RemainingNbOfBits::zero; break;
+      case 1U: ernob = gpcc::stream::MemStreamReader::RemainingNbOfBits::seven; break;
+      case 2U: ernob = gpcc::stream::MemStreamReader::RemainingNbOfBits::six; break;
+      case 3U: ernob = gpcc::stream::MemStreamReader::RemainingNbOfBits::five; break;
+      case 4U: ernob = gpcc::stream::MemStreamReader::RemainingNbOfBits::four; break;
+      case 5U: ernob = gpcc::stream::MemStreamReader::RemainingNbOfBits::three; break;
+      case 6U: ernob = gpcc::stream::MemStreamReader::RemainingNbOfBits::two; break;
+      case 7U: ernob = gpcc::stream::MemStreamReader::RemainingNbOfBits::one; break;
     }
 
     // do the actual write
-    gpcc::Stream::MemStreamReader msr(data.data(), sizeInByte, gpcc::Stream::IStreamReader::nativeEndian);
+    gpcc::stream::MemStreamReader msr(data.data(), sizeInByte, gpcc::stream::IStreamReader::nativeEndian);
     auto const result = objPtr->CompleteWrite(true, false, permissions, msr, ernob);
     msr.Close();
 

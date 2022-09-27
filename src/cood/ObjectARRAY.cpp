@@ -1,41 +1,24 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2018, 2020-2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2018 Daniel Jerolm
 */
 
-#include "ObjectARRAY.hpp"
-#include "IObjectNotifiable.hpp"
-#include "exceptions.hpp"
-#include "gpcc/src/osal/Mutex.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
-#include "gpcc/src/Stream/StreamErrors.hpp"
-#include <cstring>
+#include <gpcc/cood/ObjectARRAY.hpp>
+#include <gpcc/cood/exceptions.hpp>
+#include <gpcc/cood/IObjectNotifiable.hpp>
+#include <gpcc/osal/Mutex.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
+#include <gpcc/stream/stream_errors.hpp>
 #include <stdexcept>
+#include <cstring>
 
 namespace gpcc {
 namespace cood {
@@ -360,7 +343,7 @@ size_t ObjectARRAY::GetSubIdxActualSize(uint8_t const subIdx) const
 /// \copydoc Object::Read
 SDOAbortCode ObjectARRAY::Read(uint8_t const subIdx,
                                attr_t const permissions,
-                               gpcc::Stream::IStreamWriter & isw) const
+                               gpcc::stream::IStreamWriter & isw) const
 {
   if (subIdx > SI0)
     return SDOAbortCode::SubindexDoesNotExist;
@@ -423,7 +406,7 @@ SDOAbortCode ObjectARRAY::Read(uint8_t const subIdx,
 /// \copydoc Object::Write
 SDOAbortCode ObjectARRAY::Write(uint8_t const subIdx,
                                 attr_t const permissions,
-                                gpcc::Stream::IStreamReader & isr)
+                                gpcc::stream::IStreamReader & isr)
 {
   if (subIdx > SI0)
     return SDOAbortCode::SubindexDoesNotExist;
@@ -441,13 +424,13 @@ SDOAbortCode ObjectARRAY::Write(uint8_t const subIdx,
     try
     {
       data = isr.Read_uint8();
-      isr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::sevenOrLess);
+      isr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::sevenOrLess);
     }
-    catch (gpcc::Stream::EmptyError const &)
+    catch (gpcc::stream::EmptyError const &)
     {
       return SDOAbortCode::DataTypeMismatchTooSmall;
     }
-    catch (gpcc::Stream::RemainingBitsError const &)
+    catch (gpcc::stream::RemainingBitsError const &)
     {
       return SDOAbortCode::DataTypeMismatchTooLong;
     }
@@ -499,13 +482,13 @@ SDOAbortCode ObjectARRAY::Write(uint8_t const subIdx,
     try
     {
       CANopenEncodedDataToNativeData(isr, type, 1U, false, pTempMem);
-      isr.EnsureAllDataConsumed(gpcc::Stream::IStreamReader::RemainingNbOfBits::sevenOrLess);
+      isr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::sevenOrLess);
     }
-    catch (gpcc::Stream::EmptyError const &)
+    catch (gpcc::stream::EmptyError const &)
     {
       return SDOAbortCode::DataTypeMismatchTooSmall;
     }
-    catch (gpcc::Stream::RemainingBitsError const &)
+    catch (gpcc::stream::RemainingBitsError const &)
     {
       return SDOAbortCode::DataTypeMismatchTooLong;
     }
@@ -556,7 +539,7 @@ SDOAbortCode ObjectARRAY::Write(uint8_t const subIdx,
 SDOAbortCode ObjectARRAY::CompleteRead(bool const inclSI0,
                                        bool const SI016Bits,
                                        attr_t const permissions,
-                                       gpcc::Stream::IStreamWriter & isw) const
+                                       gpcc::stream::IStreamWriter & isw) const
 {
   // If subindex 0 is included, then check the access permission for subindex 0.
   // Note: Subindex 0 is never pure write-only (ensured by constructor).
@@ -629,8 +612,8 @@ SDOAbortCode ObjectARRAY::CompleteRead(bool const inclSI0,
 SDOAbortCode ObjectARRAY::CompleteWrite(bool const inclSI0,
                                         bool const SI016Bits,
                                         attr_t const permissions,
-                                        gpcc::Stream::IStreamReader & isr,
-                                        gpcc::Stream::IStreamReader::RemainingNbOfBits const ernob)
+                                        gpcc::stream::IStreamReader & isr,
+                                        gpcc::stream::IStreamReader::RemainingNbOfBits const ernob)
 {
   // determine if SI0 is pure read-only
   bool const SI0pureReadOnly = ((attributesSI0 & attr_ACCESS_WR) == 0U);
@@ -703,11 +686,11 @@ SDOAbortCode ObjectARRAY::CompleteWrite(bool const inclSI0,
 
     isr.EnsureAllDataConsumed(ernob);
   }
-  catch (gpcc::Stream::EmptyError const &)
+  catch (gpcc::stream::EmptyError const &)
   {
     return SDOAbortCode::DataTypeMismatchTooSmall;
   }
-  catch (gpcc::Stream::RemainingBitsError const &)
+  catch (gpcc::stream::RemainingBitsError const &)
   {
     return SDOAbortCode::DataTypeMismatchTooLong;
   }

@@ -1,41 +1,26 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2011-2017, 2021, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "CLI.hpp"
-#include "CLIColors.hpp"
-#include "ICLINotifiable.hpp"
-#include "ITerminal.hpp"
-#include "exceptions.hpp"
-#include "gpcc/src/osal/AdvancedMutexLocker.hpp"
-#include "gpcc/src/osal/MutexLocker.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/string/levenshtein_distance.hpp"
-#include "gpcc/src/string/tools.hpp"
+#include <gpcc/cli/CLI.hpp>
+#include <gpcc/cli/CLIColors.hpp>
+#include <gpcc/cli/exceptions.hpp>
+#include <gpcc/cli/ICLINotifiable.hpp>
+#include <gpcc/cli/ITerminal.hpp>
+#include <gpcc/osal/AdvancedMutexLocker.hpp>
+#include <gpcc/osal/MutexLocker.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/string/levenshtein_distance.hpp>
+#include <gpcc/string/tools.hpp>
+#include "internal/ReturnKeyFilter.hpp"
+#include "internal/TerminalRxParser.hpp"
 #include <exception>
 #include <cstdio>
 #include <cstring>
@@ -96,8 +81,8 @@ CLI::CLI(ITerminal& _terminal,
 , terminalWidth(_terminalWidth)
 , historyDepth(_historyDepth)
 , thread(pThreadName)
-, rxParser()
-, returnKeyFilter()
+, spRxParser(std::make_unique<internal::TerminalRxParser>())
+, spReturnKeyFilter(std::make_unique<internal::ReturnKeyFilter>())
 , history()
 , cmdMutex()
 , pCurrExecCmd(nullptr)
@@ -520,7 +505,7 @@ void CLI::SetLineHead(std::string const & newConsoleLineHead)
  *
  * This method can be used as an alternative if otherwise multiple `std::string` objects had to be concatenated:
  * ~~~{.cpp}
- * #include "gpcc/src/cli/CLIColors.hpp"
+ * #include <gpcc/cli/CLIColors.hpp>
  * #include <string>
  *
  * // [...]
@@ -1362,7 +1347,7 @@ void CLI::EnterLine(bool const useHistory, std::string const & lineHead)
   // - Stop of CLI is requested
   // ------------------------------------------------------------------------------------------
   terminal.Flush();
-  rxParser.Clear();
+  spRxParser->Clear();
   char c = 0;
   while (true)
   {
@@ -1384,11 +1369,11 @@ void CLI::EnterLine(bool const useHistory, std::string const & lineHead)
     }
 
     // pass received or re-inserted byte to the VT100 parser
-    auto const result = rxParser.Input(c);
+    auto const result = spRxParser->Input(c);
     c = 0;
 
     // check if RETURN-key has been pressed
-    bool const returnKey = returnKeyFilter.Filter(result);
+    bool const returnKey = spReturnKeyFilter->Filter(result);
 
     terminalMutexLocker.Relock();
     cmdMutexLocker.Relock();
@@ -1589,8 +1574,8 @@ void CLI::EnterLine(bool const useHistory, std::string const & lineHead)
       case TerminalRxParser::Result::NoCommand:
       {
         // fetch stuff from rx parser
-        rxParser.RemoveNonPrintableCharacters();
-        char const * const newChars = rxParser.Output(maxInputLength - inputBuffer.length());
+        spRxParser->RemoveNonPrintableCharacters();
+        char const * const newChars = spRxParser->Output(maxInputLength - inputBuffer.length());
         size_t nbOfNewChars = strlen(newChars);
 
         if (nbOfNewChars != 0)
@@ -1630,7 +1615,7 @@ void CLI::EnterLine(bool const useHistory, std::string const & lineHead)
     } // switch (Result)
 
     if (result != TerminalRxParser::Result::NeedMoreData)
-      rxParser.Clear();
+      spRxParser->Clear();
 
     if (returnKey)
     {

@@ -1,38 +1,21 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2020, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2020 Daniel Jerolm
 */
 
-#include "gpcc/src/cli/CLI.hpp"
-#include "gpcc/src/log/backends/Backend_CLILogHistory.hpp"
-#include "gpcc/src/log/log_levels.hpp"
-#include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/Stream/MemStreamWriter.hpp"
-#include "gpcc/src/string/tools.hpp"
-#include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"
+#include <gpcc/log/backends/Backend_CLILogHistory.hpp>
+#include <gpcc/cli/CLI.hpp>
+#include <gpcc/log/log_levels.hpp>
+#include <gpcc/osal/Thread.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/stream/MemStreamWriter.hpp>
+#include <gpcc/string/tools.hpp>
+#include "test_src/fakes/cli/FakeTerminal.hpp"
 #include "gtest/gtest.h"
 #include <functional>
 #include <string>
@@ -57,7 +40,7 @@ class gpcc_log_Backend_CLILogHistory_TestsF: public Test
     std::unique_ptr<Backend_CLILogHistory> spUUT;
 
     char buffer[1024];
-    gpcc::Stream::MemStreamWriter buffer_msw;
+    gpcc::stream::MemStreamWriter buffer_msw;
 
     void SetUp(void) override;
     void TearDown(void) override;
@@ -72,7 +55,7 @@ gpcc_log_Backend_CLILogHistory_TestsF::gpcc_log_Backend_CLILogHistory_TestsF(voi
 , cliRunning(false)
 , spUUT()
 , buffer()
-, buffer_msw(buffer, sizeof(buffer) - 1U, gpcc::Stream::MemStreamWriter::nativeEndian)
+, buffer_msw(buffer, sizeof(buffer) - 1U, gpcc::stream::MemStreamWriter::nativeEndian)
 {
 }
 

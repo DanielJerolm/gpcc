@@ -1,33 +1,16 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2021, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "ReturnStackItem.hpp"
-#include "gpcc/src/Stream/IStreamReader.hpp"
-#include "gpcc/src/Stream/IStreamWriter.hpp"
+#include <gpcc/cood/remote_access/requests_and_responses/ReturnStackItem.hpp>
+#include <gpcc/stream/IStreamReader.hpp>
+#include <gpcc/stream/IStreamWriter.hpp>
 
 namespace gpcc {
 namespace cood {
@@ -64,7 +47,7 @@ ReturnStackItem::ReturnStackItem(uint32_t const _id, uint32_t const _info) noexc
 
 /**
  * \brief Constructor. Creates a @ref ReturnStackItem object from data read from an
- *        [IStreamReader](@ref gpcc::Stream::IStreamReader) containing a serialized @ref ReturnStackItem object.
+ *        [IStreamReader](@ref gpcc::stream::IStreamReader) containing a serialized @ref ReturnStackItem object.
  *
  * This is the counterpart of @ref ToBinary().
  *
@@ -83,7 +66,7 @@ ReturnStackItem::ReturnStackItem(uint32_t const _id, uint32_t const _info) noexc
  * \param sr
  * Stream from which the data shall be read.
  */
-ReturnStackItem::ReturnStackItem(gpcc::Stream::IStreamReader & sr)
+ReturnStackItem::ReturnStackItem(gpcc::stream::IStreamReader & sr)
 : id(sr.Read_uint32())
 , info(sr.Read_uint32())
 {
@@ -91,9 +74,9 @@ ReturnStackItem::ReturnStackItem(gpcc::Stream::IStreamReader & sr)
 
 /**
  * \brief Writes a binary representation of the object into a stream, which can be deserialized via
- *        @ref ReturnStackItem(gpcc::Stream::IStreamReader & sr).
+ *        @ref ReturnStackItem(gpcc::stream::IStreamReader & sr).
  *
- * The counterpart of this is @ref ReturnStackItem(gpcc::Stream::IStreamReader & sr).
+ * The counterpart of this is @ref ReturnStackItem(gpcc::stream::IStreamReader & sr).
  *
  * @ref binarySize number of bytes will be written.
  *
@@ -115,7 +98,7 @@ ReturnStackItem::ReturnStackItem(gpcc::Stream::IStreamReader & sr)
  * \param sw
  * The binary data is written into the referenced stream.
  */
-void ReturnStackItem::ToBinary(gpcc::Stream::IStreamWriter & sw) const
+void ReturnStackItem::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   sw.Write_uint32(id);
   sw.Write_uint32(info);

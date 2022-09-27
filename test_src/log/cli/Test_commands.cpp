@@ -1,51 +1,34 @@
 /*
     General Purpose Class Collection (GPCC)
-    Copyright (C) 2011-2017, 2020, 2022 Daniel Jerolm
 
-    This file is part of the General Purpose Class Collection (GPCC).
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    The General Purpose Class Collection (GPCC) is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The General Purpose Class Collection (GPCC) is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes the General Purpose Class Collection (GPCC), without being obliged
-    to provide the source code for any proprietary components. See the file
-    license_exception.txt for full details of how and when the exception can be applied.
+    Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "gpcc/src/cli/CLI.hpp"
-#include "gpcc/src/cli/Command.hpp"
-#include "gpcc/src/file_systems/linux_fs/FileStorage.hpp"
-#include "gpcc/src/file_systems/linux_fs/internal/tools.hpp"
-#include "gpcc/src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
-#include "gpcc/src/log/backends/Backend_CLI.hpp"
-#include "gpcc/src/log/cli/commands.hpp"
-#include "gpcc/src/log/logfacilities/ThreadedLogFacility.hpp"
-#include "gpcc/src/log/log_levels.hpp"
-#include "gpcc/src/log/Logger.hpp"
-#include "gpcc/src/osal/Panic.hpp"
-#include "gpcc/src/osal/Thread.hpp"
-#include "gpcc/src/raii/scope_guard.hpp"
-#include "gpcc/src/string/tools.hpp"
-#include "gpcc/test_src/fakes/cli/FakeTerminal.hpp"
+#include <gpcc/log/cli/commands.hpp>
+#include <gpcc/cli/CLI.hpp>
+#include <gpcc/cli/Command.hpp>
+#include <gpcc/file_systems/linux_fs/FileStorage.hpp>
+#include <gpcc/log/backends/Backend_CLI.hpp>
+#include <gpcc/log/logfacilities/ThreadedLogFacility.hpp>
+#include <gpcc/log/log_levels.hpp>
+#include <gpcc/log/Logger.hpp>
+#include <gpcc/osal/Panic.hpp>
+#include <gpcc/osal/Thread.hpp>
+#include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/string/tools.hpp>
+#include "src/file_systems/linux_fs/internal/tools.hpp"
+#include "src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
+#include "test_src/fakes/cli/FakeTerminal.hpp"
 #include "gtest/gtest.h"
 #include <iostream>
 #include <memory>
 #include <sstream>
-#include <string>
 #include <stdexcept>
+#include <string>
 #include <cerrno>
 #include <cstdio>
 
@@ -504,7 +487,7 @@ TEST_F(gpcc_log_cli_commands_TestsF, CLI_Cmd_WriteConfigToFile_OK)
   EXPECT_TRUE(e2 == "logger2");
   EXPECT_TRUE(l2 == LogLevel::WarningOrAbove);
 
-  EXPECT_TRUE(f->GetState() == gpcc::Stream::IStreamReader::States::empty);
+  EXPECT_TRUE(f->GetState() == gpcc::stream::IStreamReader::States::empty);
 
   // check terminal output
   ASSERT_TRUE(terminal.Compare(expected));
@@ -844,7 +827,7 @@ TEST_F(gpcc_log_cli_commands_TestsF, CLI_Cmd_WriteConfigToTextFile_OK)
 
   // read all lines from the file into a single string
   std::string allLines;
-  while (f->GetState() != gpcc::Stream::IStreamReader::States::empty)
+  while (f->GetState() != gpcc::stream::IStreamReader::States::empty)
   {
     allLines += f->Read_line();
     allLines += '\n';
