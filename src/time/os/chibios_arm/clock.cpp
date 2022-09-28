@@ -11,55 +11,95 @@
 #ifdef OS_CHIBIOS_ARM
 
 #include <gpcc/time/clock.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include <platform/system_time/system_time.h>
 #include <stdexcept>
+
+#ifndef _POSIX_MONOTONIC_CLOCK
+#error "_POSIX_MONOTONIC_CLOCK is required"
+#endif
 
 namespace gpcc {
 namespace time {
 
 /**
  * \ingroup GPCC_TIME
- * \brief Fetches the value of a system clock.
+ * \brief Queries the precision of a clock.
  *
- * Consider using class @ref TimePoint instead of using this function directly.
- *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * This is thread-safe.
  *
  * __Exception safety:__\n
- * Basic guarantee:
- * - `ts` may be set to a random value.
+ * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param clock ID of the clock that shall be read.
- * \param ts The fetched time is written into the referenced timespec structure.
+ * \param clock
+ * Clock whose precision shall be queried.
+ *
+ * \return
+ * Minimum precision of any reading from the clock specified by `clock` in ns.
  */
-void GetTime(Clocks const clock, struct ::timespec& ts)
+uint32_t GetPrecision_ns(Clocks const clock) noexcept
+{
+  struct ::timespec ts{0,0};
+
+  switch (clock)
+  {
+    case Clocks::realtime:         platform_SYSTIME_getres(&ts); break;
+    case Clocks::realtimePrecise:  platform_SYSTIME_getres_precise(&ts); break;
+    case Clocks::monotonic:        platform_SYSTIME_getres_monotonic(&ts); break;
+    case Clocks::monotonicPrecise: platform_SYSTIME_getres_monotonic_precise(&ts); break;
+  }
+
+  if ((ts.tv_sec != 0) || (ts.tv_nsec <= 0) || (ts.tv_nsec >= 1000000000L))
+    PANIC();
+
+  return static_cast<uint32_t>(ts.tv_nsec);
+}
+
+/**
+ * \ingroup GPCC_TIME
+ * \brief Reads the time from a clock.
+ *
+ * Consider using class @ref TimePoint instead of using this function directly.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * No-throw guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param clock
+ * ID of the clock that shall be read.
+ *
+ * \param ts
+ * The reading is written into the referenced timespec structure.
+ */
+void GetTime(Clocks const clock, struct ::timespec& ts) noexcept
 {
   switch (clock)
   {
-    case Clocks::realtime:
-      platform_SYSTIME_gettime(&ts);
-      break;
-    case Clocks::monotonic:
-      platform_SYSTIME_gettime_monotonic(&ts);
-      break;
-    case Clocks::monotonicPrecise:
-      platform_SYSTIME_gettime_monotonic_precise(&ts);
-      break;
-    default:
-      throw std::runtime_error("GetTime: Unsupported Clocks-value");
-      break;
+    case Clocks::realtime:         platform_SYSTIME_gettime(&ts); break;
+    case Clocks::realtimePrecise:  platform_SYSTIME_gettime_precise(&ts); break;
+    case Clocks::monotonic:        platform_SYSTIME_gettime_monotonic(&ts); break;
+    case Clocks::monotonicPrecise: platform_SYSTIME_gettime_monotonic_precise(&ts); break;
   }
 }
 
 } // namespace time
 } // namespace gpcc
 
-#endif /* #ifdef OS_CHIBIOS_ARM */
+#endif // #ifdef OS_CHIBIOS_ARM

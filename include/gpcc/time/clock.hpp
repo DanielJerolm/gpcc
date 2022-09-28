@@ -11,24 +11,36 @@
 #ifndef CLOCK_HPP_201701162120
 #define CLOCK_HPP_201701162120
 
-#ifdef OS_LINUX_X64
-#include "os/linux_x64/clock.hpp"
-#endif
+#include <cstdint>
+#include <ctime>
 
-#ifdef OS_LINUX_X64_TFC
-#include "os/linux_x64_tfc/clock.hpp"
-#endif
+namespace gpcc {
+namespace time {
 
-#ifdef OS_LINUX_ARM
-#include "os/linux_arm/clock.hpp"
-#endif
+/**
+ * \ingroup GPCC_TIME
+ * \brief Enumeration with clocks.
+ *
+ * Note:
+ * - The precise variants of the clocks are more expensive to read.\n
+ *   If you do not need a high-precision clock reading, then the non-precise variants should be preferred.
+ * - The precision of a clock can be queried via @ref gpcc::time::GetPrecision_ns().
+ * - If the precise (non-precise) variant is not available on a platform, then the non-precise (precise) variant will be
+ *   used implicitly.
+ * - The precise and non-precise variants of a clock have the same base. It is safe to compare them against each other.
+ */
+enum class Clocks
+{
+  realtime,         ///<UTC system time.
+  realtimePrecise,  ///<Like @ref Clocks::realtime, but with highest available precision.
+  monotonic,        ///<Monotonic rising time (not any jumps) starting at some arbitrary point in time.
+  monotonicPrecise  ///<Like @ref Clocks::monotonic, but with highest available precision.
+};
 
-#ifdef OS_LINUX_ARM_TFC
-#include "os/linux_arm_tfc/clock.hpp"
-#endif
+uint32_t GetPrecision_ns(Clocks const clock) noexcept;
+void GetTime(Clocks const clock, struct ::timespec& ts) noexcept;
 
-#ifdef OS_CHIBIOS_ARM
-#include "os/chibios_arm/clock.hpp"
-#endif
+} // namespace time
+} // namespace gpcc
 
-#endif /* CLOCK_HPP_201701162120 */
+#endif // CLOCK_HPP_201701162120
