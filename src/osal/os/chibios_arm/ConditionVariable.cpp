@@ -176,7 +176,7 @@ void ConditionVariable::Wait(Mutex & mutex)
  * `absoluteTimeout`) regardless whether the condition has been signaled or not. This method will also return
  * immediately, if the specified point in time has already been passed when the call to this method is made.\n
  * The mutex will be locked again when the method returns due to a timeout condition.\n
- * The time is specified using @ref gpcc::time::Clocks::monotonic
+ * The time is specified using the clock @ref ConditionVariable::clockID.
  *
  * \retval true
  *   Woke up due to timeout.

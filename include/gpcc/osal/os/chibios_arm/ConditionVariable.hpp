@@ -14,6 +14,7 @@
 #define CONDITIONVARIABLE_HPP_201701291128
 
 #include <gpcc/osal/Mutex.hpp>
+#include <gpcc/time/clock.hpp>
 #include <ch.h>
 
 namespace gpcc {
@@ -110,6 +111,10 @@ namespace osal {
 class ConditionVariable final
 {
   public:
+    /// Clock used by @ref TimeLimitedWait() to specify the timeout.
+    static gpcc::time::Clocks constexpr clockID = gpcc::time::Clocks::monotonic;
+
+
     ConditionVariable(void);
     ConditionVariable(ConditionVariable const &) = delete;
     ConditionVariable(ConditionVariable &&) = delete;
