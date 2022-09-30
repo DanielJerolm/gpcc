@@ -303,7 +303,7 @@ TimeSpan TimePoint::operator - (TimePoint const & rhv) const
   if (Compiler::OverflowAwareSub(ts.tv_sec, rhv.ts.tv_sec, &dsec))
     throw std::overflow_error("TimePoint::operator-(Timepoint): Overflow subtracting seconds");
 
-  // note: this check is not precise
+  // note: this check is not precise, but safe
   if ((dsec > ((std::numeric_limits<int64_t>::max() / NSEC_PER_SEC) - 1)) ||
       (dsec < ((std::numeric_limits<int64_t>::min() / NSEC_PER_SEC) + 1)))
     throw std::overflow_error("TimePoint::operator-(Timepoint): Overflow in final result");
