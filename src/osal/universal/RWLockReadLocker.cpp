@@ -11,6 +11,7 @@
 #if (defined(OS_CHIBIOS_ARM) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC))
 
 #include <gpcc/osal/RWLockReadLocker.hpp>
+#include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/exceptions.hpp>
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
@@ -40,7 +41,7 @@ namespace osal {
  * be released when the @ref RWLockReadLocker is destroyed.
  * \param absTimeout
  * Timeout specified as an absolute point in time when waiting to acquire the read-lock.\n
- * _This must be specified using Clocks::monotonic._
+ * The time must be specified using the clock @ref gpcc::osal::ConditionVariable::clockID.
  */
 RWLockReadLocker::RWLockReadLocker(RWLock& rwLock, gpcc::time::TimePoint const & absTimeout)
 : pRWLock(&rwLock)
@@ -75,7 +76,7 @@ RWLockReadLocker::RWLockReadLocker(RWLock& rwLock, gpcc::time::TimePoint const &
 RWLockReadLocker::RWLockReadLocker(RWLock& rwLock, gpcc::time::TimeSpan const & timeout)
 : pRWLock(&rwLock)
 {
-  auto const absTimeout = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonic) + timeout;
+  auto const absTimeout = gpcc::time::TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID) + timeout;
 
   if (!pRWLock->ReadLock(absTimeout))
     throw TimeoutError("RWLockReadLocker::RWLockReadLocker: Timeout acquiring read-lock");

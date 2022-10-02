@@ -94,7 +94,7 @@ void* gpcc_osal_ConditionVariable_TestsF::ThreadEntry_ReturnWhenPredicateTrue(vo
 
 void* gpcc_osal_ConditionVariable_TestsF::ThreadEntry_ReturnWhenPredicateTrueWithTimeout(void)
 {
-  TimePoint const timeout = TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(TIMEOUT_MS);
+  TimePoint const timeout = TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(TIMEOUT_MS);
 
   MutexLocker m_locker(m);
 
@@ -132,7 +132,7 @@ TEST(gpcc_osal_ConditionVariable_Tests, SignalNoWaiter)
   uut.Signal();
 
   // Check that signal is lost. TimeLimitedWait() must return with timeout.
-  TimePoint const timeout = TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(NO_SIGNAL_TIMEOUT_MS);
+  TimePoint const timeout = TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(NO_SIGNAL_TIMEOUT_MS);
   ASSERT_TRUE(uut.TimeLimitedWait(m, timeout));
 
   // check that mutex is locked
@@ -148,7 +148,7 @@ TEST(gpcc_osal_ConditionVariable_Tests, BroadcastNoWaiter)
   uut.Broadcast();
 
   // Check that broadcast is lost. TimeLimitedWait() must return with timeout.
-  TimePoint const timeout = TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(NO_SIGNAL_TIMEOUT_MS);
+  TimePoint const timeout = TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(NO_SIGNAL_TIMEOUT_MS);
   ASSERT_TRUE(uut.TimeLimitedWait(m, timeout));
 
   // check that mutex is locked
@@ -295,7 +295,7 @@ TEST_F(gpcc_osal_ConditionVariable_TestsF, WaitWithTimeoutNoSignal)
 {
   MutexLocker m_locker(m);
 
-  TimePoint const timeout = TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(NO_SIGNAL_TIMEOUT_MS);
+  TimePoint const timeout = TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(NO_SIGNAL_TIMEOUT_MS);
   ASSERT_TRUE(uut.TimeLimitedWait(m, timeout));
 
   // check that mutex is locked

@@ -25,6 +25,8 @@ static clockid_t ToClockID(Clocks const clock) noexcept
     case Clocks::monotonic:        return CLOCK_MONOTONIC_COARSE;
     case Clocks::monotonicPrecise: return CLOCK_MONOTONIC;
   }
+
+  PANIC();
 }
 
 /**

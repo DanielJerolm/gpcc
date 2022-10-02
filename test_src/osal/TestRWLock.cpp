@@ -137,7 +137,7 @@ class TestHelper final
     void WaitUntilNotBusy(void)
     {
       MutexLocker mutexLocker(mutex);
-      TimePoint const tp = TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(TIMEOUT_TESTHELPER_JOB_MS);
+      TimePoint const tp = TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(TIMEOUT_TESTHELPER_JOB_MS);
       while ((busy) || (request != Requests::none))
       {
         if (conVarBusy.TimeLimitedWait(mutex, tp))
@@ -202,7 +202,7 @@ class TestHelper final
               if (state != States::noLock)
                 throw std::runtime_error("TestHelper::ThreadEntry: Wrong state (writeLockTimeout)");
 
-              TimePoint const tp = TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(TIMEOUT_MS);
+              TimePoint const tp = TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(TIMEOUT_MS);
               uut_retVal = pUUT->WriteLock(tp);
 
               if (uut_retVal)
@@ -214,7 +214,7 @@ class TestHelper final
               if (state != States::noLock)
                 throw std::runtime_error("TestHelper::ThreadEntry: Wrong state (writeLockTimeoutNoChance)");
 
-              TimePoint const tp = TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(NO_CHANCE_TIMEOUT_MS);
+              TimePoint const tp = TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(NO_CHANCE_TIMEOUT_MS);
               uut_retVal = pUUT->WriteLock(tp);
 
               if (uut_retVal)
@@ -257,7 +257,7 @@ class TestHelper final
               if (state != States::noLock)
                 throw std::runtime_error("TestHelper::ThreadEntry: Wrong state (readLockTimeout)");
 
-              TimePoint const tp = TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(TIMEOUT_MS);
+              TimePoint const tp = TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(TIMEOUT_MS);
               uut_retVal = pUUT->ReadLock(tp);
 
               if (uut_retVal)
@@ -269,7 +269,7 @@ class TestHelper final
               if (state != States::noLock)
                 throw std::runtime_error("TestHelper::ThreadEntry: Wrong state (readLockTimeoutNoChance)");
 
-              TimePoint const tp = TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(NO_CHANCE_TIMEOUT_MS);
+              TimePoint const tp = TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(NO_CHANCE_TIMEOUT_MS);
               uut_retVal = pUUT->ReadLock(tp);
 
               if (uut_retVal)
@@ -382,7 +382,7 @@ TEST(gpcc_osal_RWLock_Tests, BasicLockUnlock)
 
   // TFC not required and no load dependency:
   // If the lock is free, then WriteLock() will even succeed if the timeout is already expired.
-  TimePoint timeout = TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(TIMEOUT_MS);
+  TimePoint timeout = TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(TIMEOUT_MS);
   ASSERT_TRUE(uut.WriteLock(timeout));
   uut.ReleaseWriteLock();
 
@@ -394,7 +394,7 @@ TEST(gpcc_osal_RWLock_Tests, BasicLockUnlock)
 
   // TFC not required and no load dependency:
   // If the lock is free, then ReadLock() will even succeed if the timeout is already expired.
-  timeout = TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(TIMEOUT_MS);
+  timeout = TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(TIMEOUT_MS);
   ASSERT_TRUE(uut.ReadLock(timeout));
   uut.ReleaseReadLock();
 }

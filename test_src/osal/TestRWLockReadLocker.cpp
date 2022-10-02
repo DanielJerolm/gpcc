@@ -9,6 +9,7 @@
 */
 
 #include <gpcc/osal/RWLockReadLocker.hpp>
+#include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/execution/async/DeferredWorkQueue.hpp>
 #include <gpcc/execution/async/WorkPackage.hpp>
 #include <gpcc/osal/exceptions.hpp>
@@ -167,7 +168,7 @@ TEST_F(gpcc_osal_RWLockReadLocker_TestsF, LockWithAbsTimeout_NoTimeoutExpiration
   {
     // TFC not required and no load dependency:
     // If the lock is free, then ReadLock() will even succeed if the timeout is already expired.
-    auto const absTimeout = TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(100);
+    auto const absTimeout = TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID) + TimeSpan::ms(100);
 
     RWLockReadLocker uut(lock, absTimeout);
 
@@ -186,7 +187,7 @@ TEST_F(gpcc_osal_RWLockReadLocker_TestsF, LockWithAbsTimeout_TimeoutAlreadyExpir
   {
     // TFC not required and no load dependency:
     // If the lock is free, then ReadLock() will even succeed if the timeout is already expired.
-    auto const absTimeout = TimePoint::FromSystemClock(Clocks::monotonic) - TimeSpan::ms(100);
+    auto const absTimeout = TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID) - TimeSpan::ms(100);
 
     RWLockReadLocker uut(lock, absTimeout);
 
@@ -204,7 +205,7 @@ TEST_F(gpcc_osal_RWLockReadLocker_TestsF, LockWithAbsTimeout_TimeoutExpires)
   RWLock lock;
 
   std::atomic<bool> ok(false);
-  auto const absTimeout = TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(10);
+  auto const absTimeout = TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID) + TimeSpan::ms(10);
 
   // this acquires a write-lock and will prevent acquisition of the read-lock
   std::unique_ptr<RWLockWriteLocker> spWriteLocker(new RWLockWriteLocker(lock));

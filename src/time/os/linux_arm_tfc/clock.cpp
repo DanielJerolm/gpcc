@@ -11,21 +11,11 @@
 #ifdef OS_LINUX_ARM_TFC
 
 #include <gpcc/time/clock.hpp>
+#include <gpcc/osal/Panic.hpp>
 #include "src/osal/os/linux_arm_tfc/internal/TFCCore.hpp"
 
 namespace gpcc {
 namespace time {
-
-static clockid_t ToClockID(Clocks const clock) noexcept
-{
-  switch (clock)
-  {
-    case Clocks::realtime:         return CLOCK_REALTIME_COARSE;
-    case Clocks::realtimePrecise:  return CLOCK_REALTIME;
-    case Clocks::monotonic:        return CLOCK_MONOTONIC_COARSE;
-    case Clocks::monotonicPrecise: return CLOCK_MONOTONIC;
-  }
-}
 
 /**
  * \ingroup GPCC_TIME
@@ -90,13 +80,15 @@ void GetTime(Clocks const clock, struct ::timespec& ts) noexcept
     case Clocks::realtime:
     case Clocks::realtimePrecise:
       pTFCCore->GetEmulatedRealtime(ts);
-      break;
+      return;
 
     case Clocks::monotonic:
     case Clocks::monotonicPrecise:
       pTFCCore->GetEmulatedMonotonicTime(ts);
-      break;
+      return;
   }
+
+  PANIC();
 }
 
 } // namespace time

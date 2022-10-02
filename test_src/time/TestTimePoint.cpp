@@ -156,6 +156,21 @@ TEST(gpcc_time_TimePoint_Tests, FromSystemClock_Clock_Monotonic)
   TimePoint uut = TimePoint::FromSystemClock(Clocks::monotonic);
 
   struct timespec ts;
+  int const ret = clock_gettime(CLOCK_MONOTONIC_COARSE, &ts);
+  ASSERT_EQ(0, ret);
+
+  int64_t const delta = ts.tv_sec - uut.Get_sec();
+  ASSERT_TRUE(delta >= 0);
+  ASSERT_TRUE(delta <= 2 * TIME_MULTIPLIER);
+}
+TEST(gpcc_time_TimePoint_Tests, FromSystemClock_Clock_MonotonicPrecise)
+{
+  // Test-case skipped if TFC is present.
+  // Rationale: No relationship between emulated clock and system clock
+
+  TimePoint uut = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
+
+  struct timespec ts;
   int const ret = clock_gettime(CLOCK_MONOTONIC, &ts);
   ASSERT_EQ(0, ret);
 
@@ -757,6 +772,17 @@ TEST(gpcc_time_TimePoint_Tests, LatchSystemClock_Clock_Monotonic)
   TimePoint uut1 = TimePoint::FromSystemClock(Clocks::monotonic);
   TimePoint uut2;
   uut2.LatchSystemClock(Clocks::monotonic);
+
+  TimeSpan const delta = uut2 - uut1;
+
+  ASSERT_TRUE(delta.ns() >= 0);
+  ASSERT_TRUE(delta.ns() <= 100000000LL * TIME_MULTIPLIER);
+}
+TEST(gpcc_time_TimePoint_Tests, LatchSystemClock_Clock_MonotonicPrecise)
+{
+  TimePoint uut1 = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
+  TimePoint uut2;
+  uut2.LatchSystemClock(Clocks::monotonicPrecise);
 
   TimeSpan const delta = uut2 - uut1;
 

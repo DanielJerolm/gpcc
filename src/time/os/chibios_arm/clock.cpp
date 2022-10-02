@@ -97,6 +97,8 @@ void GetTime(Clocks const clock, struct ::timespec& ts) noexcept
     case Clocks::monotonic:        platform_SYSTIME_gettime_monotonic(&ts); break;
     case Clocks::monotonicPrecise: platform_SYSTIME_gettime_monotonic_precise(&ts); break;
   }
+
+  PANIC();
 }
 
 } // namespace time

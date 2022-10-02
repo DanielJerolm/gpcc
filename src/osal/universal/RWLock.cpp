@@ -172,7 +172,7 @@ void RWLock::WriteLock(void)
  *
  * \param absoluteTimeout
  * Absolute point in time when the timeout for waiting for acquisition of the write-lock shall expire.\n
- * _This must be specified using Clocks::monotonic._
+ * The time must be specified using the clock @ref gpcc::osal::ConditionVariable::clockID.
  *
  * \retval true   Write-lock acquired.
  * \retval false  Timeout. Write-lock _not_ acquired. Another writer or one or more readers already hold the lock.
@@ -352,7 +352,7 @@ void RWLock::ReadLock(void)
  *
  * \param absoluteTimeout
  * Absolute point in time when the timeout for waiting for acquisition of the read-lock shall expire.\n
- * _This must be specified using Clocks::monotonic._
+ * The time must be specified using the clock @ref gpcc::osal::ConditionVariable::clockID.
  *
  * \retval true   Read-lock acquired.
  * \retval false  Timeout, read-lock _not_ acquired. A writer already holds the lock.

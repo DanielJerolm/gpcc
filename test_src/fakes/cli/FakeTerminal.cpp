@@ -793,7 +793,8 @@ size_t FakeTerminal::Read(char * pBuffer, size_t bufferSize, uint16_t timeout_ms
 
       // wait for data or timeout
       bool timeout = false;
-      TimePoint const absTimeout = TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(timeout_ms);
+      TimePoint const absTimeout = TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID)
+                                 + TimeSpan::ms(timeout_ms);
       while ((inputBuffer.empty()) && (!throwRequested_in) && (!timeout))
         timeout = inputBufferNotEmptyCV.TimeLimitedWait(inputMutex, absTimeout);
     }

@@ -9,6 +9,7 @@
 */
 
 #include <gpcc/execution/async/DeferredWorkPackage.hpp>
+#include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/time/TimeSpan.hpp>
 #include <stdexcept>
@@ -47,7 +48,7 @@ using namespace gpcc::time;
  * \param _tp
  * Time point until when execution of the work package shall be deferred.\n
  * A copy is generated.\n
- * The time point must be specified using the monotonous system clock (@ref gpcc::time::Clocks::monotonic).
+ * The time point must be specified using the clock @ref gpcc::osal::ConditionVariable::clockID.
  */
 DeferredWorkPackage::DeferredWorkPackage(void const * const _pOwnerObject,
                                          uint32_t const _ownerID,
@@ -94,7 +95,7 @@ DeferredWorkPackage::DeferredWorkPackage(void const * const _pOwnerObject,
  * \param _tp
  * Time point until when execution of the work package shall be deferred.\n
  * A copy is generated.\n
- * The time point must be specified using the monotonous system clock (@ref gpcc::time::Clocks::monotonic).
+ * The time point must be specified using the clock @ref gpcc::osal::ConditionVariable::clockID.
  */
 DeferredWorkPackage::DeferredWorkPackage(void const * const _pOwnerObject,
                                          uint32_t const _ownerID,
@@ -148,7 +149,7 @@ DeferredWorkPackage::DeferredWorkPackage(void const * const _pOwnerObject,
 : pOwnerObject(_pOwnerObject)
 , ownerID(_ownerID)
 , functor(_functor)
-, tp(TimePoint::FromSystemClock(Clocks::monotonic) + delay)
+, tp(TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID) + delay)
 , pNext(nullptr)
 , pPrev(nullptr)
 , state(States::staticNotInQ)
@@ -194,7 +195,7 @@ DeferredWorkPackage::DeferredWorkPackage(void const * const _pOwnerObject,
 : pOwnerObject(_pOwnerObject)
 , ownerID(_ownerID)
 , functor(std::move(_functor))
-, tp(TimePoint::FromSystemClock(Clocks::monotonic) + delay)
+, tp(TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID) + delay)
 , pNext(nullptr)
 , pPrev(nullptr)
 , state(States::staticNotInQ)
@@ -335,7 +336,7 @@ DeferredWorkPackage::~DeferredWorkPackage(void)
  * \param _tp
  * Time point until when execution of the work package shall be deferred.\n
  * A copy is generated.\n
- * The time point must be specified using the monotonous system clock (@ref gpcc::time::Clocks::monotonic).
+ * The time point must be specified using the clock @ref gpcc::osal::ConditionVariable::clockID.
  * \return
  * An `std::unique_ptr` to a new @ref DeferredWorkPackage instance.
  */
@@ -381,7 +382,7 @@ std::unique_ptr<DeferredWorkPackage> DeferredWorkPackage::CreateDynamic(void con
  * \param _tp
  * Time point until when execution of the work package shall be deferred.\n
  * A copy is generated.\n
- * The time point must be specified using the monotonous system clock (@ref gpcc::time::Clocks::monotonic).
+ * The time point must be specified using the clock @ref gpcc::osal::ConditionVariable::clockID.
  * \return
  * An `std::unique_ptr` to a new @ref DeferredWorkPackage instance.
  */
@@ -434,7 +435,10 @@ std::unique_ptr<DeferredWorkPackage> DeferredWorkPackage::CreateDynamic(void con
                                                                         tFunctor const & _functor,
                                                                         time::TimeSpan const & delay)
 {
-  auto pDWP = new DeferredWorkPackage(_pOwnerObject, _ownerID, _functor, TimePoint::FromSystemClock(Clocks::monotonic) + delay);
+  auto pDWP = new DeferredWorkPackage(_pOwnerObject,
+                                      _ownerID,
+                                      _functor,
+                                      TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID) + delay);
   pDWP->state = States::dynamicNotInQ;
   return std::unique_ptr<DeferredWorkPackage>(pDWP);
 }
@@ -479,7 +483,10 @@ std::unique_ptr<DeferredWorkPackage> DeferredWorkPackage::CreateDynamic(void con
                                                                         tFunctor && _functor,
                                                                         time::TimeSpan const & delay)
 {
-  auto pDWP = new DeferredWorkPackage(_pOwnerObject, _ownerID, std::move(_functor), TimePoint::FromSystemClock(Clocks::monotonic) + delay);
+  auto pDWP = new DeferredWorkPackage(_pOwnerObject,
+                                      _ownerID,
+                                      std::move(_functor),
+                                      TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID) + delay);
   pDWP->state = States::dynamicNotInQ;
   return std::unique_ptr<DeferredWorkPackage>(pDWP);
 }
@@ -506,7 +513,7 @@ std::unique_ptr<DeferredWorkPackage> DeferredWorkPackage::CreateDynamic(void con
  * \param _tp
  * Time point until when execution of the work package shall be deferred.\n
  * A copy is generated.\n
- * The time point must be specified using the monotonous system clock (@ref gpcc::time::Clocks::monotonic).
+ * The time point must be specified using the clock @ref gpcc::osal::ConditionVariable::clockID.
  */
 void DeferredWorkPackage::SetTimePoint(time::TimePoint const & _tp)
 {
@@ -544,7 +551,7 @@ void DeferredWorkPackage::SetTimeSpan(time::TimeSpan const & delay)
   if ((state != States::staticNotInQ) && (state != States::staticExec))
     throw std::logic_error("DeferredWorkPackage::SetTimespan: Wrong state");
 
-  tp = TimePoint::FromSystemClock(Clocks::monotonic) + delay;
+  tp = TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID) + delay;
 }
 
 } // namespace async

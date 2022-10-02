@@ -11,6 +11,7 @@
 #if (defined(OS_CHIBIOS_ARM) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC))
 
 #include <gpcc/osal/RWLockWriteLocker.hpp>
+#include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/exceptions.hpp>
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
@@ -40,7 +41,7 @@ namespace osal {
  * be released when the @ref RWLockWriteLocker is destroyed.
  * \param absTimeout
  * Timeout specified as an absolute point in time when waiting to acquire the write-lock.\n
- * _This must be specified using Clocks::monotonic._
+ * The time must be specified using the clock @ref gpcc::osal::ConditionVariable::clockID.
  */
 RWLockWriteLocker::RWLockWriteLocker(RWLock& rwLock, gpcc::time::TimePoint const & absTimeout)
 : pRWLock(&rwLock)
@@ -75,7 +76,7 @@ RWLockWriteLocker::RWLockWriteLocker(RWLock& rwLock, gpcc::time::TimePoint const
 RWLockWriteLocker::RWLockWriteLocker(RWLock& rwLock, gpcc::time::TimeSpan const & timeout)
 : pRWLock(&rwLock)
 {
-  auto const absTimeout = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonic) + timeout;
+  auto const absTimeout = gpcc::time::TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID) + timeout;
 
   if (!pRWLock->WriteLock(absTimeout))
     throw TimeoutError("RWLockWriteLocker::RWLockWriteLocker: Timeout acquiring write-lock");

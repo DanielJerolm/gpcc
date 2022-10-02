@@ -171,7 +171,7 @@ void ConditionVariable::Wait(Mutex & mutex)
  * gpcc::osal::MutexLocker locker(myMutex);
  *
  * // calculate timeout (here: 1 second from now)
- * gpcc::time::TimePoint tp = gpcc::time::TimePoint::FromSystemClock(Clocks::monotonic);
+ * gpcc::time::TimePoint tp = gpcc::time::TimePoint::FromSystemClock(ConditionVariable::clockID);
  * tp += gpcc::time::TimeSpan::sec(1);
  *
  * bool timeout = false;
@@ -211,7 +211,7 @@ void ConditionVariable::Wait(Mutex & mutex)
  * `absoluteTimeout`) regardless whether the condition has been signaled or not. This method will also return
  * immediately, if the specified point in time has already been passed when the call to this method is made.\n
  * The mutex will be locked again when the method returns due to a timeout condition.\n
- * The time is specified using the clock @ref ConditionVariable::clockID.
+ * The time must be specified using the clock @ref ConditionVariable::clockID.
  *
  * \retval true
  *   Woke up due to timeout.

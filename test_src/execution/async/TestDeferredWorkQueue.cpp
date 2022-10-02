@@ -46,7 +46,7 @@ void gpcc_execution_async_DeferredWorkQueue_TestsF::WQ_RemoveDWPByRefAndPushToCh
   uut.Remove(*pDWP);
 
   checkList.push_back(checkListValue);
-  timestampList.push_back(TimePoint::FromSystemClock(Clocks::monotonic));
+  timestampList.push_back(TimePoint::FromSystemClock(ConditionVariable::clockID));
 }
 
 void gpcc_execution_async_DeferredWorkQueue_TestsF::WQ_AddDWPbyRef(DeferredWorkPackage* pDWP)
@@ -58,13 +58,13 @@ void gpcc_execution_async_DeferredWorkQueue_TestsF::WQ_AddDynamicDWP(uint32_t co
 {
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
                                              std::bind(&gpcc_execution_async_DeferredWorkQueue_TestsF::WQ_PushToCheckList, this, checkListValue),
-                                             TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(DELAY_TIME_MS)));
+                                             TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(DELAY_TIME_MS)));
 }
 
 void gpcc_execution_async_DeferredWorkQueue_TestsF::WQ_PushToCheckListAndEnqueueDWPByRef(uint32_t const checkListValue, DeferredWorkPackage* pDWP)
 {
   checkList.push_back(checkListValue);
-  timestampList.push_back(TimePoint::FromSystemClock(Clocks::monotonic));
+  timestampList.push_back(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   if (repeats != 0)
   {
@@ -85,7 +85,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Instantiation)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_copyFunctor)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   auto const f = std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_copyFunctor)::WQ_PushToCheckList, this, 1);
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0, f, now + TimeSpan::ms(DELAY_TIME_MS)));
@@ -104,7 +104,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_copyFunctor)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_moveFunctor)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   auto f = std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_moveFunctor)::WQ_PushToCheckList, this, 1);
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0, std::move(f), now + TimeSpan::ms(DELAY_TIME_MS)));
@@ -123,7 +123,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_moveFunctor)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   // first in list
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
@@ -160,7 +160,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred_FifoIfSameTime_first)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred_FifoIfSameTime_first)::WQ_PushToCheckList,
@@ -193,7 +193,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred_FifoIf
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred_FifoIfSameTime_mid)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred_FifoIfSameTime_mid)::WQ_PushToCheckList,
@@ -226,7 +226,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred_FifoIf
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred_FifoIfSameTime_last)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred_FifoIfSameTime_last)::WQ_PushToCheckList,
@@ -263,7 +263,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred_FifoIf
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred_TimepointAlreadyReached)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred_TimepointAlreadyReached)::WQ_PushToCheckList,
@@ -326,7 +326,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred_FromWQ
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Cleanup_dyn)
 {
   // Add some work packages. helgrind/memcheck must not detect any memory leaks.
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Cleanup_dyn)::WQ_PushToCheckList,
@@ -351,7 +351,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Cleanup_dyn)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred)::WQ_PushToCheckList,
@@ -394,7 +394,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_FifoIfSameTime_first)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_FifoIfSameTime_first)::WQ_PushToCheckList,
@@ -433,7 +433,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_FifoIfS
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_FifoIfSameTime_mid)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_FifoIfSameTime_mid)::WQ_PushToCheckList,
@@ -472,7 +472,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_FifoIfS
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_FifoIfSameTime_last)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_FifoIfSameTime_last)::WQ_PushToCheckList,
@@ -516,7 +516,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_FifoIfS
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_TimepointAlreadyReached)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_TimepointAlreadyReached)::WQ_PushToCheckList,
@@ -555,7 +555,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_Timepoi
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_DynamicDWP)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   auto spDWP = DeferredWorkPackage::CreateDynamic(this, 0,
                                                   std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_DynamicDWP)::WQ_PushToCheckList,
@@ -567,7 +567,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_Dynamic
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_FromWQContext)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_FromWQContext)::WQ_PushToCheckList,
@@ -597,7 +597,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_FromWQC
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Cleanup_stat)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   auto spUUT = std::unique_ptr<DeferredWorkQueue>(new DeferredWorkQueue);
   DeferredWorkPackage dwp1(this, 0,
@@ -612,7 +612,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Cleanup_stat)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, ReuseOfStaticDWPs)
 {
-  TimePoint now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, ReuseOfStaticDWPs)::WQ_PushToCheckList,
@@ -645,7 +645,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, ReuseOfStaticDWPs)
   EnterUUTWork();
   JoinWorkThread();
 
-  now.LatchSystemClock(Clocks::monotonic);
+  now.LatchSystemClock(ConditionVariable::clockID);
   dwp1.SetTimePoint(now + TimeSpan::ms(5 * DELAY_TIME_MS));
   dwp2.SetTimePoint(now + TimeSpan::ms(10 * DELAY_TIME_MS));
   dwp3.SetTimePoint(now + TimeSpan::ms(10 * DELAY_TIME_MS));
@@ -671,7 +671,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, ReuseOfStaticDWPs)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, ReuseOfStaticDWPs_EnqueuedWhileExecuting)
 {
-  TimePoint now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, ReuseOfStaticDWPs_EnqueuedWhileExecuting)::WQ_PushToCheckListAndEnqueueDWPByRef,
@@ -691,7 +691,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, ReuseOfStaticDWPs_Enqueued
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, ReuseOfStaticDWPs_ChangeExpirationTimeWhileEnqueued)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, ReuseOfStaticDWPs_ChangeExpirationTimeWhileEnqueued)::WQ_PushToCheckList,
@@ -730,7 +730,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, ReuseOfStaticDWPs_ChangeEx
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Work_DeferredHasPriority)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(WorkPackage::CreateDynamic(this, 0,
                                      std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Work_DeferredHasPriority)::WQ_PushToCheckList,
@@ -772,7 +772,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Work_DeferredHasPriority)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_first)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_first)::WQ_PushToCheckList,
@@ -805,7 +805,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_first)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_mid)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_mid)::WQ_PushToCheckList,
@@ -838,7 +838,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_mid)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_last)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_last)::WQ_PushToCheckList,
@@ -871,7 +871,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_last)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_fromWQcontext)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_fromWQcontext)::WQ_PushToCheckList,
@@ -908,7 +908,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_fromWQcontext)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_TheLastOne)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_TheLastOne)::WQ_PushToCheckList,
@@ -930,7 +930,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_TheLastOne)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_Empty)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_Empty)::WQ_PushToCheckList,
@@ -950,7 +950,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_Empty)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_NoHit)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_NoHit)::WQ_PushToCheckList,
@@ -977,7 +977,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_NoHit)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_DynamicWP)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
   auto dwp1 = DeferredWorkPackage::CreateDynamic(this, 0,
                                                  std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_DynamicWP)::WQ_PushToCheckList,
                                                            this, 1),
@@ -987,7 +987,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_DynamicWP)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_itself)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_itself)::WQ_PushToCheckList,
@@ -1019,7 +1019,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_itself)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_first)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(&owner1, 0,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_first)::WQ_PushToCheckList,
@@ -1047,7 +1047,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_first
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_mid)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_mid)::WQ_PushToCheckList,
@@ -1075,7 +1075,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_mid)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_last)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_last)::WQ_PushToCheckList,
@@ -1103,7 +1103,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_last)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_nullptr)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(&owner1, 0,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_nullptr)::WQ_PushToCheckList,
@@ -1131,7 +1131,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_nullp
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_fromWQcontext)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_fromWQcontext)::WQ_PushToCheckList,
@@ -1160,7 +1160,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_fromW
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_TheLastOne)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(&owner1, 1,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_TheLastOne)::WQ_PushToCheckList,
@@ -1191,7 +1191,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_Empty
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_NoHit)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(&owner1, 1,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_NoHit)::WQ_PushToCheckList,
@@ -1211,7 +1211,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_NoHit
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_first)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(&owner1, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_first)::WQ_PushToCheckList,
@@ -1248,7 +1248,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_firs
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_mid)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_mid)::WQ_PushToCheckList,
@@ -1285,7 +1285,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_mid)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_last)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_last)::WQ_PushToCheckList,
@@ -1322,7 +1322,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_last
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_nullptr)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(&owner1, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_nullptr)::WQ_PushToCheckList,
@@ -1359,7 +1359,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_null
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_fromWQcontext)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_fromWQcontext)::WQ_PushToCheckList,
@@ -1400,7 +1400,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_from
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_TheLastOne)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(&owner1, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_TheLastOne)::WQ_PushToCheckList,
@@ -1434,7 +1434,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_Empt
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_NoHit)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(&owner1, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_NoHit)::WQ_PushToCheckList,
@@ -1457,7 +1457,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_NoHi
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_first)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(&owner1, 1,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_first)::WQ_PushToCheckList,
@@ -1485,7 +1485,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_first
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_mid)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(&owner1, 2,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_mid)::WQ_PushToCheckList,
@@ -1513,7 +1513,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_mid)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_last)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 1,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_last)::WQ_PushToCheckList,
@@ -1541,7 +1541,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_last)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_nullptr)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(&owner1, 0,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_nullptr)::WQ_PushToCheckList,
@@ -1569,7 +1569,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_nullp
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_fromWQcontext)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_fromWQcontext)::WQ_PushToCheckList,
@@ -1598,7 +1598,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_fromW
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_TheLastOne)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(&owner1, 1,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_TheLastOne)::WQ_PushToCheckList,
@@ -1629,7 +1629,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_Empty
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_NoHit)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(&owner1, 1,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_NoHit)::WQ_PushToCheckList,
@@ -1649,7 +1649,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_NoHit
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_first)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(&owner1, 1,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_first)::WQ_PushToCheckList,
@@ -1686,7 +1686,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_firs
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_mid)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(&owner1, 2,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_mid)::WQ_PushToCheckList,
@@ -1723,7 +1723,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_mid)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_last)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 1,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_last)::WQ_PushToCheckList,
@@ -1760,7 +1760,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_last
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_nullptr)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(&owner1, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_nullptr)::WQ_PushToCheckList,
@@ -1797,7 +1797,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_null
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_fromWQcontext)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_fromWQcontext)::WQ_PushToCheckList,
@@ -1838,7 +1838,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_from
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_TheLastOne)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(&owner1, 1,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_TheLastOne)::WQ_PushToCheckList,
@@ -1871,7 +1871,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_Empt
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_NoHit)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(&owner1, 1,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_NoHit)::WQ_PushToCheckList,
@@ -1894,7 +1894,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_NoHi
 #ifndef SKIP_TFC_BASED_TESTS
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_WaitUntilCurrentWorkPackageHasBeenExecuted)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   EnterUUTWork();
 
@@ -1906,9 +1906,9 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_WaitUntilCurrentW
   // allow WQ thread to block on the sleep in the work package
   Thread::Sleep_ms(WAITTIME_MS + 1);
 
-  TimePoint const startTime(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const startTime(TimePoint::FromSystemClock(ConditionVariable::clockID));
   uut.WaitUntilCurrentWorkPackageHasBeenExecuted(this);
-  TimePoint const endTime(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const endTime(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   TimeSpan const duration = endTime - startTime;
 
@@ -1922,7 +1922,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_WaitUntilCurrentW
 #ifndef SKIP_TFC_BASED_TESTS
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_WaitUntilCurrentWorkPackageHasBeenExecuted_otherwork)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   EnterUUTWork();
 
@@ -1938,9 +1938,9 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_WaitUntilCurrentW
   // allow WQ thread to block on the sleep in the work package
   Thread::Sleep_ms(DELAY_TIME_MS + 1);
 
-  TimePoint const startTime(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const startTime(TimePoint::FromSystemClock(ConditionVariable::clockID));
   uut.WaitUntilCurrentWorkPackageHasBeenExecuted(this);
-  TimePoint const endTime(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const endTime(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   TimeSpan const duration = endTime - startTime;
 
@@ -1954,7 +1954,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_WaitUntilCurrentW
 #ifndef SKIP_TFC_BASED_TESTS
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_WaitUntilCurrentWorkPackageHasBeenExecuted_nowait)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   EnterUUTWork();
 
@@ -1966,9 +1966,9 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_WaitUntilCurrentW
   // allow WQ thread to block on the sleep in the work package
   Thread::Sleep_ms(DELAY_TIME_MS + 1);
 
-  TimePoint const startTime(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const startTime(TimePoint::FromSystemClock(ConditionVariable::clockID));
   uut.WaitUntilCurrentWorkPackageHasBeenExecuted(&owner1);
-  TimePoint const endTime(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const endTime(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   TimeSpan const duration = endTime - startTime;
 
@@ -1981,7 +1981,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_WaitUntilCurrentW
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_WaitUntilCurrentWorkPackageHasBeenExecuted_WQcontext)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_WaitUntilCurrentWorkPackageHasBeenExecuted_WQcontext)::WQ_WaitUntilCurrentWorkPackageHasBeenExecuted,
@@ -2010,7 +2010,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_WaitUntilCurrentW
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_IsAnyInQueue_dyn)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   ASSERT_FALSE(uut.IsAnyInQueue(nullptr));
   ASSERT_FALSE(uut.IsAnyInQueue(&owner1));
@@ -2048,7 +2048,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_IsAnyInQueue_dyn)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_IsAnyInQueue_stat)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   DeferredWorkPackage dwp1(this, 0,
                            std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_IsAnyInQueue_stat)::WQ_PushToCheckList,
@@ -2090,7 +2090,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_IsAnyInQueue_stat
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Work_Restart)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Work_Restart)::WQ_PushToCheckList,
@@ -2133,7 +2133,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Work_Restart)
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Work_Cancel_Restart)
 {
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uint32_t const expectedChecklist[6] = {1, 2, 3, 4, 5, 6};
 
@@ -2189,7 +2189,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, InsertionWithShorterDelay)
 {
   EnterUUTWork();
 
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, InsertionWithShorterDelay)::WQ_PushToCheckList,
@@ -2240,7 +2240,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, RemoveFirstDeferredWorkPac
   // this test checks that the wake-up time is recalculated when the first work package is removed
   EnterUUTWork();
 
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, RemoveFirstDeferredWorkPackageFromQueue)::WQ_PushToCheckList,
@@ -2290,7 +2290,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, DeferredWPbecomesRunnableD
 {
   EnterUUTWork();
 
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, DeferredWPbecomesRunnableDuringWPExec)::WQ_PushToCheckList,
@@ -2328,7 +2328,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_DeathTestsF, EnqueuedStaticDWPDest
 {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
 
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   auto spDWP1 = std::unique_ptr<DeferredWorkPackage>(new DeferredWorkPackage(this, 0,
                                                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_DeathTestsF, EnqueuedStaticDWPDestroyed)::WQ_PushToCheckList,
@@ -2364,7 +2364,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, UseIDeferredWorkQueue)
   using gpcc::execution::async::IDeferredWorkQueue;
   IDeferredWorkQueue& idwq = static_cast<IDeferredWorkQueue&>(uut);
 
-  TimePoint const now(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   auto spWP1 = WorkPackage::CreateDynamic(this, 0,
                                           std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, UseIDeferredWorkQueue)::WQ_PushToCheckList,
