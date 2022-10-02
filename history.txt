@@ -182,7 +182,15 @@ Next to do:
 
 History:
 ===============================================================================
-2022-09-27
+2022-10-02
+- Revised gpcc::time:
+  - Added coarse versions of realtime and monotonic clocks.
+  - ConditionVariable::clockID indicates which clock is used by class ConditionVariable to specify the timeout for a
+    time limited wait.
+  - Classes using time limited wait use ConditionVariable::clockID to read the proper clock when calculating the
+    timeout.
+
+2022-09-27 (Release Version V 2.0.0)
 - Moved cmake files into gpcc/cmake
 
 2022-09-26
@@ -210,7 +218,7 @@ History:
 - Enhanced cmake files
 - Fixed includes in time/chibios_arm
 
-2022-06-09
+2022-06-09 (Release Version 1.0.0)
 - Enhanced OSAL for ChibiOS/RT: Access to ChibiOS internals replaced by call to API function
 - Bugfix: Selection of 32/64bit specific code in RODACLIClientBase.cpp
 
