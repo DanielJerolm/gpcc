@@ -182,6 +182,10 @@ Next to do:
 
 History:
 ===============================================================================
+2022-10-03
+- Reviewed gpcc/src/time/Test_clock.cpp
+- Reviewed gpcc/src/time/Test_TimePoint.cpp
+
 2022-10-02
 - Revised gpcc::time:
   - Added coarse versions of realtime and monotonic clocks.
