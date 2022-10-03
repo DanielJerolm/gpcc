@@ -51,9 +51,9 @@ uint32_t GetPrecision_ns(Clocks const clock) noexcept
 
   switch (clock)
   {
-    case Clocks::realtime:         platform_SYSTIME_getres(&ts); break;
+    case Clocks::realtimeCoarse:   platform_SYSTIME_getres(&ts); break;
     case Clocks::realtimePrecise:  platform_SYSTIME_getres_precise(&ts); break;
-    case Clocks::monotonic:        platform_SYSTIME_getres_monotonic(&ts); break;
+    case Clocks::monotonicCoarse:  platform_SYSTIME_getres_monotonic(&ts); break;
     case Clocks::monotonicPrecise: platform_SYSTIME_getres_monotonic_precise(&ts); break;
   }
 
@@ -92,9 +92,9 @@ void GetTime(Clocks const clock, struct ::timespec& ts) noexcept
 {
   switch (clock)
   {
-    case Clocks::realtime:         platform_SYSTIME_gettime(&ts); break;
+    case Clocks::realtimeCoarse:   platform_SYSTIME_gettime(&ts); break;
     case Clocks::realtimePrecise:  platform_SYSTIME_gettime_precise(&ts); break;
-    case Clocks::monotonic:        platform_SYSTIME_gettime_monotonic(&ts); break;
+    case Clocks::monotonicCoarse:  platform_SYSTIME_gettime_monotonic(&ts); break;
     case Clocks::monotonicPrecise: platform_SYSTIME_gettime_monotonic_precise(&ts); break;
   }
 

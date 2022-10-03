@@ -31,14 +31,14 @@ using namespace testing;
 
 TEST(gpcc_time_clock_Tests, GetPrecision_ns)
 {
-  uint32_t p = GetPrecision_ns(Clocks::realtime);
+  uint32_t p = GetPrecision_ns(Clocks::realtimeCoarse);
 #if defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64_TFC)
   EXPECT_EQ(p, 1U);
 #else
   EXPECT_GT(p, 0U);
   EXPECT_LE(p, MS10_in_NS);
 #endif
-  std::cout << "Precision Clocks::realtime (ns): " << p << std::endl;
+  std::cout << "Precision Clocks::realtimeCoarse (ns): " << p << std::endl;
 
   uint32_t p_prec = GetPrecision_ns(Clocks::realtimePrecise);
 #if defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64_TFC)
@@ -50,14 +50,14 @@ TEST(gpcc_time_clock_Tests, GetPrecision_ns)
   EXPECT_LE(p_prec, p);
   std::cout << "Precision Clocks::realtimePrecise (ns): " << p_prec << std::endl;
 
-  p = GetPrecision_ns(Clocks::monotonic);
+  p = GetPrecision_ns(Clocks::monotonicCoarse);
 #if defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64_TFC)
   EXPECT_EQ(p, 1U);
 #else
   EXPECT_GT(p, 0U);
   EXPECT_LE(p, MS10_in_NS);
 #endif
-  std::cout << "Precision Clocks::monotonic (ns): " << p << std::endl;
+  std::cout << "Precision Clocks::monotonicCoarse (ns): " << p << std::endl;
 
   p_prec = GetPrecision_ns(Clocks::monotonicPrecise);
 #if defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64_TFC)
@@ -73,13 +73,13 @@ TEST(gpcc_time_clock_Tests, GetPrecision_ns)
 TEST(gpcc_time_clock_Tests, GetTime_justCall)
 {
   struct timespec ts;
-  GetTime(Clocks::realtime, ts);
-  std::cout << "Clock (Clocks::realtime): " << TimePoint(ts).ToString() << std::endl;
+  GetTime(Clocks::realtimeCoarse, ts);
+  std::cout << "Clock (Clocks::realtimeCoarse): " << TimePoint(ts).ToString() << std::endl;
   GetTime(Clocks::realtimePrecise, ts);
   std::cout << "Clock (Clocks::realtimePrecise): " << TimePoint(ts).ToString() << std::endl;
 
-  GetTime(Clocks::monotonic, ts);
-  std::cout << "Clock (Clocks::monotonic): " << TimePoint(ts).ToString() << std::endl;
+  GetTime(Clocks::monotonicCoarse, ts);
+  std::cout << "Clock (Clocks::monotonicCoarse): " << TimePoint(ts).ToString() << std::endl;
   GetTime(Clocks::monotonicPrecise, ts);
   std::cout << "Clock (Clocks::monotonicPrecise): " << TimePoint(ts).ToString() << std::endl;
 }
@@ -94,7 +94,7 @@ TEST(gpcc_time_clock_Tests, GetTime_Validate_Realtime)
   struct timespec ts_fromUUT;
   struct timespec ts_reference;
 
-  ASSERT_NO_THROW(GetTime(Clocks::realtime, ts_fromUUT));
+  ASSERT_NO_THROW(GetTime(Clocks::realtimeCoarse, ts_fromUUT));
   ASSERT_EQ(0, clock_gettime(CLOCK_REALTIME_COARSE, &ts_reference));
 
   TimePoint const TP_from_UUT(ts_fromUUT);
@@ -102,7 +102,7 @@ TEST(gpcc_time_clock_Tests, GetTime_Validate_Realtime)
   TimeSpan const difference = TP_Reference - TP_from_UUT;
 
   int64_t const difference_ns = difference.ns();
-  std::cout << "Delta (Clocks::realtime) (ns): " << difference_ns << std::endl;
+  std::cout << "Delta (Clocks::realtimeCoarse) (ns): " << difference_ns << std::endl;
   EXPECT_GE(difference_ns, 0);
   EXPECT_LT(difference_ns, MS10_in_NS);
 }
@@ -134,7 +134,7 @@ TEST(gpcc_time_clock_Tests, GetTime_Validate_Monotonic)
   struct timespec ts_fromUUT;
   struct timespec ts_reference;
 
-  ASSERT_NO_THROW(GetTime(Clocks::monotonic, ts_fromUUT));
+  ASSERT_NO_THROW(GetTime(Clocks::monotonicCoarse, ts_fromUUT));
   ASSERT_EQ(0, clock_gettime(CLOCK_MONOTONIC_COARSE, &ts_reference));
 
   TimePoint const TP_from_UUT(ts_fromUUT);
@@ -142,7 +142,7 @@ TEST(gpcc_time_clock_Tests, GetTime_Validate_Monotonic)
   TimeSpan const difference = TP_Reference - TP_from_UUT;
 
   int64_t const difference_ns = difference.ns();
-  std::cout << "Delta (Clocks::monotonic) (ns): " << difference_ns << std::endl;
+  std::cout << "Delta (Clocks::monotonicCoarse) (ns): " << difference_ns << std::endl;
   EXPECT_GE(difference_ns, 0);
   EXPECT_LT(difference_ns, MS10_in_NS);
 }
@@ -175,7 +175,7 @@ TEST(gpcc_time_clock_Tests, GetTime_DifferenceRealtimeClocks)
   struct timespec ts_realtime;
   struct timespec ts_realtimePrecise;
 
-  GetTime(Clocks::realtime, ts_realtime);
+  GetTime(Clocks::realtimeCoarse, ts_realtime);
   GetTime(Clocks::realtimePrecise, ts_realtimePrecise);
 
   TimePoint const TP_realtime(ts_realtime);
@@ -183,7 +183,7 @@ TEST(gpcc_time_clock_Tests, GetTime_DifferenceRealtimeClocks)
   TimeSpan const difference = TP_realtimePrecise - TP_realtime;
 
   int64_t const difference_ns = difference.ns();
-  std::cout << "Delta (Clocks::realtimePrecise vs Clocks::realtime) (ns): " << difference_ns << std::endl;
+  std::cout << "Delta (Clocks::realtimePrecise vs Clocks::realtimeCoarse) (ns): " << difference_ns << std::endl;
 
 #if defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64_TFC)
   EXPECT_TRUE(difference_ns == 0);
@@ -198,7 +198,7 @@ TEST(gpcc_time_clock_Tests, GetTime_DifferenceMonotonicClocks)
   struct timespec ts_monotonic;
   struct timespec ts_monotonicPrecise;
 
-  GetTime(Clocks::monotonic, ts_monotonic);
+  GetTime(Clocks::monotonicCoarse, ts_monotonic);
   GetTime(Clocks::monotonicPrecise, ts_monotonicPrecise);
 
   TimePoint const TP_monotonic(ts_monotonic);
@@ -206,7 +206,7 @@ TEST(gpcc_time_clock_Tests, GetTime_DifferenceMonotonicClocks)
   TimeSpan const difference = TP_monotonicPrecise - TP_monotonic;
 
   int64_t const difference_ns = difference.ns();
-  std::cout << "Delta (Clocks::monotonicPrecise vs Clocks::monotonic) (ns): " << difference_ns << std::endl;
+  std::cout << "Delta (Clocks::monotonicPrecise vs Clocks::monotonicCoarse) (ns): " << difference_ns << std::endl;
 
 #if defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64_TFC)
   EXPECT_TRUE(difference_ns == 0);
@@ -237,7 +237,7 @@ TEST(gpcc_time_clock_Tests, GetTime_Realtime_PreciseAlwaysLargerThanCoarse)
     do
     {
       ++innerCycles;
-      GetTime(Clocks::realtime, ts_realtime);
+      GetTime(Clocks::realtimeCoarse, ts_realtime);
       GetTime(Clocks::realtimePrecise, ts_realtimePrecise);
 
       TP_realtime = ts_realtime;
@@ -289,7 +289,7 @@ TEST(gpcc_time_clock_Tests, GetTime_Monotonic_PreciseAlwaysLargerThanCoarse)
     do
     {
       ++innerCycles;
-      GetTime(Clocks::monotonic, ts_realtime);
+      GetTime(Clocks::monotonicCoarse, ts_realtime);
       GetTime(Clocks::monotonicPrecise, ts_realtimePrecise);
 
       TP_realtime = ts_realtime;

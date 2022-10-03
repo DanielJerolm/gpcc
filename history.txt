@@ -185,6 +185,8 @@ History:
 2022-10-03
 - Reviewed gpcc/src/time/Test_clock.cpp
 - Reviewed gpcc/src/time/Test_TimePoint.cpp
+- Renamed Clocks::monotonic to Clocks::monotonicCoarse and Clocks::realtime to Clocks::realtimeCoarse to
+  ensure that existing code is updated and uses the proper clock.
 
 2022-10-02
 - Revised gpcc::time:

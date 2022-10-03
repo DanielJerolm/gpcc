@@ -135,7 +135,7 @@ TEST(gpcc_time_TimePoint_Tests, FromSystemClock_Clock_RealtimeCoarse)
   // Test-case skipped if TFC is present.
   // Rationale: No relationship between emulated clock and system clock
 
-  TimePoint uut = TimePoint::FromSystemClock(Clocks::realtime);
+  TimePoint uut = TimePoint::FromSystemClock(Clocks::realtimeCoarse);
 
   struct timespec ref;
   int const ret = clock_gettime(CLOCK_REALTIME_COARSE, &ref);
@@ -145,7 +145,7 @@ TEST(gpcc_time_TimePoint_Tests, FromSystemClock_Clock_RealtimeCoarse)
   TimeSpan const difference = TP_Reference - uut;
 
   int64_t const difference_ns = difference.ns();
-  std::cout << "Delta (Clocks::realtime) (ns): " << difference_ns << std::endl;
+  std::cout << "Delta (Clocks::realtimeCoarse) (ns): " << difference_ns << std::endl;
   EXPECT_GE(difference_ns, 0);
   EXPECT_LT(difference_ns, MS10_in_NS);
 }
@@ -164,7 +164,7 @@ TEST(gpcc_time_TimePoint_Tests, FromSystemClock_Clock_RealtimePrecise)
   TimeSpan const difference = TP_Reference - uut;
 
   int64_t const difference_ns = difference.ns();
-  std::cout << "Delta (Clocks::realtime) (ns): " << difference_ns << std::endl;
+  std::cout << "Delta (Clocks::realtimeCoarse) (ns): " << difference_ns << std::endl;
   EXPECT_GE(difference_ns, 0);
   EXPECT_LT(difference_ns, MS10_in_NS);
 }
@@ -178,7 +178,7 @@ TEST(gpcc_time_TimePoint_Tests, FromSystemClock_Clock_MonotonicCoarse)
   // Test-case skipped if TFC is present.
   // Rationale: No relationship between emulated clock and system clock
 
-  TimePoint uut = TimePoint::FromSystemClock(Clocks::monotonic);
+  TimePoint uut = TimePoint::FromSystemClock(Clocks::monotonicCoarse);
 
   struct timespec ref;
   int const ret = clock_gettime(CLOCK_MONOTONIC_COARSE, &ref);
@@ -188,7 +188,7 @@ TEST(gpcc_time_TimePoint_Tests, FromSystemClock_Clock_MonotonicCoarse)
   TimeSpan const difference = TP_Reference - uut;
 
   int64_t const difference_ns = difference.ns();
-  std::cout << "Delta (Clocks::realtime) (ns): " << difference_ns << std::endl;
+  std::cout << "Delta (Clocks::realtimeCoarse) (ns): " << difference_ns << std::endl;
   EXPECT_GE(difference_ns, 0);
   EXPECT_LT(difference_ns, MS10_in_NS);
 }
@@ -207,7 +207,7 @@ TEST(gpcc_time_TimePoint_Tests, FromSystemClock_Clock_MonotonicPrecise)
   TimeSpan const difference = TP_Reference - uut;
 
   int64_t const difference_ns = difference.ns();
-  std::cout << "Delta (Clocks::realtime) (ns): " << difference_ns << std::endl;
+  std::cout << "Delta (Clocks::realtimeCoarse) (ns): " << difference_ns << std::endl;
   EXPECT_GE(difference_ns, 0);
   EXPECT_LT(difference_ns, MS10_in_NS);
 }
@@ -789,9 +789,9 @@ TEST(gpcc_time_TimePoint_Tests, OperatorNotEqual)
 #ifndef SKIP_LOAD_DEPENDENT_TESTS
 TEST(gpcc_time_TimePoint_Tests, LatchSystemClock_Clock_Realtime)
 {
-  TimePoint uut1 = TimePoint::FromSystemClock(Clocks::realtime);
+  TimePoint uut1 = TimePoint::FromSystemClock(Clocks::realtimeCoarse);
   TimePoint uut2;
-  uut2.LatchSystemClock(Clocks::realtime);
+  uut2.LatchSystemClock(Clocks::realtimeCoarse);
 
   TimeSpan const delta = uut2 - uut1;
 
@@ -802,9 +802,9 @@ TEST(gpcc_time_TimePoint_Tests, LatchSystemClock_Clock_Realtime)
 #ifndef SKIP_LOAD_DEPENDENT_TESTS
 TEST(gpcc_time_TimePoint_Tests, LatchSystemClock_Clock_Monotonic)
 {
-  TimePoint uut1 = TimePoint::FromSystemClock(Clocks::monotonic);
+  TimePoint uut1 = TimePoint::FromSystemClock(Clocks::monotonicCoarse);
   TimePoint uut2;
-  uut2.LatchSystemClock(Clocks::monotonic);
+  uut2.LatchSystemClock(Clocks::monotonicCoarse);
 
   TimeSpan const delta = uut2 - uut1;
 

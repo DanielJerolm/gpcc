@@ -112,7 +112,7 @@ class ConditionVariable final
 {
   public:
     /// Clock used by @ref TimeLimitedWait() to specify the timeout.
-    static gpcc::time::Clocks constexpr clockID = gpcc::time::Clocks::monotonic;
+    static gpcc::time::Clocks constexpr clockID = gpcc::time::Clocks::monotonicCoarse;
 
 
     ConditionVariable(void);

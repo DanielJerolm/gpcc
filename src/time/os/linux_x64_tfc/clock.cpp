@@ -77,12 +77,12 @@ void GetTime(Clocks const clock, struct ::timespec& ts) noexcept
 
   switch (clock)
   {
-    case Clocks::realtime:
+    case Clocks::realtimeCoarse:
     case Clocks::realtimePrecise:
       pTFCCore->GetEmulatedRealtime(ts);
       return;
 
-    case Clocks::monotonic:
+    case Clocks::monotonicCoarse:
     case Clocks::monotonicPrecise:
       pTFCCore->GetEmulatedMonotonicTime(ts);
       return;

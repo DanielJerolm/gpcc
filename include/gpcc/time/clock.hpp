@@ -40,11 +40,11 @@ namespace time {
  */
 enum class Clocks
 {
-  realtime,         ///<UTC system time.
-  realtimePrecise,  ///<Like @ref Clocks::realtime, but with highest available precision.
-  monotonic,        ///<Monotonic rising time (not any jumps) starting at some arbitrary point in time.
+  realtimeCoarse,   ///<UTC system time.
+  realtimePrecise,  ///<Like @ref Clocks::realtimeCoarse, but with highest available precision.
+  monotonicCoarse,  ///<Monotonic rising time (not any jumps) starting at some arbitrary point in time.
                     /**<It has no jumps, but may change in frequency (speed) due to NTP on some systems. */
-  monotonicPrecise  ///<Like @ref Clocks::monotonic, but with highest available precision.
+  monotonicPrecise  ///<Like @ref Clocks::monotonicCoarse, but with highest available precision.
 };
 
 uint32_t GetPrecision_ns(Clocks const clock) noexcept;

@@ -42,7 +42,7 @@ StringLogMessageTS::StringLogMessageTS(string::SharedString const & _srcName,
                                        LogType const _type,
                                        std::string const & _msg)
 : LogMessage(_srcName, _type)
-, timestamp(gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::realtime))
+, timestamp(gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::realtimeCoarse))
 , msg(_msg)
 {
 }
@@ -74,7 +74,7 @@ StringLogMessageTS::StringLogMessageTS(string::SharedString const & _srcName,
                                        LogType const _type,
                                        std::string && _msg)
 : LogMessage(_srcName, _type)
-, timestamp(gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::realtime))
+, timestamp(gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::realtimeCoarse))
 , msg(std::move(_msg))
 {
 }

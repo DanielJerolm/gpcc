@@ -20,9 +20,9 @@ static clockid_t ToClockID(Clocks const clock) noexcept
 {
   switch (clock)
   {
-    case Clocks::realtime:         return CLOCK_REALTIME_COARSE;
+    case Clocks::realtimeCoarse:   return CLOCK_REALTIME_COARSE;
     case Clocks::realtimePrecise:  return CLOCK_REALTIME;
-    case Clocks::monotonic:        return CLOCK_MONOTONIC_COARSE;
+    case Clocks::monotonicCoarse:  return CLOCK_MONOTONIC_COARSE;
     case Clocks::monotonicPrecise: return CLOCK_MONOTONIC;
   }
 
