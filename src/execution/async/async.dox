@@ -25,8 +25,7 @@
  * usually executed in FIFO order.
  *
  * _Deferred work packages_ are a special type of work package whose execution will not start before a
- * configurable point in time has been reached on the system's monotonous clock (@ref gpcc::time::Clocks::monotonic).
- * They can be used to implement timeouts or delays.
+ * configurable point in time has been reached. They can be used to implement timeouts or delays.
  *
  * _Deferred work queues_ extend _work queues_ by the capability to execute _deferred work packages_.
  *

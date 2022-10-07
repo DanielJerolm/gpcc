@@ -11,6 +11,7 @@
 #ifdef OS_LINUX_ARM_TFC
 
 #include "src/osal/os/linux_arm_tfc/internal/TimeLimitedThreadBlocker.hpp"
+#include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
@@ -35,6 +36,7 @@ namespace osal {
 namespace internal {
 
 
+using gpcc::osal::ConditionVariable;
 using gpcc::osal::Mutex;
 using gpcc::osal::MutexLocker;
 using gpcc::osal::Thread;
@@ -206,7 +208,7 @@ TEST(gpcc_osal_internal_TimeLimitedThreadBlocker_Tests, Block_AlreadySignaled)
   {
     UnmanagedMutexLocker locker(bigLock);
     uut.Signal();
-    ASSERT_FALSE(uut.Block(dummyMutex, TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(DUMMY_TIMEOUT_MS)));
+    ASSERT_FALSE(uut.Block(dummyMutex, TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(DUMMY_TIMEOUT_MS)));
   }
 
   EXPECT_FALSE(dummyMutex.TryLock());
@@ -224,8 +226,8 @@ TEST(gpcc_osal_internal_TimeLimitedThreadBlocker_Tests, Block_AlreadySignaled2)
   {
     UnmanagedMutexLocker locker(bigLock);
     uut.Signal();
-    ASSERT_FALSE(uut.Block(dummyMutex, TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(DUMMY_TIMEOUT_MS)));
-    ASSERT_FALSE(uut.Block(dummyMutex, TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(DUMMY_TIMEOUT_MS)));
+    ASSERT_FALSE(uut.Block(dummyMutex, TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(DUMMY_TIMEOUT_MS)));
+    ASSERT_FALSE(uut.Block(dummyMutex, TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(DUMMY_TIMEOUT_MS)));
   }
 
   EXPECT_FALSE(dummyMutex.TryLock());
@@ -242,7 +244,7 @@ TEST(gpcc_osal_internal_TimeLimitedThreadBlocker_Tests, Block_AlreadySignaledTim
 
   {
     UnmanagedMutexLocker locker(bigLock);
-    ASSERT_TRUE(uut.Block(dummyMutex, TimePoint::FromSystemClock(Clocks::monotonic)));
+    ASSERT_TRUE(uut.Block(dummyMutex, TimePoint::FromSystemClock(ConditionVariable::clockID)));
   }
 
   EXPECT_FALSE(dummyMutex.TryLock());
@@ -259,8 +261,8 @@ TEST(gpcc_osal_internal_TimeLimitedThreadBlocker_Tests, Block_AlreadySignaledTim
 
   {
     UnmanagedMutexLocker locker(bigLock);
-    ASSERT_TRUE(uut.Block(dummyMutex, TimePoint::FromSystemClock(Clocks::monotonic)));
-    ASSERT_TRUE(uut.Block(dummyMutex, TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(DUMMY_TIMEOUT_MS)));
+    ASSERT_TRUE(uut.Block(dummyMutex, TimePoint::FromSystemClock(ConditionVariable::clockID)));
+    ASSERT_TRUE(uut.Block(dummyMutex, TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(DUMMY_TIMEOUT_MS)));
   }
 
   EXPECT_FALSE(dummyMutex.TryLock());
@@ -278,7 +280,7 @@ TEST(gpcc_osal_internal_TimeLimitedThreadBlocker_Tests, Block_SignaledPlusTimeou
   {
     UnmanagedMutexLocker locker(bigLock);
     uut.Signal();
-    ASSERT_FALSE(uut.Block(dummyMutex, TimePoint::FromSystemClock(Clocks::monotonic)));
+    ASSERT_FALSE(uut.Block(dummyMutex, TimePoint::FromSystemClock(ConditionVariable::clockID)));
   }
 
   EXPECT_FALSE(dummyMutex.TryLock());
@@ -296,8 +298,8 @@ TEST(gpcc_osal_internal_TimeLimitedThreadBlocker_Tests, Block_SignaledPlusTimeou
   {
     UnmanagedMutexLocker locker(bigLock);
     uut.Signal();
-    ASSERT_FALSE(uut.Block(dummyMutex, TimePoint::FromSystemClock(Clocks::monotonic)));
-    ASSERT_FALSE(uut.Block(dummyMutex, TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(DUMMY_TIMEOUT_MS)));
+    ASSERT_FALSE(uut.Block(dummyMutex, TimePoint::FromSystemClock(ConditionVariable::clockID)));
+    ASSERT_FALSE(uut.Block(dummyMutex, TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(DUMMY_TIMEOUT_MS)));
   }
 
   EXPECT_FALSE(dummyMutex.TryLock());
@@ -312,7 +314,7 @@ TEST(gpcc_osal_internal_TimeLimitedThreadBlocker_Tests, Block_NoTimeout_WithMute
 
   // start thread
   t.Start(std::bind(&threadEntryA, &uut,
-                    TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(SLEEPTIME_MS * 2)),
+                    TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(SLEEPTIME_MS * 2)),
           Thread::SchedPolicy::Other, 0, Thread::GetDefaultStackSize());
   ON_SCOPE_EXIT(JoinThread) { t.Join(); };
   ON_SCOPE_EXIT(CancelThread) { t.Cancel(); };
@@ -340,7 +342,7 @@ TEST(gpcc_osal_internal_TimeLimitedThreadBlocker_Tests, Block_NoTimeout_WithoutM
 
   // start thread
   t.Start(std::bind(&threadEntryB, &uut,
-                    TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(SLEEPTIME_MS * 2)),
+                    TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(SLEEPTIME_MS * 2)),
           Thread::SchedPolicy::Other, 0, Thread::GetDefaultStackSize());
   ON_SCOPE_EXIT(JoinThread) { t.Join(); };
   ON_SCOPE_EXIT(CancelThread) { t.Cancel(); };
@@ -368,7 +370,7 @@ TEST(gpcc_osal_internal_TimeLimitedThreadBlocker_Tests, Block_Timeout_WithMutexU
 
   // start thread
   t.Start(std::bind(&threadEntryA, &uut,
-                    TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(SLEEPTIME_MS)),
+                    TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(SLEEPTIME_MS)),
           Thread::SchedPolicy::Other, 0, Thread::GetDefaultStackSize());
   ON_SCOPE_EXIT(JoinThread) { t.Join(); };
   ON_SCOPE_EXIT(CancelThread) { t.Cancel(); };
@@ -396,7 +398,7 @@ TEST(gpcc_osal_internal_TimeLimitedThreadBlocker_Tests, Block_Timeout_WithoutMut
 
   // start thread
   t.Start(std::bind(&threadEntryB, &uut,
-                    TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(SLEEPTIME_MS)),
+                    TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(SLEEPTIME_MS)),
           Thread::SchedPolicy::Other, 0, Thread::GetDefaultStackSize());
   ON_SCOPE_EXIT(JoinThread) { t.Join(); };
   ON_SCOPE_EXIT(CancelThread) { t.Cancel(); };
@@ -422,7 +424,7 @@ TEST(gpcc_osal_internal_TimeLimitedThreadBlocker_Tests, Block_DeferredCancellati
 
   // start thread
   t.Start(std::bind(&threadEntryA, &uut,
-                    TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(SLEEPTIME_MS * 2)),
+                    TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(SLEEPTIME_MS * 2)),
           Thread::SchedPolicy::Other, 0, Thread::GetDefaultStackSize());
   ON_SCOPE_EXIT(JoinThread) { t.Join(); };
   ON_SCOPE_EXIT(CancelThread) { t.Cancel(); };
@@ -443,7 +445,7 @@ TEST(gpcc_osal_internal_TimeLimitedThreadBlocker_Tests, Block_DeferredCancellati
 
   // start thread
   t.Start(std::bind(&threadEntryB, &uut,
-                    TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(SLEEPTIME_MS * 2)),
+                    TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::ms(SLEEPTIME_MS * 2)),
           Thread::SchedPolicy::Other, 0, Thread::GetDefaultStackSize());
   ON_SCOPE_EXIT(JoinThread) { t.Join(); };
   ON_SCOPE_EXIT(CancelThread) { t.Cancel(); };

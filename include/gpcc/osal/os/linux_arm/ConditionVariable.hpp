@@ -13,6 +13,7 @@
 #ifndef CONDITIONVARIABLE_HPP_201702042220
 #define CONDITIONVARIABLE_HPP_201702042220
 
+#include <gpcc/time/clock.hpp>
 #include <pthread.h>
 
 namespace gpcc {
@@ -110,6 +111,10 @@ class Mutex;
 class ConditionVariable final
 {
   public:
+    /// Clock used by @ref TimeLimitedWait() to specify the timeout.
+    static gpcc::time::Clocks constexpr clockID = gpcc::time::Clocks::monotonicPrecise;
+
+
     ConditionVariable(void);
     ConditionVariable(ConditionVariable const &) = delete;
     ConditionVariable(ConditionVariable &&) = delete;

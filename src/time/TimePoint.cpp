@@ -115,14 +115,9 @@ TimePoint::TimePoint(time_t const sec, int32_t const nsec)
  * ---
  *
  * \param clock_id
- * ID of the system clock whose time shall be used to initialize the @ref TimePoint instance.\n
- * The clocks available depend on the underlying platform/operating system.\n
- * Most commonly used ones: (there may be more)\n
- * - @ref Clocks::realtime (System time)\n
- * - @ref Clocks::monotonic (Monotonic rising time (not any jumps) starting at some arbitrary point in time)
+ * ID of the system clock whose time shall be used to initialize the @ref TimePoint instance.
  * \return
- * A @ref TimePoint instance initialized with the current time fetched from the system clock specified by
- * parameter clock_id.
+ * A @ref TimePoint instance initialized with the current time read from the clock specified by parameter `clock_id`.
  */
 TimePoint TimePoint::FromSystemClock(Clocks const clock_id)
 {
@@ -303,7 +298,7 @@ TimeSpan TimePoint::operator - (TimePoint const & rhv) const
   if (Compiler::OverflowAwareSub(ts.tv_sec, rhv.ts.tv_sec, &dsec))
     throw std::overflow_error("TimePoint::operator-(Timepoint): Overflow subtracting seconds");
 
-  // note: this check is not precise
+  // note: this check is not precise, but safe
   if ((dsec > ((std::numeric_limits<int64_t>::max() / NSEC_PER_SEC) - 1)) ||
       (dsec < ((std::numeric_limits<int64_t>::min() / NSEC_PER_SEC) + 1)))
     throw std::overflow_error("TimePoint::operator-(Timepoint): Overflow in final result");
@@ -574,11 +569,7 @@ bool TimePoint::operator != (TimePoint const & rhv) const noexcept
  * ---
  *
  * \param clock_id
- * ID of the clock whose time shall be retrieved.\n
- * The clocks available depend on the underlying platform/operating system.\n
- * Most commonly used ones: (there may be more)\n
- * - @ref Clocks::realtime (System time)\n
- * - @ref Clocks::monotonic (Monotonic rising time (not any jumps) starting at some arbitrary point in time)
+ * ID of the clock whose time shall be read.
  */
 void TimePoint::LatchSystemClock(Clocks const clock_id)
 {

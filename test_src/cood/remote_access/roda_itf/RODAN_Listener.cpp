@@ -338,7 +338,7 @@ bool RODAN_Listener::WaitForStateReady(uint32_t const timeout_ms)
   if (state == States::ready)
     return true;
 
-  auto timeout = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonic);
+  auto timeout = gpcc::time::TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID);
   timeout += gpcc::time::TimeSpan::ms(timeout_ms);
 
   while (state != States::ready)
@@ -547,7 +547,7 @@ bool RODAN_Listener::WaitForResponseAvailable(uint32_t const timeout_ms)
   if (!responses.empty())
     return true;
 
-  auto timeout = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonic);
+  auto timeout = gpcc::time::TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID);
   timeout += gpcc::time::TimeSpan::ms(timeout_ms);
 
   while (responses.empty())

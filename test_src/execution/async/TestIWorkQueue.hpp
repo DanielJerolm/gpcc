@@ -15,6 +15,7 @@
 #include <gpcc/execution/async/DeferredWorkQueue.hpp>
 #include <gpcc/execution/async/WorkPackage.hpp>
 #include <gpcc/execution/async/WorkQueue.hpp>
+#include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/Semaphore.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
@@ -45,6 +46,7 @@ using gpcc::execution::async::WorkPackage;
 using gpcc::execution::async::WorkQueue;
 using gpcc::execution::async::DeferredWorkPackage;
 using gpcc::execution::async::DeferredWorkQueue;
+using gpcc::osal::ConditionVariable;
 using gpcc::osal::Thread;
 using gpcc::osal::Semaphore;
 using gpcc::time::TimePoint;
@@ -207,7 +209,7 @@ template <typename T>
 void IWorkQueue_TestsF<T>::WQ_PushToCheckList(uint32_t const checkListValue)
 {
   checkList.push_back(checkListValue);
-  timestampList.push_back(TimePoint::FromSystemClock(Clocks::monotonic));
+  timestampList.push_back(TimePoint::FromSystemClock(ConditionVariable::clockID));
 }
 
 template <typename T>
@@ -216,14 +218,14 @@ void IWorkQueue_TestsF<T>::WQ_RemoveByRefAndPushToCheckList(uint32_t const check
   uut.Remove(*pWP);
 
   checkList.push_back(checkListValue);
-  timestampList.push_back(TimePoint::FromSystemClock(Clocks::monotonic));
+  timestampList.push_back(TimePoint::FromSystemClock(ConditionVariable::clockID));
 }
 
 template <typename T>
 void IWorkQueue_TestsF<T>::WQ_PushToCheckListAndEnqueueSelf(uint32_t const checkListValue1, uint32_t const checkListValue2)
 {
   checkList.push_back(checkListValue1);
-  timestampList.push_back(TimePoint::FromSystemClock(Clocks::monotonic));
+  timestampList.push_back(TimePoint::FromSystemClock(ConditionVariable::clockID));
   uut.Add(WorkPackage::CreateDynamic(this, 0,
                                          std::bind(&IWorkQueue_TestsF<T>::WQ_PushToCheckList, this, checkListValue2)));
 }
@@ -232,7 +234,7 @@ template <typename T>
 void IWorkQueue_TestsF<T>::WQ_PushToCheckListAndEnqueueByRef(uint32_t const checkListValue, WorkPackage* pWP)
 {
   checkList.push_back(checkListValue);
-  timestampList.push_back(TimePoint::FromSystemClock(Clocks::monotonic));
+  timestampList.push_back(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   if (repeats != 0)
   {
@@ -247,7 +249,7 @@ template <typename T>
 void IWorkQueue_TestsF<T>::WQ_PushToCheckListAndInsertAtHeadByRef(uint32_t const checkListValue, WorkPackage* pWP)
 {
   checkList.push_back(checkListValue);
-  timestampList.push_back(TimePoint::FromSystemClock(Clocks::monotonic));
+  timestampList.push_back(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   if (repeats != 0)
   {
@@ -1380,9 +1382,9 @@ TYPED_TEST_P(IWorkQueue_Tests2F, WaitUntilCurrentWorkPackageHasBeenExecuted)
   // allow WQ thread to start
   Thread::Sleep_ms(WAITTIME_MS);
 
-  TimePoint const startTime(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const startTime(TimePoint::FromSystemClock(ConditionVariable::clockID));
   this->uut.WaitUntilCurrentWorkPackageHasBeenExecuted(this);
-  TimePoint const endTime(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const endTime(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   TimeSpan const duration = endTime - startTime;
 
@@ -1404,9 +1406,9 @@ TYPED_TEST_P(IWorkQueue_Tests2F, WaitUntilCurrentWorkPackageHasBeenExecuted_othe
   // allow WQ thread to start
   Thread::Sleep_ms(WAITTIME_MS);
 
-  TimePoint const startTime(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const startTime(TimePoint::FromSystemClock(ConditionVariable::clockID));
   this->uut.WaitUntilCurrentWorkPackageHasBeenExecuted(this);
-  TimePoint const endTime(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const endTime(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   TimeSpan const duration = endTime - startTime;
 
@@ -1427,9 +1429,9 @@ TYPED_TEST_P(IWorkQueue_Tests2F, WaitUntilCurrentWorkPackageHasBeenExecuted_nowa
   // allow WQ thread to start
   Thread::Sleep_ms(WAITTIME_MS);
 
-  TimePoint const startTime(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const startTime(TimePoint::FromSystemClock(ConditionVariable::clockID));
   this->uut.WaitUntilCurrentWorkPackageHasBeenExecuted(&this->owner1);
-  TimePoint const endTime(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const endTime(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   TimeSpan const duration = endTime - startTime;
 
@@ -1526,9 +1528,9 @@ TYPED_TEST_P(IWorkQueue_Tests2F, FlushNonDeferredWorkPackages)
   this->uut.Add(WorkPackage::CreateDynamic(this, 0, std::bind(&FlushNonDeferredWorkPackages::WQ_Sleep, this, WP_SLEEPTIME_MS)));
   this->uut.Add(WorkPackage::CreateDynamic(&this->owner1, 0, std::bind(&FlushNonDeferredWorkPackages::WQ_Sleep, this, WAITTIME_MS)));
 
-  TimePoint const startTime(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const startTime(TimePoint::FromSystemClock(ConditionVariable::clockID));
   this->uut.FlushNonDeferredWorkPackages();
-  TimePoint const endTime(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint const endTime(TimePoint::FromSystemClock(ConditionVariable::clockID));
 
   TimeSpan const duration = endTime - startTime;
 

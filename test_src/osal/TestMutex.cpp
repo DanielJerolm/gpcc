@@ -52,7 +52,7 @@ void* threadEntryA(Mutex* pUUT, Thread* pThread)
 void* threadEntryB(Mutex* pUUT)
 {
   MutexLocker locker(pUUT);
-  otherThreadLocked.LatchSystemClock(Clocks::monotonic);
+  otherThreadLocked.LatchSystemClock(Clocks::monotonicPrecise);
   return nullptr;
 }
 
@@ -63,7 +63,7 @@ void* threadEntryC(Mutex* pUUT)
     Thread::Sleep_ms(SLEEPTIME_MS);
   ON_SCOPE_EXIT(Unlock) { pUUT->Unlock(); };
 
-  otherThreadLocked.LatchSystemClock(Clocks::monotonic);
+  otherThreadLocked.LatchSystemClock(Clocks::monotonicPrecise);
   return nullptr;
 }
 
@@ -163,7 +163,7 @@ TEST(gpcc_osal_Mutex_Tests, BlockOtherThread_ViaLock)
   Thread::Sleep_ms(SLEEPTIME_MS);
 
   // measure start time and unlock uut
-  TimePoint const mainThreadUnlocks = TimePoint::FromSystemClock(Clocks::monotonic);
+  TimePoint const mainThreadUnlocks = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
   ON_SCOPE_EXIT_DISMISS(unlockUUT2);
   uut.Unlock();
 
@@ -197,7 +197,7 @@ TEST(gpcc_osal_Mutex_Tests, BlockOtherThread_ViaTryLock)
   Thread::Sleep_ms(2 * SLEEPTIME_MS);
 
   // measure start time and unlock uut
-  TimePoint const mainThreadUnlocks = TimePoint::FromSystemClock(Clocks::monotonic);
+  TimePoint const mainThreadUnlocks = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
   ON_SCOPE_EXIT_DISMISS(unlockUUT);
   uut.Unlock();
 

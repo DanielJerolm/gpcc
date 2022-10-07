@@ -425,16 +425,16 @@ TEST_F(gpcc_osal_Thread_TestsF, Sleep_ms)
   using namespace gpcc::time;
 
   // test small timespan
-  auto tp1 = TimePoint::FromSystemClock(Clocks::monotonic);
+  auto tp1 = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
   Thread::Sleep_ms(25);
-  auto tp2 = TimePoint::FromSystemClock(Clocks::monotonic);
+  auto tp2 = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
   TimeSpan duration = tp2 - tp1;
   ASSERT_TRUE(duration.ms() >= 25);
 
   // test large timespan
-  tp1 = TimePoint::FromSystemClock(Clocks::monotonic);
+  tp1 = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
   Thread::Sleep_ms(2508);
-  tp2 = TimePoint::FromSystemClock(Clocks::monotonic);
+  tp2 = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
   duration = tp2 - tp1;
   ASSERT_TRUE(duration.ms() >= 2508);
 }
@@ -444,16 +444,16 @@ TEST_F(gpcc_osal_Thread_TestsF, Sleep_ns)
   using namespace gpcc::time;
 
   // test small timespan
-  auto tp1 = TimePoint::FromSystemClock(Clocks::monotonic);
+  auto tp1 = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
   Thread::Sleep_ns(25000000UL);
-  auto tp2 = TimePoint::FromSystemClock(Clocks::monotonic);
+  auto tp2 = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
   TimeSpan duration = tp2 - tp1;
   ASSERT_TRUE(duration.ns() >= 25000000L);
 
   // test large timespan
-  tp1 = TimePoint::FromSystemClock(Clocks::monotonic);
+  tp1 = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
   Thread::Sleep_ns(2508000000UL);
-  tp2 = TimePoint::FromSystemClock(Clocks::monotonic);
+  tp2 = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
   duration = tp2 - tp1;
   ASSERT_TRUE(duration.ns() >= 2508000000L);
 }

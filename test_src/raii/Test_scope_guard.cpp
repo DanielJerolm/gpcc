@@ -243,13 +243,13 @@ TEST(gpcc_raii_scope_guard_Tests, Performance_WithoutDismiss)
   // reference loop without scope guard
   a = 0;
   b = 0;
-  start = TimePoint::FromSystemClock(Clocks::monotonic);
+  start = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
   for (i = 0; i < loops; i++)
   {
     a++;
     b++;
   }
-  stop = TimePoint::FromSystemClock(Clocks::monotonic);
+  stop = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
   TimeSpan const duration_no_scope_gaurd = stop - start;
 
   ASSERT_EQ(loops, a);
@@ -258,7 +258,7 @@ TEST(gpcc_raii_scope_guard_Tests, Performance_WithoutDismiss)
   // loop with scope guard
   a = 0;
   b = 0;
-  start = TimePoint::FromSystemClock(Clocks::monotonic);
+  start = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
   for (i = 0; i < loops; i++)
   {
     ON_SCOPE_EXIT() { a++; };
@@ -269,7 +269,7 @@ TEST(gpcc_raii_scope_guard_Tests, Performance_WithoutDismiss)
       throw std::runtime_error("cancel is true");
     }
   }
-  stop = TimePoint::FromSystemClock(Clocks::monotonic);
+  stop = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
   TimeSpan const duration_with_scope_gaurd = stop - start;
 
   ASSERT_EQ(loops, a);
@@ -295,7 +295,7 @@ TEST(gpcc_raii_scope_guard_Tests, Performance_WithDismiss)
   // reference loop without scope guard
   a = 0;
   b = 0;
-  start = TimePoint::FromSystemClock(Clocks::monotonic);
+  start = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
   for (i = 0; i < loops; i++)
   {
     if ((i % 8) == 0)
@@ -303,7 +303,7 @@ TEST(gpcc_raii_scope_guard_Tests, Performance_WithDismiss)
 
     b++;
   }
-  stop = TimePoint::FromSystemClock(Clocks::monotonic);
+  stop = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
   TimeSpan const duration_no_scope_gaurd = stop - start;
 
   EXPECT_EQ(loops / 8, a);
@@ -312,7 +312,7 @@ TEST(gpcc_raii_scope_guard_Tests, Performance_WithDismiss)
   // loop with scope guard
   a = 0;
   b = 0;
-  start = TimePoint::FromSystemClock(Clocks::monotonic);
+  start = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
   for (i = 0; i < loops; i++)
   {
     ON_SCOPE_EXIT() { a++; };
@@ -325,7 +325,7 @@ TEST(gpcc_raii_scope_guard_Tests, Performance_WithDismiss)
     if ((i % 8) != 0)
       ON_SCOPE_EXIT_DISMISS();
   }
-  stop = TimePoint::FromSystemClock(Clocks::monotonic);
+  stop = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
   TimeSpan const duration_with_scope_gaurd = stop - start;
 
   EXPECT_EQ(loops / 8, a);

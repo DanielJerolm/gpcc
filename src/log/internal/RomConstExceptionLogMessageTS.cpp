@@ -55,7 +55,7 @@ RomConstExceptionLogMessageTS::RomConstExceptionLogMessageTS(string::SharedStrin
 : LogMessage(_srcName, _type)
 , pMsg(_pMsg)
 , ePtr(_ePtr)
-, timestamp(gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::realtime))
+, timestamp(gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::realtimeCoarse))
 {
   if (pMsg == nullptr)
     throw std::invalid_argument("RomConstExceptionLogMessageTS::RomConstExceptionLogMessageTS: !_pMsg");

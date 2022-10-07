@@ -717,7 +717,7 @@ void DeferredWorkQueue::Work(void)
     {
       // deferred work packages ready for execution shall have priority above normal work packages
       if ((pQueueFirst != nullptr) &&
-          (pDeferredQueueFirst->tp <= TimePoint::FromSystemClock(Clocks::monotonic)))
+          (pDeferredQueueFirst->tp <= TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID)))
         timeout = true;
 
       // Clear pOwnerOfCurrentExecutedWP if non-deferred queue is empty and if deferred work package
@@ -737,7 +737,7 @@ void DeferredWorkQueue::Work(void)
         // because pDeferredQueueFirst may have changed while waiting.
         if ((timeout) &&
             (pDeferredQueueFirst != nullptr) &&
-            (pDeferredQueueFirst->tp > TimePoint::FromSystemClock(Clocks::monotonic)))
+            (pDeferredQueueFirst->tp > TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID)))
           timeout = false;
       }
     }

@@ -32,7 +32,7 @@ namespace async {
  * \brief Deferred work package which can be processed by class @ref DeferredWorkQueue.
  *
  * In contrast to class @ref WorkPackage, the execution of this type of work package will be deferred until
- * the monotonic system clock (@ref gpcc::time::Clocks::monotonic) reaches a specific point in time.
+ * the clock specified by @ref gpcc::osal::ConditionVariable::clockID reaches a specific point in time.
  *
  * # Content
  * The deferred work package encapsulates the following:
@@ -40,7 +40,7 @@ namespace async {
  * - A pointer to the owner (originator) of the work package (nullptr = anonymous).
  * - An ID for further identification of @ref DeferredWorkPackage instances on a per-owner basis.
  * - A timestamp specifying the point in time until when execution of the work package shall be deferred.\n
- *   The timestamp refers to the clock @ref gpcc::time::Clocks::monotonic.
+ *   The timestamp refers to the clock specified by @ref gpcc::osal::ConditionVariable::clockID.
  *
  * The owner and the ID are only used for selective removal of work packages from a work queue.
  *
@@ -142,7 +142,7 @@ class DeferredWorkPackage final
     tFunctor const functor;
 
     /// Absolute point in time until when execution of the work package shall be deferred.
-    /** The time point is specified using the monotonous system clock (@ref gpcc::time::Clocks::monotonic). */
+    /** The time point is specified using the clock specified by @ref gpcc::osal::ConditionVariable::clockID. */
     time::TimePoint tp;
 
     /// Pointer to next @ref DeferredWorkPackage in a work queue.

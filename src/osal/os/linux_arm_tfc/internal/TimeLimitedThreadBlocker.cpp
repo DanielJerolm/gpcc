@@ -135,8 +135,8 @@ void TimeLimitedThreadBlocker::SignalTimeout(void)
  * The referenced _unmanaged_ mutex is guaranteed to be re-locked before this method returns (either
  * normally, due to an timeout condition, due to an exception, or due to deferred thread cancellation).
  * \param _absTimeout
- * Timepoint when the timeout expires. This must be an absolute point in time specified via
- * @ref gpcc::time::Clocks::monotonic.
+ * Timepoint when the timeout expires.\n
+ * The time must be specified using the clock @ref ConditionVariable::clockID.
  * \return
  * true = timeout\n
  * false = signaled
@@ -202,8 +202,8 @@ bool TimeLimitedThreadBlocker::Block(Mutex & mutexToBeUnlocked, gpcc::time::Time
  * ---
  *
  * \param _absTimeout
- * Timepoint when the timeout expires. This must be an absolute point in time specified via
- * @ref gpcc::time::Clocks::monotonic.
+ * Timepoint when the timeout expires.\n
+ * The time must be specified using the clock @ref ConditionVariable::clockID.
  * \return
  * true = timeout\n
  * false = signaled

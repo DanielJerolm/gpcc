@@ -86,7 +86,7 @@ bool WaitUntilStoppedHelper::WaitUntilStopped(gpcc::time::TimeSpan const & timeo
 
   osal::MutexLocker mutexLocker(mutex);
 
-  time::TimePoint const absTimeout = time::TimePoint::FromSystemClock(time::Clocks::monotonic) + timeout;
+  time::TimePoint const absTimeout = time::TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID) + timeout;
   while (state != States::stopped)
   {
     if (state_Stopped_Entered_ConVar.TimeLimitedWait(mutex, absTimeout))
