@@ -81,8 +81,13 @@ TEST(gpcc_osal_Panic_DeathTests, Panic_Macro)
 {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
 
+#if (__GNUC__ >= 8)
   EXPECT_DEATH(PANIC(), ".*PANIC: gpcc/test_src/osal/TestPanic.cpp.*")
     << "Use -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=/ in your CMakeLists.txt to cut-off anything in front of project name";
+#else
+  // -fmacro-prefix-map is not available before GCC 8
+  EXPECT_DEATH(PANIC(), ".*PANIC:.*/gpcc/test_src/osal/TestPanic.cpp.*");
+#endif
 }
 
 TEST(gpcc_osal_Panic_DeathTests, PanicPlusException_Macro)
@@ -90,8 +95,14 @@ TEST(gpcc_osal_Panic_DeathTests, PanicPlusException_Macro)
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
 
   std::runtime_error err("Exception Error Test");
+
+#if (__GNUC__ >= 8)
   EXPECT_DEATH(PANIC_E(err), ".*PANIC: gpcc/test_src/osal/TestPanic.cpp (.*): Exception Error Test.*")
     << "Use -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=/ in your CMakeLists.txt to cut-off anything in front of project name";
+#else
+  // -fmacro-prefix-map is not available before GCC 8
+  EXPECT_DEATH(PANIC_E(err), ".*PANIC:.*/gpcc/test_src/osal/TestPanic.cpp (.*): Exception Error Test.*");
+#endif
 }
 
 TEST(gpcc_osal_Panic_DeathTests, SetPanicHandler)
