@@ -182,7 +182,7 @@ Next to do:
 
 History:
 ===============================================================================
-2022-10-07
+2022-10-07 (Release Version V 2.1.0)
 - Bugfix: GPCC did not compile with GCC 7 or less due to no support for -fmacro-prefix-map until GCC 8.
 
 2022-10-03
