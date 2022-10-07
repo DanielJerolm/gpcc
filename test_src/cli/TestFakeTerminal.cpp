@@ -711,9 +711,9 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_TimeoutNoData)
 {
   char buffer[16];
 
-  gpcc::time::TimePoint start = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonic);
+  gpcc::time::TimePoint start = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonicPrecise);
   size_t retVal = static_cast<gpcc::cli::ITerminal&>(uut).Read(buffer, sizeof(buffer), 500);
-  gpcc::time::TimePoint end = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonic);
+  gpcc::time::TimePoint end = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonicPrecise);
 
   ASSERT_EQ(0U, retVal);
   ASSERT_TRUE((end - start).ms() >= 500);
@@ -728,9 +728,9 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_TimeoutWithData)
 
   uut.Input("A");
 
-  gpcc::time::TimePoint start = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonic);
+  gpcc::time::TimePoint start = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonicPrecise);
   size_t retVal = static_cast<gpcc::cli::ITerminal&>(uut).Read(buffer, sizeof(buffer), 500);
-  gpcc::time::TimePoint end = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonic);
+  gpcc::time::TimePoint end = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonicPrecise);
 
   ASSERT_EQ(1U, retVal);
   ASSERT_EQ('A', buffer[0]);
@@ -743,9 +743,9 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_ZeroTimeoutNoData)
 {
   char buffer[16];
 
-  gpcc::time::TimePoint start = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonic);
+  gpcc::time::TimePoint start = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonicPrecise);
   size_t retVal = static_cast<gpcc::cli::ITerminal&>(uut).Read(buffer, sizeof(buffer), 0);
-  gpcc::time::TimePoint end = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonic);
+  gpcc::time::TimePoint end = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonicPrecise);
 
   ASSERT_EQ(0U, retVal);
 #ifndef SKIP_TFC_BASED_TESTS
@@ -758,9 +758,9 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_ZeroTimeoutWithData)
 
   uut.Input("A");
 
-  gpcc::time::TimePoint start = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonic);
+  gpcc::time::TimePoint start = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonicPrecise);
   size_t retVal = static_cast<gpcc::cli::ITerminal&>(uut).Read(buffer, sizeof(buffer), 0);
-  gpcc::time::TimePoint end = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonic);
+  gpcc::time::TimePoint end = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonicPrecise);
 
   ASSERT_EQ(1U, retVal);
   ASSERT_EQ('A', buffer[0]);

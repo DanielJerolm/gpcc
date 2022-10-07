@@ -13,6 +13,7 @@
 #ifndef CONDITIONVARIABLE_HPP_201702261426
 #define CONDITIONVARIABLE_HPP_201702261426
 
+#include <gpcc/time/clock.hpp>
 #include <vector>
 #include <cstddef>
 
@@ -120,6 +121,10 @@ class ThreadBlockerBase;
 class ConditionVariable final
 {
   public:
+    /// Clock used by @ref TimeLimitedWait() to specify the timeout.
+    static gpcc::time::Clocks constexpr clockID = gpcc::time::Clocks::monotonicPrecise;
+
+
     ConditionVariable(void);
     ConditionVariable(ConditionVariable const &) = delete;
     ConditionVariable(ConditionVariable &&) = delete;

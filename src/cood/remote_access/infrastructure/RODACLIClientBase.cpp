@@ -278,7 +278,7 @@ bool RODACLIClientBase::WaitForRODAItfReady(uint16_t const timeout_ms)
   }
   else
   {
-    auto const timeout = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonic)
+    auto const timeout = gpcc::time::TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID)
                        + gpcc::time::TimeSpan::ms(timeout_ms);
 
     while (state != States::ready)
@@ -1190,7 +1190,7 @@ std::unique_ptr<ResponseBase> RODACLIClientBase::WaitAndFetchResponse(uint32_t c
 {
   if (!spReceivedResponse)
   {
-    auto const timeout = gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::monotonic)
+    auto const timeout = gpcc::time::TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID)
                        + gpcc::time::TimeSpan::ms(timeout_ms);
 
     while (!spReceivedResponse)

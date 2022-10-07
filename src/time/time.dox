@@ -9,12 +9,28 @@
 */
 
 /**
- * @ingroup GPCC
- * @defgroup GPCC_TIME Time
+ * \ingroup GPCC
+ * \defgroup GPCC_TIME Time
  *
  * \brief Portable time representations.
  *
- * The time representations in this group also allow for emulation by
- * [GPCC's Time Flow Control (TFC)](@ref GPCC_TIME_FLOW_CONTROL). If you want to use TFC in your unit tests, then you
- * have to use GPCC's time representations instead of those from `std::chrono` and `std::time`.
+ * # Features
+ * - Cross-platform, portable access to multiple clocks:
+ *   - UTC time
+ *   - Monotonic time
+ *   - There are coarse and high-precision variants of each clock available to fit the characteristics of the
+ *     different platforms supported by GPCC.
+ *   - See @ref gpcc::time::Clocks enum for details.
+ * - Classes to specify points in time and durations:
+ *   - @ref gpcc::time::TimePoint, resolution 1 ns, up to 68 or 8E22 years since epoch (depends on underlying platform)
+ *   - @ref gpcc::time::TimeSpan, resolution 1 ns, up to approx. +/-262 years
+ *   - __100% overflow-aware arithmetic for TimePoint and TimeSpan__
+ *
+ * # gpcc::time vs. std::chrono
+ * @ref gpcc::time and `std::chrono` can both be used side by side.
+ *
+ * However, the clocks offered by GPCC in @ref gpcc::time allow for emulation of the system time by
+ * [GPCC's Time Flow Control (TFC)](@ref GPCC_TIME_FLOW_CONTROL) feature. If you want to use TFC in your unit tests,
+ * then you have to use @ref gpcc::time::GetTime() or @ref gpcc::time::TimePoint::FromSystemClock() to read a clock,
+ * instead of `std::time()` or any of the `now()`-methods offered by the clocks offered by `std::chrono`.
  */

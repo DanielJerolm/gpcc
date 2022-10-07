@@ -11,6 +11,7 @@
 #ifdef OS_LINUX_X64_TFC
 
 #include <gpcc/osal/Thread.hpp>
+#include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/time/TimePoint.hpp>
@@ -304,7 +305,7 @@ void Thread::Sleep_ms(uint32_t const ms)
 
   internal::TimeLimitedThreadBlocker blocker;
   internal::UnmanagedMutexLocker mutexLocker(internal::TFCCore::Get()->GetBigLock());
-  blocker.Block(TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(ms));
+  blocker.Block(TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID) + TimeSpan::ms(ms));
 }
 
 /**
@@ -340,7 +341,7 @@ void Thread::Sleep_ns(uint32_t const ns)
 
   internal::TimeLimitedThreadBlocker blocker;
   internal::UnmanagedMutexLocker mutexLocker(internal::TFCCore::Get()->GetBigLock());
-  blocker.Block(TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ns(ns));
+  blocker.Block(TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID) + TimeSpan::ns(ns));
 }
 
 /**

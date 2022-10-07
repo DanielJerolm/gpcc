@@ -45,7 +45,8 @@ bool TriggerProvider::WaitForThread(uint32_t const timeout_ms)
 
   gpcc::osal::MutexLocker mutexLocker(mutex);
 
-  TimePoint const absTimeout = TimePoint::FromSystemClock(Clocks::monotonic) + TimeSpan::ms(timeout_ms);
+  TimePoint const absTimeout = TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID)
+                             + TimeSpan::ms(timeout_ms);
   while ((!threadInWaitWithTimeout) || (continueFlag))
   {
     if (threadInWaitWithTimeoutSetConvar.TimeLimitedWait(mutex, absTimeout))

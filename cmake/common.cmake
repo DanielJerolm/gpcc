@@ -108,8 +108,10 @@ function(SetRequiredCompilerOptionsAndFeatures target)
     target_compile_options(${target} PUBLIC "$<$<COMPILE_LANGUAGE:CXX>:-fexceptions>")
     target_compile_options(${target} PUBLIC "$<$<COMPILE_LANGUAGE:CXX>:-frtti>")
 
-    # reduce length of file-names in debug messages contained in the libs
-    target_compile_options(${target} PRIVATE -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=gpcc/)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 8.0)
+      # reduce length of file-names in debug messages contained in the libs
+      target_compile_options(${target} PRIVATE -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=gpcc/)
+    endif()
   else()
     message(FATAL_ERROR "Error: Used compiler is not supported by function 'SetRequiredCompilerOptionsAndFeatures'.")
   endif()

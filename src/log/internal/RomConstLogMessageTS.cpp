@@ -46,7 +46,7 @@ RomConstLogMessageTS::RomConstLogMessageTS(string::SharedString const & _srcName
                                            char const * const _pMsg)
 : LogMessage(_srcName, _type)
 , pMsg(_pMsg)
-, timestamp(gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::realtime))
+, timestamp(gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::realtimeCoarse))
 {
   if (pMsg == nullptr)
     throw std::invalid_argument("RomConstLogMessageTS::RomConstLogMessageTS: !_pMsg");

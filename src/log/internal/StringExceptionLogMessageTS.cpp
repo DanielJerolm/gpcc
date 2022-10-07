@@ -51,7 +51,7 @@ StringExceptionLogMessageTS::StringExceptionLogMessageTS(string::SharedString co
                                                          std::exception_ptr const & _ePtr)
 : LogMessage(_srcName, _type)
 , ePtr(_ePtr)
-, timestamp(gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::realtime))
+, timestamp(gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::realtimeCoarse))
 , msg(_msg)
 {
 }
@@ -92,7 +92,7 @@ StringExceptionLogMessageTS::StringExceptionLogMessageTS(string::SharedString co
                                                          std::exception_ptr const & _ePtr)
 : LogMessage(_srcName, _type)
 , ePtr(_ePtr)
-, timestamp(gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::realtime))
+, timestamp(gpcc::time::TimePoint::FromSystemClock(gpcc::time::Clocks::realtimeCoarse))
 , msg(std::move(_msg))
 {
 }

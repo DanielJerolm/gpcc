@@ -244,11 +244,11 @@ TEST_F(gpcc_cli_CLI_withICLINotifiable_TestsF, Login_WrongInput)
    ""
   };
 
-  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   terminal.Input("wrong");
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
-  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
 
   ASSERT_TRUE(terminal.Compare(expected));
   ASSERT_TRUE((end - start).ms() >= 999);
@@ -290,11 +290,11 @@ TEST_F(gpcc_cli_CLI_withICLINotifiable_TestsF, Login_with_password_but_wrong)
   };
 
   uut.SetPassword("PWD");
-  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   terminal.Input("pwd");
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
-  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   ASSERT_TRUE(terminal.Compare(expected));
   ASSERT_TRUE((end - start).ms() >= 999);
 }
@@ -363,11 +363,11 @@ TEST_F(gpcc_cli_CLI_withICLINotifiable_TestsF, OnBeforePasswordPromptThrows)
    ""
   };
 
-  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   terminal.Input("bla");
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
-  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   terminal.Input("login");
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
@@ -391,11 +391,11 @@ TEST_F(gpcc_cli_CLI_withICLINotifiable_TestsF, OnWrongPasswordEnteredThrows)
   };
 
   uut.SetPassword("PWD");
-  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   terminal.Input("pwd");
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
-  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   ASSERT_TRUE(terminal.Compare(expected));
   ASSERT_TRUE((end - start).ms() >= 999);
 }
@@ -415,14 +415,14 @@ TEST_F(gpcc_cli_CLI_withICLINotifiable_TestsF, OnLoginThrows)
    ""
   };
 
-  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   terminal.Input("login");
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
   terminal.Input("login");
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
-  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   ASSERT_TRUE(terminal.Compare(expected));
   ASSERT_TRUE((end - start).ms() > 999);
 }
@@ -487,13 +487,13 @@ TEST_F(gpcc_cli_CLI_withICLINotifiable_TestsF, CtrlC_NotLoggedIn_NoPasswordSetup
    ""
   };
 
-  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   terminal.Input("login");
   terminal.Input_CtrlC();
   terminal.WaitForInputProcessed();
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
-  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   ASSERT_TRUE(terminal.Compare(expected));
   ASSERT_TRUE((end - start).ms() >= 1999);
 }
@@ -513,13 +513,13 @@ TEST_F(gpcc_cli_CLI_withICLINotifiable_TestsF, CtrlC_NotLoggedIn_PasswordSetup)
 
   uut.SetPassword("PWD");
 
-  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   terminal.Input("PWD");
   terminal.Input_CtrlC();
   terminal.WaitForInputProcessed();
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
-  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   ASSERT_TRUE(terminal.Compare(expected));
   ASSERT_TRUE((end - start).ms() >= 1999);
 }
@@ -567,11 +567,11 @@ TEST_F(gpcc_cli_CLI_withICLINotifiable_TestsF, TestTermination_NoKey)
   };
 
   Login();
-  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   terminal.Input("LRC");
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
-  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   ASSERT_TRUE(terminal.Compare(expected));
   ASSERT_TRUE((end - start).ms() >= 999);
 }
@@ -594,13 +594,13 @@ TEST_F(gpcc_cli_CLI_withICLINotifiable_TestsF, TestTermination_RandomUninteresti
   };
 
   Login();
-  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   terminal.Input("LRC");
   terminal.Input_ENTER();
   gpcc::osal::Thread::Sleep_ms(500);
   terminal.Input("ABC");
   terminal.WaitForInputProcessed();
-  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   ASSERT_TRUE(terminal.Compare(expected));
   ASSERT_TRUE((end - start).ms() >= 999);
 }
@@ -624,13 +624,13 @@ TEST_F(gpcc_cli_CLI_withICLINotifiable_TestsF, TestTermination_CTRLC)
   };
 
   Login();
-  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   terminal.Input("LRC");
   terminal.Input_ENTER();
   gpcc::osal::Thread::Sleep_ms(500);
   terminal.Input_CtrlC();
   terminal.WaitForInputProcessed();
-  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
 
   ASSERT_TRUE(terminal.Compare(expected));
   TimeSpan const delta = end - start;
@@ -657,7 +657,7 @@ TEST_F(gpcc_cli_CLI_withICLINotifiable_TestsF, TestTermination_Stop)
   };
 
   Login();
-  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint start(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
   terminal.Input("LRC");
   terminal.Input_ENTER();
   gpcc::osal::Thread::Sleep_ms(500);
@@ -666,7 +666,7 @@ TEST_F(gpcc_cli_CLI_withICLINotifiable_TestsF, TestTermination_Stop)
   StartUUT();
 
   terminal.WaitForInputProcessed();
-  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonic));
+  TimePoint end(TimePoint::FromSystemClock(Clocks::monotonicPrecise));
 
   ASSERT_TRUE(terminal.Compare(expected));
   TimeSpan const delta = end - start;
