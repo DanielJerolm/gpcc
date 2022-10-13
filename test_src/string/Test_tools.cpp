@@ -1558,58 +1558,6 @@ TEST(gpcc_string_tools_Tests, DecimalToU8)
   ASSERT_THROW(DecimalToU8("-1"), std::out_of_range);
   ASSERT_THROW(DecimalToU8("256"), std::out_of_range);
 }
-TEST(gpcc_string_tools_Tests, DecimalToU32)
-{
-  // valid values
-  ASSERT_EQ(0U,          DecimalToU32("0"));
-  ASSERT_EQ(1U,          DecimalToU32("1"));
-  ASSERT_EQ(4294967294U, DecimalToU32("4294967294"));
-  ASSERT_EQ(4294967295U, DecimalToU32("4294967295"));
-
-  ASSERT_EQ(0U,          DecimalToU32(" 0"));
-  ASSERT_EQ(1U,          DecimalToU32(" 1"));
-  ASSERT_EQ(4294967294U, DecimalToU32(" 4294967294"));
-  ASSERT_EQ(4294967295U, DecimalToU32(" 4294967295"));
-
-  // invalid values
-  ASSERT_THROW(DecimalToU32(""),    std::invalid_argument);
-  ASSERT_THROW(DecimalToU32(" "),   std::invalid_argument);
-  ASSERT_THROW(DecimalToU32("3 "),  std::invalid_argument);
-  ASSERT_THROW(DecimalToU32("X7"),  std::invalid_argument);
-  ASSERT_THROW(DecimalToU32("0x0"), std::invalid_argument);
-  ASSERT_THROW(DecimalToU32("0b0"), std::invalid_argument);
-
-  // values out of range
-  ASSERT_THROW(DecimalToU32("-1"),         std::out_of_range);
-  ASSERT_THROW(DecimalToU32("4294967296"), std::out_of_range);
-}
-TEST(gpcc_string_tools_Tests, DecimalToI32)
-{
-  // valid values
-  ASSERT_EQ(0,           DecimalToI32("0"));
-  ASSERT_EQ(1,           DecimalToI32("1"));
-  ASSERT_EQ(-1,          DecimalToI32("-1"));
-  ASSERT_EQ(2147483647,  DecimalToI32("2147483647"));
-  ASSERT_EQ(-2147483648, DecimalToI32("-2147483648"));
-
-  ASSERT_EQ(0,           DecimalToI32(" 0"));
-  ASSERT_EQ(1,           DecimalToI32(" 1"));
-  ASSERT_EQ(-1,          DecimalToI32(" -1"));
-  ASSERT_EQ(2147483647,  DecimalToI32(" 2147483647"));
-  ASSERT_EQ(-2147483648, DecimalToI32(" -2147483648"));
-
-  // invalid values
-  ASSERT_THROW(DecimalToI32(""),    std::invalid_argument);
-  ASSERT_THROW(DecimalToI32(" "),   std::invalid_argument);
-  ASSERT_THROW(DecimalToI32("3 "),  std::invalid_argument);
-  ASSERT_THROW(DecimalToI32("X7"),  std::invalid_argument);
-  ASSERT_THROW(DecimalToI32("0x0"), std::invalid_argument);
-  ASSERT_THROW(DecimalToI32("0b0"), std::invalid_argument);
-
-  // values out of range
-  ASSERT_THROW(DecimalToI32("2147483648"),  std::out_of_range);
-  ASSERT_THROW(DecimalToI32("-2147483649"), std::out_of_range);
-}
 TEST(gpcc_string_tools_Tests, AnyNumberToU8)
 {
   ASSERT_EQ(12,  AnyNumberToU8("0xC"));
@@ -1707,6 +1655,79 @@ TEST(gpcc_string_tools_Tests, AnyStringToU8)
   ASSERT_THROW(AnyStringToU8("256"), std::out_of_range);
   ASSERT_THROW(AnyStringToU8("55B"), std::invalid_argument);
 }
+TEST(gpcc_string_tools_Tests, TwoDigitHexToU8)
+{
+  EXPECT_EQ(  0U, TwoDigitHexToU8("00"));
+  EXPECT_EQ(  1U, TwoDigitHexToU8("01"));
+  EXPECT_EQ( 16U, TwoDigitHexToU8("10"));
+  EXPECT_EQ( 10U, TwoDigitHexToU8("0A"));
+  EXPECT_EQ( 10U, TwoDigitHexToU8("0a"));
+  EXPECT_EQ(240U, TwoDigitHexToU8("F0"));
+  EXPECT_EQ(240U, TwoDigitHexToU8("f0"));
+  EXPECT_EQ(255U, TwoDigitHexToU8("FF"));
+  EXPECT_EQ(255U, TwoDigitHexToU8("ff"));
+
+  EXPECT_THROW(TwoDigitHexToU8(""), std::invalid_argument);
+  EXPECT_THROW(TwoDigitHexToU8(" 0"), std::invalid_argument);
+  EXPECT_THROW(TwoDigitHexToU8("0 "), std::invalid_argument);
+  EXPECT_THROW(TwoDigitHexToU8(" 00"), std::invalid_argument);
+  EXPECT_THROW(TwoDigitHexToU8("00 "), std::invalid_argument);
+  EXPECT_THROW(TwoDigitHexToU8("1"), std::invalid_argument);
+  EXPECT_THROW(TwoDigitHexToU8("123"), std::invalid_argument);
+  EXPECT_THROW(TwoDigitHexToU8("G0"), std::invalid_argument);
+  EXPECT_THROW(TwoDigitHexToU8("-1"), std::invalid_argument);
+  EXPECT_THROW(TwoDigitHexToU8("+1"), std::invalid_argument);
+}
+
+TEST(gpcc_string_tools_Tests, FourDigitHexToU16)
+{
+  EXPECT_EQ(    0U, FourDigitHexToU16("0000"));
+  EXPECT_EQ(    1U, FourDigitHexToU16("0001"));
+  EXPECT_EQ(   16U, FourDigitHexToU16("0010"));
+  EXPECT_EQ(   10U, FourDigitHexToU16("000A"));
+  EXPECT_EQ(   10U, FourDigitHexToU16("000a"));
+  EXPECT_EQ(61440U, FourDigitHexToU16("F000"));
+  EXPECT_EQ(61440U, FourDigitHexToU16("f000"));
+  EXPECT_EQ(65535U, FourDigitHexToU16("FFFF"));
+  EXPECT_EQ(65535U, FourDigitHexToU16("ffff"));
+
+  EXPECT_THROW(FourDigitHexToU16(""), std::invalid_argument);
+  EXPECT_THROW(FourDigitHexToU16(" 000"), std::invalid_argument);
+  EXPECT_THROW(FourDigitHexToU16("000 "), std::invalid_argument);
+  EXPECT_THROW(FourDigitHexToU16(" 0000"), std::invalid_argument);
+  EXPECT_THROW(FourDigitHexToU16("0000 "), std::invalid_argument);
+  EXPECT_THROW(FourDigitHexToU16("1"), std::invalid_argument);
+  EXPECT_THROW(FourDigitHexToU16("12345"), std::invalid_argument);
+  EXPECT_THROW(FourDigitHexToU16("G0"), std::invalid_argument);
+  EXPECT_THROW(FourDigitHexToU16("-100"), std::invalid_argument);
+  EXPECT_THROW(FourDigitHexToU16("+100"), std::invalid_argument);
+}
+
+TEST(gpcc_string_tools_Tests, DecimalToU32)
+{
+  // valid values
+  ASSERT_EQ(0U,          DecimalToU32("0"));
+  ASSERT_EQ(1U,          DecimalToU32("1"));
+  ASSERT_EQ(4294967294U, DecimalToU32("4294967294"));
+  ASSERT_EQ(4294967295U, DecimalToU32("4294967295"));
+
+  ASSERT_EQ(0U,          DecimalToU32(" 0"));
+  ASSERT_EQ(1U,          DecimalToU32(" 1"));
+  ASSERT_EQ(4294967294U, DecimalToU32(" 4294967294"));
+  ASSERT_EQ(4294967295U, DecimalToU32(" 4294967295"));
+
+  // invalid values
+  ASSERT_THROW(DecimalToU32(""),    std::invalid_argument);
+  ASSERT_THROW(DecimalToU32(" "),   std::invalid_argument);
+  ASSERT_THROW(DecimalToU32("3 "),  std::invalid_argument);
+  ASSERT_THROW(DecimalToU32("X7"),  std::invalid_argument);
+  ASSERT_THROW(DecimalToU32("0x0"), std::invalid_argument);
+  ASSERT_THROW(DecimalToU32("0b0"), std::invalid_argument);
+
+  // values out of range
+  ASSERT_THROW(DecimalToU32("-1"),         std::out_of_range);
+  ASSERT_THROW(DecimalToU32("4294967296"), std::out_of_range);
+}
 TEST(gpcc_string_tools_Tests, AnyNumberToU32)
 {
   ASSERT_EQ(0U,           AnyNumberToU32("0x0"));
@@ -1756,6 +1777,7 @@ TEST(gpcc_string_tools_Tests, AnyNumberToU32)
   ASSERT_THROW(AnyNumberToU32("4294967296"), std::out_of_range);
   ASSERT_THROW(AnyNumberToU32("55B"), std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, AnyStringToChar)
 {
   ASSERT_EQ(static_cast<char>(12),  AnyStringToChar("0xC"));
@@ -1823,52 +1845,33 @@ TEST(gpcc_string_tools_Tests, AnyStringToChar)
   ASSERT_THROW(AnyStringToChar("128"), std::out_of_range);
   ASSERT_THROW(AnyStringToChar("55B"), std::invalid_argument);
 }
-TEST(gpcc_string_tools_Tests, TwoDigitHexToU8)
+
+TEST(gpcc_string_tools_Tests, DecimalToI32)
 {
-  EXPECT_EQ(  0U, TwoDigitHexToU8("00"));
-  EXPECT_EQ(  1U, TwoDigitHexToU8("01"));
-  EXPECT_EQ( 16U, TwoDigitHexToU8("10"));
-  EXPECT_EQ( 10U, TwoDigitHexToU8("0A"));
-  EXPECT_EQ( 10U, TwoDigitHexToU8("0a"));
-  EXPECT_EQ(240U, TwoDigitHexToU8("F0"));
-  EXPECT_EQ(240U, TwoDigitHexToU8("f0"));
-  EXPECT_EQ(255U, TwoDigitHexToU8("FF"));
-  EXPECT_EQ(255U, TwoDigitHexToU8("ff"));
+  // valid values
+  ASSERT_EQ(0,           DecimalToI32("0"));
+  ASSERT_EQ(1,           DecimalToI32("1"));
+  ASSERT_EQ(-1,          DecimalToI32("-1"));
+  ASSERT_EQ(2147483647,  DecimalToI32("2147483647"));
+  ASSERT_EQ(-2147483648, DecimalToI32("-2147483648"));
 
-  EXPECT_THROW(TwoDigitHexToU8(""), std::invalid_argument);
-  EXPECT_THROW(TwoDigitHexToU8(" 0"), std::invalid_argument);
-  EXPECT_THROW(TwoDigitHexToU8("0 "), std::invalid_argument);
-  EXPECT_THROW(TwoDigitHexToU8(" 00"), std::invalid_argument);
-  EXPECT_THROW(TwoDigitHexToU8("00 "), std::invalid_argument);
-  EXPECT_THROW(TwoDigitHexToU8("1"), std::invalid_argument);
-  EXPECT_THROW(TwoDigitHexToU8("123"), std::invalid_argument);
-  EXPECT_THROW(TwoDigitHexToU8("G0"), std::invalid_argument);
-  EXPECT_THROW(TwoDigitHexToU8("-1"), std::invalid_argument);
-  EXPECT_THROW(TwoDigitHexToU8("+1"), std::invalid_argument);
-}
+  ASSERT_EQ(0,           DecimalToI32(" 0"));
+  ASSERT_EQ(1,           DecimalToI32(" 1"));
+  ASSERT_EQ(-1,          DecimalToI32(" -1"));
+  ASSERT_EQ(2147483647,  DecimalToI32(" 2147483647"));
+  ASSERT_EQ(-2147483648, DecimalToI32(" -2147483648"));
 
-TEST(gpcc_string_tools_Tests, FourDigitHexToU16)
-{
-  EXPECT_EQ(    0U, FourDigitHexToU16("0000"));
-  EXPECT_EQ(    1U, FourDigitHexToU16("0001"));
-  EXPECT_EQ(   16U, FourDigitHexToU16("0010"));
-  EXPECT_EQ(   10U, FourDigitHexToU16("000A"));
-  EXPECT_EQ(   10U, FourDigitHexToU16("000a"));
-  EXPECT_EQ(61440U, FourDigitHexToU16("F000"));
-  EXPECT_EQ(61440U, FourDigitHexToU16("f000"));
-  EXPECT_EQ(65535U, FourDigitHexToU16("FFFF"));
-  EXPECT_EQ(65535U, FourDigitHexToU16("ffff"));
+  // invalid values
+  ASSERT_THROW(DecimalToI32(""),    std::invalid_argument);
+  ASSERT_THROW(DecimalToI32(" "),   std::invalid_argument);
+  ASSERT_THROW(DecimalToI32("3 "),  std::invalid_argument);
+  ASSERT_THROW(DecimalToI32("X7"),  std::invalid_argument);
+  ASSERT_THROW(DecimalToI32("0x0"), std::invalid_argument);
+  ASSERT_THROW(DecimalToI32("0b0"), std::invalid_argument);
 
-  EXPECT_THROW(FourDigitHexToU16(""), std::invalid_argument);
-  EXPECT_THROW(FourDigitHexToU16(" 000"), std::invalid_argument);
-  EXPECT_THROW(FourDigitHexToU16("000 "), std::invalid_argument);
-  EXPECT_THROW(FourDigitHexToU16(" 0000"), std::invalid_argument);
-  EXPECT_THROW(FourDigitHexToU16("0000 "), std::invalid_argument);
-  EXPECT_THROW(FourDigitHexToU16("1"), std::invalid_argument);
-  EXPECT_THROW(FourDigitHexToU16("12345"), std::invalid_argument);
-  EXPECT_THROW(FourDigitHexToU16("G0"), std::invalid_argument);
-  EXPECT_THROW(FourDigitHexToU16("-100"), std::invalid_argument);
-  EXPECT_THROW(FourDigitHexToU16("+100"), std::invalid_argument);
+  // values out of range
+  ASSERT_THROW(DecimalToI32("2147483648"),  std::out_of_range);
+  ASSERT_THROW(DecimalToI32("-2147483649"), std::out_of_range);
 }
 
 TEST(gpcc_string_tools_Tests, ToDouble)

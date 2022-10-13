@@ -52,14 +52,14 @@ std::string ToDecAndHex(uint32_t const value, uint8_t const width);
 
 // Conversion string to X -----------------------------------------------------
 uint8_t DecimalToU8(std::string const & s);
-uint32_t DecimalToU32(std::string const & s);
-int32_t DecimalToI32(std::string const & s);
 uint8_t AnyNumberToU8(std::string const & s);
 uint8_t AnyStringToU8(std::string const & s);
-uint32_t AnyNumberToU32(std::string const & s);
-char AnyStringToChar(std::string const & s);
 uint8_t TwoDigitHexToU8(std::string const & s);
 uint16_t FourDigitHexToU16(std::string const & s);
+uint32_t DecimalToU32(std::string const & s);
+uint32_t AnyNumberToU32(std::string const & s);
+char AnyStringToChar(std::string const & s);
+int32_t DecimalToI32(std::string const & s);
 double ToDouble(std::string const & s);
 
 // Extraction and breakdown ---------------------------------------------------

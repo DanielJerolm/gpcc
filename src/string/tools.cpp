@@ -1455,100 +1455,6 @@ uint8_t DecimalToU8(std::string const & s)
 
 /**
  * \ingroup GPCC_STRING
- * \brief Converts a string containing a number in decimal representation into a value of type `uint32_t`.
- *
- * The function accepts the following textual representations of data of type `uint32_t`:
- * - Integer numbers: 1, 3, 5; Range: 0..2^32-1
- * - Any leading spaces characters are ignored
- * - Trailing space characters are not allowed
- *
- * This function is intended to be used in function interpreting user input.
- *
- * - - -
- *
- * __Thread safety:__\n
- * This is thread-safe.
- *
- * __Exception safety:__\n
- * Strong guarantee.
- *
- * \throws std::out_of_range       Result does not fit into `uint32_t`.
- *
- * \throws std::invalid_argument   `s` is invalid.
- *
- * __Thread cancellation safety:__\n
- * No cancellation point included.
- *
- * - - -
- *
- * \param s
- * String containing the number that shall be converted to an `uint32_t`.
- * \return
- * `uint32_t` value.
- */
-uint32_t DecimalToU32(std::string const & s)
-{
-  size_t n;
-  long long const value = std::stoll(s, &n, 10);
-
-  if (n != s.size())
-    throw std::invalid_argument("DecimalToU32");
-
-  if ((value < std::numeric_limits<uint32_t>::min()) || (value > std::numeric_limits<uint32_t>::max()))
-    throw std::out_of_range("DecimalToU32");
-
-  return static_cast<uint32_t>(value);
-}
-
-/**
- * \ingroup GPCC_STRING
- * \brief Converts a string containing a number in decimal representation into a value of type `int32_t`.
- *
- * The function accepts the following textual representations of data of type `int32_t`:
- * - Integer numbers: -4, -2, 0, 1, 3, 5; Range: -2^31 .. 2^31-1
- * - Any leading spaces characters are ignored
- * - Trailing space characters are not allowed
- *
- * This function is intended to be used in function interpreting user input.
- *
- * - - -
- *
- * __Thread safety:__\n
- * This is thread-safe.
- *
- * __Exception safety:__\n
- * Strong guarantee.
- *
- * \throws std::out_of_range       Result does not fit into `int32_t`.
- *
- * \throws std::invalid_argument   `s` is invalid.
- *
- * __Thread cancellation safety:__\n
- * No cancellation point included.
- *
- * - - -
- *
- * \param s
- * String containing the number that shall be converted to an `int32_t`.
- * \return
- * `int32_t` value.
- */
-int32_t DecimalToI32(std::string const & s)
-{
-  size_t n;
-  long long const value = std::stoll(s, &n, 10);
-
-  if (n != s.size())
-    throw std::invalid_argument("DecimalToI32");
-
-  if ((value < std::numeric_limits<int32_t>::min()) || (value > std::numeric_limits<int32_t>::max()))
-    throw std::out_of_range("DecimalToI32");
-
-  return static_cast<int32_t>(value);
-}
-
-/**
- * \ingroup GPCC_STRING
  * \brief Converts a string containing any valid number representation into a value of type `uint8_t`.
  *
  * The function accepts the following textual representations of data of type `uint8_t`:
@@ -1706,6 +1612,153 @@ uint8_t AnyStringToU8(std::string const & s)
     throw std::out_of_range("AnyStringToU8");
 
   return static_cast<uint8_t>(value);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing a two digit hexadecimal number into a value of type `uint8_t`.
+ *
+ * The input format is strict:
+ * - two digits, hexadecimal format
+ * - no "0x" prefix
+ * - Leading and trailing space characters are not allowed
+ *
+ * This function is intended to be used in functions interpreting user input.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::out_of_range       Result does not fit into `uint8_t`.
+ *
+ * \throws std::invalid_argument   `s` is invalid.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String containing the 2-digit hexadecimal number that shall be converted to an `uint8_t`.
+ * \return
+ * `uint8_t` value.
+ */
+uint8_t TwoDigitHexToU8(std::string const & s)
+{
+  if ((s.size() != 2U) || (s.front() == '+') || (s.front() == '-') || (s.front() == ' '))
+    throw std::invalid_argument("TwoDigitHexToU8");
+
+  size_t n;
+  auto const value = std::stol(s, &n, 16);
+
+  if (n != 2U)
+    throw std::invalid_argument("TwoDigitHexToU8");
+
+  if ((value < std::numeric_limits<uint8_t>::min()) || (value > std::numeric_limits<uint8_t>::max()))
+    throw std::out_of_range("TwoDigitHexToU8");
+
+  return static_cast<uint8_t>(value);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing a two digit hexadecimal number into a value of type `uint16_t`.
+ *
+ * The input format is strict:
+ * - four digits, hexadecimal format
+ * - no "0x" prefix
+ * - Leading and trailing space characters are not allowed
+ *
+ * This function is intended to be used in functions interpreting user input.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::out_of_range       Result does not fit into `uint16_t`.
+ *
+ * \throws std::invalid_argument   `s` is invalid.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String containing the 4-digit hexadecimal number that shall be converted to an `uint16_t`.
+ * \return
+ * `uint16_t` value.
+ */
+uint16_t FourDigitHexToU16(std::string const & s)
+{
+  if ((s.size() != 4U) || (s.front() == '+') || (s.front() == '-') || (s.front() == ' '))
+    throw std::invalid_argument("FourDigitHexToU16");
+
+  size_t n;
+  long const value = std::stol(s, &n, 16);
+
+  if (n != 4U)
+    throw std::invalid_argument("FourDigitHexToU16");
+
+  if ((value < std::numeric_limits<uint16_t>::min()) || (value > std::numeric_limits<uint16_t>::max()))
+    throw std::out_of_range("FourDigitHexToU16");
+
+  return static_cast<uint16_t>(value);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing a number in decimal representation into a value of type `uint32_t`.
+ *
+ * The function accepts the following textual representations of data of type `uint32_t`:
+ * - Integer numbers: 1, 3, 5; Range: 0..2^32-1
+ * - Any leading spaces characters are ignored
+ * - Trailing space characters are not allowed
+ *
+ * This function is intended to be used in function interpreting user input.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::out_of_range       Result does not fit into `uint32_t`.
+ *
+ * \throws std::invalid_argument   `s` is invalid.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String containing the number that shall be converted to an `uint32_t`.
+ * \return
+ * `uint32_t` value.
+ */
+uint32_t DecimalToU32(std::string const & s)
+{
+  size_t n;
+  long long const value = std::stoll(s, &n, 10);
+
+  if (n != s.size())
+    throw std::invalid_argument("DecimalToU32");
+
+  if ((value < std::numeric_limits<uint32_t>::min()) || (value > std::numeric_limits<uint32_t>::max()))
+    throw std::out_of_range("DecimalToU32");
+
+  return static_cast<uint32_t>(value);
 }
 
 /**
@@ -1870,64 +1923,14 @@ char AnyStringToChar(std::string const & s)
 
 /**
  * \ingroup GPCC_STRING
- * \brief Converts a string containing a two digit hexadecimal number into a value of type `uint8_t`.
+ * \brief Converts a string containing a number in decimal representation into a value of type `int32_t`.
  *
- * The input format is strict:
- * - two digits, hexadecimal format
- * - no "0x" prefix
- * - Leading and trailing space characters are not allowed
+ * The function accepts the following textual representations of data of type `int32_t`:
+ * - Integer numbers: -4, -2, 0, 1, 3, 5; Range: -2^31 .. 2^31-1
+ * - Any leading spaces characters are ignored
+ * - Trailing space characters are not allowed
  *
- * This function is intended to be used in functions interpreting user input.
- *
- * - - -
- *
- * __Thread safety:__\n
- * This is thread-safe.
- *
- * __Exception safety:__\n
- * Strong guarantee.
- *
- * \throws std::out_of_range       Result does not fit into `uint8_t`.
- *
- * \throws std::invalid_argument   `s` is invalid.
- *
- * __Thread cancellation safety:__\n
- * No cancellation point included.
- *
- * - - -
- *
- * \param s
- * String containing the 2-digit hexadecimal number that shall be converted to an `uint8_t`.
- * \return
- * `uint8_t` value.
- */
-uint8_t TwoDigitHexToU8(std::string const & s)
-{
-  if ((s.size() != 2U) || (s.front() == '+') || (s.front() == '-') || (s.front() == ' '))
-    throw std::invalid_argument("TwoDigitHexToU8");
-
-  size_t n;
-  auto const value = std::stol(s, &n, 16);
-
-  if (n != 2U)
-    throw std::invalid_argument("TwoDigitHexToU8");
-
-  if ((value < std::numeric_limits<uint8_t>::min()) || (value > std::numeric_limits<uint8_t>::max()))
-    throw std::out_of_range("TwoDigitHexToU8");
-
-  return static_cast<uint8_t>(value);
-}
-
-/**
- * \ingroup GPCC_STRING
- * \brief Converts a string containing a two digit hexadecimal number into a value of type `uint16_t`.
- *
- * The input format is strict:
- * - four digits, hexadecimal format
- * - no "0x" prefix
- * - Leading and trailing space characters are not allowed
- *
- * This function is intended to be used in functions interpreting user input.
+ * This function is intended to be used in function interpreting user input.
  *
  * - - -
  *
@@ -1937,7 +1940,7 @@ uint8_t TwoDigitHexToU8(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::out_of_range       Result does not fit into `uint16_t`.
+ * \throws std::out_of_range       Result does not fit into `int32_t`.
  *
  * \throws std::invalid_argument   `s` is invalid.
  *
@@ -1947,25 +1950,22 @@ uint8_t TwoDigitHexToU8(std::string const & s)
  * - - -
  *
  * \param s
- * String containing the 4-digit hexadecimal number that shall be converted to an `uint16_t`.
+ * String containing the number that shall be converted to an `int32_t`.
  * \return
- * `uint16_t` value.
+ * `int32_t` value.
  */
-uint16_t FourDigitHexToU16(std::string const & s)
+int32_t DecimalToI32(std::string const & s)
 {
-  if ((s.size() != 4U) || (s.front() == '+') || (s.front() == '-') || (s.front() == ' '))
-    throw std::invalid_argument("FourDigitHexToU16");
-
   size_t n;
-  long const value = std::stol(s, &n, 16);
+  long long const value = std::stoll(s, &n, 10);
 
-  if (n != 4U)
-    throw std::invalid_argument("FourDigitHexToU16");
+  if (n != s.size())
+    throw std::invalid_argument("DecimalToI32");
 
-  if ((value < std::numeric_limits<uint16_t>::min()) || (value > std::numeric_limits<uint16_t>::max()))
-    throw std::out_of_range("FourDigitHexToU16");
+  if ((value < std::numeric_limits<int32_t>::min()) || (value > std::numeric_limits<int32_t>::max()))
+    throw std::out_of_range("DecimalToI32");
 
-  return static_cast<uint16_t>(value);
+  return static_cast<int32_t>(value);
 }
 
 /**
