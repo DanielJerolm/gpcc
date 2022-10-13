@@ -1707,54 +1707,54 @@ TEST(gpcc_string_tools_Tests, AnyStringToU8)
   ASSERT_THROW(AnyStringToU8("256"), std::out_of_range);
   ASSERT_THROW(AnyStringToU8("55B"), std::invalid_argument);
 }
-TEST(gpcc_string_tools_Tests, AnyStringToU32)
+TEST(gpcc_string_tools_Tests, AnyNumberToU32)
 {
-  ASSERT_EQ(0U,           AnyStringToU32("0x0"));
-  ASSERT_EQ(12U,          AnyStringToU32("0xc"));
-  ASSERT_EQ(12U,          AnyStringToU32("0xC"));
-  ASSERT_EQ(4294967294UL, AnyStringToU32("0xFFFFFFFE"));
-  ASSERT_EQ(4294967295UL, AnyStringToU32("0xFFFFFFFF"));
-  ASSERT_EQ(4294967295UL, AnyStringToU32("0x00FFFFFFFF"));
-  ASSERT_EQ(33U,          AnyStringToU32("0x21"));
-  ASSERT_EQ(33U,          AnyStringToU32("0x000021"));
+  ASSERT_EQ(0U,           AnyNumberToU32("0x0"));
+  ASSERT_EQ(12U,          AnyNumberToU32("0xc"));
+  ASSERT_EQ(12U,          AnyNumberToU32("0xC"));
+  ASSERT_EQ(4294967294UL, AnyNumberToU32("0xFFFFFFFE"));
+  ASSERT_EQ(4294967295UL, AnyNumberToU32("0xFFFFFFFF"));
+  ASSERT_EQ(4294967295UL, AnyNumberToU32("0x00FFFFFFFF"));
+  ASSERT_EQ(33U,          AnyNumberToU32("0x21"));
+  ASSERT_EQ(33U,          AnyNumberToU32("0x000021"));
 
-  ASSERT_THROW(AnyStringToU32(" 0xC"),        std::invalid_argument);
-  ASSERT_THROW(AnyStringToU32("0xC "),        std::invalid_argument);
-  ASSERT_THROW(AnyStringToU32("0xABZ"),       std::invalid_argument);
-  ASSERT_THROW(AnyStringToU32("0xAZ") ,       std::invalid_argument);
-  ASSERT_THROW(AnyStringToU32("0x100000000"), std::out_of_range);
-  ASSERT_THROW(AnyStringToU32("0X11"),        std::invalid_argument);
-  ASSERT_THROW(AnyStringToU32(""),            std::invalid_argument);
-  ASSERT_THROW(AnyStringToU32("0x"),          std::invalid_argument);
-  ASSERT_THROW(AnyStringToU32("0b"),          std::invalid_argument);
-  ASSERT_THROW(AnyStringToU32("0x0x21"),      std::invalid_argument);
-  ASSERT_THROW(AnyStringToU32("0b0b10"),      std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32(" 0xC"),        std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32("0xC "),        std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32("0xABZ"),       std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32("0xAZ") ,       std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32("0x100000000"), std::out_of_range);
+  ASSERT_THROW(AnyNumberToU32("0X11"),        std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32(""),            std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32("0x"),          std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32("0b"),          std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32("0x0x21"),      std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32("0b0b10"),      std::invalid_argument);
 
-  ASSERT_EQ(12U,          AnyStringToU32("0b1100"));
-  ASSERT_EQ(12U,          AnyStringToU32("0b00001100"));
-  ASSERT_EQ(12U,          AnyStringToU32("0b000000001100"));
-  ASSERT_EQ(4294967295UL, AnyStringToU32("0b11111111111111111111111111111111"));
+  ASSERT_EQ(12U,          AnyNumberToU32("0b1100"));
+  ASSERT_EQ(12U,          AnyNumberToU32("0b00001100"));
+  ASSERT_EQ(12U,          AnyNumberToU32("0b000000001100"));
+  ASSERT_EQ(4294967295UL, AnyNumberToU32("0b11111111111111111111111111111111"));
 
-  ASSERT_THROW(AnyStringToU32(" 0b1100"), std::invalid_argument);
-  ASSERT_THROW(AnyStringToU32("0b1100 "), std::invalid_argument);
-  ASSERT_THROW(AnyStringToU32("0b1102"), std::invalid_argument);
-  ASSERT_THROW(AnyStringToU32("0b111111111111111111111111111111111"), std::out_of_range);
-  ASSERT_THROW(AnyStringToU32("0B1101"), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32(" 0b1100"), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32("0b1100 "), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32("0b1102"), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32("0b111111111111111111111111111111111"), std::out_of_range);
+  ASSERT_THROW(AnyNumberToU32("0B1101"), std::invalid_argument);
 
-  ASSERT_THROW(AnyStringToU32("-1"), std::invalid_argument);
-  ASSERT_THROW(AnyStringToU32("-0"), std::invalid_argument);
-  ASSERT_THROW(AnyStringToU32("-0x0"), std::invalid_argument);
-  ASSERT_THROW(AnyStringToU32("-0b0"), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32("-1"), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32("-0"), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32("-0x0"), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32("-0b0"), std::invalid_argument);
 
-  ASSERT_EQ(0U,           AnyStringToU32("0"));
-  ASSERT_EQ(0U,           AnyStringToU32("000"));
-  ASSERT_EQ(1U,           AnyStringToU32("1"));
-  ASSERT_EQ(4294967295Ul, AnyStringToU32("4294967295"));
+  ASSERT_EQ(0U,           AnyNumberToU32("0"));
+  ASSERT_EQ(0U,           AnyNumberToU32("000"));
+  ASSERT_EQ(1U,           AnyNumberToU32("1"));
+  ASSERT_EQ(4294967295Ul, AnyNumberToU32("4294967295"));
 
-  ASSERT_THROW(AnyStringToU32(" 5"), std::invalid_argument);
-  ASSERT_THROW(AnyStringToU32("5 "), std::invalid_argument);
-  ASSERT_THROW(AnyStringToU32("4294967296"), std::out_of_range);
-  ASSERT_THROW(AnyStringToU32("55B"), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32(" 5"), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32("5 "), std::invalid_argument);
+  ASSERT_THROW(AnyNumberToU32("4294967296"), std::out_of_range);
+  ASSERT_THROW(AnyNumberToU32("55B"), std::invalid_argument);
 }
 TEST(gpcc_string_tools_Tests, AnyStringToChar)
 {

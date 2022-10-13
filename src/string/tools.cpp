@@ -1743,42 +1743,42 @@ uint8_t AnyStringToU8(std::string const & s)
  * \return
  * `uint32_t` value.
  */
-uint32_t AnyStringToU32(std::string const & s)
+uint32_t AnyNumberToU32(std::string const & s)
 {
   long long value;
   size_t n;
   if (StartsWith(s, " "))
   {
-    throw std::invalid_argument("AnyStringToU32");
+    throw std::invalid_argument("AnyNumberToU32");
   }
   else if (StartsWith(s, "0x"))
   {
     value = std::stoll(s, &n, 16);
 
     if (n != s.size())
-      throw std::invalid_argument("AnyStringToU32");
+      throw std::invalid_argument("AnyNumberToU32");
   }
   else if (StartsWith(s, "0b"))
   {
     value = std::stoll(s.substr(2), &n, 2);
 
     if (n != s.size() - 2U)
-      throw std::invalid_argument("AnyStringToU32");
+      throw std::invalid_argument("AnyNumberToU32");
   }
   else if (StartsWith(s, "-"))
   {
-    throw std::invalid_argument("AnyStringToU32");
+    throw std::invalid_argument("AnyNumberToU32");
   }
   else
   {
     value = std::stoll(s, &n, 10);
 
     if (n != s.size())
-      throw std::invalid_argument("AnyStringToU32");
+      throw std::invalid_argument("AnyNumberToU32");
   }
 
   if ((value < std::numeric_limits<uint32_t>::min()) || (value > std::numeric_limits<uint32_t>::max()))
-    throw std::out_of_range("AnyStringToU32");
+    throw std::out_of_range("AnyNumberToU32");
 
   return static_cast<uint32_t>(value);
 }

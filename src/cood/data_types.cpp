@@ -847,17 +847,15 @@ void StringToCANOpenEncodedData(std::string const & s, size_t const sizeInBit, D
 
       case DataType::unsigned8:
       {
-        uint32_t const u32 = gpcc::string::AnyStringToU32(s);
-        if (u32 > std::numeric_limits<uint8_t>::max())
-          throw std::invalid_argument("Expected: 0..255");
+        uint8_t const u8 = gpcc::string::AnyStringToU8(s);
 
-        sw.Write_uint8(static_cast<uint8_t>(u32));
+        sw.Write_uint8(static_cast<uint8_t>(u8));
         break;
       }
 
       case DataType::unsigned16:
       {
-        uint32_t const u32 = gpcc::string::AnyStringToU32(s);
+        uint32_t const u32 = gpcc::string::AnyNumberToU32(s);
         if (u32 > std::numeric_limits<uint16_t>::max())
           throw std::invalid_argument("Expected: 0..65535");
 
@@ -867,7 +865,7 @@ void StringToCANOpenEncodedData(std::string const & s, size_t const sizeInBit, D
 
       case DataType::unsigned32:
       {
-        uint32_t const u32 = gpcc::string::AnyStringToU32(s);
+        uint32_t const u32 = gpcc::string::AnyNumberToU32(s);
         sw.Write_uint32(u32);
         break;
       }

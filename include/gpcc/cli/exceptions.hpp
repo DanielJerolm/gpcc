@@ -109,7 +109,7 @@ class CtrlCError : public std::runtime_error
  *     if (params.size() != 2U)
  *       throw UserEnteredInvalidArgsError();
  *
- *     p1 = gpcc::string::AnyStringToU32(params[0]);
+ *     p1 = gpcc::string::AnyNumberToU32(params[0]);
  *     p2 = gpcc::string::DecimalToU8(params[1]);
  *
  *     // [...] More code that could also throw std::bad_alloc

@@ -53,7 +53,7 @@ uint16_t StringToObjIndex(std::string const & s)
     if ((!gpcc::string::StartsWith(s, "0x")) || (s.size() < 3U) || (s.size() > 6U))
       throw std::invalid_argument("String does not match expected format: Hex, 1..4 digits");
 
-    uint32_t i = gpcc::string::AnyStringToU32(s);
+    uint32_t i = gpcc::string::AnyNumberToU32(s);
     if (i > std::numeric_limits<uint16_t>::max())
       throw std::invalid_argument("Object index exceeds maximum value");
 
