@@ -897,7 +897,7 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat1)
    "Invalid arguments. Try 'WriteRAS help'.",
    "Details:",
    "0: User entered invalid arguments.",
-   "1: AnyStringToU8",
+   "1: Value '-5' is out of range [0;255]",
    ">"
   };
 
@@ -921,7 +921,7 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat2)
    "Invalid arguments. Try 'WriteRAS help'.",
    "Details:",
    "0: User entered invalid arguments.",
-   "1: AnyStringToU8",
+   "1: Invalid number: \"-0x05\"",
    ">"
   };
 
@@ -945,7 +945,7 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat3)
    "Invalid arguments. Try 'WriteRAS help'.",
    "Details:",
    "0: User entered invalid arguments.",
-   "1: AnyStringToU8",
+   "1: Value '0xABCD' is out of range [0;255]",
    ">"
   };
 
@@ -969,7 +969,7 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat4)
    "Invalid arguments. Try 'WriteRAS help'.",
    "Details:",
    "0: User entered invalid arguments.",
-   "1: AnyStringToU8",
+   "1: Value '257' is out of range [0;255]",
    ">"
   };
 
@@ -993,7 +993,7 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat5)
    "Invalid arguments. Try 'WriteRAS help'.",
    "Details:",
    "0: User entered invalid arguments.",
-   "1: AnyStringToU8",
+   "1: Invalid number: \"'AB'\"",
    ">"
   };
 
@@ -1017,7 +1017,7 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat6)
    "Invalid arguments. Try 'WriteRAS help'.",
    "Details:",
    "0: User entered invalid arguments.",
-   "1: stol",
+   "1: Invalid number: \"A\"",
    ">"
   };
 
@@ -1041,7 +1041,7 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat7)
    "Invalid arguments. Try 'WriteRAS help'.",
    "Details:",
    "0: User entered invalid arguments.",
-   "1: stol",
+   "1: Invalid number: \"\"A\"\"",
    ">"
   };
 
