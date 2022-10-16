@@ -2,6 +2,54 @@
 GPCC Implementation History and Current Activities
 ==================================================
 
+- Branch Fix_AnyString2X
+  - [OK] Review ToU32
+  - [OK] Review ToI32
+  - [OK] Review DecimalToU8
+  - [OK] Review DecimalToU32
+  - [OK] Review DecimalToU32(min,max)
+  - [OK] Compare Doxygen across DecimalToU*
+  - [OK] Review AnyNumberToU8
+  - [OK] Review AnyStringToU8
+  - [OK] Review AnyNumberToU32
+  - [OK] Review AnyNumberToU32(min,max)
+  - [OK] Compare Doxygen across AnyNumberToU*
+  - [OK] Compare Doxygen across DecimalToU* and AnyNumberToU*
+  - [OK] Review AnyStringToChar
+  - [OK] Compare Doxygen of AnyStringToChar with AnyNumberToU8
+  - [OK] Review ToDouble
+  - [OK] Check order of functions (hpp vs cpp)
+
+  - [  ] Review TwoDigitHexToU8
+  - [  ] Review FourDigitHexToU16
+
+  - [OK] Review DecimalToI32
+  - [OK] Review DecimalToI32(min,max)
+
+  - [  ] Add AnyNumberToI32
+  - [  ] Add AnyNumberToI32(min,max)
+  - [  ] Review AnyNumberToI32
+  - [  ] Review AnyNumberToI32(min,max)
+
+  - [  ] Review Unit-Tests of String2X functions
+         [OK] uint8_t DecimalToU8(std::string const & s);
+         [OK] uint8_t AnyNumberToU8(std::string const & s);
+         [OK] uint8_t AnyStringToU8(std::string const & s);
+         [  ] uint8_t TwoDigitHexToU8(std::string const & s);
+         [  ] uint16_t FourDigitHexToU16(std::string const & s);
+         [OK] uint32_t DecimalToU32(std::string const & s);
+         [OK] uint32_t DecimalToU32(std::string const & s, uint32_t const min, uint32_t const max);
+         [OK] uint32_t AnyNumberToU32(std::string const & s);
+         [OK] uint32_t AnyNumberToU32(std::string const & s, uint32_t const min, uint32_t const max);
+         [OK] char AnyStringToChar(std::string const & s);
+         [OK] int32_t DecimalToI32(std::string const & s);
+         [OK] int32_t DecimalToI32(std::string const & s, int32_t const min, int32_t const max);
+         [OK] double ToDouble(std::string const & s);
+         [  ] int32_t AnyNumberToI32(std::string const & s);
+         [  ] int32_t AnyNumberToI32(std::string const & s, int32_t const min, int32_t const max);
+         [OK] Check order of test (cpp vs test-cpp)
+
+
 Next to do:
 ===============================================================================
 - Options for enhancements identified during header restructuring:

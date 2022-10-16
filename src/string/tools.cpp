@@ -23,9 +23,12 @@ namespace
 
 /**
  * \ingroup GPCC_STRING
- * \brief Internal helper for @ref ExceptionDescriptionToString(). \n
+ * \brief Internal helper for @ref ExceptionDescriptionToString().
+ *
  * Appends the description (returned by `what()`) of an exception and all nested
  * exceptions (if any) to an `std::ostringstream`.
+ *
+ * - - -
  *
  * __Thread safety:__\n
  * This is thread-safe.
@@ -35,16 +38,18 @@ namespace
  * - Incomplete or undefined text may have been written to `oss`.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param e
  * Reference to the exception whose description (returned by `what()`) shall be appended to `oss`.\n
  * The descriptions of all nested exceptions (if any) will also be appended to `oss`.\n
  * Each nested exception's description will start on a new line.
+ *
  * \param level
  * Nesting level. It is prepended to the text output to indicate the nesting level.
+ *
  * \param oss
  * Reference to the `std::ostringstream` to which the descriptions of the exceptions
  * shall be appended to.
@@ -67,6 +72,232 @@ void ExceptionDescriptionToStringHelper(std::exception const & e, size_t level, 
     oss << std::endl;
     oss << (level + 1U) << ": " << "Unknown exception";
   }
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Throws an `std::invalid_argument` with verbose description indicating that `s` contains an invalid
+ *        representation of a number.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * This always throws.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String containing the invalid representation of a number.
+ */
+void ThrowInvalidNumberRepresentation(std::string const & s)
+{
+  std::ostringstream oss;
+  oss << "Invalid number: \"" << s << '\"';
+  throw std::invalid_argument(oss.str());
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Throws an `std::out_of_range` with verbose description indicating that `s` contains a number that is out of
+ *        range [`min`;`max`].
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * This always throws.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \tparam T
+ * Type of `min` and `max`.
+ *
+ * \param s
+ * String containing the representation of the number.
+ *
+ * \param min
+ * Minimum value.
+ *
+ * \param max
+ * Maximum value.
+ */
+template <typename T>
+void ThrowOutOfRange(std::string const & s, T const min, T const max)
+{
+  std::ostringstream oss;
+  oss << "Value '" << s << "' is out of range [" << min << ';' << max << ']';
+  throw std::out_of_range(oss.str());
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Wrapper for `std::stoul`.
+ *
+ * Additional functionality:
+ * - Checks if the result is within a given range [`min`;`max`].
+ * - Does not accept any leading or trailing extra characters (incl. whitespace characters), except for one optional
+ *   leading sign character (+/-).
+ * - Throws verbose exceptions in case of any error.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ *
+ * \throws std::out_of_range       The result of the conversion exceeds the range [`min`;`max`].
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String that shall be converted into an `uint32_t`.
+ *
+ * \param base
+ * Base for interpreting `s`. Valid range: 0..36\n
+ * Special values:
+ * - 0 = auto detect base by prefix (0 = octal, 0x or 0X = hex, other = decimal)
+ * - 2 = binary
+ * - 10 = decimal
+ * - 16 = hexadecimal (prefix 0x or 0X is ignored if present)
+ *
+ * \param min
+ * Minimum allowed value for the result of the conversion.
+ *
+ * \param max
+ * Maximum allowed value for the result of the conversion.\n
+ * If `max` < `min`, then the range-check will always fail.
+ *
+ * \return
+ * Result of the conversion.
+ */
+uint32_t ToU32(std::string const & s, uint_fast8_t const base, uint32_t const min, uint32_t const max)
+{
+  static_assert(sizeof(unsigned long) >= sizeof(uint32_t), "Unexpected size of 'unsigned long' on this platform.");
+
+  // reject empty strings and leading whitespace characters
+  if ((s.empty()) || (std::isspace(s.front()) != 0))
+    ThrowInvalidNumberRepresentation(s);
+
+  size_t n;
+  unsigned long value;
+  try
+  {
+    value = std::stoul(s, &n, base);
+  }
+  catch (std::out_of_range const &)
+  {
+    ThrowOutOfRange(s, min, max);
+  }
+  catch (std::exception const &)
+  {
+    ThrowInvalidNumberRepresentation(s);
+  }
+
+  if (n != s.size())
+    ThrowInvalidNumberRepresentation(s);
+
+  if ((value < min) || (value > max))
+    ThrowOutOfRange(s, min, max);
+
+  return static_cast<uint32_t>(value);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Wrapper for `std::stoi`.
+ *
+ * Additional functionality:
+ * - Checks if the result is within a given range [`min`;`max`].
+ * - Does not accept any leading or trailing extra characters (incl. whitespace characters), except for one optional
+ *   leading sign character (+/-).
+ * - Throws verbose exceptions in case of any error.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ *
+ * \throws std::out_of_range       The result of the conversion exceeds the range [`min`;`max`].
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String that shall be converted into an `int32_t`.
+ *
+ * \param base
+ * Base for interpreting `s`. Valid range: 0..36\n
+ * Special values:
+ * - 0 = auto detect base by prefix (0 = octal, 0x or 0X = hex, other = decimal)
+ * - 2 = binary
+ * - 10 = decimal
+ * - 16 = hexadecimal (prefix 0x or 0X is ignored if present)
+ *
+ * \param min
+ * Minimum allowed value for the result of the conversion.
+ *
+ * \param max
+ * Maximum allowed value for the result of the conversion.\n
+ * If `max` < `min`, then the range-check will always fail.
+ *
+ * \return
+ * Result of the conversion.
+ */
+int32_t ToI32(std::string const & s, uint_fast8_t const base, int32_t const min, int32_t const max)
+{
+  static_assert(sizeof(int) >= sizeof(int32_t), "Unexpected size of 'int' on this platform.");
+
+  // reject empty strings and leading whitespace characters
+  if ((s.empty()) || (std::isspace(s.front()) != 0))
+    ThrowInvalidNumberRepresentation(s);
+
+  size_t n;
+  int value;
+  try
+  {
+    value = std::stoi(s, &n, base);
+  }
+  catch (std::out_of_range const &)
+  {
+    ThrowOutOfRange(s, min, max);
+  }
+  catch (std::exception const &)
+  {
+    ThrowInvalidNumberRepresentation(s);
+  }
+
+  if (n != s.size())
+    ThrowInvalidNumberRepresentation(s);
+
+  if ((value < min) || (value > max))
+    ThrowOutOfRange(s, min, max);
+
+  return static_cast<int32_t>(value);
 }
 
 } // anonymous namespace
@@ -1410,12 +1641,13 @@ std::string ToDecAndHex(uint32_t const value, uint8_t const width)
  * \ingroup GPCC_STRING
  * \brief Converts a string containing a number in decimal representation into a value of type `uint8_t`.
  *
- * The function accepts the following textual representations of data of type `uint8_t`:
- * - Integer numbers: 1, 3, 5; Range: 0..255
- * - Any leading spaces characters are ignored
- * - Trailing space characters are not allowed
+ * This function accepts the following textual representations of data of type `uint8_t`:
+ * - Decimal numbers, digits 0..9 only; Range: 0..255
+ * - Leading and trailing space characters are not allowed.
+ * - A leading +/- character is optional.
  *
- * This function is intended to be used in function interpreting user input.
+ * This function is intended to be used for interpreting user input. Potential exceptions will contain a verbose error
+ * message.
  *
  * - - -
  *
@@ -1425,9 +1657,9 @@ std::string ToDecAndHex(uint32_t const value, uint8_t const width)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::out_of_range       Result does not fit into `uint8_t`.
+ * \throws std::invalid_argument   `s` contains no valid representation of a number.
  *
- * \throws std::invalid_argument   `s` is invalid.
+ * \throws std::out_of_range       The result of the conversion exceeds the range of `uint8_t`.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -1435,38 +1667,33 @@ std::string ToDecAndHex(uint32_t const value, uint8_t const width)
  * - - -
  *
  * \param s
- * String containing the number that shall be converted to an `uint8_t`.
+ * String containing the number that shall be converted into an `uint8_t`.
+ *
  * \return
- * `uint8_t` value.
+ * Result of the conversion.
  */
 uint8_t DecimalToU8(std::string const & s)
 {
-  size_t n;
-  long const value = std::stol(s, &n, 10);
-
-  if (n != s.size())
-    throw std::invalid_argument("DecimalToU8");
-
-  if ((value < std::numeric_limits<uint8_t>::min()) || (value > std::numeric_limits<uint8_t>::max()))
-    throw std::out_of_range("DecimalToU8");
-
-  return static_cast<uint8_t>(value);
+  return static_cast<uint8_t>(ToU32(s,
+                                    10U,
+                                    std::numeric_limits<uint8_t>::min(),
+                                    std::numeric_limits<uint8_t>::max()));
 }
 
 /**
  * \ingroup GPCC_STRING
  * \brief Converts a string containing any valid number representation into a value of type `uint8_t`.
  *
- * The function accepts the following textual representations of data of type `uint8_t`:
- * - Hex values: 0x12, 0xAB, 0xab; Range: 0x00..0xFF
- * - Binary values: 0b00001000; Range: 0b00000000..0b11111111
- * - Integer numbers: 1, 3, 5; Range: 0..255
- * - Leading and trailing space characters are not allowed
+ * This function accepts the following textual representations of data of type `uint8_t`:
+ * - Hex values: 0x12, 0xAB; Range: 0x00..0xFF
+ * - Binary values: 0b01, 0b001000; Range: 0b00000000..0b11111111
+ * - Decimal numbers, digits 0..9 only, range 0..255; A leading +/- character is optional.
+ * - Leading and trailing space characters are not allowed.
  *
- * This function is intended to be used in function interpreting user input. It provides
- * maximum flexibility to the user when a `uint8_t` shall be entered.
+ * This function is intended to be used for interpreting user input. It provides maximum flexibility to the user when
+ * a `uint8_t` shall be entered. Potential exceptions will contain a verbose error message.
  *
- * If single ASCII characters shall be accepted, consider using @ref AnyStringToU8().
+ * If single ASCII characters shall also be accepted, consider using @ref AnyStringToU8().
  *
  * - - -
  *
@@ -1476,9 +1703,9 @@ uint8_t DecimalToU8(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::out_of_range       Result does not fit into `uint8_t`.
+ * \throws std::invalid_argument   `s` contains no valid representation of a number.
  *
- * \throws std::invalid_argument   `s` is invalid.
+ * \throws std::out_of_range       The result of the conversion exceeds the range of `uint8_t`.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -1486,48 +1713,16 @@ uint8_t DecimalToU8(std::string const & s)
  * - - -
  *
  * \param s
- * String that shall be converted to an `uint8_t`.
+ * String that shall be converted into an `uint8_t`.
+ *
  * \return
- * `uint8_t` value.
+ * Result of the conversion.
  */
 uint8_t AnyNumberToU8(std::string const & s)
 {
-  long value;
-  size_t n;
-  if (StartsWith(s, " "))
-  {
-    throw std::invalid_argument("AnyNumberToU8");
-  }
-  else if (StartsWith(s, "0x"))
-  {
-    value = std::stol(s, &n, 16);
-
-    if (n != s.size())
-      throw std::invalid_argument("AnyNumberToU8");
-  }
-  else if (StartsWith(s, "0b"))
-  {
-    value = std::stol(s.substr(2), &n, 2);
-
-    if (n != s.size() - 2U)
-      throw std::invalid_argument("AnyNumberToU8");
-  }
-  else if (StartsWith(s, "-"))
-  {
-    throw std::invalid_argument("AnyNumberToU8");
-  }
-  else
-  {
-    value = std::stol(s, &n, 10);
-
-    if (n != s.size())
-      throw std::invalid_argument("AnyNumberToU8");
-  }
-
-  if ((value < std::numeric_limits<uint8_t>::min()) || (value > std::numeric_limits<uint8_t>::max()))
-    throw std::out_of_range("AnyNumberToU8");
-
-  return static_cast<uint8_t>(value);
+  return static_cast<uint8_t>(AnyNumberToU32(s,
+                                             std::numeric_limits<uint8_t>::min(),
+                                             std::numeric_limits<uint8_t>::max()));
 }
 
 /**
@@ -1535,15 +1730,15 @@ uint8_t AnyNumberToU8(std::string const & s)
  * \brief Converts a string containing any valid number representation (incl. single ASCII characters) into a value of
  *        type `uint8_t`.
  *
- * The function accepts the following textual representations of data of type `uint8_t`:
- * - Hex values: 0x12, 0xAB, 0xab; Range: 0x00..0xFF
- * - Binary values: 0b00001000; Range: 0b00000000..0b11111111
- * - Integer numbers: 1, 3, 5; Range: 0..255
- * - Single ASCII characters in '': 'a', 'b', ''' -> '
- * - Leading and trailing space characters are not allowed
+ * This function accepts the following textual representations of data of type `uint8_t`:
+ * - Hex values: 0x12, 0xAB; Range: 0x00..0xFF
+ * - Binary values: 0b01, 0b001000; Range: 0b00000000..0b11111111
+ * - Decimal numbers, digits 0..9 only, range 0..255; A leading +/- character is optional.
+ * - Single ASCII characters in quoted in '': 'a', 'b', ''' -> '
+ * - Leading and trailing space characters are not allowed.
  *
- * This function is intended to be used in function interpreting user input. It provides
- * maximum flexibility to the user when a `uint8_t` shall be entered.
+ * This function is intended to be used for interpreting user input. It provides maximum flexibility to the user when
+ * a `uint8_t` shall be entered. Potential exceptions will contain a verbose error message.
  *
  * - - -
  *
@@ -1553,9 +1748,9 @@ uint8_t AnyNumberToU8(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::out_of_range       Result does not fit into `uint8_t`.
+ * \throws std::invalid_argument   `s` contains no valid representation of a number.
  *
- * \throws std::invalid_argument   `s` is invalid.
+ * \throws std::out_of_range       The result of the conversion exceeds the range of `uint8_t`.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -1563,55 +1758,26 @@ uint8_t AnyNumberToU8(std::string const & s)
  * - - -
  *
  * \param s
- * String that shall be converted to an `uint8_t`.
+ * String that shall be converted into an `uint8_t`.
+ *
  * \return
- * `uint8_t` value.
+ * Result of the conversion.
  */
 uint8_t AnyStringToU8(std::string const & s)
 {
-  long value;
-  size_t n;
-  if (StartsWith(s, " "))
-  {
-    throw std::invalid_argument("AnyStringToU8");
-  }
-  else if (StartsWith(s, "0x"))
-  {
-    value = std::stol(s, &n, 16);
-
-    if (n != s.size())
-      throw std::invalid_argument("AnyStringToU8");
-  }
-  else if (StartsWith(s, "0b"))
-  {
-    value = std::stol(s.substr(2), &n, 2);
-
-    if (n != s.size() - 2U)
-      throw std::invalid_argument("AnyStringToU8");
-  }
-  else if (StartsWith(s, "-"))
-  {
-    throw std::invalid_argument("AnyStringToU8");
-  }
-  else if (StartsWith(s, "'"))
+  if (StartsWith(s, "'"))
   {
     if ((s.length() != 3U) || (s[2] != '\''))
-      throw std::invalid_argument("AnyStringToU8");
+      ThrowInvalidNumberRepresentation(s);
 
-    return s[1];
+    return static_cast<uint8_t>(s[1]);
   }
   else
   {
-    value = std::stol(s, &n, 10);
-
-    if (n != s.size())
-      throw std::invalid_argument("AnyStringToU8");
+    return static_cast<uint8_t>(AnyNumberToU32(s,
+                                               std::numeric_limits<uint8_t>::min(),
+                                               std::numeric_limits<uint8_t>::max()));
   }
-
-  if ((value < std::numeric_limits<uint8_t>::min()) || (value > std::numeric_limits<uint8_t>::max()))
-    throw std::out_of_range("AnyStringToU8");
-
-  return static_cast<uint8_t>(value);
 }
 
 /**
@@ -1652,16 +1818,7 @@ uint8_t TwoDigitHexToU8(std::string const & s)
   if ((s.size() != 2U) || (s.front() == '+') || (s.front() == '-') || (s.front() == ' '))
     throw std::invalid_argument("TwoDigitHexToU8");
 
-  size_t n;
-  auto const value = std::stol(s, &n, 16);
-
-  if (n != 2U)
-    throw std::invalid_argument("TwoDigitHexToU8");
-
-  if ((value < std::numeric_limits<uint8_t>::min()) || (value > std::numeric_limits<uint8_t>::max()))
-    throw std::out_of_range("TwoDigitHexToU8");
-
-  return static_cast<uint8_t>(value);
+  return static_cast<uint8_t>(ToU32(s, 16U, std::numeric_limits<uint8_t>::min(), std::numeric_limits<uint8_t>::max()));
 }
 
 /**
@@ -1702,28 +1859,20 @@ uint16_t FourDigitHexToU16(std::string const & s)
   if ((s.size() != 4U) || (s.front() == '+') || (s.front() == '-') || (s.front() == ' '))
     throw std::invalid_argument("FourDigitHexToU16");
 
-  size_t n;
-  long const value = std::stol(s, &n, 16);
-
-  if (n != 4U)
-    throw std::invalid_argument("FourDigitHexToU16");
-
-  if ((value < std::numeric_limits<uint16_t>::min()) || (value > std::numeric_limits<uint16_t>::max()))
-    throw std::out_of_range("FourDigitHexToU16");
-
-  return static_cast<uint16_t>(value);
+  return static_cast<uint16_t>(ToU32(s, 16U, std::numeric_limits<uint16_t>::min(), std::numeric_limits<uint16_t>::max()));
 }
 
 /**
  * \ingroup GPCC_STRING
  * \brief Converts a string containing a number in decimal representation into a value of type `uint32_t`.
  *
- * The function accepts the following textual representations of data of type `uint32_t`:
- * - Integer numbers: 1, 3, 5; Range: 0..2^32-1
- * - Any leading spaces characters are ignored
- * - Trailing space characters are not allowed
+ * This function accepts the following textual representations of data of type `uint32_t`:
+ * - Decimal numbers, digits 0..9 only; Range: 0..2^32-1
+ * - Leading and trailing space characters are not allowed.
+ * - A leading +/- character is optional.
  *
- * This function is intended to be used in function interpreting user input.
+ * This function is intended to be used for interpreting user input. Potential exceptions will contain a verbose error
+ * message.
  *
  * - - -
  *
@@ -1733,9 +1882,9 @@ uint16_t FourDigitHexToU16(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::out_of_range       Result does not fit into `uint32_t`.
+ * \throws std::invalid_argument   `s` contains no valid representation of a number.
  *
- * \throws std::invalid_argument   `s` is invalid.
+ * \throws std::out_of_range       The result of the conversion exceeds the range of `uint32_t`.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -1743,36 +1892,79 @@ uint16_t FourDigitHexToU16(std::string const & s)
  * - - -
  *
  * \param s
- * String containing the number that shall be converted to an `uint32_t`.
+ * String containing the number that shall be converted into an `uint32_t`.
+ *
  * \return
- * `uint32_t` value.
+ * Result of the conversion.
  */
 uint32_t DecimalToU32(std::string const & s)
 {
-  size_t n;
-  long long const value = std::stoll(s, &n, 10);
+  return ToU32(s,
+               10U,
+               std::numeric_limits<uint32_t>::min(),
+               std::numeric_limits<uint32_t>::max());
+}
 
-  if (n != s.size())
-    throw std::invalid_argument("DecimalToU32");
-
-  if ((value < std::numeric_limits<uint32_t>::min()) || (value > std::numeric_limits<uint32_t>::max()))
-    throw std::out_of_range("DecimalToU32");
-
-  return static_cast<uint32_t>(value);
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing a number in decimal representation into a value of type `uint32_t` and checks
+ *        the result against a given `min` and `max`.
+ *
+ * This function accepts the following textual representations of data of type `uint32_t`:
+ * - Decimal numbers, digits 0..9 only; Range: [`min`;`max`]
+ * - Leading and trailing space characters are not allowed.
+ * - A leading +/- character is optional.
+ *
+ * This function is intended to be used for interpreting user input. Potential exceptions will contain a verbose error
+ * message.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ *
+ * \throws std::out_of_range       The result of the conversion exceeds the range of [`min`;`max`].
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String containing the number that shall be converted into an `uint32_t`.
+ *
+ * \param min
+ * Minimum allowed value.
+ *
+ * \param max
+ * Maximum allowed value.\n
+ * If `max` < `min`, then the range-check will always fail.
+ *
+ * \return
+ * Result of the conversion.
+ */
+uint32_t DecimalToU32(std::string const & s, uint32_t const min, uint32_t const max)
+{
+  return ToU32(s, 10U, min, max);
 }
 
 /**
  * \ingroup GPCC_STRING
  * \brief Converts a string containing any valid number representation into a value of type `uint32_t`.
  *
- * The function accepts the following textual representations of data of type `uint32_t`:
- * - Hex values: 0x12000000, 0xAB000000, 0xab00; Range: 0x00000000..0xFF000000
- * - Binary values: 0b001000; Range: max. 32 bits
- * - Integer numbers: 1, 3, 5; Range: 0..2^32-1
- * - Leading and trailing space characters are not allowed
+ * This function accepts the following textual representations of data of type `uint32_t`:
+ * - Hex values: 0x120000CD, 0xAB000000, 0xab00
+ * - Binary values: 0b01, 0b001000
+ * - Decimal numbers, digits 0..9 only. A leading +/- character is optional.
+ * - Leading and trailing space characters are not allowed.
  *
- * This function is intended to be used in function interpreting user input. It provides
- * maximum flexibility to the user when a `uint32_t` shall be entered.
+ * This function is intended to be used for interpreting user input. It provides maximum flexibility to the user when
+ * a `uint32_t` shall be entered. Potential exceptions will contain a verbose error message.
  *
  * - - -
  *
@@ -1782,9 +1974,9 @@ uint32_t DecimalToU32(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::out_of_range       Result does not fit into `uint32_t`.
+ * \throws std::invalid_argument   `s` contains no valid representation of a number.
  *
- * \throws std::invalid_argument   `s` is invalid.
+ * \throws std::out_of_range       The result of the conversion exceeds the range of `uint32_t`.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -1792,63 +1984,91 @@ uint32_t DecimalToU32(std::string const & s)
  * - - -
  *
  * \param s
- * String that shall be converted to an `uint32_t`.
+ * String that shall be converted into an `uint32_t`.
+ *
  * \return
- * `uint32_t` value.
+ * Result of the conversion.
  */
 uint32_t AnyNumberToU32(std::string const & s)
 {
-  long long value;
-  size_t n;
-  if (StartsWith(s, " "))
-  {
-    throw std::invalid_argument("AnyNumberToU32");
-  }
-  else if (StartsWith(s, "0x"))
-  {
-    value = std::stoll(s, &n, 16);
+  return AnyNumberToU32(s,
+                        std::numeric_limits<uint32_t>::min(),
+                        std::numeric_limits<uint32_t>::max());
+}
 
-    if (n != s.size())
-      throw std::invalid_argument("AnyNumberToU32");
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing any valid number representation into a value of type `uint32_t` and checks
+ *        the result against a given `min` and `max`.
+ *
+ * This function accepts the following textual representations of data of type `uint32_t`:
+ * - Hex values: 0x120000CD, 0xAB000000, 0xab00
+ * - Binary values: 0b01, 0b001000
+ * - Decimal numbers, digits 0..9 only. A leading +/- character is optional.
+ * - Leading and trailing space characters are not allowed.
+ *
+ * This function is intended to be used for interpreting user input. It provides maximum flexibility to the user when
+ * a `uint32_t` shall be entered. Potential exceptions will contain a verbose error message.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ *
+ * \throws std::out_of_range       The result of the conversion exceeds the range of [`min`;`max`].
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String that shall be converted into an `uint32_t`.
+ *
+ * \param min
+ * Minimum allowed value.
+ *
+ * \param max
+ * Maximum allowed value.\n
+ * If `max` < `min`, then the range-check will always fail.
+ *
+ * \return
+ * Result of the conversion.
+ */
+uint32_t AnyNumberToU32(std::string const & s, uint32_t const min, uint32_t const max)
+{
+  if (StartsWith(s, "0x"))
+  {
+    return ToU32(s, 16U, min, max);
   }
   else if (StartsWith(s, "0b"))
   {
-    value = std::stoll(s.substr(2), &n, 2);
-
-    if (n != s.size() - 2U)
-      throw std::invalid_argument("AnyNumberToU32");
-  }
-  else if (StartsWith(s, "-"))
-  {
-    throw std::invalid_argument("AnyNumberToU32");
+    return ToU32(s.substr(2), 2U, min, max);
   }
   else
   {
-    value = std::stoll(s, &n, 10);
-
-    if (n != s.size())
-      throw std::invalid_argument("AnyNumberToU32");
+    return ToU32(s, 10U, min, max);
   }
-
-  if ((value < std::numeric_limits<uint32_t>::min()) || (value > std::numeric_limits<uint32_t>::max()))
-    throw std::out_of_range("AnyNumberToU32");
-
-  return static_cast<uint32_t>(value);
 }
 
 /**
  * \ingroup GPCC_STRING
  * \brief Converts a string containing any valid character representation into a value of type `char`.
  *
- * The function accepts the following textual representations of data of type `char`:
- * - Hex values: 0x12, 0xAB, 0xab; Range: 0x00..0xFF
- * - Binary values: 0b00001000; Range: 0b00000000..0b11111111
- * - Single ASCII characters in '': 'a', 'b', ''' -> '
- * - Integer numbers: 1, 3, -5; Range: -128..127
- * - Leading and trailing space characters are not allowed
+ * This function accepts the following textual representations of data of type `char`:
+ * - Hex values: 0x12, 0xAB; Range: 0x00..0xFF
+ * - Binary values: 0b01, 0b001000; Range: 0b00000000..0b11111111
+ * - Decimal numbers, digits 0..9 only, range -128..127; A leading +/- character is optional.
+ * - Single ASCII characters in quoted in '': 'a', 'b', ''' -> '
+ * - Leading and trailing space characters are not allowed.
  *
- * This function is intended to be used in function interpreting user input. It provides
- * maximum flexibility to the user when a `char` shall be entered.
+ * This function is intended to be used for interpreting user input. It provides maximum flexibility to the user when
+ * a `char` shall be entered. Potential exceptions will contain a verbose error message.
  *
  * - - -
  *
@@ -1858,9 +2078,9 @@ uint32_t AnyNumberToU32(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::out_of_range       Result does not fit into `char`.
+ * \throws std::invalid_argument   `s` contains no valid representation of a character.
  *
- * \throws std::invalid_argument   `s` is invalid.
+ * \throws std::out_of_range       The result of the conversion exceeds the range of `char`.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -1868,69 +2088,45 @@ uint32_t AnyNumberToU32(std::string const & s)
  * - - -
  *
  * \param s
- * String that shall be converted to an `char`.
+ * String that shall be converted into an `char`.
+ *
  * \return
- * `char` value.
+ * Result of the conversion.
  */
 char AnyStringToChar(std::string const & s)
 {
-  long value;
-  size_t n;
-  if (StartsWith(s, " "))
+  if (StartsWith(s, "0x"))
   {
-    throw std::invalid_argument("AnyStringToChar");
-  }
-  else if (StartsWith(s, "0x"))
-  {
-    value = std::stol(s, &n, 16);
-
-    if (n != s.size())
-      throw std::invalid_argument("AnyStringToChar");
-
-    if ((value < 0) || (value > 255))
-      throw std::out_of_range("AnyStringToChar");
+    return static_cast<char>(ToU32(s, 16U, 0U, 255U));
   }
   else if (StartsWith(s, "0b"))
   {
-    value = std::stol(s.substr(2), &n, 2);
-
-    if (n != s.size() - 2U)
-      throw std::invalid_argument("AnyStringToChar");
-
-    if ((value < 0) || (value > 255))
-      throw std::out_of_range("AnyStringToChar");
+    return static_cast<char>(ToU32(s.substr(2), 2U, 0U, 255U));
   }
   else if (StartsWith(s, "'"))
   {
     if ((s.length() != 3U) || (s[2] != '\''))
-      throw std::invalid_argument("AnyStringToChar");
+      ThrowInvalidNumberRepresentation(s);
 
     return s[1];
   }
   else
   {
-    value = std::stol(s, &n, 10);
-
-    if (n != s.size())
-      throw std::invalid_argument("AnyStringToChar");
-
-    if ((value < std::numeric_limits<char>::min()) || (value > std::numeric_limits<char>::max()))
-      throw std::out_of_range("AnyStringToChar");
+    return static_cast<char>(ToI32(s, 10U, std::numeric_limits<char>::min(), std::numeric_limits<char>::max()));
   }
-
-  return static_cast<char>(value);
 }
 
 /**
  * \ingroup GPCC_STRING
  * \brief Converts a string containing a number in decimal representation into a value of type `int32_t`.
  *
- * The function accepts the following textual representations of data of type `int32_t`:
- * - Integer numbers: -4, -2, 0, 1, 3, 5; Range: -2^31 .. 2^31-1
- * - Any leading spaces characters are ignored
- * - Trailing space characters are not allowed
+ * This function accepts the following textual representations of data of type `int32_t`:
+ * - Decimal numbers, digits 0..9 only; Range: -2^31 .. 2^31-1
+ * - Leading and trailing space characters are not allowed.
+ * - A leading +/- character is optional.
  *
- * This function is intended to be used in function interpreting user input.
+ * This function is intended to be used for interpreting user input. Potential exceptions will contain a verbose error
+ * message.
  *
  * - - -
  *
@@ -1940,9 +2136,9 @@ char AnyStringToChar(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::out_of_range       Result does not fit into `int32_t`.
+ * \throws std::invalid_argument   `s` contains no valid representation of a number.
  *
- * \throws std::invalid_argument   `s` is invalid.
+ * \throws std::out_of_range       The result of the conversion exceeds the range of `int32_t`.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -1950,22 +2146,65 @@ char AnyStringToChar(std::string const & s)
  * - - -
  *
  * \param s
- * String containing the number that shall be converted to an `int32_t`.
+ * String containing the number that shall be converted into an `int32_t`.
+ *
  * \return
- * `int32_t` value.
+ * Result of the conversion.
  */
 int32_t DecimalToI32(std::string const & s)
 {
-  size_t n;
-  long long const value = std::stoll(s, &n, 10);
+  return ToI32(s,
+               10U,
+               std::numeric_limits<int32_t>::min(),
+               std::numeric_limits<int32_t>::max());
+}
 
-  if (n != s.size())
-    throw std::invalid_argument("DecimalToI32");
-
-  if ((value < std::numeric_limits<int32_t>::min()) || (value > std::numeric_limits<int32_t>::max()))
-    throw std::out_of_range("DecimalToI32");
-
-  return static_cast<int32_t>(value);
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing a number in decimal representation into a value of type `int32_t` and checks
+ *        the result against a given `min` and `max`.
+ *
+ * This function accepts the following textual representations of data of type `int32_t`:
+ * - Decimal numbers, digits 0..9 only; Range: [`min`;`max`]
+ * - Leading and trailing space characters are not allowed.
+ * - A leading +/- character is optional.
+ *
+ * This function is intended to be used for interpreting user input. Potential exceptions will contain a verbose error
+ * message.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ *
+ * \throws std::out_of_range       The result of the conversion exceeds the range of [`min`;`max`].
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String containing the number that shall be converted into an `int32_t`.
+ *
+ * \param min
+ * Minimum allowed value.
+ *
+ * \param max
+ * Maximum allowed value.\n
+ * If `max` < `min`, then the range-check will always fail.
+ *
+ * \return
+ * Result of the conversion.
+ */
+int32_t DecimalToI32(std::string const & s, int32_t const min, int32_t const max)
+{
+  return ToI32(s, 10U, min, max);
 }
 
 /**
@@ -1976,10 +2215,10 @@ int32_t DecimalToI32(std::string const & s)
  * - 0, +0, -0, 0.5, +0.5, -0.5, 0.5E+1, 0.5E1. 0.5E-1, 0.5e1
  * - INF, INFINITY (both case-insensitive)
  * - NAN, NAN(*) (both case-insensitive; * may be any sequence of digits, letters, and underscores)
- * - Any leading spaces characters are ignored
- * - Trailing space characters are not allowed
+ * - Leading and trailing space characters are not allowed.
  *
- * This function is intended to be used in functions interpreting user input.
+ * This function is intended to be used for interpreting user input. Potential exceptions will contain a verbose error
+ * message.
  *
  * - - -
  *
@@ -1989,9 +2228,9 @@ int32_t DecimalToI32(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::out_of_range       Result does not fit into `double`.
+ * \throws std::invalid_argument   `s` contains no valid representation of a number.
  *
- * \throws std::invalid_argument   `s` is invalid.
+ * \throws std::out_of_range       The result of the conversion exceeds the range of `double`.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -1999,21 +2238,36 @@ int32_t DecimalToI32(std::string const & s)
  * - - -
  *
  * \param s
- * String containing the floating point number that shall be converted into a value of type `double`.
+ * String that shall be converted into an `double`.
+ *
  * \return
- * `double` value.
+ * Result of the conversion.
  */
 double ToDouble(std::string const & s)
 {
-  if (StartsWith(s, " "))
-    throw std::invalid_argument("ToDouble");
+  // reject empty strings and leading whitespace characters
+  if ((s.empty()) || (std::isspace(s.front()) != 0))
+    ThrowInvalidNumberRepresentation(s);
 
   size_t n;
-  double const d = std::stod(s, &n);
-  if (n != s.length())
-    throw std::invalid_argument("ToDouble");
+  double value;
+  try
+  {
+    value = std::stod(s, &n);
+  }
+  catch (std::out_of_range const &)
+  {
+    throw;
+  }
+  catch (std::exception const &)
+  {
+    ThrowInvalidNumberRepresentation(s);
+  }
 
-  return d;
+  if (n != s.size())
+    ThrowInvalidNumberRepresentation(s);
+
+  return value;
 }
 
 /**
