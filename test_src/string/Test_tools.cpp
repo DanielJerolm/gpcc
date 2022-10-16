@@ -1552,6 +1552,8 @@ TEST(gpcc_string_tools_Tests, DecimalToU8)
   // invalid values
   EXPECT_THROW(DecimalToU8(" 0"),  std::invalid_argument);
   EXPECT_THROW(DecimalToU8("0 "),  std::invalid_argument);
+  EXPECT_THROW(DecimalToU8("--0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToU8("++0"), std::invalid_argument);
   EXPECT_THROW(DecimalToU8(""),    std::invalid_argument);
   EXPECT_THROW(DecimalToU8(" "),   std::invalid_argument);
   EXPECT_THROW(DecimalToU8("X7"),  std::invalid_argument);

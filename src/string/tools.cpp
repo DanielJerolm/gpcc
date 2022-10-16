@@ -1785,11 +1785,12 @@ uint8_t AnyStringToU8(std::string const & s)
  * \brief Converts a string containing a two digit hexadecimal number into a value of type `uint8_t`.
  *
  * The input format is strict:
- * - two digits, hexadecimal format
+ * - exactly two digits, hexadecimal format
  * - no "0x" prefix
  * - Leading and trailing space characters are not allowed
  *
- * This function is intended to be used in functions interpreting user input.
+ * This function is intended to be used for interpreting user input. Potential exceptions will contain a verbose error
+ * message.
  *
  * - - -
  *
@@ -1799,9 +1800,7 @@ uint8_t AnyStringToU8(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::out_of_range       Result does not fit into `uint8_t`.
- *
- * \throws std::invalid_argument   `s` is invalid.
+ * \throws std::invalid_argument   `s` contains no valid representation of a number.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -1809,14 +1808,15 @@ uint8_t AnyStringToU8(std::string const & s)
  * - - -
  *
  * \param s
- * String containing the 2-digit hexadecimal number that shall be converted to an `uint8_t`.
+ * String containing the 2-digit hexadecimal number that shall be converted into an `uint8_t`.
+ *
  * \return
- * `uint8_t` value.
+ * Result of the conversion.
  */
 uint8_t TwoDigitHexToU8(std::string const & s)
 {
-  if ((s.size() != 2U) || (s.front() == '+') || (s.front() == '-') || (s.front() == ' '))
-    throw std::invalid_argument("TwoDigitHexToU8");
+  if ((s.size() != 2U) || (s.front() == '+') || (s.front() == '-') || (std::isspace(s.front()) != 0))
+    ThrowInvalidNumberRepresentation(s);
 
   return static_cast<uint8_t>(ToU32(s, 16U, std::numeric_limits<uint8_t>::min(), std::numeric_limits<uint8_t>::max()));
 }
@@ -1826,11 +1826,12 @@ uint8_t TwoDigitHexToU8(std::string const & s)
  * \brief Converts a string containing a two digit hexadecimal number into a value of type `uint16_t`.
  *
  * The input format is strict:
- * - four digits, hexadecimal format
+ * - exactly four digits, hexadecimal format
  * - no "0x" prefix
  * - Leading and trailing space characters are not allowed
  *
- * This function is intended to be used in functions interpreting user input.
+ * This function is intended to be used for interpreting user input. Potential exceptions will contain a verbose error
+ * message.
  *
  * - - -
  *
@@ -1840,9 +1841,7 @@ uint8_t TwoDigitHexToU8(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::out_of_range       Result does not fit into `uint16_t`.
- *
- * \throws std::invalid_argument   `s` is invalid.
+ * \throws std::invalid_argument   `s` contains no valid representation of a number.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -1851,13 +1850,14 @@ uint8_t TwoDigitHexToU8(std::string const & s)
  *
  * \param s
  * String containing the 4-digit hexadecimal number that shall be converted to an `uint16_t`.
+ *
  * \return
- * `uint16_t` value.
+ * Result of the conversion.
  */
 uint16_t FourDigitHexToU16(std::string const & s)
 {
-  if ((s.size() != 4U) || (s.front() == '+') || (s.front() == '-') || (s.front() == ' '))
-    throw std::invalid_argument("FourDigitHexToU16");
+  if ((s.size() != 4U) || (s.front() == '+') || (s.front() == '-') || (std::isspace(s.front()) != 0))
+    ThrowInvalidNumberRepresentation(s);
 
   return static_cast<uint16_t>(ToU32(s, 16U, std::numeric_limits<uint16_t>::min(), std::numeric_limits<uint16_t>::max()));
 }
