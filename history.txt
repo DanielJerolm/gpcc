@@ -11,6 +11,8 @@ GPCC Implementation History and Current Activities
   - [OK] Compare Doxygen across DecimalToU*
   - [OK] Review AnyNumberToU8
   - [OK] Review AnyStringToU8
+  - [OK] Review HexToU32
+  - [OK] Review HexToU32(min, max)
   - [OK] Review AnyNumberToU32
   - [OK] Review AnyNumberToU32(min,max)
   - [OK] Compare Doxygen across AnyNumberToU*
@@ -26,12 +28,12 @@ GPCC Implementation History and Current Activities
   - [OK] Review DecimalToI32
   - [OK] Review DecimalToI32(min,max)
 
-  - [  ] Add AnyNumberToI32
-  - [  ] Add AnyNumberToI32(min,max)
-  - [  ] Review AnyNumberToI32
-  - [  ] Review AnyNumberToI32(min,max)
+  - [OK] Add AnyNumberToI32
+  - [OK] Add AnyNumberToI32(min,max)
+  - [OK] Review AnyNumberToI32
+  - [OK] Review AnyNumberToI32(min,max)
 
-  - [  ] Review Unit-Tests of String2X functions
+  - [OK] Review Unit-Tests of String2X functions
          [OK] uint8_t DecimalToU8(std::string const & s);
          [OK] uint8_t AnyNumberToU8(std::string const & s);
          [OK] uint8_t AnyStringToU8(std::string const & s);
@@ -39,15 +41,19 @@ GPCC Implementation History and Current Activities
          [OK] uint16_t FourDigitHexToU16(std::string const & s);
          [OK] uint32_t DecimalToU32(std::string const & s);
          [OK] uint32_t DecimalToU32(std::string const & s, uint32_t const min, uint32_t const max);
+         [OK] uint32_t HexToU32(std::string const & s);
+         [OK] uint32_t HexToU32(std::string const & s, uint32_t const min, uint32_t const max);
          [OK] uint32_t AnyNumberToU32(std::string const & s);
          [OK] uint32_t AnyNumberToU32(std::string const & s, uint32_t const min, uint32_t const max);
          [OK] char AnyStringToChar(std::string const & s);
          [OK] int32_t DecimalToI32(std::string const & s);
-         [OK] int32_t DecimalToI32(std::string const & s, int32_t const min, int32_t const max);
+         [OK] int32_t DecimalToI32(std::string const & s, int32_t const min, int32_t const max); <-- min < 0?
          [OK] double ToDouble(std::string const & s);
-         [  ] int32_t AnyNumberToI32(std::string const & s);
-         [  ] int32_t AnyNumberToI32(std::string const & s, int32_t const min, int32_t const max);
+         [OK] int32_t AnyNumberToI32(std::string const & s);
+         [OK] int32_t AnyNumberToI32(std::string const & s, int32_t const min, int32_t const max);
          [OK] Check order of test (cpp vs test-cpp)
+
+  - [  ] Check users of String2X
 
 
 Next to do:
@@ -228,6 +234,10 @@ Next to do:
 
 History:
 ===============================================================================
+2022-10-17
+- Added missing String2X-functions, incl. unit tests
+- Reviewed String2X-functions, incl. unit tests
+
 2022-10-13
 - Bugfix: Renamed AnyStringToU32() -> AnyNumberToU32()
 

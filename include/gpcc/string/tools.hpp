@@ -58,11 +58,15 @@ uint8_t TwoDigitHexToU8(std::string const & s);
 uint16_t FourDigitHexToU16(std::string const & s);
 uint32_t DecimalToU32(std::string const & s);
 uint32_t DecimalToU32(std::string const & s, uint32_t const min, uint32_t const max);
+uint32_t HexToU32(std::string const & s);
+uint32_t HexToU32(std::string const & s, uint32_t const min, uint32_t const max);
 uint32_t AnyNumberToU32(std::string const & s);
 uint32_t AnyNumberToU32(std::string const & s, uint32_t const min, uint32_t const max);
 char AnyStringToChar(std::string const & s);
 int32_t DecimalToI32(std::string const & s);
 int32_t DecimalToI32(std::string const & s, int32_t const min, int32_t const max);
+int32_t AnyNumberToI32(std::string const & s);
+int32_t AnyNumberToI32(std::string const & s, int32_t const min, int32_t const max);
 double ToDouble(std::string const & s);
 
 // Extraction and breakdown ---------------------------------------------------
