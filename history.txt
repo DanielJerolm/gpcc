@@ -2,14 +2,66 @@
 GPCC Implementation History and Current Activities
 ==================================================
 
+- Branch Fix_AnyString2X
+  - [OK] Review ToU32
+  - [OK] Review ToI32
+  - [OK] Review DecimalToU8
+  - [OK] Review DecimalToU32
+  - [OK] Review DecimalToU32(min,max)
+  - [OK] Compare Doxygen across DecimalToU*
+  - [OK] Review AnyNumberToU8
+  - [OK] Review AnyStringToU8
+  - [OK] Review HexToU32
+  - [OK] Review HexToU32(min, max)
+  - [OK] Review AnyNumberToU32
+  - [OK] Review AnyNumberToU32(min,max)
+  - [OK] Compare Doxygen across AnyNumberToU*
+  - [OK] Compare Doxygen across DecimalToU* and AnyNumberToU*
+  - [OK] Review AnyStringToChar
+  - [OK] Compare Doxygen of AnyStringToChar with AnyNumberToU8
+  - [OK] Review ToDouble
+  - [OK] Check order of functions (hpp vs cpp)
+
+  - [OK] Review TwoDigitHexToU8
+  - [OK] Review FourDigitHexToU16
+
+  - [OK] Review DecimalToI32
+  - [OK] Review DecimalToI32(min,max)
+
+  - [OK] Add AnyNumberToI32
+  - [OK] Add AnyNumberToI32(min,max)
+  - [OK] Review AnyNumberToI32
+  - [OK] Review AnyNumberToI32(min,max)
+
+  - [OK] Review Unit-Tests of String2X functions
+         [OK] uint8_t DecimalToU8(std::string const & s);
+         [OK] uint8_t AnyNumberToU8(std::string const & s);
+         [OK] uint8_t AnyStringToU8(std::string const & s);
+         [OK] uint8_t TwoDigitHexToU8(std::string const & s);
+         [OK] uint16_t FourDigitHexToU16(std::string const & s);
+         [OK] uint32_t DecimalToU32(std::string const & s);
+         [OK] uint32_t DecimalToU32(std::string const & s, uint32_t const min, uint32_t const max);
+         [OK] uint32_t HexToU32(std::string const & s);
+         [OK] uint32_t HexToU32(std::string const & s, uint32_t const min, uint32_t const max);
+         [OK] uint32_t AnyNumberToU32(std::string const & s);
+         [OK] uint32_t AnyNumberToU32(std::string const & s, uint32_t const min, uint32_t const max);
+         [OK] char AnyStringToChar(std::string const & s);
+         [OK] int32_t DecimalToI32(std::string const & s);
+         [OK] int32_t DecimalToI32(std::string const & s, int32_t const min, int32_t const max); <-- min < 0?
+         [OK] double ToDouble(std::string const & s);
+         [OK] int32_t AnyNumberToI32(std::string const & s);
+         [OK] int32_t AnyNumberToI32(std::string const & s, int32_t const min, int32_t const max);
+         [OK] Check order of test (cpp vs test-cpp)
+
+  - [OK] Check users of String2X
+
+
 Next to do:
 ===============================================================================
-- Bugfix: AnyStringToU32 should be AnyNumberToU32
-
 - Options for enhancements identified during header restructuring:
   - [  ] Simplify TestBlockAccessor (long namespaces)
   - [  ] Simplify TestEEPROMSectionSystem (long namespaces)
-  - [  ] IRandomAccessStorageCLI.cpp
+  - [IP] IRandomAccessStorageCLI.cpp
          Provide more String2X functions and use them in CliCmdReadIRandomAccessStorage() and
          CliCmdWriteIRandomAccessStorage()
 
@@ -182,6 +234,14 @@ Next to do:
 
 History:
 ===============================================================================
+2022-10-17
+- Added missing String2X-functions, incl. unit tests
+- Reviewed String2X-functions, incl. unit tests
+- Checked users of String2X-functions, enhanced them if advantageous, and updated unit tests if required
+
+2022-10-13
+- Bugfix: Renamed AnyStringToU32() -> AnyNumberToU32()
+
 2022-10-12 (Release version V 2.1.1)
 - Added missing license notes
 - Enhanced README.md

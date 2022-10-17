@@ -212,7 +212,7 @@ void MultiRODACLIClientBase::CLICommandHandler(std::string const & restOfLine, g
   if (pos == std::string::npos)
     throw gpcc::cli::UserEnteredInvalidArgsError();
 
-  uint32_t const rodaID = gpcc::string::AnyStringToU32(restOfLine.substr(0U, pos));
+  uint32_t const rodaID = gpcc::string::AnyNumberToU32(restOfLine.substr(0U, pos));
 
   auto rest = restOfLine.substr(pos + 1U);
 
