@@ -75,32 +75,25 @@ void CliCmdReadIRandomAccessStorage(std::string const & restOfLine,
   try
   {
     auto it = params.begin();
-    long long value;
 
     // address
-    if (!gpcc::string::StartsWith(*it, "0x"))
-      throw gpcc::cli::UserEnteredInvalidArgsError();
-
-    value = std::stoll((*it).substr(2), nullptr, 16);
-    if ((value < 0) || (value > std::numeric_limits<uint32_t>::max()))
-      throw gpcc::cli::UserEnteredInvalidArgsError();
-    address = value;
+    address = gpcc::string::HexToU32(*it);
     ++it;
 
     // number of bytes
-    value = std::stoll(*it);
-    if ((value < 0) || (value > 1024))
-      throw gpcc::cli::UserEnteredInvalidArgsError();
-    n = value;
-
+    n = gpcc::string::AnyNumberToU32(*it, 0U, 1024U);
     if (n == 0U)
       return;
 
     // check: address overflow?
-    if (std::numeric_limits<uint32_t>::max() - address < n - 1U)
+    if ((std::numeric_limits<uint32_t>::max() - address) < (n - 1U))
       throw gpcc::cli::UserEnteredInvalidArgsError("Address out of bounds");
   }
   catch (gpcc::cli::UserEnteredInvalidArgsError const &)
+  {
+    throw;
+  }
+  catch (std::bad_alloc const &)
   {
     throw;
   }
@@ -112,7 +105,7 @@ void CliCmdReadIRandomAccessStorage(std::string const & restOfLine,
   params.clear();
 
   // check "address" and "n" against properties of pRAS
-  if (address + (n - 1U) >= pRAS->GetSize())
+  if ((address + (n - 1U)) >= pRAS->GetSize())
     throw gpcc::cli::UserEnteredInvalidArgsError("Address out of bounds");
 
   // allocate buffer and read
@@ -196,16 +189,9 @@ void CliCmdWriteIRandomAccessStorage(std::string const & restOfLine,
   try
   {
     auto it = params.begin();
-    long long value;
 
     // address
-    if (!gpcc::string::StartsWith(*it, "0x"))
-      throw gpcc::cli::UserEnteredInvalidArgsError();
-
-    value = std::stoll((*it).substr(2), nullptr, 16);
-    if ((value < 0) || (value > std::numeric_limits<uint32_t>::max()))
-      throw gpcc::cli::UserEnteredInvalidArgsError();
-    address = value;
+    address = gpcc::string::HexToU32(*it);
     ++it;
 
     // read data
@@ -216,10 +202,14 @@ void CliCmdWriteIRandomAccessStorage(std::string const & restOfLine,
     }
 
     // check: address overflow?
-    if (std::numeric_limits<uint32_t>::max() - address < data.size() - 1U)
+    if ((std::numeric_limits<uint32_t>::max() - address) < (data.size() - 1U))
       throw gpcc::cli::UserEnteredInvalidArgsError("Address out of bounds");
   }
   catch (gpcc::cli::UserEnteredInvalidArgsError const &)
+  {
+    throw;
+  }
+  catch (std::bad_alloc const &)
   {
     throw;
   }
@@ -231,7 +221,7 @@ void CliCmdWriteIRandomAccessStorage(std::string const & restOfLine,
   params.clear();
 
   // check "address" and "n" against properties of pRAS
-  if (address + (data.size() - 1U) >= pRAS->GetSize())
+  if ((address + (data.size() - 1U)) >= pRAS->GetSize())
     throw gpcc::cli::UserEnteredInvalidArgsError("Address out of bounds");
 
   // write

@@ -4,15 +4,6 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
-- Bugfix: AnyStringToU32 should be AnyNumberToU32
-
-- Options for enhancements identified during header restructuring:
-  - [  ] Simplify TestBlockAccessor (long namespaces)
-  - [  ] Simplify TestEEPROMSectionSystem (long namespaces)
-  - [  ] IRandomAccessStorageCLI.cpp
-         Provide more String2X functions and use them in CliCmdReadIRandomAccessStorage() and
-         CliCmdWriteIRandomAccessStorage()
-
 
 - COOD remote access
   ==================
@@ -107,14 +98,20 @@ Next to do:
   [  ] Request for command execution
   [  ] IPC-Adapter
 
+- rename Thread::priority_t to Thread::tPriority
+
+- Options for enhancements identified during header restructuring:
+  - [  ] Simplify TestBlockAccessor (long namespaces)
+  - [  ] Simplify TestEEPROMSectionSystem (long namespaces)
+
+- Review text messages passed to exception's ctors
+  (grep -n -r "throw .*\(.*\);")
+
 - cleanup osal/universal
 
 - cleanup resource_management
   - Coding & doc style
   - Some internals are referenced by unique_ptr and are not a part. Stay with this or make parts?
-
-- Review text messages passed to exception's ctors
-  (grep -n -r "throw .*\(.*\);")
 
 - Evaluate Feature Request:
   - SharedLogger with prefix ("Instanzidentifier") that allows multiple users of a SharedLogger to log to one Logger.
@@ -142,8 +139,6 @@ Next to do:
 - TFC
   - Check mutex unlock order
   - Consider checking mutex locking order
-
-- rename Thread::priority_t to Thread::tPriority
 
 - enhance gpcc::string::InsertIndention:
   - function does not provide what one might expect from its name
@@ -182,6 +177,14 @@ Next to do:
 
 History:
 ===============================================================================
+2022-10-17 (Release version V 2.2.0)
+- Added missing String2X-functions, incl. unit tests
+- Reviewed String2X-functions, incl. unit tests
+- Checked users of String2X-functions, enhanced them if advantageous, and updated unit tests if required
+
+2022-10-13
+- Bugfix: Renamed AnyStringToU32() -> AnyNumberToU32()
+
 2022-10-12 (Release version V 2.1.1)
 - Added missing license notes
 - Enhanced README.md
