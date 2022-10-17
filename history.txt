@@ -237,6 +237,7 @@ History:
 2022-10-17
 - Added missing String2X-functions, incl. unit tests
 - Reviewed String2X-functions, incl. unit tests
+- Checked users of String2X-functions, enhanced them if advantageous, and updated unit tests if required
 
 2022-10-13
 - Bugfix: Renamed AnyStringToU32() -> AnyNumberToU32()
