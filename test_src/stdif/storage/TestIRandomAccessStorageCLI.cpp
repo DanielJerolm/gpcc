@@ -194,13 +194,13 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_AddressNotHex)
 {
   char const * expected[8] =
   {
-   "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0 0",
    "",
    "Invalid arguments. Try 'ReadRAS help'.",
    "Details:",
    "0: User entered invalid arguments.",
+   "1: Invalid number/format: \"0\"",
    ">"
   };
 
@@ -222,7 +222,7 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_AddressBadChars)
    "Invalid arguments. Try 'ReadRAS help'.",
    "Details:",
    "0: User entered invalid arguments.",
-   "1: stoll",
+   "1: Invalid number/format: \"0xXYZ\"",
    ">"
   };
 
@@ -238,13 +238,13 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_NbOfBytesNegative)
 {
   char const * expected[8] =
   {
-   "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0x0 -1",
    "",
    "Invalid arguments. Try 'ReadRAS help'.",
    "Details:",
    "0: User entered invalid arguments.",
+   "1: Value '-1' is out of range [0;1024]",
    ">"
   };
 
@@ -266,7 +266,7 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_NbOfBytesBadChars)
    "Invalid arguments. Try 'ReadRAS help'.",
    "Details:",
    "0: User entered invalid arguments.",
-   "1: stoll",
+   "1: Invalid number/format: \"XYZ\"",
    ">"
   };
 
@@ -282,13 +282,13 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_NbOfBytesTooLarge)
 {
   char const * expected[8] =
   {
-   "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0x0 1025",
    "",
    "Invalid arguments. Try 'ReadRAS help'.",
    "Details:",
    "0: User entered invalid arguments.",
+   "1: Value '1025' is out of range [0;1024]",
    ">"
   };
 
@@ -597,13 +597,13 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_AddressNotHex)
 {
   char const * expected[8] =
   {
-   "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">WriteRAS 0 0",
    "",
    "Invalid arguments. Try 'WriteRAS help'.",
    "Details:",
    "0: User entered invalid arguments.",
+   "1: Invalid number/format: \"0\"",
    ">"
   };
 
@@ -627,7 +627,7 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_AddressBadChars)
    "Invalid arguments. Try 'WriteRAS help'.",
    "Details:",
    "0: User entered invalid arguments.",
-   "1: stoll",
+   "1: Invalid number/format: \"0xXYZ\"",
    ">"
   };
 
@@ -921,7 +921,7 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat2)
    "Invalid arguments. Try 'WriteRAS help'.",
    "Details:",
    "0: User entered invalid arguments.",
-   "1: Invalid number: \"-0x05\"",
+   "1: Invalid number/format: \"-0x05\"",
    ">"
   };
 
@@ -993,7 +993,7 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat5)
    "Invalid arguments. Try 'WriteRAS help'.",
    "Details:",
    "0: User entered invalid arguments.",
-   "1: Invalid number: \"'AB'\"",
+   "1: Invalid number/format: \"'AB'\"",
    ">"
   };
 
@@ -1017,7 +1017,7 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat6)
    "Invalid arguments. Try 'WriteRAS help'.",
    "Details:",
    "0: User entered invalid arguments.",
-   "1: Invalid number: \"A\"",
+   "1: Invalid number/format: \"A\"",
    ">"
   };
 
@@ -1041,7 +1041,7 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Write_BadNumberFormat7)
    "Invalid arguments. Try 'WriteRAS help'.",
    "Details:",
    "0: User entered invalid arguments.",
-   "1: Invalid number: \"\"A\"\"",
+   "1: Invalid number/format: \"\"A\"\"",
    ">"
   };
 
