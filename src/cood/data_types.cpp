@@ -820,9 +820,9 @@ void StringToCANOpenEncodedData(std::string const & s, size_t const sizeInBit, D
 
       case DataType::integer8:
       {
-        int32_t const i32 = gpcc::string::DecimalToI32(s);
-        if ((i32 < std::numeric_limits<int8_t>::min()) || (i32 > std::numeric_limits<int8_t>::max()))
-          throw std::invalid_argument("Expected: -128..127");
+        int32_t const i32 = gpcc::string::DecimalToI32(s,
+                                                       std::numeric_limits<int8_t>::min(),
+                                                       std::numeric_limits<int8_t>::max());
 
         sw.Write_int8(static_cast<int8_t>(i32));
         break;
@@ -830,9 +830,9 @@ void StringToCANOpenEncodedData(std::string const & s, size_t const sizeInBit, D
 
       case DataType::integer16:
       {
-        int32_t const i32 = gpcc::string::DecimalToI32(s);
-        if ((i32 < std::numeric_limits<int16_t>::min()) || (i32 > std::numeric_limits<int16_t>::max()))
-          throw std::invalid_argument("Expected: -32768..32767");
+        int32_t const i32 = gpcc::string::DecimalToI32(s,
+                                                       std::numeric_limits<int16_t>::min(),
+                                                       std::numeric_limits<int16_t>::max());
 
         sw.Write_int16(static_cast<int16_t>(i32));
         break;
@@ -855,9 +855,9 @@ void StringToCANOpenEncodedData(std::string const & s, size_t const sizeInBit, D
 
       case DataType::unsigned16:
       {
-        uint32_t const u32 = gpcc::string::AnyNumberToU32(s);
-        if (u32 > std::numeric_limits<uint16_t>::max())
-          throw std::invalid_argument("Expected: 0..65535");
+        uint32_t const u32 = gpcc::string::AnyNumberToU32(s,
+                                                          std::numeric_limits<uint16_t>::min(),
+                                                          std::numeric_limits<uint16_t>::max());
 
         sw.Write_uint16(static_cast<uint16_t>(u32));
         break;
@@ -944,9 +944,7 @@ void StringToCANOpenEncodedData(std::string const & s, size_t const sizeInBit, D
       case DataType::bit7:
       case DataType::bit8:
       {
-        uint8_t const bits = gpcc::string::AnyNumberToU8(s);
-        if (bits > ((1UL << sizeInBit) - 1U))
-          throw std::invalid_argument("Value too large");
+        uint8_t const bits = gpcc::string::AnyNumberToU32(s, 0U, (1UL << sizeInBit) - 1U);
 
         sw.Write_Bits(bits, sizeInBit);
         break;

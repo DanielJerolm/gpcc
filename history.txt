@@ -53,7 +53,7 @@ GPCC Implementation History and Current Activities
          [OK] int32_t AnyNumberToI32(std::string const & s, int32_t const min, int32_t const max);
          [OK] Check order of test (cpp vs test-cpp)
 
-  - [  ] Check users of String2X
+  - [OK] Check users of String2X
 
 
 Next to do:
