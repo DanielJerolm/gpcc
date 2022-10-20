@@ -12,7 +12,7 @@
 
 #include <gpcc/time/clock.hpp>
 #include <gpcc/osal/Panic.hpp>
-#include <platform/system_time/system_time.h>
+#include <chClockAndTime.h>
 #include <stdexcept>
 
 #ifndef _POSIX_MONOTONIC_CLOCK
@@ -51,10 +51,10 @@ uint32_t GetPrecision_ns(Clocks const clock) noexcept
 
   switch (clock)
   {
-    case Clocks::realtimeCoarse:   platform_SYSTIME_getres(&ts); break;
-    case Clocks::realtimePrecise:  platform_SYSTIME_getres_precise(&ts); break;
-    case Clocks::monotonicCoarse:  platform_SYSTIME_getres_monotonic(&ts); break;
-    case Clocks::monotonicPrecise: platform_SYSTIME_getres_monotonic_precise(&ts); break;
+    case Clocks::realtimeCoarse:   ch_clock_getres_realtime_coarse(&ts); break;
+    case Clocks::realtimePrecise:  ch_clock_getres_realtime(&ts); break;
+    case Clocks::monotonicCoarse:  ch_clock_getres_monotonic_coarse(&ts); break;
+    case Clocks::monotonicPrecise: ch_clock_getres_monotonic(&ts); break;
   }
 
   if ((ts.tv_sec != 0) || (ts.tv_nsec <= 0) || (ts.tv_nsec >= 1000000000L))
@@ -92,10 +92,10 @@ void GetTime(Clocks const clock, struct ::timespec& ts) noexcept
 {
   switch (clock)
   {
-    case Clocks::realtimeCoarse:   platform_SYSTIME_gettime(&ts); break;
-    case Clocks::realtimePrecise:  platform_SYSTIME_gettime_precise(&ts); break;
-    case Clocks::monotonicCoarse:  platform_SYSTIME_gettime_monotonic(&ts); break;
-    case Clocks::monotonicPrecise: platform_SYSTIME_gettime_monotonic_precise(&ts); break;
+    case Clocks::realtimeCoarse:   ch_clock_gettime_realtime_coarse(&ts); break;
+    case Clocks::realtimePrecise:  ch_clock_gettime_realtime(&ts); break;
+    case Clocks::monotonicCoarse:  ch_clock_gettime_monotonic_coarse(&ts); break;
+    case Clocks::monotonicPrecise: ch_clock_gettime_monotonic(&ts); break;
   }
 
   PANIC();
