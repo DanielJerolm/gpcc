@@ -71,7 +71,7 @@
 #
 # In productive environment:
 # For GPCC_OS=chibios_arm, the top level project has to provide:
-# - target_link_libraries(gpcc PRIVATE <library containing ChibiOS/RT kernel>)
+# - target_link_libraries(gpcc PUBLIC <library containing ChibiOS/RT kernel>)
 #
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(gpcc LANGUAGES CXX)

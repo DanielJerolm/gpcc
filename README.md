@@ -98,3 +98,76 @@ the workspace for the first time, you should take the following actions:
 3. Click on the drop-down-box in the bottom right of VSCODE that displays the current configuration.
 
 4. Choose the configuration "Linux-unittests".
+
+# Adoption to a specific platform
+## Linux (ARM/ARM64/x64)
+The underlying platform provides a standart C libarary, STL, and POSIX. Beyond these there is no need to provide any
+special functions.
+
+## ChibiOS/RT
+Interoperability has been tested with ChibiOS/RT kernel version 6.0.3. Any later version should also be compliant.
+
+The top-level project has to provide public linkage against a library or object-library containing ChibiOS/RT. The
+integration of GPCC into the CMakeLists.txt file of the top level project may look like this:
+
+```
+# GPCC
+set(GPCC_TargetEnvironment "productive" CACHE STRING "" FORCE)
+set(GPCC_Compiler "gcc_arm" CACHE STRING "" FORCE)
+set(GPCC_OS "chibios_arm" CACHE STRING "" FORCE)
+add_subdirectory(gpcc)
+target_link_libraries(gpcc PUBLIC <library containing ChibiOS/RT>)
+```
+
+GPCC will include the main ChibiOS/RT header this way:
+
+```
+#include <ch.h>
+```
+
+Alongside ChibiOS/RT, the user has to provide a few functions to allow GPCC to read the system's clocks. These functions
+are currently not part of ChibiOS/RT, but the naming follows the ChibiOS/RT pattern for include files and functions:
+
+```
+#include <chClockAndTime.h>
+```
+
+This header has to provide the following functions:
+
+```
+#include <time.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+  void ch_clock_getres_realtime_coarse(struct timespec* ts);
+  void ch_clock_getres_realtime(struct timespec* ts);
+  void ch_clock_getres_monotonic_coarse(struct timespec* ts);
+  void ch_clock_getres_monotonic(struct timespec* ts);
+
+  void ch_clock_gettime_realtime_coarse(struct timespec* ts);
+  void ch_clock_gettime_realtime(struct timespec* ts);
+  void ch_clock_gettime_monotonic_coarse(struct timespec* ts);
+  void ch_clock_gettime_monotonic(struct timespec* ts);
+
+#ifdef __cplusplus
+}
+#endif
+```
+
+The functions shall provide the resolution and a reading of the following clocks:
+
+- A coarse realtime clock. It shall provide UTC time based on the system tick (e.g. 1ms).
+- A precise realtime clock. It shall provide UTC time with the highest feasible precision. On some platforms, reading
+  this clock may be more expensive than reading the coarse version of this clock.
+- A coarse monotonic clock. It shall provide the time passed by since the system has booted based on the system tick
+  (e.g. 1ms). __This shall be the same clock like the one used by ChibiOS/RT to specify timeouts for condition__
+  __variables, semaphores etc.__
+- A precise monotonic clock. It shall provide the time passed by since the system has booted with the highest feasible
+  precision. On some platforms, reading this clock may be more expensive than reading the coarse version of this clock.
+
+For an example, please refer to folder "fake_platform_chibios" in https://github.com/DanielJerolm/gpcc_dev.
+
+The requried functions are inspired by POSIX functionality. Search the web for `clock_getres()`, `clock_gettime()`,
+`CLOCK_REALTIME`, `CLOCK_REALTIME_COARSE`, `CLOCK_MONOTONIC` and `CLOCK_MONOTONIC_COARSE`.
