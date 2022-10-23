@@ -47,3 +47,14 @@ target_sources(${PROJECT_NAME}
                remote_access/requests_and_responses/WriteRequestResponse.cpp
                sdo_abort_codes.cpp
               )
+
+if((${GPCC_OS} STREQUAL "linux_arm") OR
+   (${GPCC_OS} STREQUAL "linux_arm_tfc") OR
+   (${GPCC_OS} STREQUAL "linux_x64") OR
+   (${GPCC_OS} STREQUAL "linux_x64_tfc"))
+  target_sources(${PROJECT_NAME}
+                 PRIVATE
+                 remote_access/infrastructure/IPCClient.cpp
+                 remote_access/infrastructure/IPCServer.cpp
+                )
+endif()
