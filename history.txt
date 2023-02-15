@@ -4,6 +4,7 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
+- BugFix: IsPowerOf2 returns true for zero, but zero is not a power of 2
 
 - COOD remote access
   ==================
