@@ -21,12 +21,15 @@ namespace gpcc_tests {
 namespace execution  {
 namespace async      {
 
+using gpcc::execution::async::WorkPackage;
+using gpcc::osal::Thread;
+
 TEST(gpcc_tests_execution_async_DWQwithThread_Tests, CreateAndDestroy)
 {
   std::unique_ptr<DWQwithThread> spUUT;
 
   ASSERT_NO_THROW(spUUT = std::make_unique<DWQwithThread>("UUT"));
-  EXPECT_NO_THROW(spUUT.reset());
+  spUUT.reset();
 }
 
 #if !defined(SKIP_TFC_BASED_TESTS)
@@ -37,8 +40,8 @@ TEST(gpcc_tests_execution_async_DWQwithThread_Tests, ExecuteWP)
 
   auto spUUT = std::make_unique<DWQwithThread>("UUT");
 
-  spUUT->GetDWQ().Add(gpcc::execution::async::WorkPackage::CreateDynamic(this, 0U, func));
-  gpcc::osal::Thread::Sleep_ms(10U);
+  spUUT->GetDWQ().Add(WorkPackage::CreateDynamic(this, 0U, func));
+  Thread::Sleep_ms(10U);
 
   EXPECT_TRUE(called);
 
@@ -53,30 +56,27 @@ TEST(gpcc_tests_execution_async_DWQwithThread_Tests, WorkPackagesLeftUponDestruc
   auto func = [&]()
   {
     ++nbOfCalls;
-    gpcc::osal::Thread::Sleep_ms(10U);
+    Thread::Sleep_ms(10U);
   };
 
-  gpcc::execution::async::WorkPackage staticWP(this, 0U, func);
+  WorkPackage staticWP(this, 0U, func);
 
   auto spUUT = std::make_unique<DWQwithThread>("UUT");
 
   // Add first work package. Execution will take 10ms.
-  spUUT->GetDWQ().Add(gpcc::execution::async::WorkPackage::CreateDynamic(this, 0U, func));
+  spUUT->GetDWQ().Add(WorkPackage::CreateDynamic(this, 0U, func));
 
   // Add two more work packages. They are not intended to be executed because the UUT is destroyed before
   // they execute.
   spUUT->GetDWQ().Add(staticWP);
-  spUUT->GetDWQ().Add(gpcc::execution::async::WorkPackage::CreateDynamic(this, 0U, func));
+  spUUT->GetDWQ().Add(WorkPackage::CreateDynamic(this, 0U, func));
 
   // wait until the first dynamic work package is executing...
-  gpcc::osal::Thread::Sleep_ms(5U);
+  Thread::Sleep_ms(5U);
   EXPECT_TRUE(nbOfCalls == 1U);
 
   // ...and then destroy the UUT
-  ASSERT_NO_THROW(spUUT.reset());
-
-  // wait until all work packages have executed if they had not been removed from the queue
-  gpcc::osal::Thread::Sleep_ms(30U);
+  spUUT.reset();
   EXPECT_TRUE(nbOfCalls == 1U);
 }
 #endif
@@ -92,8 +92,8 @@ TEST(gpcc_tests_execution_async_DWQwithThread_DeathTests, WorkpackageThrows)
 
   auto lethalCode = [&]()
   {
-    spUUT->GetDWQ().Add(gpcc::execution::async::WorkPackage::CreateDynamic(this, 0U, func));
-    gpcc::osal::Thread::Sleep_ms(10U);
+    spUUT->GetDWQ().Add(WorkPackage::CreateDynamic(this, 0U, func));
+    Thread::Sleep_ms(10U);
   };
 
   EXPECT_DEATH(lethalCode(), ".*DWQwithThread::ThreadEntry: A work package threw.*");
