@@ -29,6 +29,9 @@ namespace async      {
  *
  * The thread will be setup with scheduling policy "other" and the default stack size for the OS configuration.
  *
+ * For productive code there is also a class combining a work queue and a thread available:
+ * @ref gpcc::execution::async::DeferredWorkQueueWithThread
+ *
  * - - -
  *
  * __Thread safety:__\n

@@ -178,6 +178,9 @@ Next to do:
 
 History:
 ===============================================================================
+2023-05-04
+- Added class gpcc::execution::async::DeferredWorkQueueWithThread
+
 2022-10-17 (Release version V 2.2.0)
 - Added missing String2X-functions, incl. unit tests
 - Reviewed String2X-functions, incl. unit tests

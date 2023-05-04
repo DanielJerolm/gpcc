@@ -40,6 +40,8 @@
  * - Class [DeferredWorkQueue](@ref gpcc::execution::async::DeferredWorkQueue) is a work queue that
  *   can execute both enqueued [WorkPackage](@ref gpcc::execution::async::WorkPackage) instances and
  *   enqueued [DeferredWorkPackage](@ref gpcc::execution::async::DeferredWorkPackage) instances.
+ * - Class [DeferredWorkQueueWithThread](@ref gpcc::execution::async::DeferredWorkQueueWithThread) is a convenient class
+ *   that combines a deferred work queue and a thread.
  *
  * # Static and dynamic work packages
  * There are two variants of instances of class [WorkPackage](@ref gpcc::execution::async::WorkPackage) and
