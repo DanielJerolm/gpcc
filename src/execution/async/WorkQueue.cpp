@@ -376,10 +376,10 @@ void WorkQueue::FlushNonDeferredWorkPackages(void)
  * \brief Executes work packages until termination is requested.
  *
  * If there is a pending request for termination when this is invoked (see @ref RequestTermination()), then the request
- * will be consumed and this will return immediately.
+ * will be consumed and this method will return immediately.
  *
  * If termination is requested while a thread is inside this method, then the request will be consumed and this method
- * will return either immediately or after execution of the current work package has finished.
+ * will either return immediately or it will return after execution of the current work package has finished.
  *
  * - - -
  *
@@ -387,11 +387,21 @@ void WorkQueue::FlushNonDeferredWorkPackages(void)
  * There must be no more than one thread executing this method at any time.
  *
  * __Exception safety:__\n
- * Strong guarantee.\n
- * _Note: Exceptions thrown by executed work packages are not caught._
+ * Basic guarantee:
+ * - If a work package throws, then the exception will propagate out of this method.
+ * - If a work package throws, then the work queue will treat the work package as if it has completed with no error.
+ *   For example a dynamic work package will be released.
+ * - If a static work package has enqueued itself again before it throws, then the enqueue operation will not be undone.
+ * - A pending termination request (see @ref RequestTermination()) may not be consumed.
  *
  * __Thread cancellation safety:__\n
- * Strong guarantee.
+ * Basic guarantee:
+ * - The work queue's thread will be cancelled if it hits a cancellation point inside the work package.
+ * - The work queue will treat the work package as if it has completed regulary. For example a dynamic work package
+ *   will be released.
+ * - If a static work package has enqueued itself again before cancellation takes place, then the enqueue operation will
+ *   not be undone.
+ * - A pending termination request (see @ref RequestTermination()) may not be consumed.
  */
 void WorkQueue::Work(void)
 {

@@ -4,6 +4,8 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
+- Bugfix: WorkQueues will not notify threads blocked in WaitUntilCurrentWorkPackageHasBeenExecuted() if the
+          work package throws or deferred thread cancellation occurrs.
 - BugFix: IsPowerOf2 returns true for zero, but zero is not a power of 2
 
 - COOD remote access
@@ -178,6 +180,9 @@ Next to do:
 
 History:
 ===============================================================================
+2023-05-10
+- Enhanced documentation of work queues regarding exceptions and deferred thread cancellation.
+
 2023-05-04
 - Added class gpcc::execution::async::DeferredWorkQueueWithThread
 

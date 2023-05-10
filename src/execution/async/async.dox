@@ -40,8 +40,10 @@
  * - Class [DeferredWorkQueue](@ref gpcc::execution::async::DeferredWorkQueue) is a work queue that
  *   can execute both enqueued [WorkPackage](@ref gpcc::execution::async::WorkPackage) instances and
  *   enqueued [DeferredWorkPackage](@ref gpcc::execution::async::DeferredWorkPackage) instances.
- * - Class [DeferredWorkQueueWithThread](@ref gpcc::execution::async::DeferredWorkQueueWithThread) is a convenient class
- *   that combines a deferred work queue and a thread.
+ *
+ * Further GPCC provides some convenient classes that bundle a thread and a work queue:
+ * - Class [DeferredWorkQueueWithThread](@ref gpcc::execution::async::DeferredWorkQueueWithThread) combines a
+ *   [DeferredWorkQueue](@ref gpcc::execution::async::DeferredWorkQueue) and a [Thread](@ref gpcc::osal::Thread).
  *
  * # Static and dynamic work packages
  * There are two variants of instances of class [WorkPackage](@ref gpcc::execution::async::WorkPackage) and
@@ -88,6 +90,29 @@
  *
  * \htmlonly <style>div.image img[src="execution/async/WorkPackage_LifeCycle.png"]{width:50%;}</style> \endhtmlonly
  * \image html "execution/async/WorkPackage_LifeCycle.png" "Static WorkPackage life-cycle"
+ *
+ * ## Exceptions
+ * Functions referenced by work packages should always provide the no-throw guarentee. The reason is, that a work queue
+ * is usually shared among different software components. The owner of the work queue cannot handle exceptions thrown
+ * by the work packages of other components in a meaningful way and will usually [panic](@ref GPCC_OSAL_PANIC).
+ *
+ * However, if a work package throws, then the behaviour is well-defined:
+ * - The exception will propagate out of the work queue's `Work()` method.
+ * - The work queue will treat the work package as if it has completed with no error. For example a dynamic work package
+ *   will be released.
+ * - If a static work package has enqueued itself again before it throws, then the enqueue operation will not be undone.
+ *
+ * ## Deferred thread cancellation
+ * A work queue's `Work()` method should always be executed with deferred thread cancellation disabled. This simplifies
+ * the implementation of the functions referenced by the work packages. Further work packages usually do not block over
+ * an extended period of time so that there is no need for thread cancellation.
+ *
+ * However, if deferred thread cancellation is enabled and requested, then the behaviour is well-defined:
+ * - The work queue's thread will be cancelled if it hits a cancellation point inside the work package.
+ * - The work queue will treat the work package as if it has completed regulary. For example a dynamic work package
+ *   will be released.
+ * - If a static work package has enqueued itself again before cancellation takes place, then the enqueue operation will
+ *   not be undone.
  *
  * ## Comparison
  * ### Advantages and disadvantages of dynamic work packages

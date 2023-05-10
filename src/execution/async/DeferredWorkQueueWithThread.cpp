@@ -84,7 +84,8 @@ void DeferredWorkQueueWithThread::Start(gpcc::osal::Thread::SchedPolicy const sc
 /**
  * \brief Stops the thread.
  *
- * If a work package is in progress, then the thread will be stopped after the work package has completed.
+ * If a work package is in progress, then the thread will be stopped after the work package has completed. If the
+ * work queue is empty, then the thread will stop immediately.
  *
  * Enqueued work packages, that have not been processed yet remain in the work queue and are not removed by the
  * stop operation.

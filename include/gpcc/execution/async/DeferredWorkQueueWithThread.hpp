@@ -27,10 +27,11 @@ namespace async     {
  * This is a convenient class for clients. Each work queue usually also requires a thread. Using this class, clients do
  * not need to setup a thread themselves.
  *
- * This class does not expect work packages to throw. If a work package throws, then this class will panic.
+ * This class does not expect work packages to throw. If a work package throws, then this class will
+ * [panic](@ref GPCC_OSAL_PANIC).
  *
- * The work packages are executed with deferred thread cancellation being disabled. The @ref Stop() method will stop
- * the thread after a work package currently in progress has been completed.
+ * The work packages are executed with deferred thread cancellation disabled. The @ref Stop() method will stop the
+ * thread after a work package currently in progress has completed. Until then the @ref Stop() method blocks.
  *
  * - - -
  *
