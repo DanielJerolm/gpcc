@@ -705,6 +705,16 @@ void DeferredWorkQueue::Work(void)
 {
   AdvancedMutexLocker queueMutexLocker(queueMutex);
 
+  ON_SCOPE_EXIT(reset_pOwnerOfCurrentExecutedWP)
+  {
+    // this will also unblock threads in WaitUntilCurrentWorkPackageHasBeenExecuted()
+    if (pOwnerOfCurrentExecutedWP != nullptr)
+    {
+      ownerChangedConVar.Broadcast();
+      pOwnerOfCurrentExecutedWP = nullptr;
+    }
+  };
+
   while (true)
   {
     bool timeout = false;
@@ -755,12 +765,6 @@ void DeferredWorkQueue::Work(void)
     // terminate?
     if (terminate)
     {
-      if (pOwnerOfCurrentExecutedWP != nullptr)
-      {
-        ownerChangedConVar.Broadcast();
-        pOwnerOfCurrentExecutedWP = nullptr;
-      }
-
       terminate = false;
       return;
     }
@@ -789,7 +793,6 @@ void DeferredWorkQueue::Work(void)
       pOwnerOfCurrentExecutedWP = pWP->pOwnerObject;
     else
       pOwnerOfCurrentExecutedWP = pDWP->pOwnerObject;
-    ON_SCOPE_EXIT(owner) { pOwnerOfCurrentExecutedWP = nullptr; };
     ownerChangedConVar.Broadcast();
 
     if (pWP != nullptr)
@@ -823,44 +826,15 @@ void DeferredWorkQueue::Work(void)
 
     queueMutexLocker.Unlock();
 
-    ON_SCOPE_EXIT(execStateAndBackInQ)
+    try
     {
-      queueMutexLocker.Relock();
-
-      if (pWP != nullptr)
-      {
-        // restore work package's state and undo preparation
-        pCurrentExecutedWP = nullptr;
-        if (pWP->state == WorkPackage::States::staticExec)
-          pWP->state = WorkPackage::States::staticInQ;
-
-        // put the work package back into the normal queue
-        if (pQueueFirst != nullptr)
-          pQueueFirst->pPrev = pWP;
-        pQueueFirst = pWP;
-        if (pQueueLast == nullptr)
-          pQueueLast = pWP;
-      }
-      else
-      {
-        // restore work package's state and undo preparation
-        pCurrentExecutedWP = nullptr;
-        if (pDWP->state == DeferredWorkPackage::States::staticExec)
-          pDWP->state = DeferredWorkPackage::States::staticInQ;
-
-        // put the work package back into the deferred queue
-        if (pDeferredQueueFirst != nullptr)
-          pDeferredQueueFirst->pPrev = pDWP;
-        pDeferredQueueFirst = pDWP;
-        if (pDeferredQueueLast == nullptr)
-          pDeferredQueueLast = pDWP;
-      }
-    };
-
-    flushMutex.Lock();
-
-    ON_SCOPE_EXIT_DISMISS(execStateAndBackInQ);
-    ON_SCOPE_EXIT_DISMISS(owner);
+      // might throw unexpectedly, so recovery is not worth, but we have to handle it
+      flushMutex.Lock();
+    }
+    catch (...)
+    {
+      PANIC();
+    }
 
     // finally execute the work package
     if (pWP != nullptr)

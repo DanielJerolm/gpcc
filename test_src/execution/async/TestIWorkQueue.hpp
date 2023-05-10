@@ -63,6 +63,7 @@ using namespace testing;
  *  - CheckCheckList() shall only be invoked either after the work queue thread has been joined or
  *    if the design of the test case ensures, that there is no work package invoking WQ_PushToCheckList() or
  *    WQ_PushToCheckListAndEnqueueSelf(). Reason: There is no lock mechanism implemented.
+ *  - After joining, pCaughtException should be examined to determine if the UUT has thrown an exception
  *
  *  - Typical valid sequences for invoking thread management functions are: (there may be more!)
  *    - EnterUUTWork() -> JoinWorkThread() -> Exit test
@@ -96,6 +97,10 @@ class IWorkQueue_TestsF: public Test
     // repeats for tests enqueing themselves again
     size_t repeats;
 
+    // Exception caught during execution of uut::Work()
+    std::exception_ptr pCaughtException;
+
+
     virtual ~IWorkQueue_TestsF(void) = default;
 
     void SetUp(void) override;
@@ -120,6 +125,7 @@ class IWorkQueue_TestsF: public Test
     void WQ_RemoveByRef(WorkPackage* pWP);
     void WQ_Remove(const void* const pOwnerObject);
     void WQ_RemoveAndID(const void* const pOwnerObject, const uint32_t ownerID);
+    void WQ_Throw(void);
 
     // check of checkList against expected values
     void PrintCheckList(uint32_t const * pExpectedValues, size_t const n);
@@ -135,6 +141,7 @@ class IWorkQueue_TestsF: public Test
     // semaphore used as gate in front of uut.Work()
     Semaphore threadStartTrigger;
 
+
     // internal thread entry
     void* ThreadEntry(void);
 };
@@ -149,6 +156,7 @@ IWorkQueue_TestsF<T>::IWorkQueue_TestsF()
 , checkList()
 , timestampList()
 , repeats(0)
+, pCaughtException()
 , thread("WQTests")
 , joined(true)
 , threadStartTrigger(0)
@@ -308,6 +316,12 @@ void IWorkQueue_TestsF<T>::WQ_RemoveAndID(const void* const pOwnerObject, const 
 }
 
 template <typename T>
+void IWorkQueue_TestsF<T>::WQ_Throw(void)
+{
+  throw std::runtime_error("Intentionally thrown by WQ_Throw");
+}
+
+template <typename T>
 void IWorkQueue_TestsF<T>::PrintCheckList(uint32_t const * pExpectedValues, size_t const n)
 {
   std::cout << "Recorded: " << std::right << std::setw(3) << std::setfill(' ') << checkList.size() << " items: ";
@@ -351,9 +365,20 @@ bool IWorkQueue_TestsF<T>::CheckCheckList(uint32_t const * const pExpectedValues
 template <typename T>
 void* IWorkQueue_TestsF<T>::ThreadEntry(void)
 {
+  pCaughtException = std::exception_ptr();
+
   threadStartTrigger.Wait();
   thread.TestForCancellation();
-  uut.Work();
+
+  try
+  {
+    uut.Work();
+  }
+  catch (std::exception&)
+  {
+    pCaughtException = std::current_exception();
+  }
+
   return nullptr;
 }
 
@@ -391,6 +416,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, AddDynamic_copyFunctor)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[3] = {1, 2, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 3));
@@ -409,6 +435,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, AddDynamic_moveFunctor)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[3] = {1, 2, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 3));
@@ -423,6 +450,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, AddDynamic_FromWQContext)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   // take a second run to execute the work package enqueued by WQ_PushToCheckListAndEnqueueSelf()
 
@@ -430,6 +458,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, AddDynamic_FromWQContext)
   this->RestartThread();
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[4] = {1, 2, 3, 4};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 4));
@@ -454,6 +483,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, AddStatic)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[3] = {1, 2, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 3));
@@ -476,6 +506,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, InsertAtHeadOfListDynamic)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[4] = {4, 1, 2, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 4));
@@ -502,6 +533,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, InsertAtHeadOfListStatic)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[4] = {4, 1, 2, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 4));
@@ -533,6 +565,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, ReuseOfStaticWPs)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   this->uut.Add(wp1);
   this->uut.Add(wp2);
@@ -542,6 +575,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, ReuseOfStaticWPs)
   this->RestartThread();
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[5] = {1, 3, 1, 2, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 5));
@@ -559,6 +593,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, ReuseItself_Add)
   this->uut.Add(wp1);
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[4] = {1, 1, 1, 1};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 4));
@@ -576,6 +611,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, ReuseItself_Insert)
   this->uut.Add(wp1);
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[4] = {1, 1, 1, 1};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 4));
@@ -592,6 +628,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, ReuseButStillInQueue)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 1));
@@ -635,6 +672,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove0_first)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {2, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -657,6 +695,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove0_mid)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -679,6 +718,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove0_last)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 2};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -699,6 +739,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove0_fromWQcontext)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -716,6 +757,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove0_TheLastOne)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   ASSERT_TRUE(this->CheckCheckList(nullptr, 0));
 }
@@ -731,6 +773,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove0_Empty)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   ASSERT_TRUE(this->CheckCheckList(nullptr, 0));
 }
@@ -749,6 +792,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove0_NoHit)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 1));
@@ -774,6 +818,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove0_itself)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[3] = {1, 2, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 3));
@@ -791,6 +836,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove1_dyn_first)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {2, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -808,6 +854,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove1_dyn_mid)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -825,6 +872,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove1_dyn_last)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 2};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -842,6 +890,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove1_dyn_nullptr)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 1));
@@ -857,6 +906,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove1_dyn_fromWQcontext)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -872,6 +922,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove1_dyn_TheLastOne)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   ASSERT_TRUE(this->CheckCheckList(nullptr, 0));
 }
@@ -884,6 +935,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove1_dyn_Empty)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   ASSERT_TRUE(this->CheckCheckList(nullptr, 0));
 }
@@ -898,6 +950,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove1_dyn_NoHit)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 1));
@@ -923,6 +976,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove1_stat_first)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {2, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -948,6 +1002,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove1_stat_mid)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -973,6 +1028,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove1_stat_last)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 2};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -998,6 +1054,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove1_stat_nullptr)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 1));
@@ -1023,6 +1080,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove1_stat_fromWQcontext)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -1040,6 +1098,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove1_stat_TheLastOne)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   ASSERT_TRUE(this->CheckCheckList(nullptr, 0));
 }
@@ -1052,6 +1111,7 @@ TYPED_TEST_P(IWorkQueue_Tests1F, Remove1_stat_Empty)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   ASSERT_TRUE(this->CheckCheckList(nullptr, 0));
 }
@@ -1068,6 +1128,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Remove1_stat_NoHit)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 1));
@@ -1085,6 +1146,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Remove2_dyn_first)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {2, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -1102,6 +1164,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Remove2_dyn_mid)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -1119,6 +1182,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Remove2_dyn_last)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 2};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -1136,6 +1200,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Remove2_dyn_nullptr)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -1151,6 +1216,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Remove2_dyn_fromWQcontext)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -1166,6 +1232,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Remove2_dyn_TheLastOne)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   ASSERT_TRUE(this->CheckCheckList(nullptr, 0));
 }
@@ -1178,6 +1245,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Remove2_dyn_Empty)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   ASSERT_TRUE(this->CheckCheckList(nullptr, 0));
 }
@@ -1192,6 +1260,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Remove2_dyn_NoHit)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 1));
@@ -1217,6 +1286,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Remove2_stat_first)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {2, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -1242,6 +1312,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Remove2_stat_mid)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -1267,6 +1338,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Remove2_stat_last)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 2};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -1292,6 +1364,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Remove2_stat_nullptr)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -1317,6 +1390,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Remove2_stat_fromWQcontext)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -1334,6 +1408,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Remove2_stat_TheLastOne)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   ASSERT_TRUE(this->CheckCheckList(nullptr, 0));
 }
@@ -1346,6 +1421,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Remove2_stat_Empty)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   ASSERT_TRUE(this->CheckCheckList(nullptr, 0));
 }
@@ -1362,6 +1438,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Remove2_stat_NoHit)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 1));
@@ -1392,6 +1469,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, WaitUntilCurrentWorkPackageHasBeenExecuted)
 
   this->WQ_AddWPTerminate();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 }
 #endif
 
@@ -1416,6 +1494,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, WaitUntilCurrentWorkPackageHasBeenExecuted_othe
 
   this->WQ_AddWPTerminate();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 }
 #endif
 
@@ -1439,6 +1518,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, WaitUntilCurrentWorkPackageHasBeenExecuted_nowa
 
   this->WQ_AddWPTerminate();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 }
 #endif
 
@@ -1453,6 +1533,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, WaitUntilCurrentWorkPackageHasBeenExecuted_WQco
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[3] = {1, 2, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 3));
@@ -1477,6 +1558,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, IsAnyInQueue_dyn)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 2};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -1512,6 +1594,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, IsAnyInQueue_stat)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 2};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
@@ -1541,6 +1624,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, FlushNonDeferredWorkPackages)
 
   this->WQ_AddWPTerminate();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 }
 #endif
 
@@ -1553,6 +1637,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Work_Restart)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   this->uut.Add(WorkPackage::CreateDynamic(this, 0, std::bind(&Work_Restart::WQ_PushToCheckList, this, 4)));
   this->uut.Add(WorkPackage::CreateDynamic(this, 0, std::bind(&Work_Restart::WQ_PushToCheckList, this, 5)));
@@ -1562,6 +1647,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Work_Restart)
   this->RestartThread();
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[6] = {1, 2, 3, 4, 5, 6};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 6));
@@ -1587,12 +1673,14 @@ TYPED_TEST_P(IWorkQueue_Tests2F, Work_Cancel_Restart)
 
   this->RequestThreadCancel();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 3));
 
   this->RestartThread();
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 6));
 }
@@ -1601,6 +1689,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, AbortBeforeStart)
 {
   this->RequestThreadCancel();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   this->uut.Add(WorkPackage::CreateDynamic(this, 0, std::bind(&AbortBeforeStart::WQ_PushToCheckList, this, 1)));
   this->WQ_AddWPTerminate();
@@ -1611,6 +1700,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, AbortBeforeStart)
 
   this->RequestThreadCancel();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   ASSERT_TRUE(this->checkList.empty()) << "No work package should have been executed, but it was.";
 }
@@ -1619,6 +1709,7 @@ TYPED_TEST_P(IWorkQueue_Tests2F, AbortTwiceBeforeStart)
 {
   this->RequestThreadCancel();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   this->uut.Add(WorkPackage::CreateDynamic(this, 0, std::bind(&AbortTwiceBeforeStart::WQ_PushToCheckList, this, 1)));
   this->WQ_AddWPTerminate();
@@ -1630,8 +1721,42 @@ TYPED_TEST_P(IWorkQueue_Tests2F, AbortTwiceBeforeStart)
 
   this->RequestThreadCancel();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   ASSERT_TRUE(this->checkList.empty()) << "No work package should have been executed, but it was.";
+}
+
+TYPED_TEST_P(IWorkQueue_Tests2F, WorkPackageThrows)
+{
+  this->uut.Add(WorkPackage::CreateDynamic(this, 0, std::bind(&WorkPackageThrows::WQ_PushToCheckList, this, 1)));
+  this->uut.Add(WorkPackage::CreateDynamic(this, 0, std::bind(&WorkPackageThrows::WQ_Throw, this)));
+  this->uut.Add(WorkPackage::CreateDynamic(this, 0, std::bind(&WorkPackageThrows::WQ_PushToCheckList, this, 2)));
+  this->WQ_AddWPTerminate();
+
+  this->EnterUUTWork();
+  this->JoinWorkThread();
+  ASSERT_TRUE(this->pCaughtException != nullptr);
+
+  try
+  {
+    std::rethrow_exception(this->pCaughtException);
+  }
+  catch (std::runtime_error const & e)
+  {
+    ASSERT_STREQ(e.what(), "Intentionally thrown by WQ_Throw");
+  }
+  catch (...)
+  {
+    FAIL() << "Work package threw, but not with the expected exception.";
+  }
+
+  this->RestartThread();
+  this->EnterUUTWork();
+  this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
+
+  uint32_t const expectedChecklist[2] = {1, 2};
+  ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
 }
 
 TYPED_TEST_P(IWorkQueue_DeathTests1F, EnqueuedStaticWPDestroyed)
@@ -1653,6 +1778,7 @@ TYPED_TEST_P(IWorkQueue_DeathTests1F, EnqueuedStaticWPDestroyed)
 
   this->EnterUUTWork();
   this->JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[3] = {1, 2, 3};
   ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 3));
@@ -1734,7 +1860,8 @@ REGISTER_TYPED_TEST_SUITE_P(IWorkQueue_Tests2F,
                             Work_Restart,
                             Work_Cancel_Restart,
                             AbortBeforeStart,
-                            AbortTwiceBeforeStart); // 29
+                            AbortTwiceBeforeStart,
+                            WorkPackageThrows); // 30
 
 REGISTER_TYPED_TEST_SUITE_P(IWorkQueue_DeathTests1F,
                             EnqueuedStaticWPDestroyed);

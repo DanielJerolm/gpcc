@@ -97,6 +97,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_copyFunctor)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 1));
@@ -116,6 +117,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_moveFunctor)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 1));
@@ -153,6 +155,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[4] = {2, 1, 4, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 4));
@@ -186,6 +189,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred_FifoIf
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[4] = {2, 4, 1, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 4));
@@ -219,6 +223,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred_FifoIf
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[4] = {2, 1, 4, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 4));
@@ -256,6 +261,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred_FifoIf
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[5] = {4, 1, 3, 2, 5};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 5));
@@ -289,6 +295,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred_Timepo
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[4] = {2, 4, 1, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 4));
@@ -318,6 +325,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddDynamic_Deferred_FromWQ
   gpcc::osal::Thread::Sleep_ms(2 * DELAY_TIME_MS);
   WQ_AddWPTerminate();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {5};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 1));
@@ -387,6 +395,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[4] = {2, 1, 4, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 4));
@@ -426,6 +435,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_FifoIfS
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[4] = {2, 4, 1, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 4));
@@ -465,6 +475,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_FifoIfS
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[4] = {2, 1, 4, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 4));
@@ -509,6 +520,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_FifoIfS
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[5] = {4, 1, 3, 2, 5};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 5));
@@ -548,6 +560,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_Timepoi
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[4] = {2, 4, 1, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 4));
@@ -590,6 +603,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, AddStatic_Deferred_FromWQC
   gpcc::osal::Thread::Sleep_ms(2 * DELAY_TIME_MS);
   WQ_AddWPTerminate();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 1));
@@ -644,6 +658,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, ReuseOfStaticDWPs)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   now.LatchSystemClock(ConditionVariable::clockID);
   dwp1.SetTimePoint(now + TimeSpan::ms(5 * DELAY_TIME_MS));
@@ -664,6 +679,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, ReuseOfStaticDWPs)
   RestartThread();
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[8] = {2, 1, 4, 3, 4, 1, 2, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 8));
@@ -684,6 +700,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, ReuseOfStaticDWPs_Enqueued
   uut.Add(dwp1);
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[4] = {1, 1, 1, 1};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 4));
@@ -723,6 +740,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, ReuseOfStaticDWPs_ChangeEx
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[3] = {2, 1, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 3));
@@ -759,6 +777,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Work_DeferredHasPriority)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
 #ifndef SKIP_TFC_BASED_TESTS
   uint32_t const expectedChecklist1[6] = {2, 1, 3, 4, 6, 5};
@@ -798,6 +817,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_first)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {2, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -831,6 +851,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_mid)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -864,6 +885,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_last)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 2};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -901,6 +923,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_fromWQcontext)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -924,6 +947,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_TheLastOne)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   ASSERT_TRUE(CheckCheckList(nullptr, 0));
 }
@@ -944,6 +968,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_Empty)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   ASSERT_TRUE(CheckCheckList(nullptr, 0));
 }
@@ -970,6 +995,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_NoHit)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 1));
@@ -1012,6 +1038,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Remove0_itself)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[3] = {1, 2, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 3));
@@ -1040,6 +1067,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_first
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {2, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -1068,6 +1096,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_mid)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -1096,6 +1125,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_last)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 2};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -1124,6 +1154,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_nullp
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 1));
@@ -1153,6 +1184,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_fromW
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -1173,6 +1205,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_TheLa
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   ASSERT_TRUE(CheckCheckList(nullptr, 0));
 }
@@ -1185,6 +1218,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_Empty
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   ASSERT_TRUE(CheckCheckList(nullptr, 0));
 }
@@ -1204,6 +1238,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_dyn_NoHit
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 1));
@@ -1241,6 +1276,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_firs
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {2, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -1278,6 +1314,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_mid)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -1315,6 +1352,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_last
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 2};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -1352,6 +1390,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_null
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 1));
@@ -1393,6 +1432,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_from
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -1416,6 +1456,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_TheL
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   ASSERT_TRUE(CheckCheckList(nullptr, 0));
 }
@@ -1428,6 +1469,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_Empt
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   ASSERT_TRUE(CheckCheckList(nullptr, 0));
 }
@@ -1450,6 +1492,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove1_stat_NoHi
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 1));
@@ -1478,6 +1521,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_first
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {2, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -1506,6 +1550,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_mid)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -1534,6 +1579,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_last)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 2};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -1562,6 +1608,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_nullp
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -1591,6 +1638,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_fromW
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -1611,6 +1659,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_TheLa
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   ASSERT_TRUE(CheckCheckList(nullptr, 0));
 }
@@ -1623,6 +1672,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_Empty
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   ASSERT_TRUE(CheckCheckList(nullptr, 0));
 }
@@ -1642,6 +1692,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_dyn_NoHit
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 1));
@@ -1679,6 +1730,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_firs
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {2, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -1716,6 +1768,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_mid)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -1753,6 +1806,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_last
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 2};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -1790,6 +1844,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_null
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -1831,6 +1886,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_from
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -1853,6 +1909,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_TheL
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   ASSERT_TRUE(CheckCheckList(nullptr, 0));
 }
@@ -1865,6 +1922,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_Empt
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   ASSERT_TRUE(CheckCheckList(nullptr, 0));
 }
@@ -1886,6 +1944,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Remove2_stat_NoHi
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 1));
@@ -1916,6 +1975,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_WaitUntilCurrentW
 
   WQ_AddWPTerminate();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 }
 #endif
 
@@ -1948,6 +2008,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_WaitUntilCurrentW
 
   WQ_AddWPTerminate();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 }
 #endif
 
@@ -1976,6 +2037,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_WaitUntilCurrentW
 
   WQ_AddWPTerminate();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 }
 #endif
 
@@ -2003,6 +2065,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_WaitUntilCurrentW
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[3] = {1, 2, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 3));
@@ -2038,6 +2101,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_IsAnyInQueue_dyn)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 2};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -2080,6 +2144,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_IsAnyInQueue_stat
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[2] = {1, 2};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 2));
@@ -2108,6 +2173,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Work_Restart)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
                                              std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Work_Restart)::WQ_PushToCheckList,
@@ -2126,6 +2192,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Work_Restart)
   RestartThread();
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[6] = {1, 2, 3, 4, 5, 6};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 6));
@@ -2175,14 +2242,61 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, Deferred_Work_Cancel_Resta
 
   RequestThreadCancel();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 3));
 
   RestartThread();
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 6));
+}
+
+
+TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, DeferredWorkPackageThrows)
+{
+  TimePoint const now(TimePoint::FromSystemClock(ConditionVariable::clockID));
+
+  uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
+                                             std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, DeferredWorkPackageThrows)::WQ_PushToCheckList,
+                                                       this, 1),
+                                             now - TimeSpan::ms(DELAY_TIME_MS)));
+  uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
+                                             std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, DeferredWorkPackageThrows)::WQ_Throw,
+                                                       this),
+                                             now - TimeSpan::ms(DELAY_TIME_MS)));
+  uut.Add(DeferredWorkPackage::CreateDynamic(this, 0,
+                                             std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_execution_async_DeferredWorkQueue_TestsF, DeferredWorkPackageThrows)::WQ_PushToCheckList,
+                                                       this, 2),
+                                             now - TimeSpan::ms(DELAY_TIME_MS)));
+  WQ_AddWPTerminate();
+
+  EnterUUTWork();
+  JoinWorkThread();
+  ASSERT_TRUE(pCaughtException != nullptr);
+
+  try
+  {
+    std::rethrow_exception(pCaughtException);
+  }
+  catch (std::runtime_error const & e)
+  {
+    ASSERT_STREQ(e.what(), "Intentionally thrown by WQ_Throw");
+  }
+  catch (...)
+  {
+    FAIL() << "Work package threw, but not with the expected exception.";
+  }
+
+  RestartThread();
+  EnterUUTWork();
+  JoinWorkThread();
+  EXPECT_TRUE(this->pCaughtException == nullptr);
+
+  uint32_t const expectedChecklist[2] = {1, 2};
+  ASSERT_TRUE(this->CheckCheckList(expectedChecklist, 2));
 }
 
 TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, InsertionWithShorterDelay)
@@ -2211,6 +2325,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, InsertionWithShorterDelay)
                                              now + TimeSpan::ms(6 * DELAY_TIME_MS)));
 
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
 #ifndef SKIP_TFC_BASED_TESTS
   uint32_t const expectedChecklist[2] = {2, 1};
@@ -2266,6 +2381,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, RemoveFirstDeferredWorkPac
                                              now + TimeSpan::ms(6 * DELAY_TIME_MS)));
 
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
 #ifndef SKIP_TFC_BASED_TESTS
   uint32_t const expectedChecklist[1] = {1};
@@ -2306,6 +2422,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, DeferredWPbecomesRunnableD
                                              now + TimeSpan::ms(2 * DELAY_TIME_MS)));
 
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[1] = {1};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 1));
@@ -2354,6 +2471,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_DeathTestsF, EnqueuedStaticDWPDest
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[3] = {1, 2, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 3));
@@ -2439,6 +2557,7 @@ TEST_F(gpcc_execution_async_DeferredWorkQueue_TestsF, UseIDeferredWorkQueue)
 
   EnterUUTWork();
   JoinWorkThread();
+  EXPECT_TRUE(pCaughtException == nullptr);
 
   uint32_t const expectedChecklist[6] = {5, 6, 8, 9, 1, 3};
   ASSERT_TRUE(CheckCheckList(expectedChecklist, 6));

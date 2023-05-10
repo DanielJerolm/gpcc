@@ -407,6 +407,16 @@ void WorkQueue::Work(void)
 {
   AdvancedMutexLocker queueMutexLocker(queueMutex);
 
+  ON_SCOPE_EXIT(reset_pOwnerOfCurrentExecutedWP)
+  {
+    // this will also unblock threads in WaitUntilCurrentWorkPackageHasBeenExecuted()
+    if (pOwnerOfCurrentExecutedWP != nullptr)
+    {
+      ownerChangedConVar.Broadcast();
+      pOwnerOfCurrentExecutedWP = nullptr;
+    }
+  };
+
   while (true)
   {
     // clear pOwnerOfCurrentExecutedWP if queue is empty
@@ -423,12 +433,6 @@ void WorkQueue::Work(void)
     // terminate?
     if (terminate)
     {
-      if (pOwnerOfCurrentExecutedWP != nullptr)
-      {
-        ownerChangedConVar.Broadcast();
-        pOwnerOfCurrentExecutedWP = nullptr;
-      }
-
       terminate = false;
       return;
     }
@@ -438,7 +442,6 @@ void WorkQueue::Work(void)
 
     // work package is about to be executed, so update pOwnerOfCurrentExecutedWP
     pOwnerOfCurrentExecutedWP = pWP->pOwnerObject;
-    ON_SCOPE_EXIT(owner) { pOwnerOfCurrentExecutedWP = nullptr; };
     ownerChangedConVar.Broadcast();
 
     // remove work package from queue
@@ -455,27 +458,15 @@ void WorkQueue::Work(void)
 
     queueMutexLocker.Unlock();
 
-    ON_SCOPE_EXIT(execStateAndBackInQ)
+    try
     {
-      queueMutexLocker.Relock();
-
-      // restore work package's state and undo preparation
-      pCurrentExecutedWP = nullptr;
-      if (pWP->state == WorkPackage::States::staticExec)
-        pWP->state = WorkPackage::States::staticInQ;
-
-      // put the work package back into the queue
-      if (pQueueFirst != nullptr)
-        pQueueFirst->pPrev = pWP;
-      pQueueFirst = pWP;
-      if (pQueueLast == nullptr)
-        pQueueLast = pWP;
-    };
-
-    flushMutex.Lock();
-
-    ON_SCOPE_EXIT_DISMISS(execStateAndBackInQ);
-    ON_SCOPE_EXIT_DISMISS(owner);
+      // might throw unexpectedly, so recovery is not worth, but we have to handle it
+      flushMutex.Lock();
+    }
+    catch (...)
+    {
+      PANIC();
+    }
 
     // finally execute the work package
     ON_SCOPE_EXIT(afterExecWP)
