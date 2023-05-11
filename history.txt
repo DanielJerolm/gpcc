@@ -178,6 +178,10 @@ Next to do:
 
 History:
 ===============================================================================
+2023-05-11
+- Renamed gpcc::execution::async::DeferredWorkQueueWithThread to DWQWithThread and removed
+  gpcc_tests::execution::async::DWQwithThread which is replaced by the productive class now.
+
 2023-05-10
 - Enhanced documentation of work queues regarding exceptions and deferred thread cancellation.
 - Bugfix: WorkQueues did not notify threads blocked in WaitUntilCurrentWorkPackageHasBeenExecuted() if the work package

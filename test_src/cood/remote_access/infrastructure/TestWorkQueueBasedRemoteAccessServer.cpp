@@ -10,6 +10,8 @@
 
 #include "TestbenchWorkQueueBasedRAS.hpp"
 #include <gpcc/cood/remote_access/infrastructure/WorkQueueBasedRemoteAccessServer.hpp>
+#include <gpcc/execution/async/DWQwithThread.hpp>
+#include <gpcc/osal/Thread.hpp>
 #include "test_src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiableMock.hpp"
 #include "test_src/cood/remote_access/roda_itf/TestIRODA_LoanExecutionContext.hpp"
 #include "test_src/cood/remote_access/roda_itf/TestIRODA_ObjectEnum.hpp"
@@ -19,7 +21,6 @@
 #include "test_src/cood/remote_access/roda_itf/TestIRODA_RegisterUnregisterStartStop.hpp"
 #include "test_src/cood/remote_access/roda_itf/TestIRODA_Send.hpp"
 #include "test_src/cood/remote_access/roda_itf/TestIRODA_Write.hpp"
-#include "test_src/execution/async/DWQwithThread.hpp"
 
 namespace gpcc_tests {
 namespace cood       {
@@ -47,12 +48,49 @@ INSTANTIATE_TYPED_TEST_SUITE_P(gpcc_cood_WorkQueueBasedRemoteAccessServer_, IROD
 
 #endif
 
-TEST(gpcc_cood_WorkQueueBasedRemoteAccessServer_Tests, CTOR_OK)
+class gpcc_cood_WorkQueueBasedRemoteAccessServer_TestsF: public Test
 {
-  gpcc_tests::execution::async::DWQwithThread dwqWithThread("DWQThread");
-  gpcc::log::Logger logger("Test");
-  gpcc::cood::ObjectDictionary od;
+  public:
+    gpcc_cood_WorkQueueBasedRemoteAccessServer_TestsF(void);
+    ~gpcc_cood_WorkQueueBasedRemoteAccessServer_TestsF(void);
 
+  protected:
+    gpcc::execution::async::DWQwithThread dwqWithThread;
+    gpcc::log::Logger logger;
+    gpcc::cood::ObjectDictionary od;
+
+    void SetUp(void) override;
+    void TearDown(void) override;
+};
+
+gpcc_cood_WorkQueueBasedRemoteAccessServer_TestsF::gpcc_cood_WorkQueueBasedRemoteAccessServer_TestsF(void)
+: Test()
+, dwqWithThread("DWQThread")
+, logger("Test")
+, od()
+{
+  dwqWithThread.Start(gpcc::osal::Thread::SchedPolicy::Other, 0U, gpcc::osal::Thread::GetDefaultStackSize());
+}
+
+gpcc_cood_WorkQueueBasedRemoteAccessServer_TestsF::~gpcc_cood_WorkQueueBasedRemoteAccessServer_TestsF(void)
+{
+  dwqWithThread.Stop();
+}
+
+void gpcc_cood_WorkQueueBasedRemoteAccessServer_TestsF::SetUp(void)
+{
+}
+
+void gpcc_cood_WorkQueueBasedRemoteAccessServer_TestsF::TearDown(void)
+{
+}
+
+// alias for death tests
+using gpcc_cood_WorkQueueBasedRemoteAccessServer_DeathTestsF = gpcc_cood_WorkQueueBasedRemoteAccessServer_TestsF;
+
+
+TEST_F(gpcc_cood_WorkQueueBasedRemoteAccessServer_TestsF, CTOR_OK)
+{
   std::unique_ptr<gpcc::cood::WorkQueueBasedRemoteAccessServer> spUUT;
 
   // minimum sizes
@@ -80,12 +118,8 @@ TEST(gpcc_cood_WorkQueueBasedRemoteAccessServer_Tests, CTOR_OK)
                                                                                          gpcc::cood::ResponseBase::minimumUsefulResponseSize));
 }
 
-TEST(gpcc_cood_WorkQueueBasedRemoteAccessServer_Tests, CTOR_invalidParams)
+TEST_F(gpcc_cood_WorkQueueBasedRemoteAccessServer_TestsF, CTOR_invalidParams)
 {
-  gpcc_tests::execution::async::DWQwithThread dwqWithThread("DWQThread");
-  gpcc::log::Logger logger("Test");
-  gpcc::cood::ObjectDictionary od;
-
   std::unique_ptr<gpcc::cood::WorkQueueBasedRemoteAccessServer> spUUT;
 
   // invalid OOM retry delay
@@ -144,13 +178,9 @@ TEST(gpcc_cood_WorkQueueBasedRemoteAccessServer_Tests, CTOR_invalidParams)
   }
 }
 
-TEST(gpcc_cood_WorkQueueBasedRemoteAccessServer_DeathTests, DTOR_stillRunning)
+TEST_F(gpcc_cood_WorkQueueBasedRemoteAccessServer_DeathTestsF, DTOR_stillRunning)
 {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
-
-  gpcc_tests::execution::async::DWQwithThread dwqWithThread("DWQThread");
-  gpcc::log::Logger logger("Test");
-  gpcc::cood::ObjectDictionary od;
 
   auto spUUT = std::make_unique<gpcc::cood::WorkQueueBasedRemoteAccessServer>(dwqWithThread.GetDWQ(),
                                                                               10U,
@@ -166,13 +196,10 @@ TEST(gpcc_cood_WorkQueueBasedRemoteAccessServer_DeathTests, DTOR_stillRunning)
   spUUT->Stop();
 }
 
-TEST(gpcc_cood_WorkQueueBasedRemoteAccessServer_DeathTests, DTOR_ClientStillRegistered)
+TEST_F(gpcc_cood_WorkQueueBasedRemoteAccessServer_DeathTestsF, DTOR_ClientStillRegistered)
 {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
 
-  gpcc_tests::execution::async::DWQwithThread dwqWithThread("DWQThread");
-  gpcc::log::Logger logger("Test");
-  gpcc::cood::ObjectDictionary od;
   StrictMock<IRemoteObjectDictionaryAccessNotifiableMock> rodanMock;
 
   auto spUUT = std::make_unique<gpcc::cood::WorkQueueBasedRemoteAccessServer>(dwqWithThread.GetDWQ(),
@@ -189,12 +216,8 @@ TEST(gpcc_cood_WorkQueueBasedRemoteAccessServer_DeathTests, DTOR_ClientStillRegi
   spUUT->Unregister();
 }
 
-TEST(gpcc_cood_WorkQueueBasedRemoteAccessServer_Tests, StartStop)
+TEST_F(gpcc_cood_WorkQueueBasedRemoteAccessServer_TestsF, StartStop)
 {
-  gpcc_tests::execution::async::DWQwithThread dwqWithThread("DWQThread");
-  gpcc::log::Logger logger("Test");
-  gpcc::cood::ObjectDictionary od;
-
   auto spUUT = std::make_unique<gpcc::cood::WorkQueueBasedRemoteAccessServer>(dwqWithThread.GetDWQ(),
                                                                               10U,
                                                                               od,
@@ -206,12 +229,8 @@ TEST(gpcc_cood_WorkQueueBasedRemoteAccessServer_Tests, StartStop)
   spUUT->Stop();
 }
 
-TEST(gpcc_cood_WorkQueueBasedRemoteAccessServer_Tests, StartTwice)
+TEST_F(gpcc_cood_WorkQueueBasedRemoteAccessServer_TestsF, StartTwice)
 {
-  gpcc_tests::execution::async::DWQwithThread dwqWithThread("DWQThread");
-  gpcc::log::Logger logger("Test");
-  gpcc::cood::ObjectDictionary od;
-
   auto spUUT = std::make_unique<gpcc::cood::WorkQueueBasedRemoteAccessServer>(dwqWithThread.GetDWQ(),
                                                                               10U,
                                                                               od,
@@ -226,13 +245,9 @@ TEST(gpcc_cood_WorkQueueBasedRemoteAccessServer_Tests, StartTwice)
   spUUT->Stop();
 }
 
-TEST(gpcc_cood_WorkQueueBasedRemoteAccessServer_DeathTests, StopTwice)
+TEST_F(gpcc_cood_WorkQueueBasedRemoteAccessServer_DeathTestsF, StopTwice)
 {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
-
-  gpcc_tests::execution::async::DWQwithThread dwqWithThread("DWQThread");
-  gpcc::log::Logger logger("Test");
-  gpcc::cood::ObjectDictionary od;
 
   auto spUUT = std::make_unique<gpcc::cood::WorkQueueBasedRemoteAccessServer>(dwqWithThread.GetDWQ(),
                                                                               10U,

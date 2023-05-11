@@ -8,8 +8,8 @@
     Copyright (C) 2023 Daniel Jerolm
 */
 
-#ifndef DEFERREDWORKQUEUEWITHTTHREAD_HPP_202305041946
-#define DEFERREDWORKQUEUEWITHTTHREAD_HPP_202305041946
+#ifndef DWQWITHTTHREAD_HPP_202305041946
+#define DWQWITHTTHREAD_HPP_202305041946
 
 #include <gpcc/execution/async/DeferredWorkQueue.hpp>
 #include <gpcc/osal/Thread.hpp>
@@ -38,17 +38,17 @@ namespace async     {
  * __Thread safety:__\n
  * Thread-safe.
  */
-class DeferredWorkQueueWithThread final
+class DWQwithThread final
 {
   public:
-    DeferredWorkQueueWithThread(void) = delete;
-    DeferredWorkQueueWithThread(std::string const & threadName);
-    DeferredWorkQueueWithThread(DeferredWorkQueueWithThread const &) = delete;
-    DeferredWorkQueueWithThread(DeferredWorkQueueWithThread&&) = delete;
-    ~DeferredWorkQueueWithThread(void) = default;
+    DWQwithThread(void) = delete;
+    DWQwithThread(std::string const & threadName);
+    DWQwithThread(DWQwithThread const &) = delete;
+    DWQwithThread(DWQwithThread&&) = delete;
+    ~DWQwithThread(void) = default;
 
-    DeferredWorkQueueWithThread& operator=(DeferredWorkQueueWithThread const &) = delete;
-    DeferredWorkQueueWithThread& operator=(DeferredWorkQueueWithThread&&) = delete;
+    DWQwithThread& operator=(DWQwithThread const &) = delete;
+    DWQwithThread& operator=(DWQwithThread&&) = delete;
 
     void Start(gpcc::osal::Thread::SchedPolicy const schedPolicy,
                gpcc::osal::Thread::priority_t const priority,
@@ -69,7 +69,7 @@ class DeferredWorkQueueWithThread final
 };
 
 /**
- * \fn gpcc::execution::async::DeferredWorkQueueWithThread::~DeferredWorkQueueWithThread(void)
+ * \fn gpcc::execution::async::DWQwithThread::~DWQwithThread(void)
  * \brief Destructor.
  *
  * Any dynamic work packages that are still enqueued in the work queue will be released.\n
@@ -104,9 +104,9 @@ class DeferredWorkQueueWithThread final
  *
  * \return
  * Reference to the encapsulated  @ref DeferredWorkQueue instance.\n
- * The object's life-span is coupled to the life-span of the @ref DeferredWorkQueueWithThread instance.
+ * The object's life-span is coupled to the life-span of the @ref DWQwithThread instance.
  */
-inline DeferredWorkQueue& DeferredWorkQueueWithThread::GetDWQ(void) noexcept
+inline DeferredWorkQueue& DWQwithThread::GetDWQ(void) noexcept
 {
   return dwq;
 }
@@ -115,4 +115,4 @@ inline DeferredWorkQueue& DeferredWorkQueueWithThread::GetDWQ(void) noexcept
 } // namespace execution
 } // namespace gpcc
 
-#endif // DEFERREDWORKQUEUEWITHTTHREAD_HPP_202305041946
+#endif // DWQWITHTTHREAD_HPP_202305041946

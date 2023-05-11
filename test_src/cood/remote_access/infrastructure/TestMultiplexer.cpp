@@ -17,13 +17,13 @@
 #include <gpcc/cood/remote_access/roda_itf/exceptions.hpp>
 #include <gpcc/cood/sdo_abort_codes.hpp>
 #include <gpcc/execution/async/DeferredWorkPackage.hpp>
+#include <gpcc/execution/async/DWQwithThread.hpp>
 #include <gpcc/execution/async/WorkPackage.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "test_src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessMock.hpp"
 #include "test_src/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiableMock.hpp"
-#include "test_src/execution/async/DWQwithThread.hpp"
 #include "gtest/gtest.h"
 #include <memory>
 #include <stdexcept>
@@ -86,7 +86,7 @@ class gpcc_cood_Multiplexer_TestsF: public Test
 
 
     // Workqueue + thread
-    gpcc_tests::execution::async::DWQwithThread dwqWithThread;
+    gpcc::execution::async::DWQwithThread dwqWithThread;
     gpcc::execution::async::IDeferredWorkQueue & dwq;
 
     // mocks for server and 2 clients
@@ -125,6 +125,8 @@ gpcc_cood_Multiplexer_TestsF::gpcc_cood_Multiplexer_TestsF(void)
 , spUUT()
 , pRODAN_of_Mux(nullptr)
 {
+  dwqWithThread.Start(gpcc::osal::Thread::SchedPolicy::Other, 0U,
+                      gpcc::osal::Thread::GetDefaultStackSize());
 }
 
 gpcc_cood_Multiplexer_TestsF::~gpcc_cood_Multiplexer_TestsF(void)
@@ -142,6 +144,8 @@ gpcc_cood_Multiplexer_TestsF::~gpcc_cood_Multiplexer_TestsF(void)
   {
     gpcc::osal::Panic("gpcc_cood_Multiplexer_TestsF::~gpcc_cood_Multiplexer_TestsF: Caught an unknown exception");
   }
+
+  dwqWithThread.Stop();
 }
 
 void gpcc_cood_Multiplexer_TestsF::SetUp(void)

@@ -42,7 +42,7 @@
  *   enqueued [DeferredWorkPackage](@ref gpcc::execution::async::DeferredWorkPackage) instances.
  *
  * Further GPCC provides some convenient classes that bundle a thread and a work queue:
- * - Class [DeferredWorkQueueWithThread](@ref gpcc::execution::async::DeferredWorkQueueWithThread) combines a
+ * - Class [DWQwithThread](@ref gpcc::execution::async::DWQwithThread) combines a
  *   [DeferredWorkQueue](@ref gpcc::execution::async::DeferredWorkQueue) and a [Thread](@ref gpcc::osal::Thread).
  *
  * # Static and dynamic work packages

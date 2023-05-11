@@ -62,10 +62,8 @@ target_sources(${PROJECT_NAME}_testcases
                crc/Test_simple_crc.cpp
                dsp/filter/TestIntegralFilter.cpp
                dsp/filter/TestMedianFilter1D.cpp
-               execution/async/DWQwithThread.cpp
                execution/async/TestDeferredWorkPackage.cpp
                execution/async/TestDeferredWorkQueue.cpp
-               execution/async/TestDeferredWorkQueueWithThread.cpp
                execution/async/TestDWQwithThread.cpp
                execution/async/TestWorkPackage.cpp
                execution/async/TestWorkQueue.cpp

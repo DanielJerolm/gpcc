@@ -8,7 +8,7 @@
     Copyright (C) 2023 Daniel Jerolm
 */
 
-#include <gpcc/execution/async/DeferredWorkQueueWithThread.hpp>
+#include <gpcc/execution/async/DWQwithThread.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/string/tools.hpp>
 #include <functional>
@@ -33,7 +33,7 @@ namespace async     {
  * \param threadName
  * Name for the thread that will run the work queue.
  */
-DeferredWorkQueueWithThread::DeferredWorkQueueWithThread(std::string const & threadName)
+DWQwithThread::DWQwithThread(std::string const & threadName)
 : dwq()
 , thread(threadName)
 {
@@ -74,11 +74,11 @@ DeferredWorkQueueWithThread::DeferredWorkQueueWithThread(std::string const & thr
  * _This must be equal to or larger than_ @ref gpcc::osal::Thread::GetMinStackSize(). \n
  * On some platforms the final stack size might be larger than this, e.g. due to interrupt handling requirements.
  */
-void DeferredWorkQueueWithThread::Start(gpcc::osal::Thread::SchedPolicy const schedPolicy,
+void DWQwithThread::Start(gpcc::osal::Thread::SchedPolicy const schedPolicy,
                                         gpcc::osal::Thread::priority_t const priority,
                                         size_t const stackSize)
 {
-  thread.Start(std::bind(&DeferredWorkQueueWithThread::ThreadEntry, this), schedPolicy, priority, stackSize);
+  thread.Start(std::bind(&DWQwithThread::ThreadEntry, this), schedPolicy, priority, stackSize);
 }
 
 /**
@@ -106,7 +106,7 @@ void DeferredWorkQueueWithThread::Start(gpcc::osal::Thread::SchedPolicy const sc
  * No cancellation point included.
  *
  */
-void DeferredWorkQueueWithThread::Stop(void) noexcept
+void DWQwithThread::Stop(void) noexcept
 {
   try
   {
@@ -115,7 +115,7 @@ void DeferredWorkQueueWithThread::Stop(void) noexcept
   }
   catch (std::exception const & e)
   {
-    gpcc::osal::Panic("DeferredWorkQueueWithThread::Stop: Failed: ", e);
+    gpcc::osal::Panic("DWQwithThread::Stop: Failed: ", e);
   }
 }
 
@@ -125,7 +125,7 @@ void DeferredWorkQueueWithThread::Stop(void) noexcept
  * - - -
  *
  * __Thread safety:__\n
- * Program logic ensures that there is only one thread per @ref DeferredWorkQueueWithThread instance executing this.
+ * Program logic ensures that there is only one thread per @ref DWQwithThread instance executing this.
  *
  * __Exception safety:__\n
  * No-throw guarantee.
@@ -138,7 +138,7 @@ void DeferredWorkQueueWithThread::Stop(void) noexcept
  * \return
  * Value returned by Thread::Join(). Here: Always nullptr.
  */
-void* DeferredWorkQueueWithThread::ThreadEntry(void)
+void* DWQwithThread::ThreadEntry(void)
 {
   thread.SetCancelabilityEnabled(false);
 
@@ -148,11 +148,11 @@ void* DeferredWorkQueueWithThread::ThreadEntry(void)
   }
   catch (std::exception const & e)
   {
-    gpcc::osal::Panic("DeferredWorkQueueWithThread::ThreadEntry: A work package threw: ", e);
+    gpcc::osal::Panic("DWQwithThread::ThreadEntry: A work package threw: ", e);
   }
   catch (...)
   {
-    gpcc::osal::Panic("DeferredWorkQueueWithThread::ThreadEntry: Caught an unknown exception thrown by a work package.");
+    gpcc::osal::Panic("DWQwithThread::ThreadEntry: Caught an unknown exception thrown by a work package.");
   }
 
   return nullptr;
