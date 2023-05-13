@@ -6,6 +6,7 @@ target_sources(${PROJECT_NAME}
                async/DeferredWorkPackage.cpp
                async/DeferredWorkQueue.cpp
                async/DWQwithThread.cpp
+               async/SuspendableDWQwithThread.cpp
                async/WorkPackage.cpp
                async/WorkQueue.cpp
                cyclic/TriggeredThreadedCyclicExec.cpp

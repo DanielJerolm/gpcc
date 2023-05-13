@@ -178,6 +178,9 @@ Next to do:
 
 History:
 ===============================================================================
+2023-05-13
+- Added class SuspendableDWQwithThread
+
 2023-05-11
 - Renamed gpcc::execution::async::DeferredWorkQueueWithThread to DWQWithThread and removed
   gpcc_tests::execution::async::DWQwithThread which is replaced by the productive class now.

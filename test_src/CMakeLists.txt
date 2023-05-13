@@ -65,6 +65,7 @@ target_sources(${PROJECT_NAME}_testcases
                execution/async/TestDeferredWorkPackage.cpp
                execution/async/TestDeferredWorkQueue.cpp
                execution/async/TestDWQwithThread.cpp
+               execution/async/TestSuspendableDWQwithThread.cpp
                execution/async/TestWorkPackage.cpp
                execution/async/TestWorkQueue.cpp
                execution/cyclic/TestTriggeredThreadedCyclicExec.cpp
