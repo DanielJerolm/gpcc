@@ -53,7 +53,7 @@ TEST(gpcc_execution_async_DWQwithThread_Tests, StartTwice)
   spUUT.reset();
 }
 
-TEST(gpcc_tests_execution_async_DeferredWorkQueueWithThread_DeathTests, StopTwice)
+TEST(gpcc_execution_async_DWQwithThread_DeathTests, StopTwice)
 {
   std::unique_ptr<DWQwithThread> spUUT;
 
@@ -118,7 +118,7 @@ TEST(gpcc_execution_async_DWQwithThread_Tests, WorkPackagesLeftUponDestruction)
 #endif
 
 #if !defined(SKIP_TFC_BASED_TESTS)
-TEST(gpcc_tests_execution_async_DeferredWorkQueueWithThread_DeathTests, WorkpackageThrows)
+TEST(gpcc_execution_async_DWQwithThread_DeathTests, WorkpackageThrows)
 {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
 

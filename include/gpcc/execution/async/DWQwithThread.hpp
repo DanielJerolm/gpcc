@@ -33,6 +33,20 @@ namespace async     {
  * The work packages are executed with deferred thread cancellation disabled. The @ref Stop() method will stop the
  * thread after a work package currently in progress has completed. Until then the @ref Stop() method blocks.
  *
+ * Usage example:
+ * ~~~{.cpp}
+ * auto spDWQ = std::make_unique<DWQwithThread>("MyThread");
+ *
+ * // start the work queue
+ * spDWQ->Start(Thread::SchedPolicy::Other, 0U, Thread::GetDefaultStackSize()));
+ *
+ * // put work packages into the work queue and watch them being executed
+ * // [...]
+ *
+ * // stop work queue's thread and destroy the object
+ * spDWQ->Stop();
+ * spDWQ.reset();
+ * ~~~
  * - - -
  *
  * __Thread safety:__\n

@@ -10,7 +10,6 @@
 
 #include <gpcc/execution/async/DWQwithThread.hpp>
 #include <gpcc/osal/Panic.hpp>
-#include <gpcc/string/tools.hpp>
 #include <functional>
 
 namespace gpcc      {
