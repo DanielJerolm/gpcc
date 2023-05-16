@@ -136,8 +136,8 @@
  * - test name
  *
  * \subsection GCS_UNIT_TESTS_DIRECTORY_STRUCTURE Directory structure
- * Unit tests shall be located under gpcc/test_src/...\n
- * The directory structure below "gpcc/test_src" shall correspond to "gpcc/src".
+ * Unit tests shall be located under gpcc/testcases/...\n
+ * The directory structure below "gpcc/testcases" shall correspond to "gpcc/src".
  *
  * \subsection GCS_UNIT_TESTS_FILENAMES File Names
  * The names of the files containing unit tests for a specific class or module shall be derived from the name of the
@@ -145,7 +145,7 @@
  *
  * Example:\n
  * Source files: gpcc/src/execution/async/WorkPackage.cpp/.hpp\n
- * Unit tests: gpcc/test_src/execution/async/TestWorkPackage.cpp
+ * Unit tests: gpcc/testcases/execution/async/TestWorkPackage.cpp
  *
  * \subsection GCS_UNIT_TESTS_TESTSUITE_NAMING Test suite naming
  * The _test suite name_ shall be comprised of the namespace in which the UUT is located plus the UUT's name plus the
@@ -214,9 +214,9 @@
  * ~~~
  *
  * An example for creation of a parametrized test fixture (with more than 50 tests) is here:
- * - gpcc/test_src/execution/async/TestIWorkQueue.hpp
- * - gpcc/test_src/execution/async/TestWorkQueue.cpp
- * - gpcc/test_src/execution/async/TestDeferredWorkQueue.cpp
+ * - gpcc/testcases/execution/async/TestIWorkQueue.hpp
+ * - gpcc/testcases/execution/async/TestWorkQueue.cpp
+ * - gpcc/testcases/execution/async/TestDeferredWorkQueue.cpp
  *
  * \subsection GCS_UNIT_TESTS_MACHINE_PERF Tests that depend on machine performance
  * Sometimes it is inevitable that UUTs implement some kind of timing behaviour and that we want to test that behaviour.
@@ -428,7 +428,7 @@
  *   + Private headers from gpcc in alphabetical order using double qoutes:\n
  *     `#include "src/.../some_file.hpp"`\n
  *     `#include "src_notest/.../some_file.hpp"`\n
- *     `#include "test_src/.../some_file.hpp"`\n
+ *     `#include "testcases/.../some_file.hpp"`\n
  *   + System headers in alphabetical order using angle brackets:\n
  *     `#include <pthread>`
  *   + STL headers in alphabetical order using angle brackets:\n

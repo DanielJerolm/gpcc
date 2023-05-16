@@ -178,6 +178,9 @@ Next to do:
 
 History:
 ===============================================================================
+2023-05-23
+- Renamed gpcc/test_src to gpcc/testcases
+
 2023-05-13
 - Added class SuspendableDWQwithThread
 

@@ -46,7 +46,7 @@ SetupLinkLibraries(${PROJECT_NAME})
 # ---------------------------------------------------------------------------------------------------------------------
 add_library(${PROJECT_NAME}_testcases OBJECT)
 
-add_subdirectory(test_src)
+add_subdirectory(testcases)
 
 target_include_directories(${PROJECT_NAME}_testcases PRIVATE .)
 
