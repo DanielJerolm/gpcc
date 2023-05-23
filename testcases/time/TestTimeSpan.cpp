@@ -9,7 +9,7 @@
 */
 
 #include <gpcc/time/TimeSpan.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <limits>
 #include <stdexcept>
 

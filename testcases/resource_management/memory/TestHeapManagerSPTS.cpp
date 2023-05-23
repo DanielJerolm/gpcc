@@ -17,7 +17,7 @@
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/resource_management/memory/HeapManagerStatistics.hpp>
 #include <gpcc/resource_management/memory/MemoryDescriptorSPTS.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <exception>
 #include <functional>
 #include <limits>

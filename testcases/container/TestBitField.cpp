@@ -9,7 +9,7 @@
 */
 
 #include <gpcc/container/BitField.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <string>
 
 namespace gpcc_tests {

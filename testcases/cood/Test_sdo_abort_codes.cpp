@@ -9,7 +9,7 @@
 */
 
 #include <gpcc/cood/sdo_abort_codes.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 namespace gpcc_tests {
 namespace cood       {

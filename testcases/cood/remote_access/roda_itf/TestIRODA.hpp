@@ -22,7 +22,7 @@
 #include <gpcc/string/tools.hpp>
 #include <gpcc_test/cood/remote_access/roda_itf/RODAN_Listener.hpp>
 #include "TestbenchBase.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <memory>
 #include <stdexcept>
 #include <string>

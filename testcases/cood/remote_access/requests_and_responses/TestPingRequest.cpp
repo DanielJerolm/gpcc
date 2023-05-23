@@ -12,7 +12,7 @@
 #include <gpcc/cood/remote_access/requests_and_responses/ReturnStackItem.hpp>
 #include <gpcc/stream/MemStreamReader.hpp>
 #include <gpcc/stream/MemStreamWriter.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 namespace gpcc_tests {
 namespace cood       {

@@ -9,7 +9,7 @@
 */
 
 #include <gpcc/string/tools.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 namespace {
 

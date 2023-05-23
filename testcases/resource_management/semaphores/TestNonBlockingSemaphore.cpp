@@ -18,7 +18,7 @@
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <memory>
 
 namespace gpcc_tests          {

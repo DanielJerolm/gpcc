@@ -9,7 +9,7 @@
 */
 
 #include "src/log/internal/StringLogMessageTS.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 using namespace gpcc::log;
 using namespace testing;

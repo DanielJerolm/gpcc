@@ -14,7 +14,7 @@
 #include <gpcc/file_systems/exceptions.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>

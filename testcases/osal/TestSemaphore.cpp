@@ -11,7 +11,7 @@
 #include <gpcc/osal/Semaphore.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <atomic>
 #include <functional>
 #include <memory>

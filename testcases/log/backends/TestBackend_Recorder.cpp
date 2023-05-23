@@ -11,7 +11,7 @@
 #include <gpcc_test/log/backends/Backend_Recorder.hpp>
 #include <gpcc/file_systems/linux_fs/FileStorage.hpp>
 #include "src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 namespace gpcc_tests {
 namespace log {

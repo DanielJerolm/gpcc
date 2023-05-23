@@ -10,7 +10,7 @@
 
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Mutex.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <memory>
 
 namespace gpcc_tests {

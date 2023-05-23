@@ -9,7 +9,7 @@
 */
 
 #include "src/cli/internal/ReturnKeyFilter.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 namespace gpcc_tests {
 namespace cli        {

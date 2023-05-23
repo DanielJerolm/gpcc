@@ -23,7 +23,7 @@
 #include <gpcc_test/cli/FakeTerminal.hpp>
 #include "src/file_systems/linux_fs/internal/tools.hpp"
 #include "src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <iostream>
 #include <memory>
 #include <sstream>

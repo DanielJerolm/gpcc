@@ -16,7 +16,7 @@
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
 #include <gpcc_test/cli/FakeTerminal.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <atomic>
 #include <stdexcept>
 

@@ -11,7 +11,7 @@
 #include <gpcc/cood/ObjectDictionary.hpp>
 #include <gpcc/cood/ObjectPtr.hpp>
 #include <gpcc/cood/ObjectVAR.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <memory>
 
 namespace gpcc_tests {

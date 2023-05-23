@@ -9,7 +9,7 @@
 */
 
 #include "src/resource_management/objects/internal/NamedRWLockEntry.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <string>
 
 namespace gpcc_tests

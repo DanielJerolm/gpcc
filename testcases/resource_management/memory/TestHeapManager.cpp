@@ -12,7 +12,7 @@
 #include <gpcc/resource_management/memory/HeapManagerStatistics.hpp>
 #include <gpcc/resource_management/memory/MemoryDescriptor.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <limits>
 #include <memory>
 #include <vector>

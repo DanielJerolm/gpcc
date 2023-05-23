@@ -9,7 +9,7 @@
 */
 
 #include <gpcc/cood/cli/string_conversion.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 namespace gpcc_tests {
 namespace cood       {

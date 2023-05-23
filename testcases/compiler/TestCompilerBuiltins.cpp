@@ -9,7 +9,7 @@
 */
 
 #include <gpcc/compiler/builtins.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <limits>
 #include <cstdint>
 

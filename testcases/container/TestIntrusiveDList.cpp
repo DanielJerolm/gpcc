@@ -11,7 +11,7 @@
 #include <gpcc/container/IntrusiveDList.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <list>
 #include <memory>
 #include <string>

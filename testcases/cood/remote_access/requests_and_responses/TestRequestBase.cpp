@@ -13,7 +13,7 @@
 #include <gpcc/cood/remote_access/requests_and_responses/WriteRequest.hpp>
 #include <gpcc/stream/MemStreamReader.hpp>
 #include <gpcc/stream/MemStreamWriter.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <limits>
 
 namespace gpcc_tests {

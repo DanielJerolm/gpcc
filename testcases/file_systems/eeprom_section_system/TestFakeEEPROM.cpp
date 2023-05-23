@@ -9,7 +9,7 @@
 */
 
 #include "FakeEEPROM.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <cstring>
 
 namespace gpcc_tests

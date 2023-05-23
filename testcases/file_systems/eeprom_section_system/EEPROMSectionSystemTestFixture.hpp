@@ -10,7 +10,7 @@
 
 #include <gpcc/file_systems/eeprom_section_system/EEPROMSectionSystem.hpp>
 #include "FakeEEPROM.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <cstddef>
 #include <cstdint>
 

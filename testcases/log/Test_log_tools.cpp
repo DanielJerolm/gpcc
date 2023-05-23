@@ -17,7 +17,7 @@
 #include <gpcc/raii/scope_guard.hpp>
 #include "src/file_systems/linux_fs/internal/tools.hpp"
 #include "src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <memory>
 #include <stdexcept>
 #include <string>

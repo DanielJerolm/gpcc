@@ -16,7 +16,7 @@
 #include <gpcc/stdif/storage/IRandomAccessStorage.hpp>
 #include <gpcc_test/cli/FakeTerminal.hpp>
 #include "testcases/file_systems/eeprom_section_system/FakeEEPROM.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <functional>
 #include <iostream>
 #include <cstddef>

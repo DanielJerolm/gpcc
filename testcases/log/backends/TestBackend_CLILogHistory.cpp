@@ -16,7 +16,7 @@
 #include <gpcc/stream/MemStreamWriter.hpp>
 #include <gpcc/string/tools.hpp>
 #include <gpcc_test/cli/FakeTerminal.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <functional>
 #include <string>
 #include <memory>

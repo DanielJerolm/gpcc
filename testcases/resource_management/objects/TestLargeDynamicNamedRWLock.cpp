@@ -9,7 +9,7 @@
 */
 
 #include <gpcc/resource_management/objects/LargeDynamicNamedRWLock.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <string>
 #include <stdexcept>
 

@@ -11,7 +11,7 @@
 #include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <memory>
 
 namespace gpcc_tests {

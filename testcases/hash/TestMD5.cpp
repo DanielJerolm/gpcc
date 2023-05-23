@@ -10,7 +10,7 @@
 
 #include <gpcc/hash/md5.hpp>
 #include <gpcc/string/tools.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <iostream>
 #include <stdexcept>
 #include <string>

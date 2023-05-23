@@ -14,7 +14,7 @@
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "logfacilities/FakeBackend.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <exception>
 #include <iostream>
 #include <memory>

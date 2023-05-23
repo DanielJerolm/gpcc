@@ -20,7 +20,7 @@
 #include <gpcc/stream/MemStreamWriter.hpp>
 #include <gpcc/string/tools.hpp>
 #include "testcases/cood/ObjectVARwithASM.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <iostream>
 #include <limits>
 

@@ -9,7 +9,7 @@
 */
 
 #include <gpcc/string/levenshtein_distance.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 namespace gpcc_tests {
 namespace string {

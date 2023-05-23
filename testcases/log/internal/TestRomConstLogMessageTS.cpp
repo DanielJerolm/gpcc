@@ -9,7 +9,7 @@
 */
 
 #include "src/log/internal/RomConstLogMessageTS.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 using namespace gpcc::log;
 using namespace testing;

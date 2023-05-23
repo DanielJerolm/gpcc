@@ -15,7 +15,7 @@
 #include <gpcc/raii/scope_guard.hpp>
 #include "src/osal/os/linux_arm_tfc/internal/AdvancedUnmanagedMutexLocker.hpp"
 #include "src/osal/os/linux_arm_tfc/internal/UnmanagedMutexLocker.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <unistd.h>
 
 // Sleeptime in ms for the main thread to allow the helper thread to run into the condition variable's

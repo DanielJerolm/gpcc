@@ -10,7 +10,7 @@
 
 #include <gpcc/compiler/definitions.hpp>
 #include <gpcc/osal/Panic.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <cstdint>
 
 namespace gpcc_tests

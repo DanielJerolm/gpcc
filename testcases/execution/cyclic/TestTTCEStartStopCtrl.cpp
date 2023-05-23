@@ -19,7 +19,7 @@
 #include "Trace.hpp"
 #include "TriggerProvider.hpp"
 #include "WaitUntilStoppedHelper.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <stdexcept>
 #include <cstddef>
 #include <cstdint>

@@ -4,8 +4,6 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
-- Fix "include# "gtest/gtest.h"" -> "include# <gtest/gtest.h>"
-
 - BugFix: IsPowerOf2 returns true for zero, but zero is not a power of 2
 
 - COOD remote access
@@ -184,6 +182,7 @@ History:
 - Renamed gpcc/test_src to gpcc/testcases
 - Rededicated old test_src-folder: Contains public classes for use in unittest target environment now,
   while testcases-folder is privat.
+- Fixed "#include "gtest/gtest.h"" -> "#include <gtest/gtest.h>"
 
 2023-05-13
 - Added class SuspendableDWQwithThread

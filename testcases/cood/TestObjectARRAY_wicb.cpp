@@ -15,7 +15,7 @@
 #include <gpcc/stream/MemStreamWriter.hpp>
 #include <gpcc/stream/stream_errors.hpp>
 #include "IObjectNotifiableMock.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <limits>
 #include <memory>
 #include <random>

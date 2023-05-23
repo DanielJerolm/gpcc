@@ -11,7 +11,7 @@
 #include <gpcc/crc/simple_crc.hpp>
 #include <gpcc/compiler/builtins.hpp>
 #include <gpcc/string/tools.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <string>
 #include <iostream>
 #include <cstring>

@@ -9,7 +9,7 @@
 */
 
 #include <gpcc/execution/async/WorkPackage.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 namespace gpcc_tests {
 namespace execution {

@@ -14,7 +14,7 @@
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc_test/cli/FakeTerminal.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <functional>
 
 namespace gpcc_tests {

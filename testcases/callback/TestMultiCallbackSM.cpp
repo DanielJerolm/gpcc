@@ -14,7 +14,7 @@
 #include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Thread.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <stdexcept>
 #include <vector>
 #include <cstdint>

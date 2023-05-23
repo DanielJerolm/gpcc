@@ -10,7 +10,7 @@
 
 #include <gpcc/resource_management/objects/HierarchicNamedRWLock.hpp>
 #include <gpcc/resource_management/objects/exceptions.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <memory>
 #include <stdexcept>
 

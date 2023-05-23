@@ -9,7 +9,7 @@
 */
 
 #include <gpcc/osal/Panic.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <iostream>
 
 namespace gpcc_tests {

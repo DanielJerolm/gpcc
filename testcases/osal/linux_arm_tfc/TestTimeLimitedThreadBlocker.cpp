@@ -22,7 +22,7 @@
 #include "src/osal/os/linux_arm_tfc/internal/TFCCore.hpp"
 #include "src/osal/os/linux_arm_tfc/internal/UnmanagedMutex.hpp"
 #include "src/osal/os/linux_arm_tfc/internal/UnmanagedMutexLocker.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 
 // Sleeptime in ms for the main thread to allow the helper thread to run into the UUTs blocking method.

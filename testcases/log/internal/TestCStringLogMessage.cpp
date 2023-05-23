@@ -9,7 +9,7 @@
 */
 
 #include "src/log/internal/CStringLogMessage.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <cstdlib>
 #include <cstring>
 

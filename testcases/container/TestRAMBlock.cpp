@@ -11,7 +11,7 @@
 #include <gpcc/container/RAMBlock.hpp>
 #include <gpcc/stream/MemStreamReader.hpp>
 #include <gpcc/stream/MemStreamWriter.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <iostream>
 #include <memory>
 #include <string>

@@ -9,7 +9,7 @@
 */
 
 #include <gpcc/cli/Command.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 namespace gpcc {
 namespace cli  {

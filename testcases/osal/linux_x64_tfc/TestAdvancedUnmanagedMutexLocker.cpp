@@ -13,7 +13,7 @@
 #include "src/osal/os/linux_x64_tfc/internal/AdvancedUnmanagedMutexLocker.hpp"
 #include "src/osal/os/linux_x64_tfc/internal/UnmanagedMutex.hpp"
 #include "src/osal/os/linux_x64_tfc/internal/UnmanagedMutexLocker.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <memory>
 
 namespace gpcc_tests {

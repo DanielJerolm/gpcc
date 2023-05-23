@@ -15,7 +15,7 @@
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <functional>
 
 #if defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64_TFC)

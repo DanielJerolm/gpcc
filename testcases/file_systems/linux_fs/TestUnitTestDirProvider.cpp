@@ -13,7 +13,7 @@
 #include "src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
 #include <gpcc/file_systems/linux_fs/FileStorage.hpp>
 #include "src/file_systems/linux_fs/internal/tools.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <memory>

@@ -17,7 +17,7 @@
 #include <gpcc/string/tools.hpp>
 #include <gpcc_test/cli/FakeTerminal.hpp>
 #include "testcases/cood/remote_access/infrastructure/TestbenchThreadBasedRAS.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <iostream>
 #include <memory>
 #include <cstddef>

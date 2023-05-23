@@ -10,7 +10,7 @@
 
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <limits>
 #include <stdexcept>
 #include <cassert>

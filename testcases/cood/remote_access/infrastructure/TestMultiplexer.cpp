@@ -24,7 +24,7 @@
 #include <gpcc/raii/scope_guard.hpp>
 #include "testcases/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessMock.hpp"
 #include "testcases/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiableMock.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <memory>
 #include <stdexcept>
 #include <vector>

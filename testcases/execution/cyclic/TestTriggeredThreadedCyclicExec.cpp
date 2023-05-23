@@ -14,7 +14,7 @@
 #include <gpcc/time/TimeSpan.hpp>
 #include "Trace.hpp"
 #include "TriggerProvider.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <stdexcept>
 #include <cstddef>
 #include <cstdint>

@@ -10,7 +10,7 @@
 
 #include <gpcc/stdif/i2c/tools.hpp>
 #include <gpcc/stdif/i2c/II2C_Master.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <cstring>
 
 using namespace testing;

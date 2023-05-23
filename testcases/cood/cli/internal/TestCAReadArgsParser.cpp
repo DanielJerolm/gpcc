@@ -10,7 +10,7 @@
 
 #include "src/cood/cli/internal/CAReadArgsParser.hpp"
 #include <gpcc/cli/exceptions.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <memory>
 
 namespace gpcc_tests {

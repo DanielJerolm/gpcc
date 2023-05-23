@@ -11,7 +11,7 @@
 #include <gpcc/stream/MemStreamReader.hpp>
 #include <gpcc/stream/MemStreamWriter.hpp>
 #include <gpcc/stream/stream_errors.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <memory>
 #include <iostream>
 #include <cassert>

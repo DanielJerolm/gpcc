@@ -14,7 +14,7 @@
 #include <gpcc/stream/MemStreamReader.hpp>
 #include <gpcc/stream/MemStreamWriter.hpp>
 #include <gpcc/string/tools.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <limits>
 
 namespace gpcc_tests {

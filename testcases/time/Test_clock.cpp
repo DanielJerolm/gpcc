@@ -11,7 +11,7 @@
 #include <gpcc/time/clock.hpp>
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <iostream>
 #include <cstdint>
 #include <ctime>

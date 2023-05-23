@@ -14,7 +14,7 @@
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 // Some of the tests here use two threads. The following sleeptime in ms shall allow
 // one of the two threads to sleep until the other of the two threads has ran into a lock

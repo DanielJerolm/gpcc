@@ -19,7 +19,7 @@
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include "FakeBackend.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <iostream>
 #include <memory>
 #include <sstream>

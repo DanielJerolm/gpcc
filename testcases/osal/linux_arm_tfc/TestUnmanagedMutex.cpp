@@ -16,7 +16,7 @@
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
 #include "src/osal/os/linux_arm_tfc/internal/UnmanagedMutexLocker.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 #include <unistd.h>
 

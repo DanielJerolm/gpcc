@@ -9,7 +9,7 @@
 */
 
 #include <gpcc/math/int_math.hpp>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <limits>
 
 namespace gpcc_tests {

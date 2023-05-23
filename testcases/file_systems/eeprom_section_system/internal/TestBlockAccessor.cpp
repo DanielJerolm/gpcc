@@ -14,7 +14,7 @@
 #include <gpcc/file_systems/eeprom_section_system/exceptions.hpp>
 #include "src/file_systems/eeprom_section_system/internal/EEPROMSectionSystemInternals.hpp"
 #include "testcases/file_systems/eeprom_section_system/FakeEEPROM.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <limits>
 #include <stdexcept>
 #include <cstring>
