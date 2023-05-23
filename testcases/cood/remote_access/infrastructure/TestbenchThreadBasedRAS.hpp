@@ -26,10 +26,10 @@ namespace gpcc_tests {
 namespace cood       {
 
 /**
- * \ingroup GPCC_TESTS_COOD_RA
+ * \ingroup GPCC_TESTCASES_COOD_RA
  * \brief Testbench for class @ref gpcc::cood::ThreadBasedRemoteAccessServer.
  *
- * Please refer to @ref GPCC_TESTS_COOD_RA for detailed information about the test strategy for the
+ * Please refer to @ref GPCC_TESTCASES_COOD_RA for detailed information about the test strategy for the
  * [IRemoteObjectDictionaryAccess](@ref gpcc::cood::IRemoteObjectDictionaryAccess) interface.
  *
  * - - -

@@ -20,9 +20,9 @@
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/string/tools.hpp>
+#include <gpcc_test/cli/FakeTerminal.hpp>
 #include "src/file_systems/linux_fs/internal/tools.hpp"
 #include "src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
-#include "testcases/fakes/cli/FakeTerminal.hpp"
 #include "gtest/gtest.h"
 #include <iostream>
 #include <memory>

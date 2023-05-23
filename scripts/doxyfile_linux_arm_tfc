@@ -875,7 +875,7 @@ WARN_LOGFILE           = ../doc/doxygen/warnings.log
 
 INPUT                  = ../include \
                          ../src \
-                         ../src_notest \
+                         ../test_src \
                          ../testcases
 
 # This tag can be used to specify the character encoding of the source files

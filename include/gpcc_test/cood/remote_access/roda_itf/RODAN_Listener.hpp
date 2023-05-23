@@ -33,7 +33,8 @@ namespace gpcc_tests {
 namespace cood       {
 
 /**
- * \ingroup GPCC_TESTS_COOD_RA
+ * \ingroup GPCC_TESTS
+ * \ingroup GPCC_TESTCASES_COOD_RA
  * \brief Listener for a RODAN interface
  *        ([IRemoteObjectDictionaryAccessNotifiable](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable)-interface).
  *

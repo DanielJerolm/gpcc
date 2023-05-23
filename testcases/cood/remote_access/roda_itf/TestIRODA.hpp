@@ -20,7 +20,7 @@
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/string/tools.hpp>
-#include "RODAN_Listener.hpp"
+#include <gpcc_test/cood/remote_access/roda_itf/RODAN_Listener.hpp>
 #include "TestbenchBase.hpp"
 #include "gtest/gtest.h"
 #include <memory>
@@ -34,7 +34,7 @@ namespace cood       {
 using namespace testing;
 
 /**
- * \ingroup GPCC_TESTS_COOD_RA
+ * \ingroup GPCC_TESTCASES_COOD_RA
  * \brief Type-parametrized test fixture for a RODA/RODAN-interface pair
  *        (@ref gpcc::cood::IRemoteObjectDictionaryAccess and @ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable).
  *
@@ -42,13 +42,13 @@ using namespace testing;
  * GPCC provides mutiple classes realizing the @ref gpcc::cood::IRemoteObjectDictionaryAccess interface. The test cases
  * using this type-parametrized test fixture can be applied to any class realizing the
  * [IRemoteObjectDictionaryAccess](@ref gpcc::cood::IRemoteObjectDictionaryAccess) interface. For details about the
- * overall test concept please refer to @ref GPCC_TESTS_COOD_RA.
+ * overall test concept please refer to @ref GPCC_TESTCASES_COOD_RA.
  *
  * # How to apply test cases to a UUT
  * To apply the test cases based on this test fixture to a UUT which realizes the
  * [IRemoteObjectDictionaryAccess](@ref gpcc::cood::IRemoteObjectDictionaryAccess) interface, a testbench __T__ for the
  * specific UUT must be provided. All testbenches __T__ must be derived from @ref TestbenchBase. For details about the
- * overall test concept please refer to @ref GPCC_TESTS_COOD_RA.
+ * overall test concept please refer to @ref GPCC_TESTCASES_COOD_RA.
  *
  * The test cases can be instantiated for a UUT as shown in this example:
  * ~~~{.cpp}

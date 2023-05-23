@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "Backend_Recorder.hpp"
+#include <gpcc_test/log/backends/Backend_Recorder.hpp>
 #include <gpcc/file_systems/linux_fs/FileStorage.hpp>
 #include "src/file_systems/linux_fs/internal/UnitTestDirProvider.hpp"
 #include "gtest/gtest.h"
@@ -17,7 +17,7 @@ namespace gpcc_tests {
 namespace log {
 
 using namespace testing;
-using gpcc::log::Backend_Recorder;
+using gpcc_tests::log::Backend_Recorder;
 
 TEST(gpcc_log_Backend_Recorder_Tests, Instantiation)
 {

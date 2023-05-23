@@ -8,7 +8,7 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "testcases/fakes/cli/FakeTerminal.hpp"
+#include <gpcc_test/cli/FakeTerminal.hpp>
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
 #include "gtest/gtest.h"

@@ -9,6 +9,11 @@
 */
 
 /**
- * @defgroup GPCC gpcc
+ * \defgroup GPCC GPCC
  * \brief General Purpose Class Collection
+ *
+ * This group contains the class collection offered to clients linking against the library `gpcc` (see CMakeLists.txt).
+ * The classes from this group are available both in the productive and in the unittest target environment.
+ *
+ * Use `#include <gpcc/xxx.hpp>` to include the headers.
  */

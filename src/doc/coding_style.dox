@@ -24,6 +24,28 @@
  * This page contains a set of rules and recommendations that shall be obeyed when modfying or extending GPCC code.
  *
  * \section GCS_GR General rules
+ * \subsection GCS_GR_DIR_AND_FILE_STRUCT Directory and file structure
+ * Source code is divided into three groups located in separate folders:
+ * - __gpcc/src__\n
+ *   Source code implementing functionality offered by GPCC to users. The functionality is available in both the
+ *   productive and the unittest target environment. It is compiled into the library "gpcc".
+ * - __gpcc/test_src__\n
+ *   Source code implementing functionality offered by GPCC to users, but the functionality is only available in the
+ *   unittest target environment.\n
+ *   Example: Classes assisting in unit testing.\n
+ *   When building GPCC for the unit test target environment, it is compiled into the library "gpcc".
+ * - __gpcc/testcases__\n
+ *   Unit test cases for GPCC and functionality which is closely coupled to GPCC's unit tests, such as test fixtures or
+ *   special UUT implementations. This functionality is of no use for clients and is thus __not__ offered to clients
+ *   linking against GPCC.\n
+ *   The directory structure shall match the directory structure below the src-folder or test_src-folder.
+ *
+ * Class declaration and class definition shall be splitted into an hpp- and a cpp-file:
+ * - Private header files shall be located in the same folder as the cpp-file.
+ * - Public header files for code located in the src-folder shall be locaded in "gpcc/include/gpcc".
+ * - Public header files for code located in the test_src-folder shall be located in "gpcc/include/gpcc_test".
+ * - The directory structure below the include-directories shall be the same as below the src- and test_src-folders.
+ *
  * \subsection GCS_GR_LANGUAGE_INDENTION_APPEARANCE Language, indention, code appearance
  * - All comments, doxygen documentation, variable names, class names, and function names shall be written in english
  *   language.
@@ -50,12 +72,6 @@
  *   } // namespace gpcc
  *   ~~~
  * - Forward declarations may use indention if readability is increased.
- *
- * \subsection GCS_GR_DIR_AND_FILE_STRUCT Directory and file structure
- * - Class declaration and class definition shall be splitted into an hpp- and a cpp-file.
- * - Private header files shall be located in the same folder as the cpp-file.
- * - Public header files shall be locaded in the include/gpcc-folder. The directory structure below the
- *   include/gpcc-folder and below the src-folder shall match each other.
  *
  * \subsection GCS_GR_CONST_AND_VOLATILE_KEYWORDS const and volatile
  * - `const` and `volatile` keywords shall be written on the right hand of the type specifier:
@@ -86,6 +102,7 @@
  * - GPCC uses namespaces to divide the offered classes, types and functions into meaningful groups. Modern IDEs offer
  *   word completion which allows for easy navigation to a desired class if namespaces are used to group stuff by
  *   topics.
+ * - The top level namespaces are `gpcc` and `gpcc_tests`.
  *
  * \subsection GCS_NAMING_ITEMS Classes, Methods, Attributes, Functions
  * - Class names shall use pascal-casing.
@@ -126,7 +143,7 @@
  * - Classes that define an abstract interface shall be prefixed with 'I'.
  *
  * \section GCS_UNIT_TESTS Unit tests with googletest
- * GPCC uses the googletest framework to build its unit tests.
+ * GPCC uses the googletest framework for its unit tests.
  *
  * googletest identifies test cases by two strings:
  * - test suite name / test fixture name
@@ -135,16 +152,14 @@
  *
  * - test name
  *
- * \subsection GCS_UNIT_TESTS_DIRECTORY_STRUCTURE Directory structure
- * Unit tests shall be located under gpcc/testcases/...\n
- * The directory structure below "gpcc/testcases" shall correspond to "gpcc/src".
+ * Test cases are located in the gpcc/testcases folder. See @ref GCS_GR_DIR_AND_FILE_STRUCT for details.
  *
  * \subsection GCS_UNIT_TESTS_FILENAMES File Names
  * The names of the files containing unit tests for a specific class or module shall be derived from the name of the
  * source file containing the UUT plus the prefix "Test".
  *
  * Example:\n
- * Source files: gpcc/src/execution/async/WorkPackage.cpp/.hpp\n
+ * Source file: gpcc/src/execution/async/WorkPackage.cpp\n
  * Unit tests: gpcc/testcases/execution/async/TestWorkPackage.cpp
  *
  * \subsection GCS_UNIT_TESTS_TESTSUITE_NAMING Test suite naming
@@ -176,7 +191,7 @@
  * ~~~
  *
  * \subsection GCS_UNIT_TESTS_PARAM_TESTSUITE_NAMING Naming of a test suite based on a parametrized test fixture
- * These type of test is usually used in conjunction with an interface implemented by the UUT. The name of the
+ * This type of test is usually used in conjunction with an interface implemented by the UUT. The name of the
  * parametrized test fixture shall be build from the interface's name plus the postfix "_TestsF" or "_DeathTestsF".\n
  * Example:
  * ~~~{.cpp}
@@ -213,14 +228,14 @@
  * //                                                              suite.
  * ~~~
  *
- * An example for creation of a parametrized test fixture (with more than 50 tests) is here:
+ * Examples for creation of parametrized test fixtures with more than 50 test cases:
  * - gpcc/testcases/execution/async/TestIWorkQueue.hpp
  * - gpcc/testcases/execution/async/TestWorkQueue.cpp
  * - gpcc/testcases/execution/async/TestDeferredWorkQueue.cpp
  *
  * \subsection GCS_UNIT_TESTS_MACHINE_PERF Tests that depend on machine performance
  * Sometimes it is inevitable that UUTs implement some kind of timing behaviour and that we want to test that behaviour.
- * The results of unit tests that check a UUTs timing behavior will depend directly or indirectly on the performance
+ * The results of unit tests that check a UUT's timing behavior will depend directly or indirectly on the performance
  * of the machine executing the tests. This dependency may cause tests to fail on heavy-loaded machines. GPCC provides
  * an OSAL implementation which offers [GPCC's TFC feature](@ref GPCC_TIME_FLOW_CONTROL) to address that issue.
  * [TFC](@ref GPCC_TIME_FLOW_CONTROL) eliminates any CPU load dependency for most types of unit tests.
@@ -288,7 +303,7 @@
  * executed on a developer machine with zero errors at least once.
  *
  * \subsection GCS_UNIT_TESTS_HUGEMEMTESTS Tests that require a huge amount of memory
- * Some test cases may allocate a very large amount of memory by intention and may crash valgrind/memcheck.
+ * Some test cases may allocate a very large amount of memory (>> 250MB) by intention and may crash valgrind/memcheck.
  *
  * To prevent this, any tests likely to fail on valgrind due to this issue can be disabled by defining the switch
  * `SKIP_VERYBIGMEM_TESTS`.\n
@@ -408,34 +423,34 @@
  * - Header files shall include all files required to compile the _header_ file.
  * - Header files shall not include files required to compile a _source_ file that includes the header file. Any extra
  *   headers required by a _source_ file shall be included by the _source_ file.
- * - Required includes (e.g. `cstdint`) shall not be omitted even if another included header file already brings them
- *   in. If in the future the other header file does not need the include any more, then it could be removed and thus
- *   break our header file by accident.
+ * - All required headers shall be included. Do not rely on that an included header brings another header you need.\n
+ *   Required includes (e.g. `cstdint`) shall not be omitted even if another included header file already pulls them
+ *   in. If at some point in time in the future the other header file does not need the include any more, then it could
+ *   be removed and thus break our header file by accident.
  * - Forward declarations shall be preferred above nested includes whenever possible.
  * - Public headers must not include private headers.
  *
  * \subsubsection GCS_CS_HEADER_FILES_ORDER Order of #include statements
- * - In case of a cpp-file, the own header shall be included first.\n
- *   The style used for 'other headers' below shall be applied.
- * - In case of a cpp-file containing unit tests, the UUT's header or the header of the test fixture shall be included
- *   first.\n
- *   The style used for 'other headers' below shall be applied.
- * - In case of a hpp-file, the headers of base classes shall be included first.\n
- *   The style used for 'other headers' below shall be applied.
- * - The other headers shall be included in the following order:
- *   + Public headers from gpcc in alphabetical order using angle brackets:\n
- *     `#include <gpcc/.../some_file.hpp>`
- *   + Private headers from gpcc in alphabetical order using double qoutes:\n
- *     `#include "src/.../some_file.hpp"`\n
- *     `#include "src_notest/.../some_file.hpp"`\n
- *     `#include "testcases/.../some_file.hpp"`\n
- *   + System headers in alphabetical order using angle brackets:\n
- *     `#include <pthread>`
- *   + STL headers in alphabetical order using angle brackets:\n
- *     `#include <vector>`
- *   + C standard library headers in alphabetical order using angle brackets:\n
- *     `#include <cstdint>`
- * - All required headers shall be included. Do not rely on that an included header brings another header you need.
+ * Header files shall be included in the following order:
+ * 1. Public headers from gpcc in alphabetical order using angle brackets:\n
+ *    `#include <gpcc/.../some_file.hpp>`\n
+ *    `#include <gpcc_test/.../some_file.hpp>`\n
+ * 2. Private headers from gpcc in alphabetical order using double quotes:\n
+ *    `#include "src/.../some_file.hpp"`\n
+ *    `#include "test_src/.../some_file.hpp"`\n
+ *    `#include "testcases/.../some_file.hpp"`\n
+ * 3. System headers in alphabetical order using angle brackets:\n
+ *    `#include <pthread>`
+ * 4. STL headers in alphabetical order using angle brackets:\n
+ *    `#include <vector>`
+ * 5. C standard library headers in alphabetical order using angle brackets:\n
+ *    `#include <cstdint>`
+ *
+ * The following exceptions apply to the order defined above:
+ * - In case of a cpp-file, the own header shall be included first.
+ * - In case of a cpp-file containing unit test cases, the UUT's header or the header of the test fixture shall be
+ *   included first.
+ * - In case of a hpp-file, headers of base classes shall be included first.
  *
  * \section GCS_DOC Documentation
  * \subsection GCS_DOC_GENERAL General
@@ -492,23 +507,43 @@
  *
  * \subsubsection GCS_DOC_THREAD_SAFETY_NORMAL_CLASSES_AND_PROVIDED_ITFS Normal classes and provided interfaces
  * A thread-safety specification shall be included in the documentation of any class and any provided interface. The
- * file "gpcc/doxygen_templates.txt" contains a template for documenting classes and provided interfaces. The template
- * contains predefined specifications for the most frequent use cases:
+ * file "gpcc/doxygen_templates.txt" contains a template for documenting classes and provided interfaces:
  *
  * ~~~{.cpp}
- * <Thread-safe.>
+ * // ------------------------------------------------------------------
+ * // Class documentation for normal classes and for provided interfaces
+ * // ------------------------------------------------------------------
+ * /*
+ *  * \ingroup <group_name>
+ *  * [If this is a private header:
+ *  * \class <class name> <class name>.hpp "<path_relative_to_gpcc>/<class name>.hpp"]
+ *  * \brief <Brief description.>
+ *  *
+ *  * <Detailed description.>
+ *  *
+ *  * - - -
+ *  *
+ *  * __Thread safety:__\n
+ *  * <Thread-safe.>
+ *  * <Not thread safe, but non-modifying concurrent access is safe.>
+ *  */
+ * ~~~
+ * \n
+ * ~~~{.txt}
+ *  * <Thrad-safe.>
  * ~~~
  * The class' implementation contains appropriate locking to properly protect the data of an instance of the class in
  * case of concurrent access by more than one thread.\n
  * There is no difference if the same or different methods of the class are invoked.\n
- * Typical examples for this type of class are:
- * - work queues
- * - message log mechanisms
+ * Examples for this type of class:
+ * - @ref gpcc::execution::async::WorkQueue
+ * - @ref gpcc::log::Logger
  *
  * Usually these classes have been intentionally designed for use with multiple threads.
- *
- * ~~~{.cpp}
- * <Not thread safe, but non-modifying concurrent access is safe.>
+ * \n
+ * \n
+ * ~~~{.txt}
+ *  * <Not thread safe, but non-modifying concurrent access is safe.>
  * ~~~
  * The class' implementation does not contain any locks. However, multiple threads are allowed to access public methods
  * of the same instance simultaneously, if the invoked methods are const and thus only perform _read-access_ to the
@@ -523,33 +558,92 @@
  *
  * If a const-method wants to modify mutual attributes, then the class has to implement proper locking.
  *
- * \subsubsection GCS_DOC_THREAD_SAFETY_METHODS Methods in normal classes and provided interfaces
+ * \subsubsection GCS_DOC_THREAD_SAFETY_METHODS Methods in normal classes and in provided interfaces
  * In addition to the class' thread-safety specification (see above), the documentation of each member function of a
- * class or provided interface shall also contain a thread-safety specification. The file "gpcc/doxygen_templates.txt"
- * contains a template for documenting class methods. The template contains predefined specifications for the most
- * frequent use cases:
- *
+ * class shall also contain a thread-safety specification. The file "gpcc/doxygen_templates.txt" contains a template for
+ * documenting class methods:
  * ~~~{.cpp}
- * <The state of the object is not modified. Concurrent accesses are safe.>
+ * // -------------------------------------------------------------------
+ * // Method documentation for normal classes and for provided interfaces
+ * // (also applicable to static and global non-member-functions)
+ * // -------------------------------------------------------------------
+ * /*
+ *  * [\fn <full function declaration on a single line, incl. return value and arguments>
+ *  *  (In case of a pure virtual function only!
+ *  *   "virtual", "override", and "noexcept" shall be omitted. Details and example: See GPCC coding style)]
+ *  * \brief <Brief documentation.>
+ *  *
+ *  * <Detailed documentation.>
+ *  *
+ *  * <\pre    precondition>
+ *  * <\post   postcondition>
+ *  *
+ *  * - - -
+ *  *
+ *  * __Thread safety:__\n
+ *  * [Delete this section for constructors and destructors.]
+ *  * [Separate multiple lines with '\n'.]
+ *  * <The state of the object is not modified. Concurrent accesses are safe.>
+ *  * <The state of the object is modified. Any concurrent accesses are not safe.>
+ *  * <This is thread-safe.>
+ *  * <This is not thread-safe.>
+ *  * <@ref Mutex_A must be locked by caller.>
+ *  * <@ref Mutex_B must __not__ be locked by caller.>
+ *  * <Custom text.>
+ *  *
+ *  * __Exception safety:__\n
+ *  * <No-throw guarantee.>
+ *  * <Strong guarantee.>
+ *  * <Basic guarantee:>
+ *  *   <Describe possible side effects here. Preferred format: List of bullet points "- ...">
+ *  *
+ *  * <\throws xyz_exception   Describe error condition <(Details: @ref xyz_exception) [Use this for self-defined exceptions]>>
+ *  *
+ *  * __Thread cancellation safety:__\n
+ *  * <No cancellation point included.>
+ *  * <Strong guarantee.>
+ *  * <Basic guarantee:>
+ *  *   <Describe possible side effects here. Preferred format: List of bullet points "- ...">
+ *  * <Deferred cancellation is not allowed.>
+ *  *
+ *  * - - -
+ *  *
+ *  * \param arg1   Argument 1 documentation. [Use this for one-line comments]
+ *  * \param arg2
+ *  * Argument 2 documentation. [Use this for long comments]
+ *  *
+ *  * \return
+ *  * \retval
+ *  * Return value documentation.
+ *  */
  * ~~~
- * This specification is applicable to classes that have no build-in thread-safety.\n
+ *
+ * The template contains predefined specifications for the most frequent use cases:
+ * \n
+ * \n
+ * ~~~{.txt}
+ *  * <The state of the object is not modified. Concurrent accesses are safe.>
+ * ~~~
+ * This specification is applicable to methods of classes that have no build-in thread-safety.\n
  * The method performs a read-only access to the object. This means, that the method will not change the state of the
- * accessed object. Concurrent access to this or other read-only methods is safe. Methods with this specification are
- * typically const-methods.\n
+ * object. Concurrent access to this or other read-only methods is safe. Methods with this specification are typically
+ * const-methods.\n
  * If mutual attributes are modified, then the class has to implement proper locking.
- *
- * ~~~{.cpp}
- * <The state of the object is modified. Any concurrent accesses are not safe.>
+ * \n
+ * \n
+ * ~~~{.txt}
+ *  * <The state of the object is modified. Any concurrent accesses are not safe.>
  * ~~~
- * This specification is applicable to classes that have no build-in thread-safety.\n
+ * This specification is applicable to methods of classes that have no build-in thread-safety.\n
  * The method performs a read- and/or write-access to the object. This means, that the method may modify the state of
- * the accessed object. Concurrent access to this or any other method of the same object is not allowed. Methods with
- * this specification are always non-const.
- *
- * ~~~{.cpp}
- * <This is thread-safe.>
+ * the object. Concurrent access to this or any other method of the same object is not allowed. Methods with this
+ * specification are always non-const.
+ * \n
+ * \n
+ * ~~~{.txt}
+ *   * <This is thread-safe.>
  * ~~~
- * This specification is applicable to classes with build-in thread-safety.\n
+ * This specification is applicable to methods of classes with build-in thread-safety.\n
  * The method performs read- and/or write-accesses to the object, but the method implements suitable locking mechanisms
  * to protect the object's data from concurrent access either through this or any other public method offered by the
  * class.
@@ -557,7 +651,28 @@
  * \subsubsection GCS_DOC_THREAD_SAFETY_REQUIRED_ITFS Required interfaces
  * A thread-safety specification shall be included in the documentation of any required interface. The file
  * "gpcc/doxygen_templates.txt" contains a template for documenting required interfaces. The template contains
- * predefined specifications for the most frequent use cases.
+ * predefined specifications for the most frequent use cases:
+ * ~~~{.cpp}
+ * // -----------------------------------------------------------------------------
+ * // Class documentation for required interfaces intended to receive notifications
+ * // -----------------------------------------------------------------------------
+ * /*
+ *  * \ingroup <group_name>
+ *  * [If this is a private header:
+ *  * \class <class name> <class name>.hpp "<path_relative_to_gpcc>/<class name>.hpp"]
+ *  * \brief <Interface which must be implemented by ... in order to ...>
+ *  *
+ *  * <Detailed description.>
+ *  *
+ *  * - - -
+ *  *
+ *  * __Thread safety:__\n
+ *  * <All methods offered by this interface will be invoked in the context of the ... component.>
+ *  * <The ... component guarantees, that no more than one method is invoked at any time.>
+ *  * <Multiple methods may be invoked at the same time.>
+ *  * <Custom text.>
+ *  */
+ * ~~~
  *
  * \subsubsection GCS_DOC_THREAD_SAFETY_METHODS_OF_REQUIRED_ITFS Methods of required interfaces
  * In addition to the required interface's thread-safety specification (see above), the documentation of each member
@@ -565,13 +680,107 @@
  * "gpcc/doxygen_templates.txt" contains a template for documenting the methods of a required interface. The template
  * contains predefined specifications for the most frequent use cases. These are the same as for provided interfaces,
  * but the point of view and the wording is reverse: The documentation does not describe a functionality _provided_ to
- * the user, it describes a functionality or behaviour the user is _required_ to provide.
+ * the user, it describes a functionality or behaviour the user is _required_ to provide:
+ * ~~~{.cpp}
+ * // ------------------------------------------------------------------------------
+ * // Method documentation for required interfaces intended to receive notifications
+ * // ------------------------------------------------------------------------------
+ * /*
+ *  * [\fn <full function declaration on a single line, incl. return value and arguments>
+ *  *  (In case of a pure virtual function only!
+ *  *   "virtual", "override", and "noexcept" shall be omitted. Details and example: See GPCC coding style)]
+ *  * \brief <Brief documentation.>
+ *  *
+ *  * <Detailed documentation.>
+ *  *
+ *  * <\pre    precondition>
+ *  * <\post   postcondition>
+ *  *
+ *  * - - -
+ *  *
+ *  * __Thread safety requirements/hints:__\n
+ *  * <Describe who will invoke this method in which context.>
+ *  * <Describe if the method is allowed to invoke interfaces offered by the caller.>
+ *  *
+ *  * __Exception safety requirements/hints:__\n
+ *  * <This method shall provide the no-throw guarantee.>
+ *  * <This method shall provide at least the strong guarantee.>
+ *  * <This method shall provide at least the basic guarantee:>
+ *  *   <Describe allowed side effects here. Preferred format: List of bullet points "- ...">
+ *  *
+ *  * __Thread cancellation safety requirements/hints:__\n
+ *  * <This method shall not contain any cancellation point.>
+ *  * <This method shall provide at least the strong guarantee.>
+ *  * <This method shall provide at least the basic guarantee:>
+ *  *   <Describe allowed side effects here. Preferred format: List of bullet points "- ...">
+ *  * <This method will be invoked with deferred thread cancellation disabled.>
+ *  *
+ *  * - - -
+ *  *
+ *  * \param arg1   Argument 1 documentation. [Use this for one-line comments]
+ *  * \param arg2
+ *  * Argument 2 documentation. [Use this for long comments]
+ *  *
+ *  * \return
+ *  * \retval
+ *  * Return value documentation.
+ *  */
+ * ~~~
  *
  * \subsubsection GCS_DOC_THREAD_SAFETY_FUNCPTRS Function pointer and function objects (e.g. for callbacks)
  * Any type definition of a function pointer or function object (e.g. `std::function`) shall be documented using the
  * GPCC doxygen templates (gpcc/doxygen_templates.txt). The templates offer predefined specifications documenting the
  * thread-safety, exception-safety, and thread-cancellation-saftey requirements that must be met by the referenced
- * function.
+ * function:
+ * ~~~{.cpp}
+ * // ===================================================================
+ * // Doxygen function pointer / function object (callback) documentation
+ * // ===================================================================
+ * // [] = Comments. Delete them when instantiating the template.
+ * // <> = Placeholder or template. Needs to be filled with text or predefined text needs to be choosen if multiple templates
+ * //      are available. May also be deleted if not applicable.
+ *
+ * /*
+ *  * \brief <Brief description.>
+ *  *
+ *  * <Detailed description.>
+ *  *
+ *  * <\pre    precondition>
+ *  * <\post   postcondition>
+ *  *
+ *  * - - -
+ *  *
+ *  * <\param 1st>
+ *  * <Document first paramter>
+ *  *
+ *  * <\param 2nd>
+ *  * <Document second parameter>
+ *  * <...>
+ *  *
+ *  * <\return>
+ *  * <\retval>
+ *  * <Document return value>
+ *  *
+ *  * - - -
+ *  *
+ *  * __Thread safety requirements/hints:__\n
+ *  * <Describe who will invoke the referenced function/method in which context.>
+ *  * <Describe if the invoked function/method is allowed to invoke interfaces offered by the caller.>
+ *  *
+ *  * __Exception safety requirements/hints:__\n
+ *  * <The referenced function/method shall provide the no-throw guarantee.>
+ *  * <The referenced function/method shall provide at least the strong guarantee.>
+ *  * <The referenced function/method shall provide at least the basic guarantee:>
+ *  *   <Describe allowed side effects here. Preferred format: List of bullet points "- ...">
+ *  *
+ *  * __Thread cancellation safety requirements/hints:__\n
+ *  * <The referenced function/method shall not contain any cancellation point.>
+ *  * <The referenced function/method shall provide at least the strong guarantee.>
+ *  * <The referenced function/method shall provide at least the basic guarantee:>
+ *  *   <Describe allowed side effects here. Preferred format: List of bullet points "- ...">
+ *  * <The referenced function/method will be invoked with deferred thread cancellation disabled.>
+ *  */
+ * ~~~
  *
  * \subsubsection GCS_DOC_THREAD_SAFETY_GLOBAL_AND_STATIC_FUNCS Global and static functions and static methods
  * Each global function, each static function, and each static member function shall be documented and the documentation
@@ -579,25 +788,26 @@
  * methods shall be used for non-member functions, too. The templates contain predefined specifications for the most
  * frequent use cases:
  *
- * ~~~{.cpp}
- * <This is thread-safe.>
+ * ~~~{.txt}
+ *   * <This is thread-safe.>
  * ~~~
  * The function only uses local variables (stored on the stack) and the parameters (if any) passed to the function. If
  * the function accesses any shared resources (e.g. a global variable), then the function implements the required
  * locking.
- *
- * ~~~{.cpp}
- * <This is not thread-safe.>
+ * \n
+ * \n
+ * ~~~{.txt}
+ *   * <This is not thread-safe.>
  * ~~~
  * The function accesses shared resources (e.g. a global variable) and there are no locks implemented in the function.
  * The function must be executed by no more than one thread at any time. The user is responsible to implement sufficient
- * locks to ensure that no more than one thread executes the function at any time.
+ * locking to ensure that no more than one thread executes the function at any time.
  *
  * Implementing functions of this type should be avoided.
  *
  * \subsection GCS_DOC_EXCEPTION_SAFETY_ Exception-safety classification
  * GPCC uses exceptions to handle errors. Exception-safety specifications are used to provide information to the user,
- * how a function or method behaves in exceptional situations. The following items require an exception-safety
+ * how a function or method behaves in case of an exception. The following items require an exception-safety
  * specification:
  * - all methods
  * - global and static functions and static methods
@@ -609,22 +819,24 @@
  * The GPCC doxygen templates (gpcc/doxygen_templates.txt) provide predefined specifications for the most frequent use
  * cases:
  *
- * ~~~{.cpp}
- * <No-throw guarantee.>
+ * ~~~{.txt}
+ *   * <No-throw guarantee.>
  * ~~~
  * The function will never throw an exception. Operations are guaranteed to succeed and satisfy all requirements even in
  * exceptional situations. If an exception occurs, then it will be handled internally and will not be observed by
  * clients.
- *
- * ~~~{.cpp}
- * <Strong guarantee.>
+ * \n
+ * \n
+ * ~~~{.txt}
+ *   * <Strong guarantee.>
  * ~~~
  * Operations can fail, but failed operations are guaranteed to have no side effects, so all data retain their original
  * values.
- *
- * ~~~{.cpp}
- * <Basic guarantee:>
- *   <Describe possible side effects here. Preferred format: List of bullet points "- ...">
+ * \n
+ * \n
+ * ~~~{.txt}
+ *   * <Basic guarantee:>
+ *     <Describe possible side effects here. Preferred format: List of bullet points "- ...">
  * ~~~
  * Partial execution of failed operations can cause side effects, but all invariants are preserved and no resources are
  * leaked. This specification shall be accompanied by a complete list of potential side effects.
@@ -657,7 +869,7 @@
  * exception.
  *
  * If code is written with exception-safety in mind (as it should always be), then handling deferred thread cancellation
- * is not a big challenge. If a thread is cancelled, then the stack will be unwound as if a normal exception had
+ * is not a big challenge. If a thread is cancelled, then the stack will be unwound as if a normal exception has
  * occurred and the thread will terminate with no memory leaks or broken invariants left.
  *
  * However, deferred thread cancellation and exception safety should be treated as separate topics when specifying the
@@ -669,37 +881,43 @@
  * thread-cancellation-safety specification. The GPCC doxygen templates (gpcc/doxygen_templates.txt) provide predefined
  * specifications for the most frequent use cases:
  *
- * ~~~{.cpp}
- * <No cancellation point included.>
+ * ~~~{.txt}
+ *   * <No cancellation point included.>
  * ~~~
  * The function/method does not contain a cancellation point and the function/method does not invoke any
  * function/method that contains a cancellation point. Thread cancellation will never occur inside this
  * function/method.
- *
- * ~~~{.cpp}
- * <Strong guarantee.>
+ * \n
+ * \n
+ * ~~~{.txt}
+ *   * <Strong guarantee.>
  * ~~~
  * The function/method may contain a cancellation point or it may invoke a function/method that contains a cancellation
  * point. If thread cancellation occurs, then no resources will be leaked and the program will be in a valid state. The
  * state is equal to the state of the program before the function/method has been invoked. This means that all data
- * retain their original values. This guarantee is equal to the strong-guarantee in terms of exception-safety.
- *
- * ~~~{.cpp}
- * <Basic guarantee:>
- *   <Describe possible side effects here. Preferred format: List of bullet points "- ...">
+ * retain their original values. This guarantee is equal to the strong-guarantee in terms of exception-safety. However,
+ * there is no guarantee, that the function really contains a cancellation point or that it is always hit during
+ * execution.
+ * \n
+ * \n
+ * ~~~{.txt}
+ *   * <Basic guarantee:>
+ *   * <Describe possible side effects here. Preferred format: List of bullet points "- ...">
  * ~~~
  * The function/method may contain a cancellation point or it may invoke a function/method that contains a cancellation
  * point. If thread cancellation occurs, then no resources will be leaked and the program will be in a valid state. The
  * state may be different compared to the state of the program before the function/method was invoked. This predefined
  * specification shall be accompanied by a complete list of side effects that may occur in case of deferred thread
- * cancellation.
- *
- * ~~~{.cpp}
- * <Deferred cancellation is not allowed.>
+ * cancellation. However, there is no guarantee, that the function really contains a cancellation point or that it is
+ * always hit during execution.
+ * \n
+ * \n
+ * ~~~{.txt}
+ *   * <Deferred cancellation is not allowed.>
  * ~~~
  * The function/method may contain a cancellation point or it may invoke a function/method that contains a cancellation
  * point. If thread cancellation occurs, then resources may be leaked or the program may be in an invalid state. The
- * function will abort the program via [Panic()](@ref GPCC_OSAL_PANIC).\n
+ * function may abort the program via [Panic()](@ref GPCC_OSAL_PANIC).\n
  * This type of function/method must only be invoked with deferred thread cancellation disabled, or if program logic
  * ensures that deferred cancellation cannot be requested while executing this type of function/method.
  *

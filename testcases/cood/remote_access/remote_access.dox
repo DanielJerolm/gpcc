@@ -9,8 +9,8 @@
 */
 
 /**
- * \ingroup GPCC_TESTS
- * \defgroup GPCC_TESTS_COOD_RA COOD Remote Access Tests
+ * \ingroup GPCC_TESTCASES_COOD
+ * \defgroup GPCC_TESTCASES_COOD_RA COOD Remote Access Tests
  *
  * \brief Classes for COOD remote access unit tests.
  *

@@ -19,7 +19,7 @@ namespace gpcc_tests {
 namespace cood       {
 
 /**
- * \ingroup GPCC_TESTS
+ * \ingroup GPCC_TESTCASES_COOD
  * \brief [ObjectVAR_wicb](@ref gpcc::cood::ObjectVAR_wicb) with application specific data. This is for unit-test
  *        purposes only.
  *

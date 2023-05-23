@@ -5,13 +5,12 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2019 Daniel Jerolm
+    Copyright (C) 2023 Daniel Jerolm
 */
 
 /**
- * @ingroup GPCC_TESTS_FAKES
- * @defgroup GPCC_TESTS_FAKES_CLI CLI
- * \brief Fake implementations for CLI related classes.
+ * \ingroup GPCC_TESTCASES
+ * \defgroup GPCC_TESTCASES_COOD COOD unit tests
  *
- * Related GPCC productive code: @ref GPCC_CLI
+ * \brief Classes for COOD unit tests.
  */

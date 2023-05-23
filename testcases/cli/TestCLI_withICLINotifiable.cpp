@@ -15,7 +15,7 @@
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
-#include "testcases/fakes/cli/FakeTerminal.hpp"
+#include <gpcc_test/cli/FakeTerminal.hpp>
 #include "gtest/gtest.h"
 #include <atomic>
 #include <stdexcept>

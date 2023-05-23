@@ -20,7 +20,7 @@
 #include <gpcc/log/logfacilities/ThreadedLogFacility.hpp>
 #include <gpcc/log/Logger.hpp>
 #include <gpcc/osal/Mutex.hpp>
-#include "testcases/log/backends/Backend_Recorder.hpp"
+#include <gpcc_test/log/backends/Backend_Recorder.hpp>
 #include <string>
 #include <vector>
 #include <cstddef>
@@ -38,10 +38,10 @@ namespace gpcc_tests {
 namespace cood       {
 
 /**
- * \ingroup GPCC_TESTS_COOD_RA
+ * \ingroup GPCC_TESTCASES_COOD_RA
  * \brief Base class for all testbenches of type T that shall be tested using IRemoteObjectDictionaryAccess_TestsF<T>.
  *
- * Please refer to @ref GPCC_TESTS_COOD_RA for detailed information about the test strategy for the
+ * Please refer to @ref GPCC_TESTCASES_COOD_RA for detailed information about the test strategy for the
  * [IRemoteObjectDictionaryAccess](@ref gpcc::cood::IRemoteObjectDictionaryAccess) interface.
  *
  * This class constains an object dictionary and a couple of CANopen objects accessible via the object dictionary.
@@ -70,7 +70,7 @@ class TestbenchBase
     gpcc::log::ThreadedLogFacility logFacility;
 
     /// Recorder for log messages.
-    gpcc::log::Backend_Recorder logRecorder;
+    gpcc_tests::log::Backend_Recorder logRecorder;
 
 
     /// Logger for the testcase.

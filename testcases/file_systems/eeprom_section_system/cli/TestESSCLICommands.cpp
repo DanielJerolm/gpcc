@@ -13,7 +13,7 @@
 #include <gpcc/cli/Command.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include "testcases/fakes/cli/FakeTerminal.hpp"
+#include <gpcc_test/cli/FakeTerminal.hpp>
 #include "testcases/file_systems/eeprom_section_system/EEPROMSectionSystemTestFixture.hpp"
 #include <functional>
 

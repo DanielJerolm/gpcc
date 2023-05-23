@@ -13,7 +13,7 @@
 #include <gpcc/log/log_levels.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include "testcases/fakes/cli/FakeTerminal.hpp"
+#include <gpcc_test/cli/FakeTerminal.hpp>
 #include "gtest/gtest.h"
 #include <functional>
 

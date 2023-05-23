@@ -15,7 +15,7 @@
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/stream/MemStreamWriter.hpp>
 #include <gpcc/string/tools.hpp>
-#include "testcases/fakes/cli/FakeTerminal.hpp"
+#include <gpcc_test/cli/FakeTerminal.hpp>
 #include "gtest/gtest.h"
 #include <functional>
 #include <string>

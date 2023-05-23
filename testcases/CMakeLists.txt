@@ -50,7 +50,6 @@ target_sources(${PROJECT_NAME}_testcases
                cood/remote_access/requests_and_responses/TestReturnStackItem.cpp
                cood/remote_access/requests_and_responses/TestWriteRequest.cpp
                cood/remote_access/requests_and_responses/TestWriteRequestResponse.cpp
-               cood/remote_access/roda_itf/RODAN_Listener.cpp
                cood/remote_access/roda_itf/TestbenchBase.cpp
                cood/Test_data_types.cpp
                cood/TestObjectARRAY_wicb.cpp
@@ -75,7 +74,6 @@ target_sources(${PROJECT_NAME}_testcases
                execution/cyclic/UUT_TriggeredThreadedCyclicExec.cpp
                execution/cyclic/UUT_TTCEStartStopCtrl.cpp
                execution/cyclic/WaitUntilStoppedHelper.cpp
-               fakes/cli/FakeTerminal.cpp
                file_systems/cli/TestIFSCLICommands.cpp
                file_systems/eeprom_section_system/cli/TestESSCLICommands.cpp
                file_systems/eeprom_section_system/EEPROMSectionSystemTestFixture.cpp
@@ -90,7 +88,6 @@ target_sources(${PROJECT_NAME}_testcases
                file_systems/linux_fs/TestUnitTestDirProvider.cpp
                hash/TestMD5Benchmark.cpp
                hash/TestMD5.cpp
-               log/backends/Backend_Recorder.cpp
                log/backends/TestBackend_CLI.cpp
                log/backends/TestBackend_CLILogHistory.cpp
                log/backends/TestBackend_Recorder.cpp

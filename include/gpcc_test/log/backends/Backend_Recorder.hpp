@@ -16,11 +16,11 @@
 #include <vector>
 #include <cstddef>
 
-namespace gpcc {
-namespace log  {
+namespace gpcc_tests {
+namespace log        {
 
 /**
- * \ingroup GPCC_LOG_BACKENDS
+ * \ingroup GPCC_TESTS
  * \brief Log facility back-end for recording log messages in a unit test environment.
  *
  * This backend is intended to be used in unit-tests. Log messages are recorded and can be printed to stdout and/or into
@@ -35,7 +35,7 @@ namespace log  {
  *  __Thread safety:__\n
  * Thread-safe.
  */
-class Backend_Recorder final: public Backend
+class Backend_Recorder final: public gpcc::log::Backend
 {
   public:
     Backend_Recorder(void);
@@ -55,7 +55,7 @@ class Backend_Recorder final: public Backend
     size_t GetNbOfRecords(void) const;
 
     // --> Backend
-    void Process(std::string const & msg, LogType const type) override;
+    void Process(std::string const & msg, gpcc::log::LogType const type) override;
     // <--
 
   private:
@@ -68,6 +68,6 @@ class Backend_Recorder final: public Backend
 };
 
 } // namespace log
-} // namespace gpcc
+} // namespace gpcc_tests
 
 #endif // BACKEND_RECORDER_HPP_201702152052

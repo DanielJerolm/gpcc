@@ -1,0 +1,27 @@
+/*
+    General Purpose Class Collection (GPCC)
+
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
+
+    Copyright (C) 2023 Daniel Jerolm
+*/
+
+/**
+ * \defgroup GPCC_TESTS GPCC-tests
+ * \brief Additional classes for the unittest target environment
+ *
+ * This group contains additional classes offered to clients in the unittest target environment only.\n
+ * The classes in this group are not intended to be used in the productive target environment.\n
+ * The classes offered in both the productive and the unittest target environment are [here](@ref GPCC).
+ *
+ * Examples:
+ * - Classes assisting in unit testing, e.g. [Backend_Recorder](@ref gpcc_tests::log::Backend_Recorder).
+ * - Fake implementations of classes from gpcc/src.
+ *
+ * When building GPCC for the unittest target environment, then the classes from this module will be compiled into
+ * the library "gpcc" together with the [GPCC class collection](@ref GPCC).
+ *
+ * Use `#include <gpcc_test/xxx.hpp>` to include the headers.
+ */

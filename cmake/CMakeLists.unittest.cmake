@@ -29,11 +29,12 @@ ValidateSkipOptions()
 
 
 # ---------------------------------------------------------------------------------------------------------------------
-# Artifact: gpcc library for use in unittest environment (src_notest is not included)
+# Artifact: gpcc library for use in unittest environment
 # ---------------------------------------------------------------------------------------------------------------------
 add_library(${PROJECT_NAME})
 
 add_subdirectory(src)
+add_subdirectory(test_src)
 
 target_include_directories(${PROJECT_NAME} PRIVATE . PUBLIC include)
 
