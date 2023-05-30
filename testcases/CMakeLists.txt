@@ -74,6 +74,7 @@ target_sources(${PROJECT_NAME}_testcases
                execution/cyclic/UUT_TriggeredThreadedCyclicExec.cpp
                execution/cyclic/UUT_TTCEStartStopCtrl.cpp
                execution/cyclic/WaitUntilStoppedHelper.cpp
+               execution/TestUnittestDurationLimiter.cpp
                file_systems/cli/TestIFSCLICommands.cpp
                file_systems/eeprom_section_system/cli/TestESSCLICommands.cpp
                file_systems/eeprom_section_system/EEPROMSectionSystemTestFixture.cpp
