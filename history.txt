@@ -180,6 +180,7 @@ History:
 ===============================================================================
 2023-06-01
 - Added gpcc_tests::execution::UnittestDurationLimiter
+- Bugfix: Invalid thread cancellation safety specification in SuspendableDWQwithThread::Resume()
 
 2023-05-23
 - Renamed gpcc/test_src to gpcc/testcases

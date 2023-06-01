@@ -205,7 +205,6 @@ void SuspendableDWQwithThread::Stop(void) noexcept
  *
  * __Thread cancellation safety:__\n
  * Deferred cancellation is not allowed.
- *
  */
 void SuspendableDWQwithThread::Suspend(void)
 {
@@ -248,8 +247,7 @@ void SuspendableDWQwithThread::Suspend(void)
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * No cancellation point included.
- *
+ * Deferred cancellation is not allowed.
  */
 void SuspendableDWQwithThread::Resume(void)
 {
