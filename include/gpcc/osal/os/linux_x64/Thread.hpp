@@ -351,6 +351,8 @@ class Thread final
     void Cancel(void);
     void* Join(bool* const pCancelled = nullptr);
 
+    void AdviceTFC_JoiningThreadWillNotBlockPermanently(void);
+
     // public methods allowed to be called ONLY by the thread managed by this object
     void SetCancelabilityEnabled(bool const enable);
     bool GetCancelabilityEnabled(void) const;
@@ -480,6 +482,40 @@ inline IThreadRegistry& Thread::GetThreadRegistry(void)
 inline std::string Thread::GetName(void) const
 {
   return name;
+}
+
+/**
+ * \brief Provides a hint to [TFC](@ref GPCC_TIME_FLOW_CONTROL) that the thread managed by this object, when it is
+ *        cancelled, is already blocked in a blocking function that is a canellation point, or that it __will for sure__
+ *        hit a cancellation point without being blocked by any activity that requires an increment of the emulated
+ *        system time.
+ *
+ * If the hint is given, then TFC will not increment the emulated system time when a thread joins the thread managed
+ * by this object.
+ *
+ * For details, please refer to @ref GPCC_TIME_FLOW_CONTROL, chapter "Special notes on deferred thread cancellation".
+ *
+ * \note  This method has no effect in this OSAL variant because TFC is not present.
+ *
+ * \pre   A thread has been started and the thread has not yet been joined.
+ *
+ * \pre   The thread has no cancellation request pending.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe, but this must not be called by the thread managed by this object.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ */
+inline void Thread::AdviceTFC_JoiningThreadWillNotBlockPermanently(void)
+{
+  // empty since TFC is not present
 }
 
 /**

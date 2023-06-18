@@ -178,6 +178,12 @@ Next to do:
 
 History:
 ===============================================================================
+2023-06-18
+- TFC:
+  - Refined documentation regarding joining threads and increment of emulated system time
+  - Added Thread::AdviceTFC_JoiningThreadWillNotBlockPermanently() to avoid increment of emulated system time when
+    a thread is cancelled and certain conditions are met.
+
 2023-06-01
 - Added gpcc_tests::execution::UnittestDurationLimiter
 - Bugfix: Invalid thread cancellation safety specification in SuspendableDWQwithThread::Resume()
