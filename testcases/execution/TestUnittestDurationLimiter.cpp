@@ -15,6 +15,7 @@
 namespace gpcc_tests {
 namespace execution  {
 
+#ifdef NDEBUG
 #ifndef SKIP_LOAD_DEPENDENT_TESTS
 TEST(gpcc_tests_execution_UnittestDurationLimiter_DeathTests, Trigger)
 {
@@ -28,6 +29,9 @@ TEST(gpcc_tests_execution_UnittestDurationLimiter_DeathTests, Trigger)
 
   EXPECT_DEATH(lethalCode(), ".*Maximum execution time exceeded.*");
 }
+#endif
+#else
+#warning "Skipping unittest for UnittestDurationLimiter due to absence of NDEBUG"
 #endif
 
 #ifndef SKIP_LOAD_DEPENDENT_TESTS

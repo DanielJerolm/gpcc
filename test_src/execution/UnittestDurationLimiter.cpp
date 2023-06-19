@@ -15,6 +15,10 @@
 #include <stdexcept>
 #include <system_error>
 
+#ifndef NDEBUG
+  #warning "UnittestDurationLimiter with no function due to absence of NDEBUG switch!"
+#endif
+
 namespace gpcc_tests {
 namespace execution  {
 
@@ -62,13 +66,14 @@ UnittestDurationLimiter::UnittestDurationLimiter(uint8_t const _maxDuration_sec)
   if (status != 0)
     throw std::system_error(status, std::generic_category(), "UnittestDurationLimiter::UnittestDurationLimiter: Could not configure pthread_attr_t object");
 
-
+#ifdef NDEBUG
   // start thread
   status = pthread_create(&thread, &attr, UnittestDurationLimiter::ThreadEntry, this);
   if (status != 0)
     throw std::system_error(status, std::generic_category(), "UnittestDurationLimiter::UnittestDurationLimiter: Could not start thread");
 
   (void)pthread_setname_np(thread, "UDL");
+#endif
 }
 
 /**
@@ -84,6 +89,7 @@ UnittestDurationLimiter::UnittestDurationLimiter(uint8_t const _maxDuration_sec)
  */
 UnittestDurationLimiter::~UnittestDurationLimiter(void)
 {
+#ifdef NDEBUG
   int status = pthread_cancel(thread);
   if (status != 0)
     PANIC();
@@ -91,6 +97,7 @@ UnittestDurationLimiter::~UnittestDurationLimiter(void)
   status = pthread_join(thread, nullptr);
   if (status != 0)
     PANIC();
+#endif
 }
 
 /**

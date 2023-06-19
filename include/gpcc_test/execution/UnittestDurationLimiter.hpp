@@ -43,6 +43,22 @@ namespace execution  {
  * }
  * ~~~
  *
+ * # Interference with debugger
+ * When stepping through code, the watchdog could be triggered due to the extra duration of code execution. To avoid
+ * this, the @ref UnittestDurationLimiter is disabled and will not raise a panic if the define `NDEBUG` is not present.
+ *
+ * `NDEBUG` is usually defined when building with release settings and various compiler optimizations applied. Code
+ * build with this settings is not intended to be examined with a debugger. The @ref UnittestDurationLimiter will be
+ * enabled.
+ *
+ * When building with debug settings and less or no compiler optimizations applied, `NDEBUG` is usually not defined
+ * and the @ref UnittestDurationLimiter will be disabled.
+ *
+ * If the @ref UnittestDurationLimiter is disabled, then a warning will be emitted in the build process:
+ * ~~~{.txt}
+ * #warning "UnittestDurationLimiter with no function due to absence of NDEBUG switch!"
+ * ~~~
+ *
  * # Compatibility with TFC
  * This class uses pthread directly instead of using @ref gpcc::osal::Thread in order to avoid being supervised by TFC
  * and in order to avoid confusing TFC's dead-lock detection.

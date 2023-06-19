@@ -178,6 +178,9 @@ Next to do:
 
 History:
 ===============================================================================
+2023-06-19
+- UnittestDurationLimiter is disabled if NDEBUG is not present to avoid panic while debugging code.
+
 2023-06-18
 - TFC:
   - Refined documentation regarding joining threads and increment of emulated system time
