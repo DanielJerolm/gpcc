@@ -78,10 +78,12 @@ class DeferredWorkQueue final: public IDeferredWorkQueue
 
   private:
     /// Mutex for queue-related stuff.
+    /** Locking order: @ref flushMutex -> @ref queueMutex */
     osal::Mutex mutable queueMutex;
 
     /// Mutex for work queue flush.
-    /** This is locked while a work package's functor is executed. */
+    /** This is locked while a work package's functor is executed.\n
+        Locking order: @ref flushMutex -> @ref queueMutex */
     osal::Mutex flushMutex;
 
     /// Condition variable indicating that the queue is no longer empty, or that @ref terminate has been

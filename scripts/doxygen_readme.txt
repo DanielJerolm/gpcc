@@ -22,8 +22,10 @@ Alternatively you can integrate GPCC's documentation seamlessly into the doxygen
 To achieve this, bear the following in mind regarding the doxygen file of the top-level project:
 
 - Section "INPUT"
-  The following must be included: gpcc/src \
-                                  gpcc/test_src
+  The following must be included: gpcc/include \
+                                  gpcc/src \
+                                  gpcc/test_src \
+                                  gpcc/testcases
 
 - Section "IMAGE_PATH"
   The following must be included: gpcc/doc/figures

@@ -363,6 +363,8 @@ class Thread final
     void Cancel(void);
     void* Join(bool* const pCancelled = nullptr);
 
+    void AdviceTFC_JoiningThreadWillNotBlockPermanently(void);
+
     // public methods allowed to be called ONLY by the thread managed by this object
     void SetCancelabilityEnabled(bool const enable);
     bool GetCancelabilityEnabled(void) const;
@@ -433,6 +435,14 @@ class Thread final
     /** true  = thread cancellation is pending\n
         false = thread cancellation is not pending */
     std::atomic<bool> cancellationPending;
+
+    /// Hint for TFC indicating that the thread will cancel soon and a joining thread will not block permanently.
+    /** @ref spMutex required.\n
+        If set, then this flag indicates, that the thread is either already blocked in a function that is a canellation
+        point, or that __it will for sure__ hit a cancellation point without being blocked by any activity that requires
+        an increment of the emulated system time. If set, TFC will expect, that the joining thrread will not be
+        permanently blocked. */
+    bool joiningThreadWillNotBlockPerm;
 
 
     static ThreadRegistry& InternalGetThreadRegistry(void);

@@ -1,5 +1,5 @@
 # GPCC
-The swiss army knife for C++ cross-platform embedded software.
+The swiss army knife for C++ cross-platform portable embedded software.
 
 # Before cloning...
 GPCC is intended to be used as a git submodule in a git superproject. Cloning the GPCC repo alone makes little sense

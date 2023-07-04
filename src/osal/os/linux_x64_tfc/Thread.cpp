@@ -209,6 +209,7 @@ Thread::Thread(std::string const & _name)
 , threadWaitingForJoin(false)
 , cancelabilityEnabled(false)
 , cancellationPending(false)
+, joiningThreadWillNotBlockPerm(false)
 {
   InternalGetThreadRegistry().RegisterThread(*this);
 }
@@ -707,11 +708,12 @@ void Thread::Start(tEntryFunction const & _entryFunction,
   char const * const pShortName = shortName.c_str();
 
   // prepare thread start
-  entryFunction         = _entryFunction;
-  threadState           = ThreadState::starting;
-  threadWaitingForJoin  = false;
-  cancelabilityEnabled  = true;
-  cancellationPending   = false;
+  entryFunction                 = _entryFunction;
+  threadState                   = ThreadState::starting;
+  threadWaitingForJoin          = false;
+  cancelabilityEnabled          = true;
+  cancellationPending           = false;
+  joiningThreadWillNotBlockPerm = false;
 
   // tell TFC that there will be a new thread
   try
@@ -868,6 +870,10 @@ void Thread::Cancel(void)
  * After joining the object no longer manages a thread and a new one may be started via @ref Start() or the
  * Thread-object may be destroyed.
  *
+ * __TFC specific information:__\n
+ * Joining a thread may consume emulated system time. See @ref GPCC_TIME_FLOW_CONTROL, chapter "Special notes on
+ * deferred thread cancellation" for details.
+ *
  * \pre   A thread has been started and it has not yet been joined.
  *
  * - - -
@@ -910,8 +916,8 @@ void* Thread::Join(bool* const pCancelled)
   // check if thread has already terminated
   bool const alreadyTerminated = (threadState == ThreadState::terminated);
 
-  // if the thread has not yet terminated, then tell TFC that this thread is going to block
-  if (!alreadyTerminated)
+  // if the joining thread will block, then inform TFC
+  if ((!alreadyTerminated) && (!joiningThreadWillNotBlockPerm))
   {
     internal::UnmanagedMutexLocker bigLockLocker(pTFCCore->GetBigLock());
     pTFCCore->ReportThreadPermanentlyBlockedBegin();
@@ -930,7 +936,7 @@ void* Thread::Join(bool* const pCancelled)
 
     // If we told TFC that this thread is blocked before we attempted to join with the managed thread,
     // then we have to inform TFC now, that this thread is no longer blocked.
-    if (!alreadyTerminated)
+    if ((!alreadyTerminated) && (!joiningThreadWillNotBlockPerm))
     {
       internal::UnmanagedMutexLocker bigLockLocker(pTFCCore->GetBigLock());
 
@@ -965,7 +971,7 @@ void* Thread::Join(bool* const pCancelled)
     internal::UnmanagedMutexLocker bigLockLocker(pTFCCore->GetBigLock());
 
     // if we really blocked then tell TFC that we have woken up
-    if (!alreadyTerminated)
+    if ((!alreadyTerminated) && (!joiningThreadWillNotBlockPerm))
       pTFCCore->ReportThreadPermanentlyBlockedEnd();
 
     // note: leaving the thread entry function is treated as permanent blocking
@@ -980,7 +986,7 @@ void* Thread::Join(bool* const pCancelled)
 
     // If we told TFC that this thread is blocked before we attempted to join with the managed thread,
     // then we have to inform TFC now, that this thread is no longer blocked.
-    if (!alreadyTerminated)
+    if ((!alreadyTerminated) && (!joiningThreadWillNotBlockPerm))
     {
       internal::UnmanagedMutexLocker bigLockLocker(pTFCCore->GetBigLock());
 
@@ -1018,6 +1024,51 @@ void* Thread::Join(bool* const pCancelled)
   threadState = ThreadState::noThreadOrJoined;
 
   return retVal;
+}
+
+/**
+ * \brief Provides a hint to [TFC](@ref GPCC_TIME_FLOW_CONTROL) that the thread managed by this object, when it is
+ *        cancelled, is already blocked in a blocking function that is a canellation point, or that it __will for sure__
+ *        hit a cancellation point without being blocked by any activity that requires an increment of the emulated
+ *        system time.
+ *
+ * If the hint is given, then TFC will not increment the emulated system time when a thread joins the thread managed
+ * by this object.
+ *
+ * For details, please refer to @ref GPCC_TIME_FLOW_CONTROL, chapter "Special notes on deferred thread cancellation".
+ *
+ * \pre   A thread has been started and the thread has not yet been joined.
+ *
+ * \pre   The thread has no cancellation request pending.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe, but this must not be called by the thread managed by this object.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ */
+void Thread::AdviceTFC_JoiningThreadWillNotBlockPermanently(void)
+{
+  internal::UnmanagedMutexLocker mutexLocker(*spMutex);
+
+  // verify that the object manages a thread, which has not yet been joined
+  if (threadState == ThreadState::noThreadOrJoined)
+    throw std::logic_error("Thread::AdviceTFC_JoiningThreadWillNotBlockPermanently: No thread");
+
+  // verify, that the current thread is not the one managed by this object
+  if (pthread_equal(thread_id, pthread_self()) != 0)
+    throw std::logic_error("Thread::AdviceTFC_JoiningThreadWillNotBlockPermanently: Thread cannot give advice about itself");
+
+  if (cancellationPending)
+    throw std::logic_error("Thread::AdviceTFC_JoiningThreadWillNotBlockPermanently: Cancellation request already pending");
+
+  joiningThreadWillNotBlockPerm = true;
 }
 
 /**
@@ -1286,10 +1337,12 @@ void* Thread::InternalThreadEntry2(void)
     //   tell TFC that this thread has woken up again and terminated. This small indirection is necessary,
     //   because a thread cannot tell TFC itself that it has terminated.
     internal::UnmanagedMutexLocker tfcMutexLocker(pTFCCore->GetBigLock());
-    if (threadWaitingForJoin)
+    if ((threadWaitingForJoin) && (!joiningThreadWillNotBlockPerm))
       pTFCCore->ReportThreadAboutToWakeUp();
+
     if (cancellationPending)
       pTFCCore->ReportThreadCancellationDone();
+
     pTFCCore->ReportThreadPermanentlyBlockedBegin();
 
     mutexLocker.Unlock();
@@ -1311,10 +1364,12 @@ void* Thread::InternalThreadEntry2(void)
       //   tell TFC that this thread has woken up again and terminated. This small indirection is necessary,
       //   because a thread cannot tell TFC itself that it has terminated.
       internal::UnmanagedMutexLocker tfcMutexLocker(pTFCCore->GetBigLock());
-      if (threadWaitingForJoin)
+      if ((threadWaitingForJoin) && (!joiningThreadWillNotBlockPerm))
         pTFCCore->ReportThreadAboutToWakeUp();
+
       if (cancellationPending)
         pTFCCore->ReportThreadCancellationDone();
+
       pTFCCore->ReportThreadPermanentlyBlockedBegin();
 
       spMutex->Unlock();

@@ -1,0 +1,26 @@
+/*
+    General Purpose Class Collection (GPCC)
+
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
+
+    Copyright (C) 2023 Daniel Jerolm
+*/
+
+/**
+ * \ingroup GPCC_TESTS
+ * \defgroup GPCC_TESTS_FAKES Fakes
+ * \brief Fake implementations for selected GPCC classes.
+ *
+ * GPCC offers fake implementations for some of its productive classes. The fakes are used in GPCC's own unit tests and
+ * may also be useful for unit testing of client code.
+ */
+
+/**
+ * \ingroup GPCC_TESTS_FAKES
+ * \defgroup GPCC_TESTS_FAKES_CLI CLI Fakes
+ * \brief Fake implementations for CLI related classes.
+ *
+ * Related productive code: @ref GPCC_CLI
+ */

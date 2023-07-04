@@ -377,8 +377,8 @@
  *   functions look as if a thread is busy with work. The emulated system time will not be incremented.\n
  *   Instead use @ref gpcc::osal::Thread::Sleep_ms() or @ref gpcc::osal::Thread::Sleep_ns() only.
  * - Do not process time information from file metadata (e.g. creation timestamp or last change timestamp).\n
- *   These timing information is based on the machine's time, not on TFC's emulated time. Both times are not synchronized
- *   to each other.
+ *   These timing information is based on the machine's time, not on TFC's emulated time. Both times are not
+ *   synchronized to each other.
  *
  * ## Do's
  * - TFC welcomes an event driven software design.
@@ -390,11 +390,44 @@
  * - Dead-lock detection (all threads blocked on events -> there is nobody who could wake up someone).
  *
  * # Special notes on deferred thread cancellation
- * - TFC's dead lock detection is disabled whenever at least one thread has a cancellation request is pending.\n
- *   This is due to the fact, that POSIX does not provide any information to TFC if a thread with a pending deferred
- *   cancellation request actually hit a cancellation point.
- * - Emulated system time may increment during deferred thread cancellation, though TFC pretends a machine with
- *   infinite speed and an infinite number of CPU cores.
+ * - TFC's dead lock detection is disabled whenever at least one thread has a cancellation request pending.\n
+ *   Deactivation extends from the call to [Thread::Cancel()](@ref gpcc::osal::Thread::Cancel) up to the point in time
+ *   when the thread actually terminates.
+ * - Joining a thread ([Thread::Join()](@ref gpcc::osal::Thread::Join)) may consume emulated system time.\n
+ *   The emulated system time may be incremented multiple times and the amount of emulated time passed by may be large.
+ *
+ * ## Technical background
+ * ### Disabling of dead lock detection
+ * The thread that shall be cancelled may be blocked on a OSAL function
+ * (e.g. [ConditionVariable::Wait()](@ref gpcc::osal::ConditionVariable::Wait)) and TFC recognizes that. The OSAL
+ * function may or may not be a cancellation point. The other thread that wants to join with the cancelled thread will
+ * or will not block in [Thread::Join()](@ref gpcc::osal::Thread::Join). If [Thread::Join()](@ref gpcc::osal::Thread::Join)
+ * will block or not cannot be predicted in any case. TFC therefore by default considers that the
+ * thread will be blocked.\n
+ * In this scenario, TFC would mistakenly detect a dead lock. TFC must consider the joining thread as permanently
+ * blocked even though a cancellation request is pending, because there is no way to figure out the state of the thread
+ * that has received the cancellation request:
+ * - Is it blocked on a cancellation point or not? (It may also block on a mutex locked by another thread)
+ * - Is the cancellation already in process?
+ * - Is it about to run into a cancellation point?
+ *
+ * ### Increment of emulated system time during join
+ * If a thread is inside [Thread::Join()](@ref gpcc::osal::Thread::Join), then the thread is considered blocked. If
+ * all threads are blocked, then TFC will increment the emulated system time. When the thread that shall be joined
+ * eventually receives the cancellation request, then it will be terminated when it hits a cancellation point. During
+ * the time span from hitting the cancellation point and the joining thread returning from `pthread_join()` in
+ * [Thread::Join()](@ref gpcc::osal::Thread::Join), both threads are blocked and TFC will increment the system time
+ * again and again until the join operation has completed.
+ *
+ * ## Options for mitigation
+ * If an increment of the emulated system time during joining a thread is inacceptable, then any of the following
+ * options can be applied to avoid it:
+ * - Do not use deferred cancellation. Instead implement your own logic to shutdown a thread and use
+ *   either [Thread::TerminateNow()](@ref gpcc::osal::Thread::TerminateNow) to terminate or return from the thread entry
+ *   function to terminate.
+ * - Ensure that the thread -when it receives the cancellation request- is blocked in a function that is a cancellation
+ *   point, or that it is about to run directly into a cancellation point. If this is ensured, then one can give
+ *   a hint to TFC via [Thread::AdviceTFC_JoiningThreadWillNotBlockPermanently()](@ref gpcc::osal::Thread::AdviceTFC_JoiningThreadWillNotBlockPermanently).
  *
  * # Software Architecture Recommendations
  * This chapter describes a software architecture that can be applied to embedded software projects in order to get

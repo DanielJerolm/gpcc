@@ -8,14 +8,14 @@
     Copyright (C) 2011 Daniel Jerolm
 */
 
-#include "Backend_Recorder.hpp"
+#include <gpcc_test/log/backends/Backend_Recorder.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
 
-namespace gpcc {
-namespace log  {
+namespace gpcc_tests {
+namespace log        {
 
 /**
  * \brief Constructor.
@@ -212,8 +212,8 @@ size_t Backend_Recorder::GetNbOfRecords(void) const
   return records.size();
 }
 
-/// \copydoc Backend::Process
-void Backend_Recorder::Process(std::string const & msg, LogType const type)
+/// \copydoc gpcc::log::Backend::Process
+void Backend_Recorder::Process(std::string const & msg, gpcc::log::LogType const type)
 {
   (void)type;
 
@@ -222,4 +222,4 @@ void Backend_Recorder::Process(std::string const & msg, LogType const type)
 }
 
 } // namespace log
-} // namespace gpcc
+} // namespace gpcc_tests

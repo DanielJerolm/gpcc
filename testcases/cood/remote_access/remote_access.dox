@@ -1,0 +1,54 @@
+/*
+    General Purpose Class Collection (GPCC)
+
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
+
+    Copyright (C) 2021 Daniel Jerolm
+*/
+
+/**
+ * \ingroup GPCC_TESTCASES_COOD
+ * \defgroup GPCC_TESTCASES_COOD_RA COOD Remote Access Tests
+ *
+ * \brief Classes for COOD remote access unit tests.
+ *
+ * # Unit test approach for classes realizing a RODA/RODAN interface pair
+ * The [IRemoteObjectDictionaryAccess](@ref gpcc::cood::IRemoteObjectDictionaryAccess) and
+ * [IRemoteObjectDictionaryAccessNotifiable](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable) interfaces
+ * (abbreviated "RODA/RODAN") offer remote access to an object dictionary. See @ref GPCC_COOD_REMOTEACCESS_ITF for
+ * details.
+ *
+ * GPCC offers a set of tests for a RODA/RODAN pair based on googletests' concept of "typed tests". The tests can be
+ * applied to any class providing a RODA/RODAN pair in order to check the rules and concepts of the offered
+ * [IRemoteObjectDictionaryAccess](@ref gpcc::cood::IRemoteObjectDictionaryAccess) and
+ * [IRemoteObjectDictionaryAccessNotifiable](@ref gpcc::cood::IRemoteObjectDictionaryAccessNotifiable) interface
+ * pair.
+ *
+ * The tests use the [IRemoteObjectDictionaryAccess_TestsF](@ref gpcc_tests::cood::IRemoteObjectDictionaryAccess_TestsF)
+ * test fixture. It is contained in the file _TestIRODA.hpp_. The test cases are contained in the
+ * _TestIRODA*.hpp_ files.
+ *
+ * For details on how to write test cases and how to apply tests to a UUT see
+ * [IRemoteObjectDictionaryAccess_TestsF](@ref gpcc_tests::cood::IRemoteObjectDictionaryAccess_TestsF) for details.
+ *
+ * The type parameter __T__ of class
+ * [IRemoteObjectDictionaryAccess_TestsF](@ref gpcc_tests::cood::IRemoteObjectDictionaryAccess_TestsF) does not refer
+ * to the UUT itself (a class providing a RODA/RODAN pair), __but__ to a class providing a testbench __containing__ the
+ * UUT.
+ *
+ * Any testbench class is derived from base class [TestbenchBase](@ref gpcc_tests::cood::TestbenchBase). Class
+ * [TestbenchBase](@ref gpcc_tests::cood::TestbenchBase) provides some common functionality (e.g. log system, loggers,
+ * some CANopen objects) and __acts as an interface__ for the testbench class. The test cases based on
+ * [IRemoteObjectDictionaryAccess_TestsF](@ref gpcc_tests::cood::IRemoteObjectDictionaryAccess_TestsF) can be applied
+ * to any UUT that can be embedded in a testbench derived from class
+ * [TestbenchBase](@ref gpcc_tests::cood::TestbenchBase).
+ *
+ * The figure below provides an example for unit-testing the
+ * [ThreadBasedRemoteAccessServer](@ref gpcc::cood::ThreadBasedRemoteAccessServer):
+ *
+ * \htmlonly <style>div.image img[src="cood/RODA_Unit_test_approach.png"]{width:75%;}</style> \endhtmlonly
+ * \image html "cood/RODA_Unit_test_approach.png" "RODA/RODAN tests applied to class ThreadBasedRemoteAccessServer"
+ *
+ */

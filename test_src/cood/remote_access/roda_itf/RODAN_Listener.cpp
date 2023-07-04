@@ -8,7 +8,7 @@
     Copyright (C) 2021 Daniel Jerolm
 */
 
-#include "RODAN_Listener.hpp"
+#include <gpcc_test/cood/remote_access/roda_itf/RODAN_Listener.hpp>
 #include <gpcc/cood/remote_access/requests_and_responses/ResponseBase.hpp>
 #include <gpcc/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp>
 #include <gpcc/log/Logger.hpp>

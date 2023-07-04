@@ -1,0 +1,19 @@
+/*
+    General Purpose Class Collection (GPCC)
+
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
+
+    Copyright (C) 2023 Daniel Jerolm
+*/
+
+/**
+ * \defgroup GPCC_TESTCASES GPCC unittest cases
+ * \brief Unit test cases and supporting classes.
+ *
+ * This group contains unit test cases for the classes offered by GPCC. Further it contains classes supporting GPCC's
+ * unit tests.
+ *
+ * Note that for unit test cases only complex classes are documented with doxygen.
+ */
