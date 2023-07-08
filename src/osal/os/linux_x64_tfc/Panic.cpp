@@ -11,6 +11,7 @@
 #ifdef OS_LINUX_X64_TFC
 
 #include <gpcc/osal/Panic.hpp>
+#include "internal/TFCCore.hpp"
 #include <atomic>
 #include <iostream>
 #include <string>
@@ -90,8 +91,7 @@ static std::atomic<tPanicHandler> panicHandler(&DefaultPanicHandler);
  */
 void Panic(void) noexcept
 {
-  panicHandler(nullptr);
-  abort();
+  Panic(nullptr);
 }
 
 /**
@@ -123,7 +123,21 @@ void Panic(void) noexcept
  */
 void Panic(char const * const pMessage) noexcept
 {
-  panicHandler(pMessage);
+  // Try to lock TFC's big lock to find out if the panic orginated in the TFC core.
+  // If so, then we will invoke the default panic handler instead if the one referenced by 'panicHandler'.
+
+  auto & biglock = gpcc::osal::internal::TFCCore::Get()->GetBigLock();
+
+  if (biglock.TryLock())
+  {
+    biglock.Unlock();
+    panicHandler(pMessage);
+  }
+  else
+  {
+    DefaultPanicHandler(pMessage);
+  }
+
   abort();
 }
 
@@ -342,9 +356,11 @@ void Panic(char const * const pFileName, int const line, std::exception const & 
  * \ingroup GPCC_OSAL_PANIC
  * \brief Retrieves the currently configured panic handler function.
  *
- * This can be used to retrieve the current panic handler before changing it via @ref SetPanicHandler(). \n
- * If the current panic handler is stored before changing it, then it can be recovered later.\n
- * Typical scenarios that require recovery of the original panic handler are e.g. GPCC's own unit tests.
+ * This is intended to query and store the current panic handler before setting up a custom one via
+ * @ref SetPanicHandler(). At a later point in time, the previous panic handler can be recovered.
+ *
+ * A typical scenario that requires recovery of the original panic handler is the temporary installation of a custom
+ * panic handler during a unittest case.
  *
  * - - -
  *
@@ -371,11 +387,15 @@ tPanicHandler GetPanicHandler(void) noexcept
  * \ingroup GPCC_OSAL_PANIC
  * \brief Sets the panic handler function.
  *
- * This can be used to setup your own panic handler if the default one does not meet your requirements.
+ * This can be used to setup a custom panic handler if the default one does not meet the requirements.
  *
- * If necessary, use @ref GetPanicHandler() to retrieve the currently configured panic handler
- * function for later recovery. Typical scenarios that require recovery of the original panic handler
- * are e.g. GPCC's own unit tests.
+ * If necessary, @ref GetPanicHandler() can be used to retrieve the currently configured panic handler function for
+ * later recovery. A typical scenario that requires recovery of the original panic handler is the temporary installation
+ * of a custom panic handler during a unittest case.
+ *
+ * \note  [TFC](@ref GPCC_TIME_FLOW_CONTROL) specific behaviour:\n
+ *        If the panic originates from the TFC core (e.g. "Dead-Lock detected. All threads permanently blocked."), then
+ *        the default panic handler will be used, even if a custom panic handler has been setup via this function.
  *
  * - - -
  *

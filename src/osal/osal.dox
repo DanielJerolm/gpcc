@@ -69,7 +69,7 @@
  *
  * If the function throws anyway, then the noexcept-specification is violated and the C/C++ runtime will abort the
  * program:\n
- * An unexpected exception is this function...
+ * An unexpected exception in this function...
  * ~~~{.cpp}
  * void MyFunc(void) noexcept
  * {
@@ -113,7 +113,31 @@
  * ~~~
  *
  * If more detailled output is required, then there are more sophisticated PANIC()-macros and Panic()-functions
- * available.
+ * available:
+ * ~~~{.cpp}
+ * void MyFunc(void) noexcept
+ * {
+ *   try
+ *   {
+ *     gpcc::osal::MutexLocker m(mutex); // <-- may throw, but is absolutely not expected to do so
+ *
+ *     // [...] <-- more code that could throw, but is absolutely not expected to do so
+ *   }
+ *   catch (std::exception const & e)
+ *   {
+ *     PANIC_E(e);
+ *   }
+ *   catch (...)
+ *   {
+ *     PANIC();
+ *   }
+ * }
+ * ~~~
+ * The output will be something like this:
+ * ~~~{.txt}
+ * PANIC: FileXYZ.cpp (233): pthread_mutex_lock(...) failed
+ * Aborted (core-dump written)
+ * ~~~
  *
  * __Rule of thumb:__\n
  * If an exception should not occurr (e.g. mutex lock failed), or if its only root cause would be a software bug inside
@@ -125,7 +149,7 @@
  * a later point in time.
  *
  * Using a try-catch-panic slightly increases code footprint and decreases readability of source code due to the
- * try-catch-block.
+ * try-catch-block. On the other hand it can provide valuable information about the panic location and panic reason.
  *
  * ## Broken invariants
  * Almost any software contains invariants, which must be valid at any time:
@@ -140,7 +164,7 @@
  * ## API
  * GPCC provides a set of overloaded Panic()-functions that can be used to abort program execution in case of an
  * unrecoverable error. In addition to program abort, the functions allow to submit a panic text message to the runtime,
- * which can be used to inform about details and/or the location of the panic condition.
+ * which can be used to inform about details and/or about the location of the panic condition.
  *
  * The following overloads are available:
  * - @ref gpcc::osal::Panic(void)
@@ -163,16 +187,15 @@
  * of the consumed code memory is minimal since all panics in a file share the same `pFileName` string.
  *
  * ## The panic handler
- * The implementation of the panic handler is platform and operating system specific.
+ * The implementation of a panic handler is platform and operating system specific. GPCC provides default panic handlers
+ * for each supported operating system. If the default panic handler is not sufficient, then it can be replaced by a
+ * user-defined panic handler at any time via @ref gpcc::osal::SetPanicHandler().
  *
- * For Linux, the default panic handler provided by GPCC will dump the text message passed to Panic() to `stderr` and
- * abort the process.
- *
- * For ChibiOS/RT, the default panic handler provided by GPCC will forward the text message passed to Panic() to
- * `chSysHalt()`.
- *
- * If the default panic handler is not sufficient, then it can be replaced by a user-defined panic handler at any time
- * via @ref gpcc::osal::SetPanicHandler().
+ * The default panic handlers provide the following behaviour:
+ * Operating system | Behaviour
+ * ---------------- | ---------------------------------------------------------------------------------------------
+ * Linux            | Dumps the text message passed to Panic() to `stderr` and aborts the process.
+ * ChibiOS/RT       | Forwards the text message passed to Panic() to `chSysHalt()`.
  */
 
 /**
