@@ -33,7 +33,7 @@ namespace internal
  * - register and unregister [Backend](@ref gpcc::log::Backend) instances
  * - pass [LogMessage](@ref gpcc::log::internal::LogMessage) objects (from an [Logger](@ref gpcc::log::Logger) instance)
  *   to the log facility for logging
- * - report errors that ocurred during log message creation (e.g. std::bad_alloc) to the log facility for logging
+ * - report errors that occurred during log message creation (e.g. std::bad_alloc) to the log facility for logging
  *
  * Note that one and the same [Logger](@ref gpcc::log::Logger) instance can only be registered at one log facility.\n
  * The other way round, multiple different [Logger](@ref gpcc::log::Logger) instances can be registered at one and

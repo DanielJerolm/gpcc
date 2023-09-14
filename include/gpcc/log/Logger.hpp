@@ -124,7 +124,7 @@ class ILogFacility;
  * ## Errors before invoking a Log()-method
  * Some overloads of the `void Log()` and `void LogTS()` methods accept an `std::string` parameter. Typically
  * the string is created before invoking the Log()-method. During creation of the string, a `std::bad_alloc` or
- * other errors may ocurr. Users should catch any error that could occur during creation of a log message string and
+ * other errors may occur. Users should catch any error that could occur during creation of a log message string and
  * invoke @ref LogFailed() to report the incident:
  *
  * ~~~{.cpp}

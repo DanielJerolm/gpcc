@@ -140,7 +140,7 @@
  * ~~~
  *
  * __Rule of thumb:__\n
- * If an exception should not occurr (e.g. mutex lock failed), or if its only root cause would be a software bug inside
+ * If an exception should not occur (e.g. mutex lock failed), or if its only root cause would be a software bug inside
  * _your_ code, then a `noexcept` should be sufficient and the try-catch-panic could be omitted.
  *
  * However if an error can be triggered by a software bug in the code of the _user_ of your functionality, e.g. due to
@@ -360,7 +360,7 @@
  * thread 1 sleeps for one second of _emulated time_ (e.g. via @ref gpcc::osal::Thread::Sleep_ms()). The emulated system
  * time does not increment since thread 2 is still in a runnable state. At point (2), thread 2 attempts to decrement a
  * semaphore that is already zero and the thread is blocked on the semaphore. Since all threads in the process are
- * blocked now, the emulated system time is incremented to the next event that will ocurr. This is _always_ some kind of
+ * blocked now, the emulated system time is incremented to the next event that will occur. This is _always_ some kind of
  * timeout. In this scenario, the next event is the expiration of the sleep of thread 1. The emulated time is
  * incremented to that point in time and thread 1 is switched back into the runnable state. The fact that the emulated
  * time only increments if all threads are blocked on something creates the illusion of an CPU with infinite processing

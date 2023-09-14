@@ -805,7 +805,7 @@ class Object
  *                                    [SDOAbortCode::OutOfMemory](@ref gpcc::cood::SDOAbortCode::OutOfMemory) will
  *                                    result in `std::bad_alloc` being thrown.
  *
- * \throws std::bad_alloc             Out of memory (may only occurr in before-read-callback).
+ * \throws std::bad_alloc             Out of memory (may only occur in before-read-callback).
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.

@@ -178,6 +178,9 @@ Next to do:
 
 History:
 ===============================================================================
+2023-09-14
+- Fixed spelling: occur, occurred
+
 2023-07-08
 - Panic handling:
   Panics originating from the TFC core are always forwarded to the default panic handler, even if a custom panic
