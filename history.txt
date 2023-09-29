@@ -178,6 +178,11 @@ Next to do:
 
 History:
 ===============================================================================
+2023-09-29
+- Fixed spelling:
+  aquire -> acquire
+  Reenable -> This word does not exist. Replaced depending on context.
+
 2023-09-14
 - Fixed spelling: occur, occurred
 

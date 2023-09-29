@@ -841,7 +841,7 @@ void Thread::Start(tEntryFunction const & _entryFunction,
  *
  * Note that the cancelability state of the thread managed by this object determines when exactly the cancellation
  * request will take effect. If cancelability is disabled, then the cancellation request will be deferred until
- * cancelability is reenabled. The managed thread can change its cancelability state via
+ * cancelability is enabled. The managed thread can change its cancelability state via
  * @ref SetCancelabilityEnabled().
  *
  * In any case, cancellation of the thread occurs asynchronously with respect to returning from this method.

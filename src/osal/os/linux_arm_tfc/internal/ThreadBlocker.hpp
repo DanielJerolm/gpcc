@@ -28,7 +28,7 @@ class TFCCore;
 /**
  * \ingroup GPCC_TIME_FLOW_CONTROL
  * \class ThreadBlocker ThreadBlocker.hpp "src/osal/os/linux_arm_tfc/internal/ThreadBlocker.hpp"
- * \brief Blocks a thread until a condition is signaled and unlocks/reaquires a TFC-managed mutex.
+ * \brief Blocks a thread until a condition is signaled and unlocks/reacquires a TFC-managed mutex.
  *
  * This class allows to block a thread until a condition is signaled. Before blocking, a _TFC-managed_
  * mutex (class @ref Mutex) is unlocked and after wake-up the _TFC-managed_ mutex is acquired again.
