@@ -321,6 +321,12 @@ Note:
 In documentation that may be referenced via "@copydoc" (typically documentation of interface methods), full qualified
 namespaces are required when using "@ref".
 
+Links to arbitrary locations
+----------------------------
+\anchor LOCATION
+\ref LOCATION "Text that appears in output"
+[Text that appears in output](@ref LOCATION)
+
 Member group:
 -------------
 ///@{
