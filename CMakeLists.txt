@@ -26,6 +26,7 @@
 # - unittest   : A library "gpcc" and an object-library "gpcc_testcases" will be build for usage in a unittest
 #                environment. The unittest environment is intended for executing GPCC's unit tests as well as
 #                unit tests from the upper level project.
+#                Note that there is an option "GPCC_BuildEmptyTestCaseLibrary" to build an empty testcase library.
 #
 # Further you have to provide the user settings for "GPCC_Compiler" and "GPCC_OS".
 #

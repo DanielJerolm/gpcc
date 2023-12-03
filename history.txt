@@ -178,6 +178,9 @@ Next to do:
 
 History:
 ===============================================================================
+2023-12-01
+- Add CMake option to build an empty unittest case library.
+
 2023-09-29
 - Fixed spelling:
   aquire -> acquire

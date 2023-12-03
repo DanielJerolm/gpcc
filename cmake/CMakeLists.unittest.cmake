@@ -17,6 +17,11 @@
 set(GPCC_CliNoFontStyles ON CACHE BOOL "" FORCE)
 
 # ---------------------------------------------------------------------------------------------------------------------
+# Option "GPCC_BuildEmptyTestCaseLibrary"
+# ---------------------------------------------------------------------------------------------------------------------
+option(GPCC_BuildEmptyTestCaseLibrary "Builds an empty test case library 'gpcc_testcases'." OFF)
+
+# ---------------------------------------------------------------------------------------------------------------------
 # Options "GPCC_Skip*Tests"
 # ---------------------------------------------------------------------------------------------------------------------
 option(GPCC_SkipTFCBasedTests "Excludes unit-tests from compilation, that require presence of TFC." OFF)
