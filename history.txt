@@ -178,6 +178,9 @@ Next to do:
 
 History:
 ===============================================================================
+2023-12-07 (Release 2.4.0)
+- Fixed bug in clock.cpp for chibios_arm: Panic was always invoked
+
 2023-12-01
 - Add CMake option to build an empty unittest case library.
 
