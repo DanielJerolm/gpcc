@@ -1226,7 +1226,7 @@ std::unique_ptr<ResponseBase> RODACLIClientBase::WaitAndFetchResponse(uint32_t c
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - If the error ocurred _after_ successful transmission of the request, then @ref sessionCnt will be incremented.
+ * - If the error occurred _after_ successful transmission of the request, then @ref sessionCnt will be incremented.
  *
  * \throws std::bad_alloc                    Out of memory.
  *

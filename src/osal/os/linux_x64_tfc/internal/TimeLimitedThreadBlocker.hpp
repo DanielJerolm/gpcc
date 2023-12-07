@@ -30,7 +30,7 @@ class TFCCore;
  * \ingroup GPCC_TIME_FLOW_CONTROL
  * \class TimeLimitedThreadBlocker TimeLimitedThreadBlocker.hpp "src/osal/os/linux_x64_tfc/internal/TimeLimitedThreadBlocker.hpp"
  * \brief Blocks a thread until either a condition is signaled or a timeout condition occurs and
- * optionally unlocks/reaquires a TFC-managed mutex.
+ * optionally unlocks/reacquires a TFC-managed mutex.
  *
  * This class allows to block a thread until either a condition is signaled or an timeout condition occurs.
  * As an optional feature, a _TFC-managed_ mutex (class @ref Mutex) can be unlocked before blocking the thread

@@ -665,7 +665,7 @@ void ThreadedLogFacility::ReleaseMessages(internal::LogMessage* pMessages) noexc
  *
  * If an error occurs during passing a log message text to a back-end, then the counter for not properly delivered
  * log messages (@ref notProperlyDeliveredMessages) will be incremented, too. The message text will be passed to all
- * back-ends, even in case of an error ocurred at one or more back-ends. The error counter will be incremented once
+ * back-ends, even in case of an error occurred at one or more back-ends. The error counter will be incremented once
  * per message, not once per back-end.
  *
  * If the counter for not properly delivered messages (@ref notProperlyDeliveredMessages) indicates that at least

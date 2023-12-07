@@ -178,6 +178,25 @@ Next to do:
 
 History:
 ===============================================================================
+2023-12-07 (Release 2.4.0)
+- Fixed bug in clock.cpp for chibios_arm: Panic was always invoked
+
+2023-12-01
+- Add CMake option to build an empty unittest case library.
+
+2023-09-29
+- Fixed spelling:
+  aquire -> acquire
+  Reenable -> This word does not exist. Replaced depending on context.
+
+2023-09-14
+- Fixed spelling: occur, occurred
+
+2023-07-08
+- Panic handling:
+  Panics originating from the TFC core are always forwarded to the default panic handler, even if a custom panic
+  handler has been setup. This avoids a dead lock, if the custom handler e.g. locks a mutex.
+
 2023-06-19
 - UnittestDurationLimiter is disabled if NDEBUG is not present to avoid panic while debugging code.
 

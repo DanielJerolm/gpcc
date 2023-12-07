@@ -134,7 +134,7 @@ class II2C_Master
  * - - -
  *
  * \return
- * A @ref gpcc::osal::MutexLocker instance managing the aquired lock.
+ * A @ref gpcc::osal::MutexLocker instance managing the acquired lock.
  */
 
 /**
