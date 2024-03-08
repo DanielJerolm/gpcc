@@ -893,9 +893,22 @@ void FakeTerminal::Write(char const * pBuffer, size_t s)
       int32_t n = u32;
 
       // examine control character
-      if ((c == 'D') || (c == 'C'))
+      if (c == 'A')
       {
-        // (move cursor)
+        // (move cursor up 'n' lines)
+
+        if (cursor_y == 0U)
+          throw std::runtime_error("FakeTerminal::Write: UUT attempt to move cursor up, but y is already zero");
+
+        int32_t newCursorY = cursor_y - n;
+        if (newCursorY < 0)
+          throw std::runtime_error("FakeTerminal::Write: UUT attempt to move cursor up beyond line 0");
+
+        cursor_y = newCursorY;
+      }
+      else if ((c == 'D') || (c == 'C'))
+      {
+        // (move cursor 'n' characters horizontally)
 
         // D = move "n" chars to the left, C = move "n" chars to the right
         if (c == 'D')
@@ -909,6 +922,51 @@ void FakeTerminal::Write(char const * pBuffer, size_t s)
           throw std::runtime_error("FakeTerminal::WriteToTerminal: UUT attempted to move cursor beyond width of terminal");
         else
           cursor_x = newCursorX;
+      }
+      else if (c == 'K')
+      {
+        // (erase part of line with modifier "n")
+        // u32 = 0 : Erase from cursor to end of line
+        // u32 = 1 : Erase from start of line to cursor
+        // u32 = 2 : Erase the entire line
+
+        std::string & termLine = lines[cursor_y];
+        size_t const termLineLength = termLine.length();
+
+        switch (n)
+        {
+          case 0:
+            // erase from cursor to end of line
+
+            if (cursor_x < termLineLength)
+              termLine.erase(cursor_x);
+            break;
+
+          case 1:
+            // erase from start of line to cursor
+
+            if (termLineLength != 0U)
+            {
+              if (cursor_x >= termLineLength - 1U)
+              {
+                termLine.clear();
+              }
+              else
+              {
+                for (uint_fast16_t x = 0U; x <= cursor_x; ++x)
+                  termLine[x] = ' ';
+              }
+            }
+            break;
+
+          case 2:
+            // erase the entire line
+            termLine.clear();
+            break;
+
+          default:
+            throw std::runtime_error("FakeTerminal::WriteToTerminal: UUT provided an invalid 'n' in ESC[nK");
+        }
       }
       else if (c == 'P')
       {
