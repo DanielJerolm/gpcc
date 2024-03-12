@@ -860,7 +860,7 @@ void FakeTerminal::Write(char const * pBuffer, size_t s)
     // convert to std::string
     std::string str(pBuffer, s);
     if (str.find(static_cast<char>(0x00)) != std::string::npos)
-      throw std::invalid_argument("FakeTerminal::WriteToTerminal: length mismatch pBuffer <-> s");
+      throw std::invalid_argument("FakeTerminal::Write: length mismatch pBuffer <-> s");
 
     gpcc::osal::MutexLocker outputMutexLocker(outputMutex);
 
@@ -877,10 +877,10 @@ void FakeTerminal::Write(char const * pBuffer, size_t s)
 
       // terminal control needs at least 4 characters
       if (str.length() < 4U)
-        throw std::runtime_error("FakeTerminal::WriteToTerminal: Bad command: too short");
+        throw std::runtime_error("FakeTerminal::Write: Bad command: too short");
 
       if (str[1U] != '[')
-        throw std::runtime_error("FakeTerminal::WriteToTerminal: Bad command: '[' missing");
+        throw std::runtime_error("FakeTerminal::Write: Bad command: '[' missing");
 
       // extract a string containing the number and extract the control character
       std::string const nb = str.substr(2U, str.length() - 3U);
@@ -889,13 +889,26 @@ void FakeTerminal::Write(char const * pBuffer, size_t s)
       // convert number string "nb" to int32_t "n"
       uint32_t const u32 = gpcc::string::DecimalToU32(nb);
       if (u32 > 9999U)
-        throw std::runtime_error("FakeTerminal::WriteToTerminal: Bad command: Bad number");
+        throw std::runtime_error("FakeTerminal::Write: Bad command: Bad number");
       int32_t n = u32;
 
       // examine control character
-      if ((c == 'D') || (c == 'C'))
+      if (c == 'A')
       {
-        // (move cursor)
+        // (move cursor up 'n' lines)
+
+        if (cursor_y == 0U)
+          throw std::runtime_error("FakeTerminal::Write: UUT attempt to move cursor up, but y is already zero");
+
+        int32_t newCursorY = cursor_y - n;
+        if (newCursorY < 0)
+          throw std::runtime_error("FakeTerminal::Write: UUT attempt to move cursor up beyond line 0");
+
+        cursor_y = newCursorY;
+      }
+      else if ((c == 'D') || (c == 'C'))
+      {
+        // (move cursor 'n' characters horizontally)
 
         // D = move "n" chars to the left, C = move "n" chars to the right
         if (c == 'D')
@@ -906,9 +919,54 @@ void FakeTerminal::Write(char const * pBuffer, size_t s)
         if (newCursorX < 0)
           cursor_x = 0;
         else if (newCursorX >= width)
-          throw std::runtime_error("FakeTerminal::WriteToTerminal: UUT attempted to move cursor beyond width of terminal");
+          throw std::runtime_error("FakeTerminal::Write: UUT attempted to move cursor beyond width of terminal");
         else
           cursor_x = newCursorX;
+      }
+      else if (c == 'K')
+      {
+        // (erase part of line with modifier "n")
+        // u32 = 0 : Erase from cursor to end of line
+        // u32 = 1 : Erase from start of line to cursor
+        // u32 = 2 : Erase the entire line
+
+        std::string & termLine = lines[cursor_y];
+        size_t const termLineLength = termLine.length();
+
+        switch (n)
+        {
+          case 0:
+            // erase from cursor to end of line
+
+            if (cursor_x < termLineLength)
+              termLine.erase(cursor_x);
+            break;
+
+          case 1:
+            // erase from start of line to cursor
+
+            if (termLineLength != 0U)
+            {
+              if (cursor_x >= termLineLength - 1U)
+              {
+                termLine.clear();
+              }
+              else
+              {
+                for (uint_fast16_t x = 0U; x <= cursor_x; ++x)
+                  termLine[x] = ' ';
+              }
+            }
+            break;
+
+          case 2:
+            // erase the entire line
+            termLine.clear();
+            break;
+
+          default:
+            throw std::runtime_error("FakeTerminal::Write: UUT provided an invalid 'n' in ESC[nK");
+        }
       }
       else if (c == 'P')
       {
@@ -925,7 +983,7 @@ void FakeTerminal::Write(char const * pBuffer, size_t s)
         }
       }
       else
-        throw std::runtime_error("FakeTerminal::WriteToTerminal: Bad command: Bad D/C/P");
+        throw std::runtime_error("FakeTerminal::Write: Bad command: Bad D/C/P");
     } // if (str.front() == '\x1B')
     else
     {
@@ -952,7 +1010,7 @@ void FakeTerminal::Write(char const * pBuffer, size_t s)
         else
         {
           if (cursor_x >= width-1U)
-            throw std::runtime_error("FakeTerminal::WriteToTerminal: UUT attempted write to last character of line");
+            throw std::runtime_error("FakeTerminal::Write: UUT attempted write to last character of line");
           std::string & termLine = lines[cursor_y];
           if (termLine.length() <= cursor_x)
             termLine.resize(cursor_x + 1U, ' ');

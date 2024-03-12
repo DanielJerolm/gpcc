@@ -114,6 +114,7 @@ class ITerminal;
  * ~~~
  *
  * ## Printing to the terminal
+ * ### Printing lines
  * CLI offers the following methods to print lines to the terminal:
  * - @ref WriteLine(char const * const)
  * - @ref WriteLine(std::string const &)
@@ -131,6 +132,28 @@ class ITerminal;
  * ~~~
  *
  * Text color, font, and style can be controlled using the definitions in group @ref GPC_CLI_FCS.
+ *
+ * ### Rewrite lines
+ * CLI offers the following method to print a line that can be rewritten by a subsequent call to the same method:
+ * - @ref RewriteLine()
+ *
+ * The method can be used by CLI command handlers only. It is intended to display a status indicator on the terminal
+ * and update it cyclically without printing on a new line during each update.
+ *
+ * ~~~{.cpp}
+ * myCli.WriteLine("Process starts...");
+ *
+ * myCli.RewriteLine("Step 1 of 3");
+ * gpcc::osal::Thread::Sleep_ms(100U);
+ *
+ * myCli.RewriteLine("Step 2 of 3");
+ * gpcc::osal::Thread::Sleep_ms(100U);
+ *
+ * myCli.RewriteLine("Step 3 of 3");
+ * gpcc::osal::Thread::Sleep_ms(100U);
+ *
+ * myCli.RewriteLine("...process complete!");
+ * ~~~
  *
  * ## Line Head
  * The command prompt is preceded by a text string, usually ">". This "text string" is called the
@@ -328,6 +351,8 @@ class CLI final
     void WriteLine(char const * const s);
     void WriteLine(std::string const & s);
 
+    void RewriteLine(std::string const & s);
+
     std::string ReadLine(std::string const & lineHead);
     void TestTermination(void);
 
@@ -443,6 +468,12 @@ class CLI final
         false = recovery not required */
     bool recoveryRequired;
 
+    /// Controls if @ref RewriteLine() is allowed to rewrite the prev. line or if it shall behave like @ref WriteLine().
+    /** @ref terminalMutex is required.\n
+        true = rewrite of previous line is allowed\n
+        false = write a new line */
+    bool allowRewriteLine;
+
     /// Password required for login to the command prompt.
     /** @ref terminalMutex is required.\n
         If this is an empty string, then no password is required to access the command prompt.\n
@@ -459,8 +490,10 @@ class CLI final
     void Terminal_Write(char const * const s);
     void Terminal_Write(std::string const & s);
     void Terminal_Write(char const c);
-    void Terminal_MoveCursor(int16_t deltaX);
+    void Terminal_MoveCursorX(int16_t deltaX);
+    void Terminal_MoveCursorY_OneUp(void);
     void Terminal_DeleteChars(uint8_t const n);
+    void Terminal_EraseFromCursorToEOL(void);
 
     void ClearInputBuffer(void);
     void ReplaceInputBufferWithString(std::string const & newInputBuffer, size_t const maxLength);
