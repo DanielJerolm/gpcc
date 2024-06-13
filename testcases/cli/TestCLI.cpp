@@ -88,6 +88,50 @@ static void LongRunCmdHandler(std::string const & restOfLine, cli::CLI & cli)
 
   cli.WriteLine("DONE");
 }
+static void RewriteLineCmdHandler(std::string const & restOfLine, cli::CLI & cli)
+{
+  if (restOfLine == "A")
+  {
+    cli.RewriteLine("Rewrite A");
+  }
+  else if (restOfLine == "B")
+  {
+    cli.RewriteLine("Rewrite 1 --------");
+    cli.RewriteLine("Rewrite B");
+  }
+  else if (restOfLine == "C")
+  {
+    cli.RewriteLine("Rewrite 1 --------");
+    cli.RewriteLine("Rewrite C.1");
+    cli.WriteLine("WriteLine");
+    cli.RewriteLine("Rewrite C.2");
+  }
+  else if (restOfLine == "D")
+  {
+    cli.RewriteLine("");
+  }
+  else if (restOfLine == "E")
+  {
+    cli.RewriteLine("Rewrite 1 --------");
+    cli.RewriteLine("");
+  }
+  else if (restOfLine == "F")
+  {
+    cli.RewriteLine("Rewrite 1 --------");
+    cli.RewriteLine("");
+    cli.RewriteLine("");
+  }
+  else if (restOfLine == "G")
+  {
+    cli.RewriteLine("Rewrite 1 --------");
+    cli.RewriteLine("");
+    cli.RewriteLine("Content");
+  }
+  else
+  {
+    throw UserEnteredInvalidArgsError();
+  }
+}
 
 // Test fixture for CLI unit tests WITHOUT ICLINotifiable registered
 // See TestCLI_withICLINotifiable.cpp for an additional test fixture with additional test cases.
@@ -1430,6 +1474,219 @@ TEST_F(gpcc_cli_CLI_TestsF, WriteLine_std_string_newline)
   ASSERT_TRUE(params_passed_to_TestCmd == "");
 }
 // ==> WriteLine() related tests
+
+// ==> RewriteLine() related tests
+TEST_F(gpcc_cli_CLI_TestsF, RewriteLine_NotCLIThread)
+{
+  char const * expected[8] =
+  {
+   ">",
+   ">",
+   ">",
+   ">",
+   ">",
+   "WriteLineA",
+   "WriteLineB",
+   ">"
+  };
+
+  Login();
+  uut.WriteLine("WriteLineA");
+  uut.WriteLine("WriteLineB");
+
+  EXPECT_THROW(uut.RewriteLine("Rewritten"), std::logic_error);
+
+  ASSERT_TRUE(terminal.Compare(expected));
+}
+
+TEST_F(gpcc_cli_CLI_TestsF, RewriteLine_OneCall)
+{
+  char const * expected[8] =
+  {
+   ">",
+   ">",
+   ">",
+   ">",
+   "WriteLine",
+   ">RC A",
+   "Rewrite A",
+   ">"
+  };
+
+  auto spCMD = Command::Create("RC", "\nCommand handler using RewriteLine", std::bind(&RewriteLineCmdHandler, std::placeholders::_1, std::placeholders::_2));
+  uut.AddCommand(std::move(spCMD));
+
+  Login();
+  uut.WriteLine("WriteLine");
+
+  terminal.Input("RC A");
+  terminal.Input_ENTER();
+  terminal.WaitForInputProcessed();
+
+  ASSERT_TRUE(terminal.Compare(expected));
+}
+
+TEST_F(gpcc_cli_CLI_TestsF, RewriteLine_TwoCalls)
+{
+  char const * expected[8] =
+  {
+   ">",
+   ">",
+   ">",
+   ">",
+   "WriteLine",
+   ">RC B",
+   "Rewrite B",
+   ">"
+  };
+
+  auto spCMD = Command::Create("RC", "\nCommand handler using RewriteLine", std::bind(&RewriteLineCmdHandler, std::placeholders::_1, std::placeholders::_2));
+  uut.AddCommand(std::move(spCMD));
+
+  Login();
+  uut.WriteLine("WriteLine");
+
+  terminal.Input("RC B");
+  terminal.Input_ENTER();
+  terminal.WaitForInputProcessed();
+
+  ASSERT_TRUE(terminal.Compare(expected));
+}
+
+TEST_F(gpcc_cli_CLI_TestsF, RewriteLine_MixWithWriteLine)
+{
+  char const * expected[8] =
+  {
+   ">",
+   ">",
+   ">",
+   ">RC C",
+   "Rewrite C.1",
+   "WriteLine",
+   "Rewrite C.2",
+   ">"
+  };
+
+  auto spCMD = Command::Create("RC", "\nCommand handler using RewriteLine", std::bind(&RewriteLineCmdHandler, std::placeholders::_1, std::placeholders::_2));
+  uut.AddCommand(std::move(spCMD));
+
+  Login();
+  terminal.Input("RC C");
+  terminal.Input_ENTER();
+  terminal.WaitForInputProcessed();
+
+  ASSERT_TRUE(terminal.Compare(expected));
+}
+
+TEST_F(gpcc_cli_CLI_TestsF, RewriteLine_OneCall_Empty)
+{
+  char const * expected[8] =
+  {
+   ">",
+   ">",
+   ">",
+   ">",
+   "WriteLine",
+   ">RC D",
+   "",
+   ">"
+  };
+
+  auto spCMD = Command::Create("RC", "\nCommand handler using RewriteLine", std::bind(&RewriteLineCmdHandler, std::placeholders::_1, std::placeholders::_2));
+  uut.AddCommand(std::move(spCMD));
+
+  Login();
+  uut.WriteLine("WriteLine");
+
+  terminal.Input("RC D");
+  terminal.Input_ENTER();
+  terminal.WaitForInputProcessed();
+
+  ASSERT_TRUE(terminal.Compare(expected));
+}
+
+TEST_F(gpcc_cli_CLI_TestsF, RewriteLine_TwoCalls_Empty)
+{
+  char const * expected[8] =
+  {
+   ">",
+   ">",
+   ">",
+   ">",
+   "WriteLine",
+   ">RC E",
+   "",
+   ">"
+  };
+
+  auto spCMD = Command::Create("RC", "\nCommand handler using RewriteLine", std::bind(&RewriteLineCmdHandler, std::placeholders::_1, std::placeholders::_2));
+  uut.AddCommand(std::move(spCMD));
+
+  Login();
+  uut.WriteLine("WriteLine");
+
+  terminal.Input("RC E");
+  terminal.Input_ENTER();
+  terminal.WaitForInputProcessed();
+
+  ASSERT_TRUE(terminal.Compare(expected));
+}
+
+TEST_F(gpcc_cli_CLI_TestsF, RewriteLine_RewriteAnEmptyLineWithNoContent)
+{
+  char const * expected[8] =
+  {
+   ">",
+   ">",
+   ">",
+   ">",
+   "WriteLine",
+   ">RC F",
+   "",
+   ">"
+  };
+
+  auto spCMD = Command::Create("RC", "\nCommand handler using RewriteLine", std::bind(&RewriteLineCmdHandler, std::placeholders::_1, std::placeholders::_2));
+  uut.AddCommand(std::move(spCMD));
+
+  Login();
+  uut.WriteLine("WriteLine");
+
+  terminal.Input("RC F");
+  terminal.Input_ENTER();
+  terminal.WaitForInputProcessed();
+
+  ASSERT_TRUE(terminal.Compare(expected));
+}
+
+TEST_F(gpcc_cli_CLI_TestsF, RewriteLine_RewriteAnEmptyLineWithContent)
+{
+  char const * expected[8] =
+  {
+   ">",
+   ">",
+   ">",
+   ">",
+   "WriteLine",
+   ">RC G",
+   "Content",
+   ">"
+  };
+
+  auto spCMD = Command::Create("RC", "\nCommand handler using RewriteLine", std::bind(&RewriteLineCmdHandler, std::placeholders::_1, std::placeholders::_2));
+  uut.AddCommand(std::move(spCMD));
+
+  Login();
+  uut.WriteLine("WriteLine");
+
+  terminal.Input("RC G");
+  terminal.Input_ENTER();
+  terminal.WaitForInputProcessed();
+
+  ASSERT_TRUE(terminal.Compare(expected));
+}
+
+// <== RewriteLine() related tests
 
 // <== ReadLine() related tests
 TEST_F(gpcc_cli_CLI_TestsF, ReadLine)
