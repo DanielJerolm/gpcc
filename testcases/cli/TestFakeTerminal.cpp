@@ -79,7 +79,7 @@ void gpcc_cli_FakeTerminal_TestsF::MoveCursorVertical(int16_t delta)
 
   if (delta < 0)
   {
-    if (delta <= -100)
+    if (delta < -99)
       throw std::invalid_argument("gpcc_cli_FakeTerminal_TestsF::MoveCursorHorizontal: delta");
     delta = -delta;
 
@@ -108,7 +108,7 @@ void gpcc_cli_FakeTerminal_TestsF::MoveCursorHorizontal(int16_t delta)
 
   if (delta < 0)
   {
-    if (delta <= -100)
+    if (delta < -99)
       throw std::invalid_argument("gpcc_cli_FakeTerminal_TestsF::MoveCursorHorizontal: delta");
     delta = -delta;
 
@@ -119,7 +119,7 @@ void gpcc_cli_FakeTerminal_TestsF::MoveCursorHorizontal(int16_t delta)
   }
   else
   {
-    if (delta >= 100)
+    if (delta > 99)
       throw std::invalid_argument("gpcc_cli_FakeTerminal_TestsF::MoveCursorHorizontal: delta");
 
     if (delta >= 10)
@@ -138,7 +138,7 @@ void gpcc_cli_FakeTerminal_TestsF::DeleteCharacters(uint8_t n)
   if (n == 0)
     return;
 
-  if (n >= 100)
+  if (n > 99)
     throw std::invalid_argument("gpcc_cli_FakeTerminal_TestsF::DeleteCharacters: n");
 
   std::string cmd;
