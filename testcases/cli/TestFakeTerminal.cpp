@@ -26,12 +26,21 @@ class gpcc_cli_FakeTerminal_TestsF: public Test
     gpcc_cli_FakeTerminal_TestsF(void);
 
   protected:
+    enum class EraseMode
+    {
+      BeginToCursor,
+      CursorToEnd,
+      WholeLine
+    };
+
     FakeTerminal uut;
     gpcc::cli::ITerminal & uut_ITerminal;
 
     void PrintText(char const * s);
-    void MoveCursor(int16_t delta);
+    void MoveCursorVertical(int16_t delta);
+    void MoveCursorHorizontal(int16_t delta);
     void DeleteCharacters(uint8_t n);
+    void EraseCharacters(EraseMode const mode);
 
     void SetUp(void) override;
     void TearDown(void) override;
@@ -47,6 +56,7 @@ gpcc_cli_FakeTerminal_TestsF::gpcc_cli_FakeTerminal_TestsF(void)
 void gpcc_cli_FakeTerminal_TestsF::SetUp(void)
 {
 }
+
 void gpcc_cli_FakeTerminal_TestsF::TearDown(void)
 {
 }
@@ -58,7 +68,35 @@ void gpcc_cli_FakeTerminal_TestsF::PrintText(char const * s)
 {
   uut_ITerminal.Write(s, strlen(s));
 }
-void gpcc_cli_FakeTerminal_TestsF::MoveCursor(int16_t delta)
+
+void gpcc_cli_FakeTerminal_TestsF::MoveCursorVertical(int16_t delta)
+{
+  if (delta == 0)
+    return;
+
+  std::string cmd;
+  cmd = "\x1B[";
+
+  if (delta < 0)
+  {
+    if (delta < -99)
+      throw std::invalid_argument("gpcc_cli_FakeTerminal_TestsF::MoveCursorHorizontal: delta");
+    delta = -delta;
+
+    if (delta >= 10)
+      cmd += '0' + (delta / 10);
+    cmd += '0' + (delta % 10);
+    cmd += 'A';
+  }
+  else
+  {
+    throw std::invalid_argument("gpcc_cli_FakeTerminal_TestsF::MoveCursorVertical: UUT only supports moving cursor up");
+  }
+
+  uut_ITerminal.Write(cmd.c_str(), cmd.length());
+}
+
+void gpcc_cli_FakeTerminal_TestsF::MoveCursorHorizontal(int16_t delta)
 {
   // Moves the cursor delta characters to the right. Negative values move to the left.
 
@@ -70,9 +108,10 @@ void gpcc_cli_FakeTerminal_TestsF::MoveCursor(int16_t delta)
 
   if (delta < 0)
   {
+    if (delta < -99)
+      throw std::invalid_argument("gpcc_cli_FakeTerminal_TestsF::MoveCursorHorizontal: delta");
     delta = -delta;
-    if (delta >= 100)
-      throw std::invalid_argument("gpcc_cli_FakeTerminal_TestsF::MoveCursor: delta");
+
     if (delta >= 10)
       cmd += '0' + (delta / 10);
     cmd += '0' + (delta % 10);
@@ -80,8 +119,9 @@ void gpcc_cli_FakeTerminal_TestsF::MoveCursor(int16_t delta)
   }
   else
   {
-    if (delta >= 100)
-      throw std::invalid_argument("gpcc_cli_FakeTerminal_TestsF::MoveCursor: delta");
+    if (delta > 99)
+      throw std::invalid_argument("gpcc_cli_FakeTerminal_TestsF::MoveCursorHorizontal: delta");
+
     if (delta >= 10)
       cmd += '0' + (delta / 10);
     cmd += '0' + (delta % 10);
@@ -90,6 +130,7 @@ void gpcc_cli_FakeTerminal_TestsF::MoveCursor(int16_t delta)
 
   uut_ITerminal.Write(cmd.c_str(), cmd.length());
 }
+
 void gpcc_cli_FakeTerminal_TestsF::DeleteCharacters(uint8_t n)
 {
   // Deletes n characters starting at current cursor position
@@ -97,7 +138,7 @@ void gpcc_cli_FakeTerminal_TestsF::DeleteCharacters(uint8_t n)
   if (n == 0)
     return;
 
-  if (n >= 100)
+  if (n > 99)
     throw std::invalid_argument("gpcc_cli_FakeTerminal_TestsF::DeleteCharacters: n");
 
   std::string cmd;
@@ -106,6 +147,32 @@ void gpcc_cli_FakeTerminal_TestsF::DeleteCharacters(uint8_t n)
     cmd += '0' + (n / 10U);
   cmd += '0' + (n % 10U);
   cmd += 'P';
+
+  uut_ITerminal.Write(cmd.c_str(), cmd.length());
+}
+
+void gpcc_cli_FakeTerminal_TestsF::EraseCharacters(EraseMode const mode)
+{
+  // Erase part of the current line or the whole line according to "mode".
+
+  std::string cmd;
+  cmd = "\x1B[";
+
+  switch (mode)
+  {
+    case EraseMode::BeginToCursor:
+      cmd += '1';
+      break;
+
+    case EraseMode::CursorToEnd:
+      cmd += '0';
+      break;
+
+    case EraseMode::WholeLine:
+      cmd += '2';
+      break;
+  }
+  cmd += 'K';
 
   uut_ITerminal.Write(cmd.c_str(), cmd.length());
 }
@@ -127,6 +194,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Create)
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(0,0));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Print1)
 {
   char const * ref[8] =
@@ -145,6 +213,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Print1)
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(12,0));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Print2)
 {
   char const * ref[8] =
@@ -163,6 +232,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Print2)
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(0,1));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Print3)
 {
   char const * ref[8] =
@@ -181,6 +251,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Print3)
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(11,1));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Print4)
 {
   char const * ref[8] =
@@ -199,6 +270,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Print4)
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(0,2));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Print5)
 {
   char const * ref[8] =
@@ -217,6 +289,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Print5)
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(10,2));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Print6)
 {
   char const * ref[8] =
@@ -235,6 +308,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Print6)
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(0,0));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Print7)
 {
   char const * ref[8] =
@@ -253,6 +327,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Print7)
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(0,1));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Print8)
 {
   char const * ref[8] =
@@ -271,6 +346,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Print8)
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(0,2));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Print9)
 {
   char const * ref[8] =
@@ -286,11 +362,12 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Print9)
   };
 
   PrintText("Hello World!");
-  MoveCursor(-7);
+  MoveCursorHorizontal(-7);
   PrintText("\nLine 2");
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(6,1));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Print_78chars)
 {
   char const * ref[8] =
@@ -310,6 +387,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Print_78chars)
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(78,0));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Print_79chars)
 {
   char const * ref[8] =
@@ -329,6 +407,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Print_79chars)
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(79,0));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_DeathTestsF, Print_80chars_RejectExpected)
 {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
@@ -351,6 +430,7 @@ TEST_F(gpcc_cli_FakeTerminal_DeathTestsF, Print_80chars_RejectExpected)
    ASSERT_TRUE(uut.Compare(ref));
    ASSERT_TRUE(uut.Compare(79,0));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Print_78chars_plus2ndLine)
 {
   char const * ref[8] =
@@ -370,6 +450,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Print_78chars_plus2ndLine)
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(5,1));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Print_79chars_plus2ndLine)
 {
   char const * ref[8] =
@@ -389,6 +470,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Print_79chars_plus2ndLine)
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(5,1));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Print_79chars_plus3newLines)
 {
   char const * ref[8] =
@@ -408,6 +490,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Print_79chars_plus3newLines)
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(0,3));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Print_VerticalScroll1)
 {
   char const * ref[8] =
@@ -426,6 +509,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Print_VerticalScroll1)
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(6,7));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Print_VerticalScroll2)
 {
   char const * ref[8] =
@@ -444,6 +528,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Print_VerticalScroll2)
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(0,7));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Print_VerticalScroll3)
 {
   char const * ref[8] =
@@ -462,7 +547,98 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Print_VerticalScroll3)
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(6,7));
 }
-TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorMove1)
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorVerticalMove1)
+{
+  char const * ref[8] =
+  {
+ // 0123456789012
+   "ABC1",
+   "ABC2DEF",
+   "ABC3",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("ABC1\nABC2\nABC3");
+  MoveCursorVertical(-1);
+  PrintText("DEF");
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(7,1));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorVerticalMove2)
+{
+  char const * ref[8] =
+  {
+ // 0123456789012
+   "ABC1DEF",
+   "ABC2",
+   "ABC3",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("ABC1\nABC2\nABC3");
+  MoveCursorVertical(-2);
+  PrintText("DEF");
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(7,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_DeathTestsF, CursorVerticalMove_BeyondTop)
+{
+  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+
+  char const * ref[8] =
+  {
+ // 0123456789012
+   "ABC1",
+   "ABC2",
+   "ABC3",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("ABC1\nABC2\nABC3");
+  EXPECT_DEATH(MoveCursorVertical(-3), ".*UUT attempt to move cursor up beyond line 0.*");
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(4,2));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_DeathTestsF, CursorVerticalMove_BeyondTopFromFirstLine)
+{
+  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+
+  char const * ref[8] =
+  {
+ // 0123456789012
+   "ABC1",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("ABC1");
+  EXPECT_DEATH(MoveCursorVertical(-1), ".*UUT attempt to move cursor up, but y is already zero.*");
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(4,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorHorizontalMove1)
 {
   char const * ref[8] =
   {
@@ -478,14 +654,15 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorMove1)
   };
 
   PrintText("ABCDEFGHIJKLM");
-  MoveCursor(-11);
+  MoveCursorHorizontal(-11);
   PrintText("55");
-  MoveCursor(4);
+  MoveCursorHorizontal(4);
   PrintText("XX");
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(10,0));
 }
-TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorMove2)
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorHorizontalMove2)
 {
   char const * ref[8] =
   {
@@ -501,15 +678,16 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorMove2)
   };
 
   PrintText("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-  MoveCursor(-20);
-  MoveCursor(-4);
+  MoveCursorHorizontal(-20);
+  MoveCursorHorizontal(-4);
   PrintText("55");
-  MoveCursor(12);
+  MoveCursorHorizontal(12);
   PrintText("XX\nLine2");
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(5,1));
 }
-TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorMove_BeyondLeftEnd)
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorHorizontalMove_BeyondLeftEnd)
 {
   char const * ref[8] =
   {
@@ -525,12 +703,13 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorMove_BeyondLeftEnd)
   };
 
   PrintText("ABCDEF");
-  MoveCursor(-20);
+  MoveCursorHorizontal(-20);
   PrintText("XX");
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(2,0));
 }
-TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorMove_BehindLastChar)
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorHorizontalMove_BehindLastChar)
 {
   char const * ref[8] =
   {
@@ -546,13 +725,14 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorMove_BehindLastChar)
   };
 
   PrintText("ABCDEF");
-  MoveCursor(-20);
+  MoveCursorHorizontal(-20);
   PrintText("XX");
-  MoveCursor(4);
+  MoveCursorHorizontal(4);
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(6,0));
 }
-TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorMove_BeyondLastCharAndPrint)
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorHorizontalMove_BeyondLastCharAndPrint)
 {
   char const * ref[8] =
   {
@@ -568,14 +748,15 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorMove_BeyondLastCharAndPrint)
   };
 
   PrintText("ABCDEF");
-  MoveCursor(-20);
+  MoveCursorHorizontal(-20);
   PrintText("XX");
-  MoveCursor(8);
+  MoveCursorHorizontal(8);
   PrintText("TEST");
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(14,0));
 }
-TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorMove_MaxLineLengthToLastCharAndPrint)
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorHorizontalMove_MaxLineLengthToLastCharAndPrint)
 {
   char const * ref[8] =
   {
@@ -591,14 +772,15 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorMove_MaxLineLengthToLastCharAndPrint)
   };
 
   PrintText("0123456789012345678901234567890123456789012345678901234567890123456789012345678");
-  MoveCursor(-6);
+  MoveCursorHorizontal(-6);
   PrintText("XX");
-  MoveCursor(3);
+  MoveCursorHorizontal(3);
   PrintText("A");
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(79,0));
 }
-TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorMove_MaxLineLengthToBehindLastChar)
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorHorizontalMove_MaxLineLengthToBehindLastChar)
 {
   char const * ref[8] =
   {
@@ -614,13 +796,14 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, CursorMove_MaxLineLengthToBehindLastChar)
   };
 
   PrintText("0123456789012345678901234567890123456789012345678901234567890123456789012345678");
-  MoveCursor(-6);
+  MoveCursorHorizontal(-6);
   PrintText("XX");
-  MoveCursor(4);
+  MoveCursorHorizontal(4);
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(79,0));
 }
-TEST_F(gpcc_cli_FakeTerminal_DeathTestsF, CursorMove_MaxLineLengthToBeyondLastChar_RejectExpected)
+
+TEST_F(gpcc_cli_FakeTerminal_DeathTestsF, CursorHorizontalMove_MaxLineLengthToBeyondLastChar_RejectExpected)
 {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
 
@@ -638,12 +821,13 @@ TEST_F(gpcc_cli_FakeTerminal_DeathTestsF, CursorMove_MaxLineLengthToBeyondLastCh
   };
 
   PrintText("0123456789012345678901234567890123456789012345678901234567890123456789012345678");
-  MoveCursor(-6);
+  MoveCursorHorizontal(-6);
   PrintText("XX");
-  EXPECT_DEATH(MoveCursor(5), ".*UUT attempted to move cursor beyond width of terminal.*");
+  EXPECT_DEATH(MoveCursorHorizontal(5), ".*UUT attempted to move cursor beyond width of terminal.*");
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(75,0));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, DeleteChars)
 {
   char const * ref[8] =
@@ -660,11 +844,12 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, DeleteChars)
   };
 
   PrintText("ABCDEFG");
-  MoveCursor(-5);
+  MoveCursorHorizontal(-5);
   DeleteCharacters(2);
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(2,0));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, DeleteChars_RestOfLine)
 {
   char const * ref[8] =
@@ -681,11 +866,12 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, DeleteChars_RestOfLine)
   };
 
   PrintText("ABCDEFG");
-  MoveCursor(-5);
+  MoveCursorHorizontal(-5);
   DeleteCharacters(5);
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(2,0));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, DeleteChars_MoreThanRestOfLine)
 {
   char const * ref[8] =
@@ -702,11 +888,528 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, DeleteChars_MoreThanRestOfLine)
   };
 
   PrintText("ABCDEFG");
-  MoveCursor(-5);
+  MoveCursorHorizontal(-5);
   DeleteCharacters(6);
   ASSERT_TRUE(uut.Compare(ref));
   ASSERT_TRUE(uut.Compare(2,0));
 }
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_BeginToCursor_X0)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   " 123456789",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("0123456789");
+  MoveCursorHorizontal(-10);
+  EraseCharacters(EraseMode::BeginToCursor);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(0,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_BeginToCursor_X1)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "  23456789",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("0123456789");
+  MoveCursorHorizontal(-9);
+  EraseCharacters(EraseMode::BeginToCursor);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(1,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_BeginToCursor_EOLminus2)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "         9",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("0123456789");
+  MoveCursorHorizontal(-2);
+  EraseCharacters(EraseMode::BeginToCursor);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(8,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_BeginToCursor_EOLminus1)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("0123456789");
+  MoveCursorHorizontal(-1);
+  EraseCharacters(EraseMode::BeginToCursor);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(9,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_BeginToCursor_EOL)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("0123456789");
+  EraseCharacters(EraseMode::BeginToCursor);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(10,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_BeginToCursor_EOLplus1)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("0123456789");
+  MoveCursorHorizontal(1);
+  EraseCharacters(EraseMode::BeginToCursor);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(11,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_CursorToEnd_X0)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("0123456789");
+  MoveCursorHorizontal(-10);
+  EraseCharacters(EraseMode::CursorToEnd);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(0,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_CursorToEnd_X1)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "0",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("0123456789");
+  MoveCursorHorizontal(-9);
+  EraseCharacters(EraseMode::CursorToEnd);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(1,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_CursorToEnd_EOLminus2)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "01234567",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("0123456789");
+  MoveCursorHorizontal(-2);
+  EraseCharacters(EraseMode::CursorToEnd);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(8,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_CursorToEnd_EOLminus1)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "012345678",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("0123456789");
+  MoveCursorHorizontal(-1);
+  EraseCharacters(EraseMode::CursorToEnd);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(9,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_CursorToEnd_EOL)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "0123456789",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("0123456789");
+  EraseCharacters(EraseMode::CursorToEnd);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(10,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_CursorToEnd_EOLplus1)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "0123456789",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("0123456789");
+  MoveCursorHorizontal(1);
+  EraseCharacters(EraseMode::CursorToEnd);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(11,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_WholeLine_X0)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("0123456789");
+  MoveCursorHorizontal(-10);
+  EraseCharacters(EraseMode::WholeLine);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(0,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_WholeLine_X1)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("0123456789");
+  MoveCursorHorizontal(-9);
+  EraseCharacters(EraseMode::WholeLine);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(1,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_WholeLine_EOLminus2)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("0123456789");
+  MoveCursorHorizontal(-2);
+  EraseCharacters(EraseMode::WholeLine);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(8,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_WholeLine_EOLminus1)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("0123456789");
+  MoveCursorHorizontal(-1);
+  EraseCharacters(EraseMode::WholeLine);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(9,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_WholeLine_EOL)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("0123456789");
+  EraseCharacters(EraseMode::WholeLine);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(10,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_WholeLine_EOLplus1)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  PrintText("0123456789");
+  MoveCursorHorizontal(1);
+  EraseCharacters(EraseMode::WholeLine);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(11,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_EmptyLine_BeginToCursor_X0)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  EraseCharacters(EraseMode::BeginToCursor);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(0,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_EmptyLine_BeginToCursor_X1)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  MoveCursorHorizontal(1);
+  EraseCharacters(EraseMode::BeginToCursor);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(1,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_EmptyLine_CursorToEnd_X0)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  EraseCharacters(EraseMode::CursorToEnd);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(0,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_EmptyLine_CursorToEnd_X1)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  MoveCursorHorizontal(1);
+  EraseCharacters(EraseMode::CursorToEnd);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(1,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_EmptyLine_WholeLine_X0)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  EraseCharacters(EraseMode::WholeLine);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(0,0));
+}
+
+TEST_F(gpcc_cli_FakeTerminal_TestsF, EraseChars_EmptyLine_WholeLine_X1)
+{
+  char const * ref[8] =
+  {
+ // 0123456789
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  };
+
+  MoveCursorHorizontal(1);
+  EraseCharacters(EraseMode::WholeLine);
+  ASSERT_TRUE(uut.Compare(ref));
+  ASSERT_TRUE(uut.Compare(1,0));
+}
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_TimeoutNoData)
 {
   char buffer[16];
@@ -722,6 +1425,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_TimeoutNoData)
   ASSERT_TRUE((end - start).ms() < 600);
 #endif
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_TimeoutWithData)
 {
   char buffer[16];
@@ -739,6 +1443,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_TimeoutWithData)
   ASSERT_TRUE((end - start).ms() < 100);
 #endif
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_ZeroTimeoutNoData)
 {
   char buffer[16];
@@ -752,6 +1457,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_ZeroTimeoutNoData)
   ASSERT_TRUE((end - start).ms() < 100);
 #endif
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_ZeroTimeoutWithData)
 {
   char buffer[16];
@@ -769,6 +1475,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_ZeroTimeoutWithData)
   ASSERT_TRUE((end - start).ms() < 100);
 #endif
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_AllInputMethods)
 {
   uut.Input("Test");
@@ -809,6 +1516,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_AllInputMethods)
   retVal = static_cast<gpcc::cli::ITerminal&>(uut).Read(buffer, sizeof(buffer), 1000);
   ASSERT_EQ(0U, retVal);
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_InputBufferEmptyAfterRead)
 {
   uut.Input("Test");
@@ -828,6 +1536,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_InputBufferEmptyAfterRead)
   retVal = static_cast<gpcc::cli::ITerminal&>(uut).Read(buffer, sizeof(buffer), 100);
   ASSERT_EQ(0U, retVal);
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Flush_InputBufferEmpty)
 {
   static_cast<gpcc::cli::ITerminal&>(uut).Flush();
@@ -836,6 +1545,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Flush_InputBufferEmpty)
   size_t retVal = static_cast<gpcc::cli::ITerminal&>(uut).Read(buffer, sizeof(buffer), 100);
   ASSERT_EQ(0U, retVal);
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Flush_InputBufferNotEmpty)
 {
   uut.Input("Test");
@@ -845,6 +1555,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Flush_InputBufferNotEmpty)
   size_t retVal = static_cast<gpcc::cli::ITerminal&>(uut).Read(buffer, sizeof(buffer), 100);
   ASSERT_EQ(0U, retVal);
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Flush_InputAfterFlush)
 {
   uut.Input("Test");
@@ -856,6 +1567,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Flush_InputAfterFlush)
   ASSERT_EQ(1U, retVal);
   ASSERT_EQ('A', buffer[0]);
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_RequestThrow)
 {
   uut.RequestThrowUponRead();
@@ -867,6 +1579,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_RequestThrow)
   retVal = static_cast<gpcc::cli::ITerminal&>(uut).Read(buffer, sizeof(buffer), 100);
   ASSERT_EQ(0U, retVal);
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Print_RequestThrow)
 {
   uut.RequestThrowUponWrite();
@@ -889,6 +1602,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Print_RequestThrow)
 
   ASSERT_TRUE(uut.Compare(ref));
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, Flush_RequestThrow)
 {
   uut.RequestThrowUponFlush();
@@ -904,16 +1618,19 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Flush_RequestThrow)
   ASSERT_EQ('s', buffer[2]);
   ASSERT_EQ('t', buffer[3]);
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, GetScreenContent_NoPrintEver)
 {
   ASSERT_TRUE(uut.GetScreenContent() == "\n\n\n\n\n\n\n\n");
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, GetScreenContent_Print1)
 {
   PrintText("Hello World!");
 
   ASSERT_TRUE(uut.GetScreenContent() == "Hello World!\n\n\n\n\n\n\n\n");
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, GetScreenContent_Print2)
 {
   PrintText("Hello World!\n");
@@ -921,16 +1638,19 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, GetScreenContent_Print2)
 
   ASSERT_TRUE(uut.GetScreenContent() == "Hello World!\nLine 2\n\n\n\n\n\n\n");
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, GetScreenContent_PrintBlanks)
 {
   PrintText("   ");
 
   ASSERT_TRUE(uut.GetScreenContent() == "   \n\n\n\n\n\n\n\n");
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, RecordDroppedOutLines_NotEnabled)
 {
   ASSERT_THROW(uut.GetDroppedOutLinesPlusCurrentScreenContent(), std::logic_error);
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, RecordDroppedOutLines_NoPrintEver)
 {
   uut.EnableRecordingOfDroppedOutLines();
@@ -938,6 +1658,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, RecordDroppedOutLines_NoPrintEver)
   EXPECT_TRUE(uut.GetScreenContent() == "\n\n\n\n\n\n\n\n");
   EXPECT_TRUE(uut.GetDroppedOutLinesPlusCurrentScreenContent() == "\n\n\n\n\n\n\n\n");
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, RecordDroppedOutLines_Print1)
 {
   uut.EnableRecordingOfDroppedOutLines();
@@ -947,6 +1668,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, RecordDroppedOutLines_Print1)
   EXPECT_TRUE(uut.GetScreenContent() == "Hello World!\n\n\n\n\n\n\n\n");
   EXPECT_TRUE(uut.GetDroppedOutLinesPlusCurrentScreenContent() == "Hello World!\n\n\n\n\n\n\n\n");
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, RecordDroppedOutLines_ScreenFull)
 {
   uut.EnableRecordingOfDroppedOutLines();
@@ -956,6 +1678,7 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, RecordDroppedOutLines_ScreenFull)
   EXPECT_TRUE(uut.GetScreenContent() == "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\n");
   EXPECT_TRUE(uut.GetDroppedOutLinesPlusCurrentScreenContent() == "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\n");
 }
+
 TEST_F(gpcc_cli_FakeTerminal_TestsF, RecordDroppedOutLines_OneLineDroppedOut)
 {
   uut.EnableRecordingOfDroppedOutLines();

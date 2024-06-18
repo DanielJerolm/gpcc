@@ -97,6 +97,7 @@ CLI::CLI(ITerminal& _terminal,
 , inputBuffer()
 , cursorX(0)
 , recoveryRequired(false)
+, allowRewriteLine(false)
 , password()
 , loggedIn(false)
 {
@@ -556,10 +557,13 @@ void CLI::WriteLineComposed(char const * const fragments[])
 
   osal::MutexLocker mutexLocker(terminalMutex);
 
+  // ensure that the line that will be printed now is not overwritten
+  allowRewriteLine = false;
+
   if (recoveryRequired)
   {
     // remove line
-    Terminal_MoveCursor(-(currentLineHead.length() + cursorX));
+    Terminal_MoveCursorX(-(currentLineHead.length() + cursorX));
     Terminal_DeleteChars(currentLineHead.length() + inputBuffer.length());
 
     // print
@@ -572,7 +576,7 @@ void CLI::WriteLineComposed(char const * const fragments[])
     // recover line and cursor position
     Terminal_Write(currentLineHead.c_str());
     Terminal_Write(inputBuffer.c_str());
-    Terminal_MoveCursor(-(inputBuffer.length() - cursorX));
+    Terminal_MoveCursorX(-(inputBuffer.length() - cursorX));
   }
   else
   {
@@ -663,6 +667,76 @@ void CLI::WriteLine(char const * const s)
 void CLI::WriteLine(std::string const & s)
 {
   WriteLine(s.c_str());
+}
+
+/**
+ * \brief Rewrites the previous line.
+ *
+ * This method is intended to be used to display a progress indicator on the terminal and to update it cyclically
+ * without writing to a new line each time. This must be invoked from the callback of a CLI command handler only.
+ *
+ * To prevent overwriting lines printed by a different CLI command handler or by a different component (e.g.
+ * [Backend_CLI](@ref gpcc::log::Backend_CLI)), there are some exceptions in which this method will not rewrite
+ * the previous line and will behave like @ref WriteLine() instead:
+ * - The previous line was written via @ref WriteLine().
+ * - There was a preceding call to @ref ReadLine().
+ * - The current CLI command handler has not printed anything yet.
+ *
+ * \note Avoid updating the previous line too frequently to avoid flicker on some terminals. A maximum update rate of
+ *       10 updates per second should be a good choice.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This must be executed in the context of the CLI's thread only, e.g.
+ * from the callback of an CLI command (class @ref Command).
+ *
+ * __Exception safety:__\n
+ * Basic guarantee:
+ * - content of terminal's screen is undefined
+ *
+ * \throws TerminalOutputError   Terminal's interface has thrown an exception. It is nested to this exception.
+ *                               ([details](@ref TerminalOutputError))
+ *
+ * __Thread cancellation safety:__\n
+ * Basic guarantee:
+ * - content of terminal's screen is undefined
+ *
+ * - - -
+ *
+ * \param s
+ * Unmodifiable reference to an std::string containing the text that shall be used to replace the previous line.\n
+ * If this contains less characters than the current content of the line that shall be rewritten, then the CLI will
+ * erase those characters gracefully.
+ */
+void CLI::RewriteLine(std::string const & s)
+{
+  if (!thread.IsItMe())
+    throw std::logic_error("CLI::RewriteLine: Executed by non-CLI thread");
+
+  osal::MutexLocker mutexLocker(terminalMutex);
+
+  if (recoveryRequired)
+    throw std::logic_error("CLI::RewriteLine: recoveryRequired");
+
+  if (allowRewriteLine)
+  {
+    Terminal_MoveCursorY_OneUp();
+
+    // just in case a subsequent call throws...
+    allowRewriteLine = false;
+
+    Terminal_Write(s.c_str());
+    Terminal_EraseFromCursorToEOL();
+    Terminal_Write(CLI_STD "\n");
+  }
+  else
+  {
+    Terminal_Write(s.c_str());
+    Terminal_Write(CLI_STD "\n");
+  }
+
+  allowRewriteLine = true;
 }
 
 /**
@@ -896,10 +970,10 @@ void CLI::Terminal_Write(char const c)
  * Negative values move the cursor to the left, positive values move the cursor to the right.\n
  * If this is zero, then this method does nothing.
  */
-void CLI::Terminal_MoveCursor(int16_t deltaX)
+void CLI::Terminal_MoveCursorX(int16_t deltaX)
 {
   if ((deltaX < -9999) || (deltaX > 9999))
-    throw std::invalid_argument("CLI::Terminal_MoveCursor: deltaX invalid");
+    throw std::invalid_argument("CLI::Terminal_MoveCursorX: deltaX invalid");
 
   if (deltaX != 0)
   {
@@ -920,6 +994,30 @@ void CLI::Terminal_MoveCursor(int16_t deltaX)
       PANIC();
     Terminal_Write(str);
   } // if (deltaX != 0)
+}
+
+/**
+ * \brief Moves the cursor on the terminal's screen one line up.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * @ref terminalMutex must be locked.
+ *
+ * __Exception safety:__\n
+ * Basic guarantee:
+ * - content of terminal's screen is undefined
+ *
+ * \throws TerminalOutputError   Terminal's interface has thrown an exception. It is nested to this exception.
+ *                               ([details](@ref TerminalOutputError))
+ *
+ * __Thread cancellation safety:__\n
+ * Basic guarantee:
+ * - content of terminal's screen is undefined
+ */
+void CLI::Terminal_MoveCursorY_OneUp(void)
+{
+  Terminal_Write("\x1B[1A");
 }
 
 /**
@@ -960,6 +1058,32 @@ void CLI::Terminal_DeleteChars(uint8_t const n)
 }
 
 /**
+ * \brief Erases the content of the current line from the cursor until the end of the line.
+ *
+ * The character at the cursor position is also erased.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * @ref terminalMutex must be locked.
+ *
+ * __Exception safety:__\n
+ * Basic guarantee:
+ * - content of terminal's screen is undefined
+ *
+ * \throws TerminalOutputError   Terminal's interface has thrown an exception. It is nested to this exception.
+ *                               ([details](@ref TerminalOutputError))
+ *
+ * __Thread cancellation safety:__\n
+ * Basic guarantee:
+ * - content of terminal's screen is undefined
+ */
+void CLI::Terminal_EraseFromCursorToEOL(void)
+{
+  Terminal_Write("\x1B[0K");
+}
+
+/**
  * \brief Clears @ref inputBuffer, sets @ref cursorX to zero, and updates the terminal's screen.
  *
  * - - -
@@ -986,7 +1110,7 @@ void CLI::ClearInputBuffer(void)
   inputBuffer.resize(0);
   cursorX = 0;
 
-  Terminal_MoveCursor(-prevCursorX);
+  Terminal_MoveCursorX(-prevCursorX);
   Terminal_DeleteChars(prevInputBufferLength);
 }
 
@@ -1029,7 +1153,7 @@ void CLI::ReplaceInputBufferWithString(std::string const & newInputBuffer, size_
     inputBuffer = newInputBuffer.substr(0, maxLength);
   cursorX = inputBuffer.length();
 
-  Terminal_MoveCursor(-prevCursorX);
+  Terminal_MoveCursorX(-prevCursorX);
   Terminal_DeleteChars(prevInputBufferLength);
   Terminal_Write(inputBuffer);
 }
@@ -1306,6 +1430,8 @@ void CLI::EnterLine(bool const useHistory, std::string const & lineHead)
   // -------
   osal::AdvancedMutexLocker terminalMutexLocker(terminalMutex);
 
+  allowRewriteLine = false;
+
   // setup line head
   currentLineHead = lineHead;
   Terminal_Write(currentLineHead);
@@ -1425,7 +1551,7 @@ void CLI::EnterLine(bool const useHistory, std::string const & lineHead)
 
             inputBuffer.pop_back();
             cursorX--;
-            Terminal_MoveCursor(-1);
+            Terminal_MoveCursorX(-1);
             Terminal_DeleteChars(1U);
           }
           else
@@ -1434,10 +1560,10 @@ void CLI::EnterLine(bool const useHistory, std::string const & lineHead)
 
             cursorX--;
             inputBuffer.erase(cursorX, 1U);
-            Terminal_MoveCursor(-1);
+            Terminal_MoveCursorX(-1);
             Terminal_Write(inputBuffer.c_str() + cursorX);
             Terminal_DeleteChars(1U);
-            Terminal_MoveCursor(-(inputBuffer.length() - cursorX));
+            Terminal_MoveCursorX(-(inputBuffer.length() - cursorX));
           }
         } // if ((inputBuffer.length() > 0U) && (cursorX > 0U))
         break;
@@ -1478,7 +1604,7 @@ void CLI::EnterLine(bool const useHistory, std::string const & lineHead)
         if (cursorX > 0U)
         {
           cursorX--;
-          Terminal_MoveCursor(-1);
+          Terminal_MoveCursorX(-1);
         }
         break;
       }
@@ -1488,7 +1614,7 @@ void CLI::EnterLine(bool const useHistory, std::string const & lineHead)
         if (cursorX < inputBuffer.length())
         {
           cursorX++;
-          Terminal_MoveCursor(1U);
+          Terminal_MoveCursorX(1U);
         }
         break;
       }
@@ -1541,14 +1667,14 @@ void CLI::EnterLine(bool const useHistory, std::string const & lineHead)
 
       case TerminalRxParser::Result::Pos1:
       {
-        Terminal_MoveCursor(-cursorX);
+        Terminal_MoveCursorX(-cursorX);
         cursorX = 0;
         break;
       }
 
       case TerminalRxParser::Result::END:
       {
-        Terminal_MoveCursor(inputBuffer.length() - cursorX);
+        Terminal_MoveCursorX(inputBuffer.length() - cursorX);
         cursorX = inputBuffer.length();
         break;
       }
@@ -1560,7 +1686,7 @@ void CLI::EnterLine(bool const useHistory, std::string const & lineHead)
           inputBuffer.erase(cursorX, 1U);
           Terminal_Write(inputBuffer.c_str() + cursorX);
           Terminal_DeleteChars(1U);
-          Terminal_MoveCursor(-(inputBuffer.length() - cursorX));
+          Terminal_MoveCursorX(-(inputBuffer.length() - cursorX));
         }
         break;
       }
@@ -1603,7 +1729,7 @@ void CLI::EnterLine(bool const useHistory, std::string const & lineHead)
             inputBuffer.insert(cursorX, newChars, nbOfNewChars);
             cursorX += nbOfNewChars;
             Terminal_Write(inputBuffer.c_str() + prevCursorX);
-            Terminal_MoveCursor(-(inputBuffer.length() - cursorX));
+            Terminal_MoveCursorX(-(inputBuffer.length() - cursorX));
           }
         } // if (nbOfNewChars != 0)
         break;
