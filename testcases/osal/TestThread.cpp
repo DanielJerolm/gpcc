@@ -75,7 +75,7 @@ class gpcc_osal_Thread_TestsF: public Test
     void* ThreadEntry_Throw(void);
     void* ThreadEntry_AttemptToJoinSelf(Thread* const pThread);
     void* ThreadEntry_JoinOtherThread(Thread* const pThread);
-    void* ThreadEntry_GetSetCancelabilityEnabled(Thread* const pThread);
+    void* ThreadEntry_SetCancelabilityEnabled(Thread* const pThread);
     void* ThreadEntry_DisableCancelability(Thread* const pThread);
     void* ThreadEntry_DisableAndEnableCancelability(Thread* const pThread);
     void* ThreadEntry_CancelOnTestForCancellation(Thread* const pThread);
@@ -207,39 +207,30 @@ void* gpcc_osal_Thread_TestsF::ThreadEntry_JoinOtherThread(Thread* const pThread
   return nullptr;
 }
 
-void* gpcc_osal_Thread_TestsF::ThreadEntry_GetSetCancelabilityEnabled(Thread* const pThread)
+void* gpcc_osal_Thread_TestsF::ThreadEntry_SetCancelabilityEnabled(Thread* const pThread)
 {
   std::unique_ptr<bool> spRetVal(new bool);
 
   *spRetVal = true;
 
-  // must be initially true
-  if (!pThread->GetCancelabilityEnabled())
-    *spRetVal = false;
-
-  // set must be ignored
-  pThread->SetCancelabilityEnabled(true);
-  if (!pThread->GetCancelabilityEnabled())
+  // must be initially true and set must be ignored
+  if (!pThread->SetCancelabilityEnabled(true))
     *spRetVal = false;
 
   // set to false
-  pThread->SetCancelabilityEnabled(false);
-  if (pThread->GetCancelabilityEnabled())
+  if (!pThread->SetCancelabilityEnabled(false))
     *spRetVal = false;
 
   // 2nd set to false must be ignored
-  pThread->SetCancelabilityEnabled(false);
-  if (pThread->GetCancelabilityEnabled())
+  if (pThread->SetCancelabilityEnabled(false))
     *spRetVal = false;
 
   // set back to true
-  pThread->SetCancelabilityEnabled(true);
-  if (!pThread->GetCancelabilityEnabled())
+  if (pThread->SetCancelabilityEnabled(true))
     *spRetVal = false;
 
   // 2nd set to true must be ignored
-  pThread->SetCancelabilityEnabled(true);
-  if (!pThread->GetCancelabilityEnabled())
+  if (!pThread->SetCancelabilityEnabled(true))
     *spRetVal = false;
 
   return spRetVal.release();
@@ -971,11 +962,11 @@ TEST_F(gpcc_osal_Thread_TestsF, SetCancelabilityEnabled_WrongThread)
   ASSERT_THROW(uut.SetCancelabilityEnabled(true), std::logic_error);
 }
 
-TEST_F(gpcc_osal_Thread_TestsF, GetSetCancelabilityEnabled)
+TEST_F(gpcc_osal_Thread_TestsF, SetCancelabilityEnabled)
 {
   Thread uut("Test");
 
-  uut.Start(std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_osal_Thread_TestsF, GetSetCancelabilityEnabled)::ThreadEntry_GetSetCancelabilityEnabled, this, &uut),
+  uut.Start(std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_osal_Thread_TestsF, SetCancelabilityEnabled)::ThreadEntry_SetCancelabilityEnabled, this, &uut),
             Thread::SchedPolicy::Other, 0, Thread::GetDefaultStackSize());
 
   std::unique_ptr<bool> spRetVal(static_cast<bool*>(uut.Join()));
