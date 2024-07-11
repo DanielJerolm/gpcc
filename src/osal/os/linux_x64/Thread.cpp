@@ -202,7 +202,6 @@ Thread::Thread(std::string const & _name)
 , threadState(ThreadState::noThreadOrJoined)
 , threadStateRunningCondVar()
 , thread_id()
-, cancelabilityEnabled(false)
 , cancellationPending(false)
 {
   InternalGetThreadRegistry().RegisterThread(*this);
@@ -778,7 +777,6 @@ void Thread::Start(tEntryFunction const & _entryFunction,
   // prepare thread start
   entryFunction         = _entryFunction;
   threadState           = ThreadState::starting;
-  cancelabilityEnabled  = true;
   cancellationPending   = false;
 
   // create and start thread
@@ -973,7 +971,12 @@ void* Thread::Join(bool* const pCancelled)
 }
 
 /**
- * \brief Enables/disables cancelability.
+ * \brief Enables/disables cancelability and retrieves the previous state.
+ *
+ * This function has no effect, if the current cancelability state already equals @p enable.
+ *
+ * Note that if cancelability is disabled, any cancellation request will _not be dropped_ but _queued_ until
+ * cancellation is enabled again or until the thread terminates.
  *
  * - - -
  *
@@ -991,11 +994,14 @@ void* Thread::Join(bool* const pCancelled)
  * \param enable
  * New cancelability state:\n
  * true = cancellation shall be enabled\n
- * false = cancellation shall be disabled\n
- * Note that if cancelability is disabled, any cancellation request will _not be dropped_ but _queued_ until
- * cancellation is enabled again or until the thread terminates.
+ * false = cancellation shall be disabled
+ *
+ * \return
+ * Previous cancelability state.\n
+ * This could be stored and used to recover the previous state at a later point in time, e.g. if cancelability shall
+ * be disabled temporarily only.
  */
-void Thread::SetCancelabilityEnabled(bool const enable)
+bool Thread::SetCancelabilityEnabled(bool const enable)
 {
   // verify that the current thread is the one managed by this object
   {
@@ -1004,54 +1010,13 @@ void Thread::SetCancelabilityEnabled(bool const enable)
       throw std::logic_error("Thread::SetCancelabilityEnabled: Not invoked by the managed thread");
   }
 
-  // requested value different from current one?
-  if (cancelabilityEnabled != enable)
-  {
-    cancelabilityEnabled = enable;
+  int oldstate;
+  int const status = pthread_setcancelstate(enable ? PTHREAD_CANCEL_ENABLE : PTHREAD_CANCEL_DISABLE, &oldstate);
 
-    int status;
-    if (enable)
-      status = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, nullptr);
-    else
-      status = pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, nullptr);
-    if (status != 0)
-    {
-      cancelabilityEnabled = !cancelabilityEnabled;
-      throw std::system_error(status, std::generic_category(), "Thread::SetCancelabilityEnabled: pthread_setcancelstate() failed");
-    }
-  }
-}
+  if (status != 0)
+    throw std::system_error(status, std::generic_category(), "Thread::SetCancelabilityEnabled: pthread_setcancelstate() failed");
 
-/**
- * \brief Retrieves if cancelability is enabled or disabled.
- *
- * - - -
- *
- * __Thread safety:__\n
- * Only the thread managed by this object is allowed to call this method.
- *
- * __Exception safety:__\n
- * Strong guarantee.
- *
- * __Thread cancellation safety:__\n
- * No cancellation point included.
- *
- * - - -
- *
- * \return
- * Current cancelability state:\n
- * true  = cancellation enabled\n
- * false = cancellation disabled
- */
-bool Thread::GetCancelabilityEnabled(void) const
-{
-  MutexLocker mutexLocker(mutex);
-
-  // verify that the current thread is the one managed by this object
-  if ((threadState != ThreadState::running) || (pthread_equal(thread_id, pthread_self()) == 0))
-    throw std::logic_error("Thread::GetCancelabilityEnabled: Not invoked by the managed thread");
-
-  return cancelabilityEnabled;
+  return (oldstate == PTHREAD_CANCEL_ENABLE);
 }
 
 /**
