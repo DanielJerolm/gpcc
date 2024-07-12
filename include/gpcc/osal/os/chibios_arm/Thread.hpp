@@ -57,10 +57,10 @@ namespace osal {
  * _running_ state when it starts executing the referenced thread entry function. As shown in the example below,
  * optional parameters can be passed to the thread entry function via the functor passed to @ref Start().
  *
- * After returning from the thread entry function or after thread cancellation, the thread has _terminated_.
- * _Terminated_ threads must be _joined_ via @ref Join() in order to release the resources occupied by the thread
- * (e.g. the thread's stack). After "joining" a thread, the @ref Thread object may be either destroyed or a new thread
- * may be started by invoking @ref Start().
+ * After returning from the thread entry function, or after invocation of @ref TerminateNow(), or after deferred thread
+ * cancellation, the thread has _terminated_. _Terminated_ threads must be _joined_ via @ref Join() in order to release
+ * the resources occupied by the thread (e.g. the thread's stack). After "joining" a thread, the @ref Thread object may
+ * be either destroyed or a new thread may be started by invoking @ref Start().
  *
  * The thread-entry function must always return `void*`. The return value of the thread entry function will be returned
  * by the @ref Join() method when the thread is later "joined". This mechanism can be used to transport results or
@@ -162,8 +162,7 @@ namespace osal {
  * ~~~
  *
  * The default configuration for any new thread is that deferred cancellation is _enabled_.\n
- * Threads can retrieve and change their own cancelabilty state by invoking @ref GetCancelabilityEnabled() and
- * @ref SetCancelabilityEnabled().
+ * Threads can retrieve and change their own cancelabilty state via @ref SetCancelabilityEnabled().
  *
  * Threads can invoke @ref IsCancellationPending() to figure out if a cancellation request is pending. The function
  * does not care if cancelabilty is currently enabled or disabled.
@@ -254,9 +253,9 @@ namespace osal {
  * ## Exception- and Cancellation-safety-notes
  * Each method of this class contains notes about the exception and thread-cancellation safety of the specific method.
  *
- * Note that these specifications often specify a lower guarantee than the actual implementation of this class does.
- * The reason is that this class is operating system specific and portable. The specifications must be so low that they
- * can be fulfilled by any implementation.
+ * Note that these specifications often specify a lower guarantee than the actual implementation of this class actually
+ * provides. The reason is that this class is operating system specific and portable. The specifications must be so low
+ * that they can be fulfilled by any implementation.
  *
  * - - -
  *
@@ -353,8 +352,7 @@ class Thread final
     void AdviceTFC_JoiningThreadWillNotBlockPermanently(void);
 
     // public methods allowed to be called ONLY by the thread managed by this object
-    void SetCancelabilityEnabled(bool const enable);
-    bool GetCancelabilityEnabled(void) const;
+    bool SetCancelabilityEnabled(bool const enable);
 
     bool IsCancellationPending(void) const;
     void TestForCancellation(void);
