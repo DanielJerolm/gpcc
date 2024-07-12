@@ -139,7 +139,7 @@ void DWQwithThread::Stop(void) noexcept
  */
 void* DWQwithThread::ThreadEntry(void)
 {
-  thread.SetCancelabilityEnabled(false);
+  (void)thread.SetCancelabilityEnabled(false);
 
   try
   {

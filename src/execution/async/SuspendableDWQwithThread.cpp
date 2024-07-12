@@ -294,7 +294,7 @@ void SuspendableDWQwithThread::Resume(void)
  */
 void* SuspendableDWQwithThread::ThreadEntry(void) noexcept
 {
-  thread.SetCancelabilityEnabled(false);
+  (void)thread.SetCancelabilityEnabled(false);
 
   while (true)
   {

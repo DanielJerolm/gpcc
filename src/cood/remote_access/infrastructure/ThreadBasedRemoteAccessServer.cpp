@@ -222,7 +222,7 @@ void* ThreadBasedRemoteAccessServer::ThreadEntry(void) noexcept
   try
   {
     // Disable deferred thread cancellation. We cancel gracefully using our own logic.
-    thread.SetCancelabilityEnabled(false);
+    (void)thread.SetCancelabilityEnabled(false);
 
     OnStart();
     ServeRequests();

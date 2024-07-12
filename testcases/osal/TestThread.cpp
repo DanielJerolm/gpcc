@@ -238,7 +238,7 @@ void* gpcc_osal_Thread_TestsF::ThreadEntry_SetCancelabilityEnabled(Thread* const
 
 void* gpcc_osal_Thread_TestsF::ThreadEntry_DisableCancelability(Thread* const pThread)
 {
-  pThread->SetCancelabilityEnabled(false);
+  (void)pThread->SetCancelabilityEnabled(false);
 
   do
   {
@@ -255,7 +255,7 @@ void* gpcc_osal_Thread_TestsF::ThreadEntry_DisableCancelability(Thread* const pT
 
 void* gpcc_osal_Thread_TestsF::ThreadEntry_DisableAndEnableCancelability(Thread* const pThread)
 {
-  pThread->SetCancelabilityEnabled(false);
+  (void)pThread->SetCancelabilityEnabled(false);
 
   do
   {
@@ -267,7 +267,7 @@ void* gpcc_osal_Thread_TestsF::ThreadEntry_DisableAndEnableCancelability(Thread*
   pThread->TestForCancellation();
 
   // this must have no effect
-  pThread->SetCancelabilityEnabled(true);
+  (void)pThread->SetCancelabilityEnabled(true);
 
   // return something that is not nullptr
   return this;
@@ -275,7 +275,7 @@ void* gpcc_osal_Thread_TestsF::ThreadEntry_DisableAndEnableCancelability(Thread*
 
 void* gpcc_osal_Thread_TestsF::ThreadEntry_CancelOnTestForCancellation(Thread* const pThread)
 {
-  pThread->SetCancelabilityEnabled(false);
+  (void)pThread->SetCancelabilityEnabled(false);
 
   do
   {
@@ -286,7 +286,7 @@ void* gpcc_osal_Thread_TestsF::ThreadEntry_CancelOnTestForCancellation(Thread* c
   // this must have no effect
   pThread->TestForCancellation();
 
-  pThread->SetCancelabilityEnabled(true);
+  (void)pThread->SetCancelabilityEnabled(true);
 
   flag = true;
 
@@ -959,7 +959,7 @@ TEST_F(gpcc_osal_Thread_DeathTestsF, UncaughtException)
 TEST_F(gpcc_osal_Thread_TestsF, SetCancelabilityEnabled_WrongThread)
 {
   Thread uut("Test");
-  ASSERT_THROW(uut.SetCancelabilityEnabled(true), std::logic_error);
+  ASSERT_THROW((void)uut.SetCancelabilityEnabled(true), std::logic_error);
 }
 
 TEST_F(gpcc_osal_Thread_TestsF, SetCancelabilityEnabled)

@@ -564,7 +564,7 @@ void* ThreadedLogFacility::InternalThreadEntry(void) noexcept
 {
   try
   {
-    thread.SetCancelabilityEnabled(false);
+    (void)thread.SetCancelabilityEnabled(false);
 
     gpcc::osal::AdvancedMutexLocker msgListMutexLocker(msgListMutex);
     while (!thread.IsCancellationPending())

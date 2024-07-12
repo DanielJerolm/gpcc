@@ -2083,7 +2083,7 @@ void CLI::LogIn(void)
  */
 void* CLI::InternalThreadEntry(void)
 {
-  thread.SetCancelabilityEnabled(false);
+  (void)thread.SetCancelabilityEnabled(false);
 
   loggedIn = false;
 
