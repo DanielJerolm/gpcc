@@ -311,14 +311,14 @@ void Thread::Sleep_ms(uint32_t const ms)
     {
       return;
     }
-    else if (status == EINTR)
+    else if (errno == EINTR)
     {
       req = rem;
       continue;
     }
     else
     {
-      throw std::system_error(status, std::generic_category(), "Thread::Sleep_ms(): nanosleep failed");
+      throw std::system_error(errno, std::generic_category(), "Thread::Sleep_ms(): nanosleep failed");
     }
   }
 }
@@ -367,14 +367,14 @@ void Thread::Sleep_ns(uint32_t const ns)
     {
       return;
     }
-    else if (status == EINTR)
+    else if (errno == EINTR)
     {
       req = rem;
       continue;
     }
     else
     {
-      throw std::system_error(status, std::generic_category(), "Thread::Sleep_ns(): nanosleep failed");
+      throw std::system_error(errno, std::generic_category(), "Thread::Sleep_ns(): nanosleep failed");
     }
   }
 }
@@ -1249,9 +1249,13 @@ void* Thread::InternalThreadEntry2(void)
 
     throw;
   }
+  catch (std::exception const & e)
+  {
+    Panic("Thread::InternalThreadEntry2: Caught exception: ", e);
+  }
   catch (...)
   {
-    Panic("Thread::InternalThreadEntry2: Local error or uncaught exception from user's thread entry function");
+    Panic("Thread::InternalThreadEntry2: Caught unknown exception");
   }
 
   return retVal;

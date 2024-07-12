@@ -1381,9 +1381,13 @@ void* Thread::InternalThreadEntry2(void)
 
     throw;
   }
+  catch (std::exception const & e)
+  {
+    Panic("Thread::InternalThreadEntry2: Caught exception: ", e);
+  }
   catch (...)
   {
-    Panic("Thread::InternalThreadEntry2: Local error or uncaught exception from user's thread entry function");
+    Panic("Thread::InternalThreadEntry2: Caught unknown exception");
   }
 
   return retVal;

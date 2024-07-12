@@ -178,6 +178,12 @@ Next to do:
 
 History:
 ===============================================================================
+2024-07-12
+- Bugfix: Evaluation of return value of nanosleep().
+
+2024-06-18
+- Enable rewriting the previous line in CLI
+
 2023-12-07 (Release 2.4.0)
 - Fixed bug in clock.cpp for chibios_arm: Panic was always invoked
 

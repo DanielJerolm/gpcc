@@ -962,7 +962,7 @@ TEST_F(gpcc_osal_Thread_DeathTestsF, UncaughtException)
 {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
 
-  EXPECT_DEATH(TestUncaughtException(), ".*Local error or uncaught exception from user's thread entry function.*");
+  EXPECT_DEATH(TestUncaughtException(), ".*Caught exception: TestException.*");
 }
 
 TEST_F(gpcc_osal_Thread_TestsF, SetCancelabilityEnabled_WrongThread)

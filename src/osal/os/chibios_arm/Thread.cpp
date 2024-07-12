@@ -1003,10 +1003,13 @@ msg_t Thread::InternalThreadEntry2(void) noexcept
       // catching abi::__forced_unwind should be impossible on this platform
       PANIC();
     }
+    catch (std::exception const & e)
+    {
+      Panic("Thread::InternalThreadEntry2: Caught exception: ", e);
+    }
     catch (...)
     {
-      // the thread has terminated due to an uncaught exception
-      Panic("Thread::InternalThreadEntry2: Uncaught exception propagated into thread entry function");
+      Panic("Thread::InternalThreadEntry2: Caught unknown exception");
     }
 
     // the thread has terminated by leaving the thread entry function
