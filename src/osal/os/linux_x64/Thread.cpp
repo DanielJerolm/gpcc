@@ -247,7 +247,8 @@ Thread::~Thread(void)
  * - - -
  *
  * __Thread safety:__\n
- * This is thread-safe.
+ * This is thread-safe.\n
+ * This can be invoked by any thread.
  *
  * __Exception safety:__\n
  * Strong guarantee.
@@ -1053,7 +1054,7 @@ void Thread::TestForCancellation(void)
 /**
  * \brief This allows the thread managed by this object to terminate itself.
  *
- * The method will never return.
+ * This method will never return.
  *
  * __Note:__\n
  * __Stack-unwinding will take place.__\n

@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
 #ifdef OS_LINUX_X64_TFC
@@ -35,7 +35,7 @@ class UnmanagedConditionVariable;
  *
  * # Features
  * - Initial value configurable during instantiation
- * - Post/inkrement and wait/decrement
+ * - Post/increment and wait/decrement
  *
  * # Constraints/Restrictions
  * - _All threads using instances of class Semaphore must live in the same process._

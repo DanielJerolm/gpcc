@@ -4,7 +4,7 @@
 # If a copy of the MPL was not distributed with this file,
 # You can obtain one at https://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2022 Daniel Jerolm
+# Copyright (C) 2022, 2024 Daniel Jerolm
 
 
 # Main CMakeLists.txt-file for GPCC
@@ -13,7 +13,7 @@
 # Intended use
 # ------------
 #
-# GPCC is intended to be treated as a sub-module in an upper level project. So the typical use case is, that this file
+# GPCC is intended to be used as a git sub-module in an upper level project. So the typical use case is, that this file
 # will be included from a top-level cmake project via "add_subdirectory(gpcc)". However, this file may also be used
 # stand-alone to build GPCC's artifacts.
 #
@@ -31,17 +31,17 @@
 # Further you have to provide the user settings for "GPCC_Compiler" and "GPCC_OS".
 #
 # There are three approaches to provide the user settings:
-# a) Via the cmake gui tool.
+# a) By the upper-level cmake project file. This is the recommended approach. Example:
+#    set(GPCC_TargetEnvironment "unittest" CACHE STRING "")
+#    set(GPCC_Compiler "gcc_arm" CACHE STRING "")
+#    set(GPCC_OS "chibios_arm" CACHE STRING "")
 #
 # b) During configuration. Example:
 #    -DGPCC_TargetEnvironment:STRING=productive
 #    -DGPCC_Compiler:STRING=gcc_arm
 #    -DGPCC_OS:STRING=chibios_arm
 #
-# c) By the upper-level cmake project file. Example:
-#    set(GPCC_TargetEnvironment "unittest" CACHE STRING "")
-#    set(GPCC_Compiler "gcc_arm" CACHE STRING "")
-#    set(GPCC_OS "chibios_arm" CACHE STRING "")
+# c) Via the cmake gui tool.
 #
 # Valid values and the help text can be retrieved using the cmake gui tool.
 #
@@ -72,7 +72,7 @@
 #
 # In productive environment:
 # For GPCC_OS=chibios_arm, the top level project has to provide:
-# - target_link_libraries(gpcc PRIVATE <library containing ChibiOS/RT kernel>)
+# - target_link_libraries(gpcc PUBLIC <library containing ChibiOS/RT kernel>)
 #
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(gpcc LANGUAGES CXX)
@@ -101,7 +101,7 @@ set_property(CACHE GPCC_Compiler PROPERTY STRINGS ${GPCC_CompilerValues})
 # User setting "GPCC_OS"
 # ---------------------------------------------------------------------------------------------------------------------
 set(GPCC_OS CACHE STRING "Operating system present on the target where GPCC will be used.")
-set(GPCC_OSValues "chibios_arm;linux_arm;linux_arm_tfc;linux_x64;linux_x64_tfc")
+set(GPCC_OSValues "chibios_arm;epos_arm;linux_arm;linux_arm_tfc;linux_x64;linux_x64_tfc")
 
 string(REPLACE ";"  ", " osValues_str "${GPCC_OSValues}")
 set_property(CACHE GPCC_OS PROPERTY STRINGS ${GPCC_OSValues})

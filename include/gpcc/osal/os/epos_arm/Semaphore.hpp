@@ -5,15 +5,15 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011, 2024 Daniel Jerolm
+    Copyright (C) 2024 Daniel Jerolm
 */
 
-#ifdef OS_CHIBIOS_ARM
+#ifdef OS_EPOS_ARM
 
-#ifndef SEMAPHORE_HPP_201701290858
-#define SEMAPHORE_HPP_201701290858
+#ifndef SEMAPHORE_HPP_202404232017
+#define SEMAPHORE_HPP_202404232017
 
-#include <ch.h>
+#include <epos/scheduler/semaphore.h>
 #include <limits>
 
 namespace gpcc {
@@ -43,7 +43,7 @@ class Semaphore final
 {
   public:
     /// Maximum value of the semaphore.
-    static size_t const MAX = std::numeric_limits<cnt_t>::max();
+    static size_t const MAX = std::numeric_limits<size_t>::max();
 
 
     Semaphore(void) = delete;
@@ -59,8 +59,8 @@ class Semaphore final
     void Wait(void);
 
   private:
-    /// ChibiOS semaphore structure.
-    semaphore_t sem;
+    /// EPOS semaphore structure.
+    epos_semaphore_t sem;
 };
 
 /**
@@ -79,7 +79,7 @@ class Semaphore final
  */
 inline void Semaphore::Post(void)
 {
-  chSemSignal(&sem);
+  epos_semaphore_Post(&sem);
 }
 
 /**
@@ -102,11 +102,11 @@ inline void Semaphore::Post(void)
  */
 inline void Semaphore::Wait(void)
 {
-  chSemWait(&sem);
+  epos_semaphore_Wait(&sem);
 }
 
 } // namespace osal
 } // namespace gpcc
 
-#endif // #ifndef SEMAPHORE_HPP_201701290858
-#endif // #ifdef OS_CHIBIOS_ARM
+#endif // #ifndef SEMAPHORE_HPP_202404232017
+#endif // #ifdef OS_EPOS_ARM

@@ -5,51 +5,27 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011, 2024 Daniel Jerolm
+    Copyright (C) 2024 Daniel Jerolm
 */
 
-#ifdef OS_CHIBIOS_ARM
+#ifdef OS_EPOS_ARM
 
 #include <gpcc/osal/Thread.hpp>
-#include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
-#include <gpcc/string/tools.hpp>
-#include <cxxabi.h>
+#include <gpcc/raii/scope_guard.hpp>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
 #include <system_error>
+#include <cerrno>
 
-#define NS_PER_SEC      1000000000UL
-#define NS_PER_SYSTICK  (NS_PER_SEC / CH_CFG_ST_FREQUENCY)
-
-static_assert(NS_PER_SEC % NS_PER_SYSTICK == 0, "Some calculations in this class will not work with configured system tick period");
 
 namespace gpcc {
 namespace osal {
 
 Thread::priority_t const Thread::minPriority;
 Thread::priority_t const Thread::maxPriority;
-
-msg_t const Thread::TEC_Normal;
-msg_t const Thread::TEC_TerminateNow;
-msg_t const Thread::TEC_Cancelled;
-
-
-// Exception used to emulate deferred cancellation.
-class ThreadCancellationException final
-{
-};
-
-// Exception used to implement TerminateNow().
-class ThreadTerminateNowException final
-{
-  public:
-    void* const pThreadReturnValue;
-
-    ThreadTerminateNowException(void* const _pThreadReturnValue) : pThreadReturnValue(_pThreadReturnValue) {};
-};
 
 
 /**
@@ -78,7 +54,7 @@ class ThreadTerminateNowException final
  */
 size_t Thread::GetMinStackSize(void)
 {
-  return 256U;
+  return EPOS_THREAD_MINIMUMSTACKSIZE;
 }
 
 /**
@@ -104,8 +80,7 @@ size_t Thread::GetMinStackSize(void)
  */
 size_t Thread::GetStackAlign(void)
 {
-  static_assert(((PORT_WORKING_AREA_ALIGN == 4U) || (PORT_WORKING_AREA_ALIGN == 8U)), "Check Thread::GetStackAlign().");
-  return PORT_WORKING_AREA_ALIGN;
+  return EPOS_THREAD_REQUIREDSTACKALIGN;
 }
 
 /**
@@ -176,12 +151,8 @@ Thread::Thread(std::string const & _name)
 , entryFunction()
 , threadState(ThreadState::noThreadOrJoined)
 , threadStateRunningCondVar()
-, pWA(nullptr)
 , pThread(nullptr)
-, totalStackSize(0U)
-, pThreadReturnValue(nullptr)
-, cancelabilityEnabled(false)
-, cancellationPending(false)
+, cancellationRequestedViaThisAPI(false)
 {
   InternalGetThreadRegistry().RegisterThread(*this);
 }
@@ -201,103 +172,15 @@ Thread::Thread(std::string const & _name)
  */
 Thread::~Thread(void)
 {
-  try
   {
-    joinMutex.Lock();
-    mutex.Lock();
+    MutexLocker joinMutexLocker(joinMutex);
+    MutexLocker mutexLocker(mutex);
 
     if (threadState != ThreadState::noThreadOrJoined)
-      Panic("Thread::~Thread: Managed thread not yet joined");
-
-    mutex.Unlock();
-    joinMutex.Unlock();
-
-    InternalGetThreadRegistry().UnregisterThread(*this);
+      Panic("Thread::~Thread: Precons");
   }
-  catch (...)
-  {
-    PANIC();
-  }
-}
 
-/**
- * \brief Retrieves the ID of the process.
- *
- * - - -
- *
- * __Thread safety:__\n
- * This is thread-safe.\n
- * This can be invoked by any thread.
- *
- * __Exception safety:__\n
- * Strong guarantee.
- *
- * __Thread cancellation safety:__\n
- * No cancellation point included.
- *
- * - - -
- *
- * \return
- * ID of the process.\n
- * Always zero for the ChibiOS/RT port.
- */
-uint32_t Thread::GetPID(void)
-{
-  return 0U;
-}
-
-/**
- * \brief Suspends execution of the calling thread for a configurable time-span.
- *
- * - - -
- *
- * __Thread safety:__\n
- * This is thread-safe.\n
- * This can be invoked by any thread.
- *
- * __Exception safety:__\n
- * Strong guarantee.
- *
- * __Thread cancellation safety:__\n
- * Strong guarantee.\n
- * On some systems, this method contains a cancellation point.
- *
- * - - -
- *
- * \param ms
- * Time-span (in ms) the calling thread shall be suspended. This is the _minimum time_ the thread will be suspended.
- * The thread may be suspended _longer_ than the specified time-span.
- */
-void Thread::Sleep_ms(uint32_t const ms)
-{
-  Internal_Sleep_ns(ms * 1000000ULL);
-}
-
-/**
- * \brief Suspends execution of the calling thread for a configurable time-span.
- *
- * - - -
- *
- * __Thread safety:__\n
- * This is thread-safe.\n
- * This can be invoked by any thread.
- *
- * __Exception safety:__\n
- * Strong guarantee.
- *
- * __Thread cancellation safety:__\n
- * Strong guarantee.\n
- * On some systems, this method contains a cancellation point.
- *
- * - - -
- *
- * \param ns
- * Time-span (in ns) the calling thread shall be suspended. This is the _minimum time_ the thread will be suspended.
- * The thread may be suspended _longer_ than the specified time-span.
- */
-void Thread::Sleep_ns(uint32_t const ns)
-{
-  Internal_Sleep_ns(ns);
+  InternalGetThreadRegistry().UnregisterThread(*this);
 }
 
 /**
@@ -306,28 +189,20 @@ void Thread::Sleep_ns(uint32_t const ns)
  * This method is intended to be used to create human-readable information about the threads registered in the
  * application's thread-registry (see @ref GetThreadRegistry()).
  *
- * Output format:\n
- * <tt>Name             State Prio  StackSize  UsedStack        [Bottom----Top[</tt>\n
- * <tt>...              no     ppp ssssssssss ssssssssss (xxx%) 0xXXXXXXXX 0xXXXXXXXX</tt>\n
- * <tt>                 start</tt>\n
- * <tt>                 run</tt>\n
- * <tt>                 term</tt>\n
- * \n
- * States:\n
- * no    = thread (currently) not registered at OS or thread has been joined\n
- * start = thread is starting\n
- * run   = thread is running (but may be blocked on a @ref Mutex, @ref Semaphore, ...)\n
- * term  = thread has terminated, but not yet been joined
- *
- * Stack bottom:\n
- * This address marks the maximum extend of the stack. If the stack pointer (R13) extends beyond this, then there
- * is a stack overflow condition.
- *
- * Stack top:\n
- * Address of the first byte above the stack, which is not part of the stack.
+ * Example format:\n
+ * (Note: The header is not generated by this)\n
+ * ~~~{.txt}
+ * Name             State Prio ePrio Timeslice Stacksize     Used        [First-----End[\n
+ * -------------------------------------------------------------------------------------------
+ * ...              run    ppp   ppp      x ms  ssssssss ssssssss (xxx%) 0xXXXXXXXX-0xXXXXXXXX
+ * ~~~
  *
  * Note that the output format may be different among the different implementations of class @ref Thread provided by
  * GPCC for different operating systems.
+ *
+ * This implementation uses the EPOS Thread API to create the output.\n
+ * See `epos_thread_CreateInfoTableHeader()`, `epos_thread_CreateInfoString()`, and
+ * `epos_thread_CreateInfoTableFooter()`.
  *
  * - - -
  *
@@ -355,71 +230,44 @@ void Thread::Sleep_ns(uint32_t const ns)
  */
 std::string Thread::GetInfo(size_t const nameFieldWidth) const
 {
-  if (nameFieldWidth < 4U)
-    throw std::invalid_argument("Thread::GetInfo: 'nameFieldWidth' too small");
-
-  // the information is build into "infoLine"
   std::ostringstream infoLine;
 
-  // start with thread's name
-  if (name.size() <= nameFieldWidth)
-    infoLine << std::left << std::setw(nameFieldWidth) << std::setfill(' ') << name;
-  else
-    infoLine << name.substr(0, nameFieldWidth - 3U) << "...";
-
-  MutexLocker mutexLocker(mutex);
-
-  bool detailsRequired = false;
-
-  switch (threadState)
+  epos_thread_t* pEPOSThread = nullptr;
   {
-    case ThreadState::noThreadOrJoined:
-      infoLine << " no     ";
-      break;
+    gpcc::osal::MutexLocker mutexLocker(mutex);
 
-    case ThreadState::starting:
-      infoLine << " start  ";
-      break;
-
-    case ThreadState::running:
-      infoLine << " run    ";
-      detailsRequired = true;
-      break;
-
-    case ThreadState::terminated:
-      infoLine << " term   ";
-      break;
-  } // switch (threadState)
-
-  if (detailsRequired)
-  {
-    // ChibiOS priority
-    infoLine << std::right << std::setw(3) << std::setfill(' ') << pThread->prio << ' ';
-
-    // stack size
-    infoLine << std::right << std::setw(10) << std::setfill(' ') << totalStackSize << ' ';
-
-    // stack usage
-    size_t const used = InternalMeasureStack();
-    if (used < 100000000UL)
+    if (pThread != nullptr)
     {
-      // perentage: round up
-      uint_fast8_t const percentage = ((used * 100U) + (totalStackSize - 1U)) / totalStackSize;
-      infoLine << std::right << std::setw(10) << std::setfill(' ') << used
-               << " (" << std::right << std::setw(3) << std::setfill(' ') << static_cast<unsigned int>(percentage) << "%) ";
+      pEPOSThread = pThread;
+      epos_thread_IncRefCnt(pEPOSThread);
     }
-    else
-      infoLine << "       Err (Err%) ";
+  }
 
-    // stack bottom
-    infoLine << gpcc::string::ToHex(reinterpret_cast<uint32_t>(pThread->wabase), 8U) << ' ';
+  if (pEPOSThread != nullptr)
+  {
+    ON_SCOPE_EXIT(DecRefCnt) { epos_thread_DecRefCnt(pEPOSThread); };
 
-    // stack top
-    infoLine << gpcc::string::ToHex(reinterpret_cast<uint32_t>(pThread), 8U);
+    char* pInfoStr = epos_thread_CreateInfoString(pEPOSThread, nameFieldWidth);
+    if (pInfoStr == nullptr)
+    {
+      if (errno == ENOMEM)
+        throw std::bad_alloc();
+      else
+        throw std::system_error(errno, std::generic_category(), "epos_thread_CreateInfoString() failed");
+    }
+
+    ON_SCOPE_EXIT(ReleaseInfoStr) { free(pInfoStr); };
+
+    infoLine << pInfoStr;
   }
   else
   {
-    infoLine << "--- ---------- ---------- ------ ---------- ----------";
+    if (name.size() <= nameFieldWidth)
+      infoLine << std::left << std::setw(nameFieldWidth) << std::setfill(' ') << name;
+    else
+      infoLine << name.substr(0, nameFieldWidth - 3U) << "...";
+
+    infoLine << " -----";
   }
 
   return infoLine.str();
@@ -450,7 +298,7 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
 bool Thread::IsItMe(void) const
 {
   MutexLocker mutexLocker(mutex);
-  return ((threadState != ThreadState::noThreadOrJoined) && (chThdGetSelfX() == pThread));
+  return (epos_thread_Self() == pThread);
 }
 
 /**
@@ -504,61 +352,51 @@ void Thread::Start(tEntryFunction const & _entryFunction,
                    priority_t const priority,
                    size_t const stackSize)
 {
-  // check parameters
+  // Check parameters
+  // ('priority' and 'schedPolicy' are checked in UniversalPrioToEPOSPrio())
   if (!_entryFunction)
-    throw std::invalid_argument("Thread::Start: '_entryFunction' refers to nothing");
-
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wtype-limits"
-  if ((priority < minPriority) || (priority > maxPriority))
-    throw std::invalid_argument("Thread::Start: 'priority' is out of bounds");
-  #pragma GCC diagnostic pop
-
-  if ((priority != 0U) && (schedPolicy != SchedPolicy::Fifo) && (schedPolicy != SchedPolicy::RR))
-    throw std::invalid_argument("Thread::Start: Selected scheduling policy requires priority level 0");
+    throw std::invalid_argument("Thread::Start: Inv. args.");
 
   if ((stackSize < GetMinStackSize()) || ((stackSize % GetStackAlign()) != 0U))
-    throw std::invalid_argument("Thread::Start: 'stackSize' is invalid");
+    throw std::invalid_argument("Thread::Start: Inv. args.");
 
-  // map universal priority to ChibiOS
-  tprio_t const mappedPrio = UniversalPrioToChibiOSPrio(priority, schedPolicy);
+  // map universal priority to EPOS
+  epos_threadprio_t const mappedPrio = UniversalPrioToEPOSPrio(priority, schedPolicy);
+  epos_timeslice_t  const timeslice_ms = UniversalPrioToTimeslice(schedPolicy);
 
   MutexLocker joinMutexLocker(joinMutex);
   MutexLocker mutexLocker(mutex);
 
   // check that there is currently no thread
   if (threadState != ThreadState::noThreadOrJoined)
-    throw std::logic_error("Thread::Start: There is already a thread");
-
-  // determine required ChibiOS thread working area size (multiple of PORT_STACK_ALIGN)
-  size_t const WAsize = THD_WORKING_AREA_SIZE(stackSize);
-
-  // allocate thread working area (aligned to PORT_WORKING_AREA_ALIGN)
-  pWA = new uint8_t[WAsize + (PORT_WORKING_AREA_ALIGN - 1U)];
-  uint8_t* const pWA_aligned = reinterpret_cast<uint8_t*>(MEM_ALIGN_NEXT(pWA, PORT_WORKING_AREA_ALIGN));
+    throw std::logic_error("Thread::Start: Precons");
 
   // prepare thread start
-  entryFunction         = _entryFunction;
-  threadState           = ThreadState::starting;
-  pThreadReturnValue    = nullptr;
-  cancelabilityEnabled  = true;
-  cancellationPending   = false;
+  entryFunction                   = _entryFunction;
+  threadState                     = ThreadState::starting;
+  cancellationRequestedViaThisAPI = false;
 
   // create and start thread
-  pThread = chThdCreateStatic(pWA_aligned, WAsize, mappedPrio, Thread::InternalThreadEntry1, this);
+  pThread = epos_thread_Create(&Thread::InternalThreadEntry1, this, mappedPrio, timeslice_ms, stackSize, name.c_str());
 
-  // Calculate total stack size. May be larger than "stackSize", because THD_WORKING_AREA_SIZE may add some extra
-  // bytes for interrupt handling, context switch, etc.
-  totalStackSize = reinterpret_cast<uintptr_t>(pThread) - reinterpret_cast<uintptr_t>(pThread->wabase);
+  if (pThread == nullptr)
+  {
+    threadState = ThreadState::noThreadOrJoined;
 
-  // check: actual stack size must be at least "stackSize"
-  if (totalStackSize < stackSize)
-    PANIC();
+    if (errno == ENOMEM)
+      throw std::bad_alloc();
+    else
+      throw std::system_error(errno, std::generic_category(), "epos_thread_Create() failed");
+  }
+
+  // Increment the reference count. This way the thread object will not be used immediately when the thread is joined.
+  epos_thread_IncRefCnt(pThread);
 
   // Wait until the new thread leaves the starting-state. Any unexpected error here will result in panic.
   try
   {
-    // note: Wait() does not contain a cancellation point on ChibiOS
+    // Note: Wait() does currently not contain a cancellation point on EPOS.
+    // If it ever does, then deferred thread cancellation of the current thread must be disabled temporarily.
     while (threadState == ThreadState::starting)
       threadStateRunningCondVar.Wait(mutex);
   }
@@ -599,20 +437,21 @@ void Thread::Cancel(void)
 
   // verify that the object manages a thread, which has not yet been joined
   if (threadState == ThreadState::noThreadOrJoined)
-    throw std::logic_error("Thread::Cancel: No thread");
+    throw std::logic_error("Thread::Cancel: Precons");
 
   // not yet terminated?
   if (threadState != ThreadState::terminated)
   {
     // verify, that the current thread is not the one managed by this object
-    if (chThdGetSelfX() == pThread)
-      throw std::logic_error("Thread::Cancel: Invoked by the managed thread");
+    if (epos_thread_Self() == pThread)
+      throw std::logic_error("Thread::Cancel: Precons");
 
     // verify, that cancellation of the thread has not yet been requested
-    if (cancellationPending)
-      throw std::logic_error("Thread::Cancel: Cancellation already requested");
+    if (cancellationRequestedViaThisAPI)
+      throw std::logic_error("Thread::Cancel: Precons");
 
-    cancellationPending = true;
+    (void)epos_thread_RequestCancellation(pThread);
+    cancellationRequestedViaThisAPI = true;
   }
 }
 
@@ -652,62 +491,50 @@ void Thread::Cancel(void)
 void* Thread::Join(bool* const pCancelled)
 {
   MutexLocker joinMutexLocker(joinMutex);
-  AdvancedMutexLocker mutexLocker(mutex);
 
-  // verify that the object manages a thread, which has not yet been joined
-  if (threadState == ThreadState::noThreadOrJoined)
-    throw std::logic_error("Thread::Join: No thread");
+  {
+    MutexLocker mutexLocker(mutex);
 
-  // verify, that the current thread is not the one managed by this object
-  if (chThdGetSelfX() == pThread)
-    throw std::logic_error("Thread::Join: Thread cannot join itself");
+    // verify that the object manages a thread, which has not yet been joined
+    if (threadState == ThreadState::noThreadOrJoined)
+      throw std::logic_error("Thread::Join: Precons");
 
-  mutexLocker.Unlock();
+    // verify, that the current thread is not the one managed by this object
+    if (epos_thread_Self() == pThread)
+      throw std::logic_error("Thread::Join: Precons");
+  }
 
-  // wait for termination and join with thread
-  msg_t const exitCode = chThdWait(pThread);
+  // Wait for termination and join with thread.
+  // Note that the thread's reference count has been incremented in Start(), so the thread's resources will not
+  // be immediately released.
+  void* const retval = epos_thread_Join(pThread);
 
-  // relock mutex
   try
   {
-    mutexLocker.Relock();
+    MutexLocker mutexLocker(mutex);
+
+    // check and update threadState, the object does no longer manage a thread
+    if (threadState != ThreadState::terminated)
+      PANIC();
+
+    threadState = ThreadState::noThreadOrJoined;
+
+    epos_thread_DecRefCnt(pThread);
+    pThread = nullptr;
+
+    // anyone interested in if the thread was cancelled?
+    if (pCancelled != nullptr)
+      *pCancelled = (retval == EPOS_THREAD_CANCELLED);
+
+    if (retval == EPOS_THREAD_CANCELLED)
+      return nullptr;
+    else
+      return retval;
   }
   catch (...)
   {
     PANIC();
   }
-
-  // check and update threadState, the object does no longer manage a thread
-  if (threadState != ThreadState::terminated)
-    PANIC();
-
-  threadState = ThreadState::noThreadOrJoined;
-
-  // clean-up
-  delete [] pWA;
-
-  // examine the way the thread has terminated
-  switch (exitCode)
-  {
-    case TEC_Normal:
-    case TEC_TerminateNow:
-      break;
-
-    case TEC_Cancelled:
-      if (pThreadReturnValue != nullptr)
-        PANIC(); // unexpected pThreadReturnValue
-      break;
-
-    default:
-      PANIC(); // Invalid exitCode
-      break;
-  }
-
-  // anyone interested in if the thread was cancelled?
-  if (pCancelled != nullptr)
-    *pCancelled = (exitCode == TEC_Cancelled);
-
-  return pThreadReturnValue;
 }
 
 /**
@@ -746,12 +573,42 @@ bool Thread::SetCancelabilityEnabled(bool const enable)
   MutexLocker mutexLocker(mutex);
 
   // verify that the current thread is the one managed by this object
-  if ((threadState != ThreadState::running) || (chThdGetSelfX() != pThread))
-    throw std::logic_error("Thread::SetCancelabilityEnabled: Not invoked by the managed thread");
+  if (epos_thread_Self() != pThread)
+    throw std::logic_error("Thread::SetCancelabilityEnabled: Precons");
 
-  bool const oldState = cancelabilityEnabled;
-  cancelabilityEnabled = enable;
-  return oldState;
+  return epos_thread_EnableDeferredCancellation(enable);
+}
+
+/**
+ * \brief Retrieves if a cancellation request is pending or not.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * Only the thread managed by this object is allowed to call this method.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \retval true
+ *    A cancellation request is pending.
+ * \retval false
+ *    No cancellation request pending.
+ */
+bool Thread::IsCancellationPending(void) const
+{
+  MutexLocker mutexLocker(mutex);
+
+  // verify that the current thread is the one managed by this object
+  if (epos_thread_Self() != pThread)
+    throw std::logic_error("Thread::IsCancellationPending: Precons");
+
+  return epos_thread_IsCancellationPending();
 }
 
 /**
@@ -777,11 +634,10 @@ void Thread::TestForCancellation(void)
   MutexLocker mutexLocker(mutex);
 
   // verify that the current thread is the one managed by this object
-  if ((threadState != ThreadState::running) || (chThdGetSelfX() != pThread))
-    throw std::logic_error("Thread::TestForCancellation: Not invoked by the managed thread");
+  if (epos_thread_Self() != pThread)
+    throw std::logic_error("Thread::TestForCancellation: Precons");
 
-  if ((cancelabilityEnabled) && (cancellationPending))
-    throw ThreadCancellationException();
+  epos_thread_TestCancel();
 }
 
 /**
@@ -815,10 +671,10 @@ void Thread::TerminateNow(void* const threadReturnValue)
   MutexLocker mutexLocker(mutex);
 
   // verify that the current thread is the one managed by this object
-  if ((threadState != ThreadState::running) || (chThdGetSelfX() != pThread))
-    throw std::logic_error("Thread::TerminateNow: Not invoked by the managed thread");
+  if (epos_thread_Self() != pThread)
+    throw std::logic_error("Thread::TerminateNow: Precons");
 
-  throw ThreadTerminateNowException(threadReturnValue);
+  epos_thread_TerminateNow(threadReturnValue);
 }
 
 /**
@@ -848,48 +704,9 @@ ThreadRegistry& Thread::InternalGetThreadRegistry(void)
 }
 
 /**
- * \brief Suspends execution of the calling thread for a configurable time-span.
- *
- * - - -
- *
- * __Thread safety:__\n
- * This is thread-safe.\n
- * This can be invoked by any thread.
- *
- * __Exception safety:__\n
- * No-throw guarantee.
- *
- * __Thread cancellation safety:__\n
- * No cancellation point included.
- *
- * - - -
- *
- * \param ns
- * Time-span (in ns) the calling thread shall be suspended.\n
- * This is the _minimum time_ the thread will be suspended.
- */
-void Thread::Internal_Sleep_ns(uint64_t const ns) noexcept
-{
-  // Convert time-span (in ns) to system timer ticks.
-  // We round up to next tick and add one tick extra for uncertainty due to granularity of system tick interrupt)
-  uint64_t ticks = ((ns + (NS_PER_SYSTICK - 1U)) / NS_PER_SYSTICK) + 1U;
-
-  // sleep in chunks of max_sleep_time
-  while (ticks > TIME_MAX_INTERVAL)
-  {
-    chThdSleep(TIME_MAX_INTERVAL);
-    ticks -= TIME_MAX_INTERVAL;
-  }
-
-  // sleep the rest
-  if (ticks != 0U)
-    chThdSleep(static_cast<sysinterval_t>(ticks));
-}
-
-/**
  * \brief Internal thread entry function (step 1).
  *
- * This is executed by ChibiOS upon thread creation. This is a static member function because ChibiOS (C-code) does
+ * This is executed by EPOS upon thread creation. This is a static member function because EPOS (C-code) does
  * not know anything about this-pointers. Parameter 'arg' is the pointer to the Thread-object managing the thread
  * executing this function. This function reconstructs the this-pointer from parameter 'arg' and invokes
  * @ref InternalThreadEntry2(), which is a non-static member function.
@@ -897,27 +714,31 @@ void Thread::Internal_Sleep_ns(uint64_t const ns) noexcept
  * - - -
  *
  * __Thread safety:__\n
- * This is reentrant for different values of parameter `arg`.
+ * This is reentrant for different values of @p arg.
  *
  * __Exception safety:__\n
- * No-throw guarantee.
+ * Basic guarantee:\n
+ * This function relies on that EPOS will raise a panic if an uncaught exception propagates out of the entry function
+ * for the EPOS thread.
  *
  * __Thread cancellation safety:__\n
- * Deferred cancellation will result in regular return from this method.
+ * Strong guarantee.
  *
  * - - -
  *
  * \param arg
- * Argument required by ChibiOS carrying application specific information.\n
+ * Argument required by EPOS carrying application specific information.\n
  * Here it points to the @ref Thread object managing the calling thread.
+ *
+ * \return
+ * Return value of the thread entry function passed to @ref Start().
  */
-void Thread::InternalThreadEntry1(void* arg) noexcept
+void* Thread::InternalThreadEntry1(void* arg)
 {
   if (arg == nullptr)
     PANIC();
 
-  msg_t const status = static_cast<Thread*>(arg)->InternalThreadEntry2();
-  chThdExit(status);
+  return static_cast<Thread*>(arg)->InternalThreadEntry2();
 }
 
 /**
@@ -931,132 +752,51 @@ void Thread::InternalThreadEntry1(void* arg) noexcept
  * Program logic ensures that there is only one thread per instance of class @ref Thread.
  *
  * __Exception safety:__\n
- * No-throw guarantee.
+ * Basic guarantee:\n
+ * This function relies on that EPOS will raise a panic if an uncaught exception propagates out of the entry function
+ * for the EPOS thread.
  *
  * __Thread cancellation safety:__\n
- * Deferred cancellation will result in regular return from this method.
+ * Strong guarantee.
  *
  * - - -
  *
  * \return
- * A msg_t value that will be passed by the calling function (@ref InternalThreadEntry1()) to `chThdExit()`.\n
- * Using a return value instead of invoking `chThdExit()` directly in this method allows to cleanly leave the
- * try-catch block and to clean the stack properly. Any C++ stuff related to the thread will be properly shut down.
+ * Return value of the thread entry function passed to @ref Start().
  */
-msg_t Thread::InternalThreadEntry2(void) noexcept
+void* Thread::InternalThreadEntry2(void)
 {
-  try
+  // set threadState to ThreadState::running
   {
-    chRegSetThreadName(name.c_str());
-
-    // set threadState to ThreadState::running
-    AdvancedMutexLocker mutexLocker(mutex);
+    MutexLocker mutexLocker(mutex);
     threadState = ThreadState::running;
     threadStateRunningCondVar.Signal();
-    mutexLocker.Unlock();
+  }
 
-    try
-    {
-      // execute thread entry function
-      pThreadReturnValue = entryFunction();
-    }
-    catch (ThreadCancellationException const &)
-    {
-      // the thread was cancelled by TestForCancellation()
-      mutexLocker.Relock();
-      threadState = ThreadState::terminated;
-
-      return TEC_Cancelled;
-    }
-    catch (ThreadTerminateNowException const & e)
-    {
-      // the thread has terminated itself by invoking TerminateNow()
-      mutexLocker.Relock();
-      pThreadReturnValue = e.pThreadReturnValue;
-      threadState = ThreadState::terminated;
-
-      return TEC_TerminateNow;
-    }
-    catch (abi::__forced_unwind const &)
-    {
-      // catching abi::__forced_unwind should be impossible on this platform
-      PANIC();
-    }
-    catch (std::exception const & e)
-    {
-      Panic("Thread::InternalThreadEntry2: Caught exception: ", e);
-    }
-    catch (...)
-    {
-      Panic("Thread::InternalThreadEntry2: Caught unknown exception");
-    }
-
-    // the thread has terminated by leaving the thread entry function
-    mutexLocker.Relock();
+  // Set state to "terminated" if the thread leaves this function, either by returning, by TerminateNow() or by
+  // thread cancellation.
+  ON_SCOPE_EXIT()
+  {
+    MutexLocker mutexLocker(mutex);
     threadState = ThreadState::terminated;
+  };
 
-    return TEC_Normal;
-  }
-  catch (...)
+  // execute thread entry function
+  void* retval;
+  try
   {
-    PANIC();
+    retval = entryFunction();
   }
+  catch (std::exception const & e)
+  {
+    gpcc::osal::Panic("Thread entry function threw: ", e);
+  }
+
+  return retval;
 }
 
 /**
- * \brief Determines the maximum number of bytes used on the thread's stack up to now.
- *
- * Measurement is based on the stack watermark applied by ChibiOS.
- *
- * - - -
- *
- * __Thread safety:__\n
- * This may be executed by any thread if the following requirements are met:
- * - @ref mutex must be locked.
- * - @ref threadState must not be @ref ThreadState::noThreadOrJoined.
- *
- * __Exception safety:__\n
- * No-throw guarantee.
- *
- * __Thread cancellation safety:__\n
- * No cancellation point included.
- *
- * - - -
- *
- * \return
- * Maximum number of bytes used on the thread's stack up to now.
- */
-size_t Thread::InternalMeasureStack(void) const noexcept
-{
-#if CH_DBG_FILL_THREADS != TRUE
-#error "Thread::InternalMeasureStack() requires that CH_DBG_FILL_THREADS is TRUE"
-#endif
-
-  // prepare stack fill pattern
-  uint32_t const pattern = (static_cast<uint32_t>(CH_DBG_STACK_FILL_VALUE) << 24) |
-                           (static_cast<uint32_t>(CH_DBG_STACK_FILL_VALUE) << 16) |
-                           (static_cast<uint32_t>(CH_DBG_STACK_FILL_VALUE) <<  8) |
-                            static_cast<uint32_t>(CH_DBG_STACK_FILL_VALUE);
-
-  // number of used uint32_t-quantities
-  size_t used = totalStackSize / sizeof(uint32_t);
-
-  // pointer to the last uint32_t-quantity of the stack
-  uint32_t const * ptr = reinterpret_cast<uint32_t const *>(MEM_ALIGN_NEXT(reinterpret_cast<uintptr_t>(pWA), PORT_WORKING_AREA_ALIGN));
-
-  // loop until end of stack or until the default fill pattern disappears
-  while ((*ptr == pattern) && (used != 0U))
-  {
-    ptr++;
-    used--;
-  }
-
-  // return number of used bytes
-  return used * sizeof(uint32_t);
-}
-
-/**
- * \brief Converts the priority level and the scheduling policy to the priority-range of ChibiOS/RT.
+ * \brief Checks a given priority level and scheduling policy and maps both to the priority-range of EPOS.
  *
  * - - -
  *
@@ -1067,7 +807,7 @@ size_t Thread::InternalMeasureStack(void) const noexcept
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Strong guarantee.
+ * No cancellation point included.
  *
  * - - -
  *
@@ -1080,51 +820,96 @@ size_t Thread::InternalMeasureStack(void) const noexcept
  * \return
  * Parameter `priority` projected on the priority-range of the system based on the selected `schedpolicy`.
  */
-tprio_t Thread::UniversalPrioToChibiOSPrio(priority_t const priority, SchedPolicy const schedpolicy) const
+epos_threadprio_t Thread::UniversalPrioToEPOSPrio(priority_t const priority, SchedPolicy const schedpolicy) const
 {
-  static_assert(NORMALPRIO + 1U + maxPriority <= HIGHPRIO, "Maximum priority value exceeds HIGHPRIO.");
+  static_assert((maxPriority - minPriority + 1U) == 32U,
+                "Thread::minPriority...Thread::maxPriority must provide 32 priority levels.");
+
+  static_assert((EPOS_THREAD_PRIO_MIN - EPOS_THREAD_PRIO_MAX + 1U) >= (1U + 32U + 13U),
+                "EPOS configuration does not provide enough priority levels.");
 
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wtype-limits"
   if ((priority < minPriority) || (priority > maxPriority))
-    throw std::invalid_argument("Thread::UniversalPrioToChibiOSPrio: 'priority' is invalid");
+    throw std::invalid_argument("Invalid sched. priority/policy");
   #pragma GCC diagnostic pop
 
-  tprio_t prio = 0U;
+  if ((priority != 0U) && (schedpolicy != SchedPolicy::Fifo) && (schedpolicy != SchedPolicy::RR))
+    throw std::invalid_argument("Invalid sched. priority/policy");
+
+  epos_threadprio_t prio = 0U;
   switch (schedpolicy)
   {
     case SchedPolicy::Inherit:
-      prio = chThdGetPriorityX();
+      prio = epos_thread_GetPriority(epos_thread_Self());
       break;
 
     case SchedPolicy::Other:
-      prio = NORMALPRIO;
+      prio = EPOS_THREAD_PRIO_MIN - 12U;
       break;
 
     case SchedPolicy::Idle:
-      prio = LOWPRIO;
+      prio = EPOS_THREAD_PRIO_MIN;
       break;
 
     case SchedPolicy::Batch:
-      prio = LOWPRIO + 1U;
+      prio = EPOS_THREAD_PRIO_MIN - 1U;
       break;
 
     case SchedPolicy::Fifo:
-      prio = NORMALPRIO + 1U + priority;
-      break;
-
+      // intentional fall-through
     case SchedPolicy::RR:
-      prio = NORMALPRIO + 1U + priority;
+      prio = (EPOS_THREAD_PRIO_MAX + 32U) - priority;
       break;
   }
 
-  if ((prio < LOWPRIO) || (prio > HIGHPRIO))
-    throw std::runtime_error("Thread::UniversalPrioToChibiOSPrio: Bad result");
-
   return prio;
+}
+
+/**
+ * \brief Converts the scheduling policy to an EPOS timeslice quantum.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param schedpolicy
+ * Scheduling policy.
+ *
+ * \return
+ * Timeslice quantum required by @p schedpolicy.
+ */
+epos_timeslice_t Thread::UniversalPrioToTimeslice(SchedPolicy const schedpolicy) const
+{
+  switch (schedpolicy)
+  {
+    case SchedPolicy::Inherit:
+      return epos_thread_GetTimeslice_ms(epos_thread_Self());
+
+    case SchedPolicy::Other:
+    case SchedPolicy::Idle:
+    case SchedPolicy::Batch:
+    case SchedPolicy::RR:
+      return EPOS_THREAD_TIMESLICE_DEFAULT_MS;
+
+    case SchedPolicy::Fifo:
+      return EPOS_THREAD_TIMESLICE_NONE;
+  }
+
+  // never reached, but makes compiler happy
+  return EPOS_THREAD_TIMESLICE_DEFAULT_MS;
 }
 
 } // namespace osal
 } // namespace gpcc
 
-#endif // #ifdef OS_CHIBIOS_ARM
+#endif // #ifdef OS_EPOS_ARM

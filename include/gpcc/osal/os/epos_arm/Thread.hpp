@@ -5,44 +5,31 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011, 2024 Daniel Jerolm
+    Copyright (C) 2024 Daniel Jerolm
 */
 
-#ifdef OS_LINUX_ARM_TFC
+#ifdef OS_EPOS_ARM
 
-#ifndef THREAD_HPP_201904071053
-#define THREAD_HPP_201904071053
+#ifndef THREAD_HPP_202404232028
+#define THREAD_HPP_202404232028
 
 #include <gpcc/compiler/definitions.hpp>
+#include <gpcc/osal/ConditionVariable.hpp>
+#include <gpcc/osal/Mutex.hpp>
 #include <gpcc/osal/ThreadRegistry.hpp>
-#include <pthread.h>
-#include <atomic>
+#include <epos/scheduler/thread.h>
+#include <unistd.h>
 #include <functional>
-#include <memory>
 #include <string>
-#include <climits>
 #include <cstddef>
 #include <cstdint>
 
 namespace gpcc {
 namespace osal {
 
-namespace internal {
-class UnmanagedConditionVariable;
-class UnmanagedMutex;
-class TFCCore;
-}
-
 /**
  * \ingroup GPCC_OSAL_THREADING
  * \brief A class used to create and manage a thread.
- *
- * __Note:__\n
- * __This thread is managed by GPCC's TFC feature.__\n
- * __The managed thread will always be scheduled using the Linux scheduling policy "OTHER",__\n
- * __regardless of the parameters passed to void Start(...).__\n
- * __This is not a problem, because TFC pretends that the software is executed on a machine with__
- * __infinite speed and an infinite number of CPU cores.__
  *
  * # Features
  * - Management of a single thread per @ref Thread class instance.
@@ -384,16 +371,11 @@ class Thread final
     /// States of the encapsulated thread.
     enum class ThreadState
     {
-      noThreadOrJoined, ///<No thread existing or thread has been joined.
+      noThreadOrJoined, ///<No thread existing or thread has been joined. @ref pThread is `nullptr`.
       starting,         ///<Thread is starting.
       running,          ///<Thread is running.
       terminated        ///<Thread has terminated, but not yet joined.
     };
-
-
-    /// Pointer to the @ref internal::TFCCore instance.
-    /** This is setup by the constructor and not changed afterwards. */
-    internal::TFCCore* const pTFCCore;
 
 
     /// Name of the thread.
@@ -401,54 +383,47 @@ class Thread final
 
 
     /// Mutex protecting access to object's internals.
-    /** Locking order: @ref spJoinMutex -> @ref spMutex */
-    std::unique_ptr<internal::UnmanagedMutex> mutable spMutex;
+    /** Locking order: @ref joinMutex -> @ref mutex */
+    Mutex mutable mutex;
 
     /// Mutex used to make @ref Join() thread-safe and to prevent any race between @ref Start() and @ref Join().
-    /** Locking order: @ref spJoinMutex -> @ref spMutex */
-    std::unique_ptr<internal::UnmanagedMutex> spJoinMutex;
+    /** Locking order: @ref joinMutex -> @ref mutex */
+    Mutex joinMutex;
 
 
     /// Functor referencing the thread entry function.
-    /** This is used to pass the thread entry function functor from @ref Start() to
-        @ref InternalThreadEntry2(). */
+    /** This is used to pass the thread entry function functor from @ref Start() to @ref InternalThreadEntry2(). \n
+        This is only modified by @ref Start() while @ref threadState is @ref ThreadState::noThreadOrJoined. */
     tEntryFunction entryFunction;
 
     /// Current state of the thread managed by this object.
-    /** @ref spMutex is required. */
+    /** @ref mutex is required. */
     ThreadState threadState;
 
     /// Condition variable signaled when @ref threadState is set to @ref ThreadState::running.
-    /** This is to be used in conjunction with @ref spMutex. */
-    std::unique_ptr<internal::UnmanagedConditionVariable> spThreadStateRunningCondVar;
+    /** This is to be used in conjunction with @ref mutex. */
+    ConditionVariable threadStateRunningCondVar;
 
-    /// pthread-handle referencing the thread managed by this object.
-    /** @ref spMutex is required.\n
-        This only contains a valid value if @ref threadState does not equal @ref ThreadState::noThreadOrJoined. */
-    pthread_t thread_id;
+    /// Pointer to the encapsulated EPOS thread.
+    /** @ref mutex is required.\n
+        If @ref threadState is @ref ThreadState::noThreadOrJoined, then this is `nullptr`.\n
+        In all other cases this refers to a valid object. */
+    epos_thread_t* pThread;
 
-    /// Flag indicating if a thread is waiting for joining with the managed thread.
-    /** @ref spMutex is required. */
-    bool threadWaitingForJoin;
-
-    /// Thread cancellation pending flag.
-    /** true  = thread cancellation is pending\n
-        false = thread cancellation is not pending */
-    std::atomic<bool> cancellationPending;
-
-    /// Hint for TFC indicating that the thread will cancel soon and a joining thread will not block permanently.
-    /** @ref spMutex required.\n
-        If set, then this flag indicates, that the thread is either already blocked in a function that is a canellation
-        point, or that __it will for sure__ hit a cancellation point without being blocked by any activity that requires
-        an increment of the emulated system time. If set, TFC will expect, that the joining thrread will not be
-        permanently blocked. */
-    bool joiningThreadWillNotBlockPerm;
+    /// Flag indicating if cancellation has already been requested via @ref Thread::Cancel().
+    /** @ref mutex is required.\n
+        EPOS accepts multiple calls to `epos_thread_RequestCancellation()`. This is only used to check the
+        precondition of @ref Cancel() which is required by GPCC`s OSAL. */
+    bool cancellationRequestedViaThisAPI;
 
 
     static ThreadRegistry& InternalGetThreadRegistry(void);
 
     static void* InternalThreadEntry1(void* arg);
     void* InternalThreadEntry2(void);
+
+    epos_threadprio_t UniversalPrioToEPOSPrio(priority_t const priority, SchedPolicy const schedpolicy) const;
+    epos_timeslice_t UniversalPrioToTimeslice(SchedPolicy const schedpolicy) const;
 };
 
 /**
@@ -487,6 +462,85 @@ inline IThreadRegistry& Thread::GetThreadRegistry(void)
 }
 
 /**
+ * \brief Retrieves the ID of the process.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.\n
+ * This can be invoked by any thread.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \return
+ * ID of the process.
+ */
+inline uint32_t Thread::GetPID(void)
+{
+  return static_cast<uint32_t>(getpid());
+}
+
+/**
+ * \brief Suspends execution of the calling thread for a configurable time-span.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.\n
+ * This can be invoked by any thread.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * Strong guarantee.\n
+ * On some systems, this method contains a cancellation point.
+ *
+ * - - -
+ *
+ * \param ms
+ * Time-span (in ms) the calling thread shall be suspended. This is the _minimum time_ the thread will be suspended.
+ * The thread may be suspended _longer_ than the specified time-span.
+ */
+inline void Thread::Sleep_ms(uint32_t const ms)
+{
+  epos_thread_Sleep_ms(ms);
+}
+
+/**
+ * \brief Suspends execution of the calling thread for a configurable time-span.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.\n
+ * This can be invoked by any thread.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * Strong guarantee.\n
+ * On some systems, this method contains a cancellation point.
+ *
+ * - - -
+ *
+ * \param ns
+ * Time-span (in ns) the calling thread shall be suspended. This is the _minimum time_ the thread will be suspended.
+ * The thread may be suspended _longer_ than the specified time-span.
+ */
+inline void Thread::Sleep_ns(uint32_t const ns)
+{
+  epos_thread_Sleep_ns(ns);
+}
+
+/**
  * \brief Retrieves the thread's name.
  *
  * - - -
@@ -512,12 +566,26 @@ inline std::string Thread::GetName(void) const
 }
 
 /**
- * \brief Retrieves if a cancellation request is pending or not.
+ * \brief Provides a hint to [TFC](@ref GPCC_TIME_FLOW_CONTROL) that the thread managed by this object, when it is
+ *        cancelled, is already blocked in a blocking function that is a canellation point, or that it __will for sure__
+ *        hit a cancellation point without being blocked by any activity that requires an increment of the emulated
+ *        system time.
+ *
+ * If the hint is given, then TFC will not increment the emulated system time when a thread joins the thread managed
+ * by this object.
+ *
+ * For details, please refer to @ref GPCC_TIME_FLOW_CONTROL, chapter "Special notes on deferred thread cancellation".
+ *
+ * \note  This method has no effect in this OSAL variant because TFC is not present.
+ *
+ * \pre   A thread has been started and the thread has not yet been joined.
+ *
+ * \pre   The thread has no cancellation request pending.
  *
  * - - -
  *
  * __Thread safety:__\n
- * Only the thread managed by this object is allowed to call this method.
+ * This is thread-safe, but this must not be called by the thread managed by this object.
  *
  * __Exception safety:__\n
  * Strong guarantee.
@@ -525,20 +593,14 @@ inline std::string Thread::GetName(void) const
  * __Thread cancellation safety:__\n
  * No cancellation point included.
  *
- * - - -
- *
- * \retval true
- *    A cancellation request is pending.
- * \retval false
- *    No cancellation request pending.
  */
-inline bool Thread::IsCancellationPending(void) const
+inline void Thread::AdviceTFC_JoiningThreadWillNotBlockPermanently(void)
 {
-  return cancellationPending;
+  // empty since TFC is not present
 }
 
 } // namespace osal
 } // namespace gpcc
 
-#endif // #ifndef THREAD_HPP_201904071053
-#endif // #ifdef OS_LINUX_ARM_TFC
+#endif // #ifndef THREAD_HPP_202404232028
+#endif // #ifdef OS_EPOS_ARM

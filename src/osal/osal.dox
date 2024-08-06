@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2019 Daniel Jerolm
+    Copyright (C) 2019, 2024 Daniel Jerolm
 */
 
 /**
@@ -38,14 +38,16 @@
  *
  * # Configuration
  * To select a specific OSAL implementation for your project please set the defines as described in
- * "gpcc/readme_gpcc_configuration.txt".
+ * "gpcc/readme_gpcc_configuration.txt". When using the cmake project files supplied with GPCC, then this happens
+ * automatically.
  *
  * Currenty the following platforms and operating systems are supported:
- * - Linux x64
- * - Linux x64 with TFC for unit tests
+ * - ChibiOS/RT (Kernel 6.0.3) for ARM
+ * - EPOS for ARM
  * - Linux ARM (32/64 bit)
  * - Linux ARM (32/64 bit) with TFC for unit tests
- * - ChibiOS/RT (Kernel 6.0.3) for ARM
+ * - Linux x64
+ * - Linux x64 with TFC for unit tests
  *
  * # Documentation
  * Though the OSAL's API is identical among all supported platforms and operating systems, there are small differences
@@ -194,8 +196,9 @@
  * The default panic handlers provide the following behaviour:
  * Operating system | Behaviour
  * ---------------- | ---------------------------------------------------------------------------------------------
- * Linux            | Dumps the text message passed to Panic() to `stderr` and aborts the process.
  * ChibiOS/RT       | Forwards the text message passed to Panic() to `chSysHalt()`.
+ * EPOS             | Forwards the text message passed to Panic() to `epos_Panic()`.
+ * Linux            | Dumps the text message passed to Panic() to `stderr` and aborts the process.
  */
 
 /**
@@ -219,6 +222,7 @@
  * OS / Platform | Thread unblocked upon signal
  * ------------- | ----------------------------
  * chibios_arm   | Thread with highest priority
+ * epos_arm      | Thread with highest priority
  * linux_arm     | Thread with highest priority
  * linux_x64     | Thread with highest priority
  * linux_arm_tfc | Latest blocked thread (LIFO)
@@ -228,6 +232,7 @@
  * OS / Platform | Priority Inheritance Protocol | Thread that locks when another thread unlocks | Runtime error checks
  * ------------- | ----------------------------- | --------------------------------------------- | --------------------
  * chibios_arm   | Yes                           | Thread with highest priority                  | unlock without lock, unlock order violation
+ * epos_arm      | Yes                           | Thread with highest priority                  | unlock without lock, unlock order violation
  * linux_arm     | Yes                           | Thread with highest priority                  | ?
  * linux_x64     | Yes                           | Thread with highest priority                  | ?
  * linux_arm_tfc | No                            | Random                                        | Recursion, unlock without lock
@@ -237,6 +242,7 @@
  * OS / Platform | Thread unblocked upon post/increment
  * ------------- | ------------------------------------
  * chibios_arm   | FIFO if `CH_CFG_USE_SEMAPHORES_PRIORITY = false` (default), otherwise thread with highest priority
+ * epos_arm      | FIFO
  * linux_arm     | ?
  * linux_x64     | ?
  * linux_arm_tfc | Thread with highest priority
@@ -246,17 +252,11 @@
  * OS / Platform | Sleep_ms() and Sleep_ns()
  * ------------- | -------------------------
  * chibios_arm   | Minimum sleep time: Round up to system tick period + 0..1 system tick periods
+ * epos_arm      | Same as chibios_arm or better
  * linux_arm     | Same as chibios_arm or better
  * linux_x64     | Same as chibios_arm or better
  * linux_arm_tfc | One nanosecond precision
  * linux_x64_tfc | One nanosecond precision
- *
- * ### Linux (linux_x64, linux_arm)
- * Full support.\n
- * Be aware that some scheduling policies might require special user rights/permissions.
- *
- * \htmlonly <style>div.image img[src="osal/os/priority_mapping_linux.png"]{width:50%;}</style> \endhtmlonly
- * \image html "osal/os/priority_mapping_linux.png" "Priority Mapping for Linux"
  *
  * ### ChibiOS/RT (chibios_arm)
  * - Scheduling policies `Other`, `Idle`, and `Batch` are emulated by mapping them to specific fixed priorities (see
@@ -268,10 +268,68 @@
  * \htmlonly <style>div.image img[src="osal/os/priority_mapping_chibiosrt.png"]{width:50%;}</style> \endhtmlonly
  * \image html "osal/os/priority_mapping_chibiosrt.png" "Priority Mapping for ChibiOS/RT"
  *
+ * ### EPOS (epos_arm)
+ * - Scheduling policies `Other`, `Idle`, and `Batch` are emulated by mapping them to specific fixed priorities (see
+ *   figure below).
+ * - EPOS supports deferred thread cancellation, but system calls (e.g. blocking on a ConditionVariable) currently do
+ *   not contain cancellation points. Currently there are only explicit cancellation points available.
+ *
+ * \htmlonly <style>div.image img[src="osal/os/priority_mapping_epos.png"]{width:50%;}</style> \endhtmlonly
+ * \image html "osal/os/priority_mapping_epos.png" "Priority Mapping for EPOS"
+ *
+ * ### Linux (linux_x64, linux_arm)
+ * Full support.\n
+ * Be aware that some scheduling policies might require special user rights/permissions.
+ *
+ * \htmlonly <style>div.image img[src="osal/os/priority_mapping_linux.png"]{width:50%;}</style> \endhtmlonly
+ * \image html "osal/os/priority_mapping_linux.png" "Priority Mapping for Linux"
+ *
  * ### TFC (linux_arm_tfc, linux_x64_tfc)
  * - All scheduling policies and priorities are mapped to Linux scheduling policy `Other`.\n
  *   This is OK, because TFC provides the illusion of an CPU with infinite speed and infinite number of cores.
  * - System calls (e.g. blocking on a ConditionVariable) support deferred cancellation.
+ *
+ * # Interoperability with other threading APIs
+ * Beside GPCC, other threading APIs may be available on the platform, e.g. POSIX Threads or the native API of an RTOS.
+ *
+ * Thread's created via @ref gpcc::osal::Thread can be used with mutexes, condition variables, and other primitives from
+ * any other threading API available on the platform. The other way round, threads created by another threading API can
+ * be used with the primitives provided by @ref gpcc::osal. A thread may also hold mutex locks from different threading
+ * APIs at the same time.
+ *
+ * However, there are also some restrictions and some points worth to note:
+ * ## TFC
+ * If you want to use GPCC's @ref GPCC_TIME_FLOW_CONTROL in your unit tests, then code must solely use GPCC's OSAL only.
+ *
+ * ## Deferred Cancellation
+ * If the underlying platform supports deferred cancellation, then a thread from @ref gpcc::osal::Thread will terminate
+ * properly if it hits any implicit or explicit cancellation point.
+ *
+ * Deferred cancellation of threads created via @ref gpcc::osal::Thread can be enabled and disabled via other APIs
+ * on the following platforms:
+ *
+ * OS / Platform | Alternative APIs for enable/disable deferred cancellation
+ * ------------- | ---------------------------------------------------------
+ * chibios_arm   | None
+ * epos_arm      | `epos_thread_EnableDeferredCancellation()`, `pthread_setcancelstate()`
+ * linux_arm     | `pthread_setcancelstate()`
+ * linux_x64     | `pthread_setcancelstate()`
+ * linux_arm_tfc | `pthread_setcancelstate()`
+ * linux_x64_tfc | `pthread_setcancelstate()`
+ *
+ * ## Thread exit
+ * A thread can terminate itself immediatedly via @ref gpcc::osal::Thread::TerminateNow(). Threads created via
+ * @ref gpcc::osal::Thread can also terminate via the following other APIs:
+ *
+ * OS / Platform | Alternative APIs for thread termination
+ * ------------- | ---------------------------------------------------------
+ * chibios_arm   | None
+ * epos_arm      | `epos_thread_TerminateNow()`, `pthread_exit()`
+ * linux_arm     | `pthread_exit()`
+ * linux_x64     | `pthread_exit()`
+ * linux_arm_tfc | `pthread_exit()`
+ * linux_x64_tfc | `pthread_exit()`
+ *
  */
 
 /**

@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2019 Daniel Jerolm
+    Copyright (C) 2019, 2024 Daniel Jerolm
 */
 
 ===========================
@@ -18,7 +18,9 @@ Note: This document applies to the bare source code.
 Defines, which must be setup when compiling source code
 -------------------------------------------------------
 COMPILER-related: -DCOMPILER_GCC_ARM or -DCOMPILER_GCC_X64
-OS-Related......: -DOS_LINUX_X64 or -DOS_LINUX_X64_TFC or -DOS_LINUX_ARM or -DOS_LINUX_ARM_TFC or -DOS_CHIBIOS_ARM
+OS-Related......: -DOS_CHIBIOS_ARM or -DOS_EPOS_ARM or
+                  -DOS_LINUX_ARM or -DOS_LINUX_ARM_TFC or
+                  -DOS_LINUX_X64 or -DOS_LINUX_X64_TFC
 
 Defines, which can be used to disable certain types of unit tests
 -----------------------------------------------------------------

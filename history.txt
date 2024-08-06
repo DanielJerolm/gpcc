@@ -4,6 +4,14 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
+- Add TimeSpan::Abs()
+- Add class MinMaxAvg
+- Add class MinMaxAvg specialization for TimeSpans
+
+- Check usage of postfixes for literals ([0-9]U <<)
+
+- Bugfix: Include pathes displayed by doxygen are wrong for OS-dependent items
+
 - BugFix: IsPowerOf2 returns true for zero, but zero is not a power of 2
 
 - COOD remote access
@@ -178,6 +186,9 @@ Next to do:
 
 History:
 ===============================================================================
+2024-08-06
+- Add support for EPOS
+
 2024-07-12
 - Bugfix: Evaluation of return value of nanosleep().
 - Enhanced API of class Thread regarding deferred cancellation.

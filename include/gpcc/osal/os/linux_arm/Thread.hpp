@@ -221,19 +221,12 @@ namespace osal {
  *
  * # Operating System specific notes
  * GPCC's OSAL has been designed to be portable and to provide _equivalent functionality_ on different operating
- * systems. Though currently Linux and ChibiOS/RT are the only supported operating systems, GPCC's OSAL can be easily
- * ported to other operating systems. The greater an OS' affinity to POSIX threads, the more simple is the
+ * systems. Though currently Linux, EPOS, and ChibiOS/RT are the only supported operating systems, GPCC's OSAL can be
+ * easily ported to other operating systems. The greater an OS' affinity to POSIX threads, the more simple is the
  * corresponding GPCC OSAL implementation.
  *
  * However the scheduling policies offered by GPCC's OSAL are not supported by all operating systems. Please check out
  * the sections below.
- *
- * ## Linux (linux_x64, linux_arm)
- * Full support.\n
- * Be aware that some scheduling policies might require special user rights/permissions.
- *
- * \htmlonly <style>div.image img[src="osal/os/priority_mapping_linux.png"]{width:50%;}</style> \endhtmlonly
- * \image html "osal/os/priority_mapping_linux.png" "Priority Mapping for Linux"
  *
  * ## ChibiOS/RT (chibios_arm)
  * - Scheduling policies `Other`, `Idle`, and `Batch` are emulated by mapping them to specific fixed priorities (see
@@ -244,6 +237,21 @@ namespace osal {
  *
  * \htmlonly <style>div.image img[src="osal/os/priority_mapping_chibiosrt.png"]{width:50%;}</style> \endhtmlonly
  * \image html "osal/os/priority_mapping_chibiosrt.png" "Priority Mapping for ChibiOS/RT"
+ *
+ * ## EPOS (epos_arm)
+ * - Scheduling policies `Other`, `Idle`, and `Batch` are emulated by mapping them to specific fixed priorities (see
+ *   figure below).
+ * - System calls (e.g. blocking on a ConditionVariable) do currently not support deferred cancellation.
+ *
+ * \htmlonly <style>div.image img[src="osal/os/priority_mapping_epos.png"]{width:50%;}</style> \endhtmlonly
+ * \image html "osal/os/priority_mapping_epos.png" "Priority Mapping for EPOS"
+ *
+ * ## Linux (linux_x64, linux_arm)
+ * Full support.\n
+ * Be aware that some scheduling policies might require special user rights/permissions.
+ *
+ * \htmlonly <style>div.image img[src="osal/os/priority_mapping_linux.png"]{width:50%;}</style> \endhtmlonly
+ * \image html "osal/os/priority_mapping_linux.png" "Priority Mapping for Linux"
  *
  * ## Time-Flow-Control (linux_x64_tfc, linux_arm_tfc)
  * Full support.\n
