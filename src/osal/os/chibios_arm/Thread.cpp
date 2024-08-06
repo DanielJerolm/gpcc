@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
 #ifdef OS_CHIBIOS_ARM
@@ -710,7 +710,12 @@ void* Thread::Join(bool* const pCancelled)
 }
 
 /**
- * \brief Enables/disables cancelability.
+ * \brief Enables/disables cancelability and retrieves the previous state.
+ *
+ * This function has no effect, if the current cancelability state already equals @p enable.
+ *
+ * Note that if cancelability is disabled, any cancellation request will _not be dropped_ but _queued_ until
+ * cancellation is enabled again or until the thread terminates.
  *
  * - - -
  *
@@ -728,11 +733,14 @@ void* Thread::Join(bool* const pCancelled)
  * \param enable
  * New cancelability state:\n
  * true = cancellation shall be enabled\n
- * false = cancellation shall be disabled\n
- * Note that if cancelability is disabled, any cancellation request will _not be dropped_ but _queued_ until
- * cancellation is enabled again or until the thread terminates.
+ * false = cancellation shall be disabled
+ *
+ * \return
+ * Previous cancelability state.\n
+ * This could be stored and used to recover the previous state at a later point in time, e.g. if cancelability shall
+ * be disabled temporarily only.
  */
-void Thread::SetCancelabilityEnabled(bool const enable)
+bool Thread::SetCancelabilityEnabled(bool const enable)
 {
   MutexLocker mutexLocker(mutex);
 
@@ -740,39 +748,9 @@ void Thread::SetCancelabilityEnabled(bool const enable)
   if ((threadState != ThreadState::running) || (chThdGetSelfX() != pThread))
     throw std::logic_error("Thread::SetCancelabilityEnabled: Not invoked by the managed thread");
 
+  bool const oldState = cancelabilityEnabled;
   cancelabilityEnabled = enable;
-}
-
-/**
- * \brief Retrieves if cancelability is enabled or disabled.
- *
- * - - -
- *
- * __Thread safety:__\n
- * Only the thread managed by this object is allowed to call this method.
- *
- * __Exception safety:__\n
- * Strong guarantee.
- *
- * __Thread cancellation safety:__\n
- * No cancellation point included.
- *
- * - - -
- *
- * \return
- * Current cancelability state:\n
- * true  = cancellation enabled\n
- * false = cancellation disabled
- */
-bool Thread::GetCancelabilityEnabled(void) const
-{
-  MutexLocker mutexLocker(mutex);
-
-  // verify that the current thread is the one managed by this object
-  if ((threadState != ThreadState::running) || (chThdGetSelfX() != pThread))
-    throw std::logic_error("Thread::GetCancelabilityEnabled: Not invoked by the managed thread");
-
-  return cancelabilityEnabled;
+  return oldState;
 }
 
 /**

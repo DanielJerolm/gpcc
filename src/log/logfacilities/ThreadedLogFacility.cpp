@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
 #include <gpcc/log/logfacilities/ThreadedLogFacility.hpp>
@@ -564,7 +564,7 @@ void* ThreadedLogFacility::InternalThreadEntry(void) noexcept
 {
   try
   {
-    thread.SetCancelabilityEnabled(false);
+    (void)thread.SetCancelabilityEnabled(false);
 
     gpcc::osal::AdvancedMutexLocker msgListMutexLocker(msgListMutex);
     while (!thread.IsCancellationPending())

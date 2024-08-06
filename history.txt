@@ -180,6 +180,7 @@ History:
 ===============================================================================
 2024-07-12
 - Bugfix: Evaluation of return value of nanosleep().
+- Enhanced API of class Thread regarding deferred cancellation.
 
 2024-06-18
 - Enable rewriting the previous line in CLI
