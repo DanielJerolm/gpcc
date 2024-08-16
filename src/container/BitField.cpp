@@ -5,12 +5,12 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
 #include <gpcc/container/BitField.hpp>
 #include <gpcc/compiler/builtins.hpp>
-#include <sstream>
+#include <gpcc/string/StringComposer.hpp>
 #include <stdexcept>
 #include <cstring>
 
@@ -1124,7 +1124,7 @@ size_t BitField::FindFirstClearedBitReverse(size_t startIndex) const noexcept
  */
 std::string BitField::EnumerateBits(bool const setNotCleared, bool const noWhitespaces) const
 {
-  std::ostringstream str;
+  gpcc::string::StringComposer str;
 
   size_t index = 0;
   bool first = true;
@@ -1143,7 +1143,7 @@ std::string BitField::EnumerateBits(bool const setNotCleared, bool const noWhite
     else
     {
       if (noWhitespaces)
-        str << ",";
+        str << ',';
       else
         str << ", ";
     }
@@ -1153,7 +1153,7 @@ std::string BitField::EnumerateBits(bool const setNotCleared, bool const noWhite
     index++;
   }
 
-  return str.str();
+  return str.Get();
 }
 
 /**
@@ -1192,7 +1192,7 @@ std::string BitField::EnumerateBits(bool const setNotCleared, bool const noWhite
  */
 std::string BitField::EnumerateBitsCompressed(bool const setNotCleared, bool const noWhitespaces) const
 {
-  std::ostringstream str;
+  gpcc::string::StringComposer str;
 
   size_t firstBit = 0;
   size_t lastBit;
@@ -1224,7 +1224,7 @@ std::string BitField::EnumerateBitsCompressed(bool const setNotCleared, bool con
     else
     {
       if (noWhitespaces)
-        str << ",";
+        str << ',';
       else
         str << ", ";
     }
@@ -1237,7 +1237,7 @@ std::string BitField::EnumerateBitsCompressed(bool const setNotCleared, bool con
     firstBit = lastBit + 1;
   }
 
-  return str.str();
+  return str.Get();
 }
 
 /**

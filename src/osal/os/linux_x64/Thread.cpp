@@ -14,12 +14,11 @@
 #include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
+#include <gpcc/string/StringComposer.hpp>
 #include <cxxabi.h>
 #include <sched.h>
 #include <time.h>
 #include <unistd.h>
-#include <iomanip>
-#include <sstream>
 #include <stdexcept>
 #include <system_error>
 #include <cerrno>
@@ -463,11 +462,13 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
     throw std::invalid_argument("Thread::GetInfo: 'nameFieldWidth' too small");
 
   // the information is build into "infoLine"
-  std::ostringstream infoLine;
+  using gpcc::string::StringComposer;
+  StringComposer infoLine;
+  infoLine << StringComposer::AlignLeft;
 
   // start with thread's name
   if (name.size() <= nameFieldWidth)
-    infoLine << std::left << std::setw(nameFieldWidth) << std::setfill(' ') << name;
+    infoLine << StringComposer::Width(nameFieldWidth) << name;
   else
     infoLine << name.substr(0, nameFieldWidth - 3U) << "...";
 
@@ -475,23 +476,24 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
 
   bool detailsRequired = false;
 
+  infoLine << ' ' << StringComposer::Width(6);
   switch (threadState)
   {
     case ThreadState::noThreadOrJoined:
-      infoLine << " no    ";
+      infoLine << "no";
       break;
 
     case ThreadState::starting:
-      infoLine << " start ";
+      infoLine << "start";
       break;
 
     case ThreadState::running:
-      infoLine << " run   ";
+      infoLine << "run";
       detailsRequired = true;
       break;
 
     case ThreadState::terminated:
-      infoLine << " term  ";
+      infoLine << "term";
       break;
   } // switch (threadState)
 
@@ -505,86 +507,96 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
     struct sched_param sp;
 
     // DS (Detach state)
+    infoLine << StringComposer::Width(4);
     status = pthread_attr_getdetachstate(attr, &i);
     if (status == 0)
     {
       if (i == PTHREAD_CREATE_DETACHED)
-        infoLine << "D   ";
+        infoLine << 'D';
       else if (i == PTHREAD_CREATE_JOINABLE)
-        infoLine << "J   ";
+        infoLine << 'J';
       else
-        infoLine << "?   ";
-    }
-    else
-      infoLine << "Err ";
-
-    // Scope (Scheduling scope)
-    status = pthread_attr_getscope(attr, &i);
-    if (status == 0)
-    {
-      if (i == PTHREAD_SCOPE_SYSTEM)
-        infoLine << "SYS   ";
-      else if (i == PTHREAD_SCOPE_PROCESS)
-        infoLine << "PRC   ";
-      else
-        infoLine << "?     ";
-    }
-    else
-      infoLine << "Err   ";
-
-    // Policy (Scheduling policy)
-    status = pthread_attr_getinheritsched(attr, &i);
-    if (status == 0)
-    {
-      if (i == PTHREAD_INHERIT_SCHED)
-        infoLine << "IH ";
-      else if (i == PTHREAD_EXPLICIT_SCHED)
-        infoLine << "EX ";
-      else
-        infoLine << "?  ";
+        infoLine << '?';
     }
     else
       infoLine << "Err";
 
+    // Scope (Scheduling scope)
+    infoLine << StringComposer::Width(6);
+    status = pthread_attr_getscope(attr, &i);
+    if (status == 0)
+    {
+      if (i == PTHREAD_SCOPE_SYSTEM)
+        infoLine << "SYS";
+      else if (i == PTHREAD_SCOPE_PROCESS)
+        infoLine << "PRC";
+      else
+        infoLine << '?';
+    }
+    else
+      infoLine << "Err";
+
+    // Policy (Scheduling policy)
+    infoLine << StringComposer::Width(3);
+    status = pthread_attr_getinheritsched(attr, &i);
+    if (status == 0)
+    {
+      if (i == PTHREAD_INHERIT_SCHED)
+        infoLine << "IH";
+      else if (i == PTHREAD_EXPLICIT_SCHED)
+        infoLine << "EX";
+      else
+        infoLine << '?';
+    }
+    else
+      infoLine << "Err";
+
+    infoLine << StringComposer::Width(6);
     status = pthread_attr_getschedpolicy(attr, &i);
     if (status == 0)
     {
       if (i == SCHED_OTHER)
-        infoLine << "other ";
+        infoLine << "other";
       else if (i == SCHED_IDLE)
-        infoLine << "idle  ";
+        infoLine << "idle";
       else if (i == SCHED_BATCH)
-        infoLine << "batch ";
+        infoLine << "batch";
       else if (i == SCHED_FIFO)
-        infoLine << "FIFO  ";
+        infoLine << "FIFO";
       else if (i == SCHED_RR)
-        infoLine << "RR    ";
+        infoLine << "RR";
       else
-        infoLine << "?     ";
+        infoLine << '?';
     }
     else
-      infoLine << "Err   ";
+      infoLine << "Err";
 
     // priority
+    infoLine << StringComposer::AlignRight << StringComposer::Width(4);
     status = pthread_attr_getschedparam(attr, &sp);
     if (status == 0)
-      infoLine << std::right << std::setw(4) << std::setfill(' ') << sp.__sched_priority << ' ';
+      infoLine << sp.__sched_priority;
     else
-      infoLine << "Err  ";
+      infoLine << "Err";
+    infoLine << ' ';
 
     // stack guard size
+    infoLine << StringComposer::Width(7);
     status = pthread_attr_getguardsize(attr, &s);
     if (status == 0)
-      infoLine << std::right << std::setw(7) << std::setfill(' ') << s << ' ';
+      infoLine << s;
     else
-      infoLine << "Err     ";
+      infoLine << "Err";
+    infoLine << ' ';
 
     // stack size
+    infoLine << StringComposer::Width(7);
     status = pthread_attr_getstacksize(attr, &s);
     if (status == 0)
-      infoLine << std::right << std::setw(7) << std::setfill(' ') << s << ' ';
+      infoLine << s;
     else
-      infoLine << "Err     ";
+      infoLine << "Err";
+    infoLine << ' ';
 
     // stack usage
     infoLine << "not imp";
@@ -594,7 +606,7 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
     infoLine << "--- ----- -- ----- ---- ------- ------- -------";
   }
 
-  return infoLine.str();
+  return infoLine.Get();
 }
 
 /**

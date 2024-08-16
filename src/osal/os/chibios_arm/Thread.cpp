@@ -14,10 +14,9 @@
 #include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
+#include <gpcc/string/StringComposer.hpp>
 #include <gpcc/string/tools.hpp>
 #include <cxxabi.h>
-#include <iomanip>
-#include <sstream>
 #include <stdexcept>
 #include <system_error>
 
@@ -359,11 +358,13 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
     throw std::invalid_argument("Thread::GetInfo: 'nameFieldWidth' too small");
 
   // the information is build into "infoLine"
-  std::ostringstream infoLine;
+  using gpcc::string::StringComposer;
+  StringComposer infoLine;
+  infoLine << StringComposer::AlignLeft;
 
   // start with thread's name
   if (name.size() <= nameFieldWidth)
-    infoLine << std::left << std::setw(nameFieldWidth) << std::setfill(' ') << name;
+    infoLine << StringComposer::Width(nameFieldWidth) << name;
   else
     infoLine << name.substr(0, nameFieldWidth - 3U) << "...";
 
@@ -371,33 +372,34 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
 
   bool detailsRequired = false;
 
+  infoLine << ' ' << StringComposer::Width(6);
   switch (threadState)
   {
     case ThreadState::noThreadOrJoined:
-      infoLine << " no     ";
+      infoLine << "no";
       break;
 
     case ThreadState::starting:
-      infoLine << " start  ";
+      infoLine << "start";
       break;
 
     case ThreadState::running:
-      infoLine << " run    ";
+      infoLine << "run";
       detailsRequired = true;
       break;
 
     case ThreadState::terminated:
-      infoLine << " term   ";
+      infoLine << "term";
       break;
   } // switch (threadState)
 
   if (detailsRequired)
   {
     // ChibiOS priority
-    infoLine << std::right << std::setw(3) << std::setfill(' ') << pThread->prio << ' ';
+    infoLine << StringComposer::AlignRight << StringComposer::Width(4) << static_cast<unsigned int>(pThread->prio) << ' ';
 
     // stack size
-    infoLine << std::right << std::setw(10) << std::setfill(' ') << totalStackSize << ' ';
+    infoLine << StringComposer::Width(10) << totalStackSize << ' ';
 
     // stack usage
     size_t const used = InternalMeasureStack();
@@ -405,8 +407,8 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
     {
       // perentage: round up
       uint_fast8_t const percentage = ((used * 100U) + (totalStackSize - 1U)) / totalStackSize;
-      infoLine << std::right << std::setw(10) << std::setfill(' ') << used
-               << " (" << std::right << std::setw(3) << std::setfill(' ') << static_cast<unsigned int>(percentage) << "%) ";
+      infoLine << StringComposer::Width(10) << used
+               << " (" << StringComposer::Width(3) << static_cast<unsigned int>(percentage) << "%) ";
     }
     else
       infoLine << "       Err (Err%) ";
@@ -419,10 +421,10 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
   }
   else
   {
-    infoLine << "--- ---------- ---------- ------ ---------- ----------";
+    infoLine << " --- ---------- ---------- ------ ---------- ----------";
   }
 
-  return infoLine.str();
+  return infoLine.Get();
 }
 
 /**

@@ -5,15 +5,16 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2024 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/requests_and_responses/ReadRequestResponse.hpp>
+#include <gpcc/osal/definitions.hpp>
 #include <gpcc/stream/IStreamReader.hpp>
 #include <gpcc/stream/IStreamWriter.hpp>
+#include <gpcc/string/StringComposer.hpp>
 #include <gpcc/string/tools.hpp>
 #include <exception>
-#include <sstream>
 #include <stdexcept>
 
 namespace gpcc {
@@ -259,7 +260,8 @@ void ReadRequestResponse::ToBinary(gpcc::stream::IStreamWriter & sw) const
 /// \copydoc gpcc::cood::ResponseBase::ToString
 std::string ReadRequestResponse::ToString(void) const
 {
-  std::ostringstream s;
+  using gpcc::string::StringComposer;
+  StringComposer s;
   s << "Read request response: " << SDOAbortCodeToDescrString(result);
 
   if (result == SDOAbortCode::OK)
@@ -268,19 +270,20 @@ std::string ReadRequestResponse::ToString(void) const
 
     if (data.size() <= 16U)
     {
-      s << ':' << std::endl;
+      s << ':' << gpcc::osal::endLine;
 
+      s << StringComposer::BaseHex << StringComposer::Uppercase << StringComposer::AlignRightPadZero;
       for (uint_fast8_t i = 0U; i < data.size(); i++)
       {
         if (i != 0U)
           s << ' ';
 
-        s << gpcc::string::ToHex(data[i], 2U);
+        s << "0x" << StringComposer::Width(2) << static_cast<unsigned int>(data[i]);
       }
     }
   }
 
-  return s.str();
+  return s.Get();
 }
 
 // --> ResponseBase

@@ -5,14 +5,14 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
 #include <gpcc/string/tools.hpp>
+#include <gpcc/osal/definitions.hpp>
+#include <gpcc/string/StringComposer.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include <iomanip>
 #include <limits>
-#include <sstream>
 #include <stdexcept>
 #include <cctype>
 #include <cstdio>
@@ -23,10 +23,10 @@ namespace
 
 /**
  * \ingroup GPCC_STRING
- * \brief Internal helper for @ref ExceptionDescriptionToString().
+ * \brief Appends the description (returned by `what()`) of an exception and all nested exceptions (if any) to an
+ *        @ref gpcc::string::StringComposer.
  *
- * Appends the description (returned by `what()`) of an exception and all nested
- * exceptions (if any) to an `std::ostringstream`.
+ * This is used by @ref ExceptionDescriptionToString().
  *
  * - - -
  *
@@ -35,7 +35,9 @@ namespace
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - Incomplete or undefined text may have been written to `oss`.
+ * - Incomplete or undefined text may have been written to @p s.
+ *
+ * \throws std::bad_alloc   Out of memory.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -43,20 +45,19 @@ namespace
  * - - -
  *
  * \param e
- * Reference to the exception whose description (returned by `what()`) shall be appended to `oss`.\n
- * The descriptions of all nested exceptions (if any) will also be appended to `oss`.\n
+ * Reference to the exception whose description (returned by `what()`) shall be appended to @p s. \n
+ * The descriptions of all nested exceptions (if any) will also be appended to @p s. \n
  * Each nested exception's description will start on a new line.
  *
  * \param level
  * Nesting level. It is prepended to the text output to indicate the nesting level.
  *
- * \param oss
- * Reference to the `std::ostringstream` to which the descriptions of the exceptions
- * shall be appended to.
+ * \param s
+ * Reference to the @ref StringComposer to which the descriptions of the exceptions shall be appended to.
  */
-void ExceptionDescriptionToStringHelper(std::exception const & e, size_t level, std::ostringstream & oss)
+void ExceptionDescriptionToStringHelper(std::exception const & e, size_t level, gpcc::string::StringComposer & s)
 {
-  oss << level << ": " << e.what();
+  s << level << ": " << e.what();
 
   try
   {
@@ -64,19 +65,19 @@ void ExceptionDescriptionToStringHelper(std::exception const & e, size_t level, 
   }
   catch (std::exception const & e2)
   {
-    oss << std::endl;
-    ExceptionDescriptionToStringHelper(e2, level + 1U, oss);
+    s << gpcc::osal::endLine;
+    ExceptionDescriptionToStringHelper(e2, level + 1U, s);
   }
   catch (...)
   {
-    oss << std::endl;
-    oss << (level + 1U) << ": " << "Unknown exception";
+    s << gpcc::osal::endLine;
+    s << (level + 1U) << ": " << "Unknown exception";
   }
 }
 
 /**
  * \ingroup GPCC_STRING
- * \brief Throws an `std::invalid_argument` with verbose description indicating that `s` contains an invalid
+ * \brief Throws an `std::invalid_argument` with verbose description indicating that @p s contains an invalid
  *        representation of a number.
  *
  * - - -
@@ -97,14 +98,14 @@ void ExceptionDescriptionToStringHelper(std::exception const & e, size_t level, 
  */
 void ThrowInvalidNumberRepresentation(std::string const & s)
 {
-  std::ostringstream oss;
-  oss << "Invalid number/format: \"" << s << '\"';
-  throw std::invalid_argument(oss.str());
+  gpcc::string::StringComposer sc;
+  sc << "Invalid number/format: \"" << s << '\"';
+  throw std::invalid_argument(sc.Get());
 }
 
 /**
  * \ingroup GPCC_STRING
- * \brief Throws an `std::out_of_range` with verbose description indicating that `s` contains a number that is out of
+ * \brief Throws an `std::out_of_range` with verbose description indicating that @p s contains a number that is out of
  *        range [`min`;`max`].
  *
  * - - -
@@ -121,7 +122,7 @@ void ThrowInvalidNumberRepresentation(std::string const & s)
  * - - -
  *
  * \tparam T
- * Type of `min` and `max`.
+ * Type of @p min and @p max.
  *
  * \param s
  * String containing the representation of the number.
@@ -135,14 +136,14 @@ void ThrowInvalidNumberRepresentation(std::string const & s)
 template <typename T>
 void ThrowOutOfRange(std::string const & s, T const min, T const max)
 {
-  std::ostringstream oss;
-  oss << "Value '" << s << "' is out of range [" << min << ';' << max << ']';
-  throw std::out_of_range(oss.str());
+  gpcc::string::StringComposer sc;
+  sc << "Value '" << s << "' is out of range [" << min << ';' << max << ']';
+  throw std::out_of_range(sc.Get());
 }
 
 /**
  * \ingroup GPCC_STRING
- * \brief Wrapper for `std::stoul`.
+ * \brief Wrapper for `std::stoul` adding verbose error checks.
  *
  * Additional functionality:
  * - Checks if the result is within a given range [`min`;`max`].
@@ -158,7 +159,7 @@ void ThrowOutOfRange(std::string const & s, T const min, T const max)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
  *
  * \throws std::out_of_range       The result of the conversion exceeds the range [`min`;`max`].
  *
@@ -171,7 +172,7 @@ void ThrowOutOfRange(std::string const & s, T const min, T const max)
  * String that shall be converted into an `uint32_t`.
  *
  * \param base
- * Base for interpreting `s`. Valid range: 0..36\n
+ * Base for interpreting @p s. Valid range: 0..36\n
  * Special values:
  * - 0 = auto detect base by prefix (0 = octal, 0x or 0X = hex, other = decimal)
  * - 2 = binary
@@ -222,7 +223,7 @@ uint32_t ToU32(std::string const & s, uint_fast8_t const base, uint32_t const mi
 
 /**
  * \ingroup GPCC_STRING
- * \brief Wrapper for `std::stoi`.
+ * \brief Wrapper for `std::stoi` adding verbose error checks.
  *
  * Additional functionality:
  * - Checks if the result is within a given range [`min`;`max`].
@@ -238,7 +239,7 @@ uint32_t ToU32(std::string const & s, uint_fast8_t const base, uint32_t const mi
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
  *
  * \throws std::out_of_range       The result of the conversion exceeds the range [`min`;`max`].
  *
@@ -251,7 +252,7 @@ uint32_t ToU32(std::string const & s, uint_fast8_t const base, uint32_t const mi
  * String that shall be converted into an `int32_t`.
  *
  * \param base
- * Base for interpreting `s`. Valid range: 0..36\n
+ * Base for interpreting @p s. Valid range: 0..36\n
  * Special values:
  * - 0 = auto detect base by prefix (0 = octal, 0x or 0X = hex, other = decimal)
  * - 2 = binary
@@ -326,19 +327,11 @@ namespace string {
  * Constant reference to the string that shall be trimmed.
  *
  * \return
- * Trimmed version of `s`.
+ * Trimmed version of @p s.
  */
 std::string Trim(std::string const & s)
 {
-  std::string result;
-
-  auto const start = s.find_first_not_of(' ');
-  auto const last  = s.find_last_not_of(' ');
-
-  if (start != std::string::npos)
-    result = s.substr(start, (last - start) + 1U);
-
-  return result;
+  return Trim(s, ' ');
 }
 
 /**
@@ -365,7 +358,7 @@ std::string Trim(std::string const & s)
  * Characters that shall be trimmed
  *
  * \return
- * Trimmed version of `s`.
+ * Trimmed version of @p s.
  */
 std::string Trim(std::string const & s, char const c)
 {
@@ -382,9 +375,9 @@ std::string Trim(std::string const & s, char const c)
 
 /**
  * \ingroup GPCC_STRING
- * \brief Splits the string `s` into sub-strings separated by `separator`.
+ * \brief Splits the string @p s into sub-strings separated by @p separator.
  *
- * If `s` does not contain `separator`, then a vector containing one string (`s`) will be returned.
+ * If @p s does not contain @p separator, then a vector containing one string (`s`) will be returned.
  *
  * __Example 1:__\n
  * s = 55, 23, 77,88,,2,\n
@@ -476,10 +469,10 @@ std::vector<std::string> Split(std::string const & s, char const separator, bool
 
 /**
  * \ingroup GPCC_STRING
- * \brief Splits the string `s` into sub-strings separated by `separator`. `separator` characters within areas
- *        surrounded by `quotationMark` characters are ignored.
+ * \brief Splits the string @p s into sub-strings separated by @p separator. @p separator characters within areas
+ *        surrounded by @p quotationMark characters are ignored.
  *
- * If `s` does not contain `separator`, then a vector containing one string (`s`) will be returned.
+ * If @p s does not contain @p separator, then a vector containing one string (`s`) will be returned.
  *
  * __Example 1:__\n
  * s = Monkey Ball "Dog Cat Bird" Airplane\n
@@ -512,7 +505,7 @@ std::vector<std::string> Split(std::string const & s, char const separator, bool
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` invalid, e.g. odd number of `quotationMark` characters.
+ * \throws std::invalid_argument   @p s invalid, e.g. odd number of @p quotationMark characters.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -531,8 +524,8 @@ std::vector<std::string> Split(std::string const & s, char const separator, bool
  * false = empty parts shall appear in the output vector
  *
  * \param quotationMark
- * `separator` characters within parts of `s` surrounded by this character will be ignored.\n
- * `separator` and `quotationMark` must be different characters.
+ * @p separator characters within parts of @p s surrounded by this character will be ignored.\n
+ * @p separator and @p quotationMark must be different characters.
  *
  * \return
  * Vector containing the sub-strings.
@@ -622,7 +615,7 @@ std::vector<std::string> Split(std::string const & s, char const separator, bool
 
 /**
  * \ingroup GPCC_STRING
- * \brief Concatenates neighbouring strings in an std::vector of strings, if a special character is present at the
+ * \brief Concatenates neighbouring strings in an `std::vector` of strings, if a special character is present at the
  *        begin and/or end of the strings.
  *
  * __Rules:__\n
@@ -792,24 +785,25 @@ void ConditionalConcat(std::vector<std::string> & v, char const glueChar)
  * **Line1\n
  * **Line2\n
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * This is thread-safe.
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - content of `s` will be undefined
+ * - content of @p s will be undefined
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param s
  * String into which white-spaces for indention shall be inserted.
+ *
  * \param n
- * Number of white-spaces to be inserted after each "\\n" in `s`.
+ * Number of white-spaces to be inserted after each "\\n" in @p s.
  */
 void InsertIndention(std::string & s, size_t const n)
 {
@@ -832,6 +826,8 @@ void InsertIndention(std::string & s, size_t const n)
  * \ingroup GPCC_STRING
  * \brief Checks if a string starts with a given character sequence.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * This is thread-safe.
  *
@@ -839,17 +835,19 @@ void InsertIndention(std::string & s, size_t const n)
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param s
  * String that shall be tested.
+ *
  * \param pCharSeq
  * Pointer to a null-terminated c-string containing the character sequence.
+ *
  * \return
- * true = `s` starts with `pCharSeq` or `pCharSeq` is an empty string.\n
- * false = `s` does not start with `pCharSeq`.
+ * true = @p s starts with @p pCharSeq or @p pCharSeq is an empty string.\n
+ * false = @p s does not start with @p pCharSeq.
  */
 bool StartsWith(std::string const & s, char const * pCharSeq) noexcept
 {
@@ -875,6 +873,8 @@ bool StartsWith(std::string const & s, char const * pCharSeq) noexcept
  * \ingroup GPCC_STRING
  * \brief Checks if a string ends with a given character sequence.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * This is thread-safe.
  *
@@ -882,17 +882,19 @@ bool StartsWith(std::string const & s, char const * pCharSeq) noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param s
  * String that shall be tested.
+ *
  * \param pCharSeq
  * Pointer to a null-terminated c-string containing the character sequence.
+ *
  * \return
- * true = `s` ends with `pCharSeq` or `pCharSeq` is an empty string.\n
- * false = `s` does not end with `pCharSeq`.
+ * true = @p s ends with @p pCharSeq or @p pCharSeq is an empty string.\n
+ * false = @p s does not end with @p pCharSeq.
  */
 bool EndsWith(std::string const & s, char const * pCharSeq) noexcept
 {
@@ -911,6 +913,8 @@ bool EndsWith(std::string const & s, char const * pCharSeq) noexcept
  * \ingroup GPCC_STRING
  * \brief Counts the number of occurrences of an specific character in a string.
  *
+ * - - -
+ *
  * __Thread-safety:__\n
  * This is thread-safe.
  *
@@ -918,16 +922,18 @@ bool EndsWith(std::string const & s, char const * pCharSeq) noexcept
  * No-throw guarantee.
  *
  * __Thread-cancellation-safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param s
  * String that shall be examined.
+ *
  * \param c
- * Character whose number of occurrences in `s` shall be counted.
+ * Character whose number of occurrences in @p s shall be counted.
+ *
  * \return
- * Number of occurrences of `c` in `s`.
+ * Number of occurrences of @p c in @p s.
  */
 size_t CountChar(std::string const & s, char const c) noexcept
 {
@@ -948,6 +954,8 @@ size_t CountChar(std::string const & s, char const c) noexcept
  * \ingroup GPCC_STRING
  * \brief Compares an `std::string` against a character sequence containing simple wildcards ('*' and '?').
  *
+ * - - -
+ *
  * __Thread-safety:__\n
  * This is thread-safe.
  *
@@ -957,26 +965,28 @@ size_t CountChar(std::string const & s, char const c) noexcept
  * \throws std::invalid_argument   Bad wildcard sequence (**), trailing '\\' or invalid escape sequence.
  *
  * __Thread-cancellation-safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param s
- * String that shall be checked for matching the character sequence given by `pCharSeq`.
+ * String that shall be checked for matching the character sequence @p pCharSeq.
+ *
  * \param pCharSeq
  * Pointer to a null-terminated string containing the character sequence used for the comparison.\n
  * The character sequence may contain wildcard characters:
  * - '*' = any string
  * - '?' = any character
  * - '\' = escape for characters '*', '?', and '\'
+ *
  * \param caseSensitive
  * Controls if the comparison shall be case sensitive:
  * `true` = case sensitive\n
  * `false` = case insensitive
  * Note: Case sensitive comparison is slightly faster than case insensitive comparison.
- * \return
- * true = match\n
- * false = no match
+ *
+ * \retval true   Match
+ * \retval false  No match
  */
 bool TestSimplePatternMatch(std::string const & s, char const * pCharSeq, bool const caseSensitive)
 {
@@ -985,8 +995,9 @@ bool TestSimplePatternMatch(std::string const & s, char const * pCharSeq, bool c
 
 /**
  * \ingroup GPCC_STRING
- * \brief Compares an null-terminated string against a character sequence containing
- * simple wildcards ('*' and '?').
+ * \brief Compares an null-terminated string against a character sequence containing simple wildcards ('*' and '?').
+ *
+ * - - -
  *
  * __Thread-safety:__\n
  * This is thread-safe.
@@ -997,27 +1008,28 @@ bool TestSimplePatternMatch(std::string const & s, char const * pCharSeq, bool c
  * \throws std::invalid_argument   Bad wildcard sequence (**), trailing '\\' or invalid escape sequence.
  *
  * __Thread-cancellation-safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param pStr
- * Pointer to a null-terminated string that shall be checked for matching the character sequence
- * given by `pCharSeq`.
+ * Pointer to a null-terminated string that shall be checked for matching the character sequence @p pCharSeq.
+ *
  * \param pCharSeq
  * Pointer to a null-terminated string containing the character sequence used for the comparison.\n
  * The character sequence may contain wildcard characters:
  * - '*' = any string
  * - '?' = any character
  * - '\' = escape for characters '*', '?', and '\'
+ *
  * \param caseSensitive
  * Controls if the comparison shall be case sensitive:
  * `true` = case sensitive\n
  * `false` = case insensitive
  * Note: Case sensitive comparison is slightly faster than case insensitive comparison.
- * \return
- * true = match\n
- * false = no match
+ *
+ * \retval true   Match
+ * \retval false  No match
  */
 bool TestSimplePatternMatch(char const * pStr, char const * pCharSeq, bool const caseSensitive)
 {
@@ -1162,7 +1174,6 @@ bool TestSimplePatternMatch(char const * pStr, char const * pCharSeq, bool const
   } // while (true)
 }
 
-
 /**
  * \ingroup GPCC_STRING
  * \brief Queries if a character is a printable ASCII character.
@@ -1271,7 +1282,7 @@ bool IsDecimalDigitsOnly(std::string const & s) noexcept
 
 /**
  * \ingroup GPCC_STRING
- * \brief Creates an std::string from the description (returned by `what()`) of an exception and all nested
+ * \brief Creates an `std::string` from the description (returned by `what()`) of an exception and all nested
  *        exceptions (if any).
  *
  * - - -
@@ -1303,9 +1314,9 @@ bool IsDecimalDigitsOnly(std::string const & s) noexcept
  */
 std::string ExceptionDescriptionToString(std::exception const & e)
 {
-  std::ostringstream oss;
-  ExceptionDescriptionToStringHelper(e, 1U, oss);
-  return oss.str();
+  gpcc::string::StringComposer s;
+  ExceptionDescriptionToStringHelper(e, 1U, s);
+  return s.Get();
 }
 
 /**
@@ -1329,7 +1340,7 @@ std::string ExceptionDescriptionToString(std::exception const & e)
  * - - -
  *
  * \param ePtr
- * Unmodifiable reference to an exception pointer referencing to the exception whose description (returned by `what()`)
+ * Unmodifiable reference to an exception pointer referencing the exception whose description (returned by `what()`)
  * shall be contained in the string. If there are any nested exceptions, then their descriptions will also be contained
  * in the string. Each nested exception's description will start on a new line.\n
  * If this is a nullptr, then this will throw an std::invalid_argument.\n
@@ -1362,7 +1373,9 @@ std::string ExceptionDescriptionToString(std::exception_ptr const & ePtr)
 
 /**
  * \ingroup GPCC_STRING
- * \brief Creates a string containing an detailed hex-dump of some binary data.
+ * \brief Creates a string containing an detailed hex-dump of a chunk of binary data.
+ *
+ * - - -
  *
  * __Thread safety:__\n
  * This is thread-safe.
@@ -1371,25 +1384,29 @@ std::string ExceptionDescriptionToString(std::exception_ptr const & ePtr)
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param address
  * Address where the first byte of data is located at.\n
- * This is used for printing only. No read-access on the given address will be performed by this.
+ * This is used for printing only. No read-access to the given address will be performed.
+ *
  * \param pData
- * Pointer to the data located at `address`.
+ * Pointer to the data located at @p address.
+ *
  * \param n
- * Number of bytes inside the buffer referenced by `pData`.\n
- * `wordSize` must divide this without any remainder.
+ * Number of bytes inside the buffer referenced by @p pData. \n
+ * @p wordSize must divide this without any remainder.
+ *
  * \param wordSize
  * Word size for displaying data in hex-format. This must be 1, 2, or 4.
+ *
  * \param valuesPerLine
- * Number of hex values per line. If `n` / `wordSize` is less than this, then white spaces
- * will be inserted.
+ * Number of hex values per line. If `n` / `wordSize` is less than this, then white spaces will be inserted.
+ *
  * \return
- * String containing a detailed hex-dump of the binary data referenced by `pData` and `n`.\n
+ * String containing a detailed hex-dump of the binary data referenced by @p pData and @p n. \n
  * Example output (n = 4, wordSize = 1, valuePerLine = 4):\n
  * 0x10005321: 21 41 5C 87 .A..\n
  * Example output (n = 4, wordSize = 1, valuePerLine = 8):\n
@@ -1404,45 +1421,47 @@ std::string HexDump(uint32_t const address,
   if (pData == nullptr)
     throw std::invalid_argument("HexDump: pData");
 
-  if ((wordSize == 0) || (n % wordSize != 0))
+  if ((wordSize == 0U) || ((n % wordSize) != 0U))
     throw std::invalid_argument("HexDump: n <-> wordSize");
 
-  if (valuesPerLine < n / wordSize)
+  if ((valuesPerLine < n) / wordSize)
     throw std::invalid_argument("HexDump: valuesPerLine invalid");
 
-  std::ostringstream oss;
+  using gpcc::string::StringComposer;
+  StringComposer sc;
 
-  oss << "0x" << std::uppercase << std::right << std::setw(8) << std::setfill('0') << std::hex << address << ": ";
+  sc << StringComposer::AlignRightPadZero << StringComposer::BaseHex << StringComposer::Uppercase
+      << "0x" << StringComposer::Width(8) << address << ": ";
 
   switch (wordSize)
   {
     case 1U:
     {
       uint8_t const * p = reinterpret_cast<uint8_t const *>(pData);
-      for (size_t i = 0; i < n; i++, valuesPerLine--)
-        oss << std::uppercase << std::right << std::setw(2) << std::setfill('0') << std::hex << static_cast<unsigned int>(p[i]) << " ";
-      while (valuesPerLine-- != 0)
-        oss << "   ";
+      for (size_t i = 0U; i < n; i++, valuesPerLine--)
+        sc << StringComposer::Width(2) << static_cast<unsigned int>(p[i]) << ' ';
+      while (valuesPerLine-- != 0U)
+        sc << "   ";
       break;
     }
 
     case 2U:
     {
       uint16_t const * p = reinterpret_cast<uint16_t const *>(pData);
-      for (size_t i = 0; i < (n / 2); i++, valuesPerLine--)
-        oss << std::uppercase << std::right << std::setw(4) << std::setfill('0') << std::hex << static_cast<unsigned int>(p[i]) << " ";
-      while (valuesPerLine-- != 0)
-        oss << "     ";
+      for (size_t i = 0U; i < (n / 2U); i++, valuesPerLine--)
+        sc << StringComposer::Width(4) << p[i] << ' ';
+      while (valuesPerLine-- != 0U)
+        sc << "     ";
       break;
     }
 
     case 4U:
     {
       uint32_t const * p = reinterpret_cast<uint32_t const *>(pData);
-      for (size_t i = 0; i < (n / 4); i++, valuesPerLine--)
-        oss << std::uppercase << std::right << std::setw(8) << std::setfill('0') << std::hex << static_cast<unsigned int>(p[i]) << " ";
-      while (valuesPerLine-- != 0)
-        oss << "         ";
+      for (size_t i = 0U; i < (n / 4U); i++, valuesPerLine--)
+        sc << StringComposer::Width(8) << p[i] << ' ';
+      while (valuesPerLine-- != 0U)
+        sc << "         ";
       break;
     }
 
@@ -1451,25 +1470,25 @@ std::string HexDump(uint32_t const address,
   }
 
   char const * p = reinterpret_cast<char const *>(pData);
-  for (size_t i = 0; i < n; i++)
+  for (size_t i = 0U; i < n; i++)
   {
     char c = *p++;
-    if ((c < 0x20) || (c > 0x7E))
+    if (!IsPrintableASCII(c))
       c = '.';
-    oss << c;
+    sc << c;
   }
 
-  return oss.str();
+  return sc.Get();
 }
 
 /**
  * \ingroup GPCC_STRING
- * \brief Converts an uint32_t into an std::string using hexadecimal representation and prefix "0x".
+ * \brief Converts an `uint32_t` into an `std::string` using hexadecimal representation and prefix "0x".
  *
  * Example:\n
  * ToHex(11, 2) -> 0x0B
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * This is thread-safe.
@@ -1478,14 +1497,16 @@ std::string HexDump(uint32_t const address,
  * Strong guarantee
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param value
  * Number that shall be converted.
+ *
  * \param width
  * Minimum number of digits. Range: 0..8.
+ *
  * \return
  * Result of the conversion.
  */
@@ -1494,21 +1515,26 @@ std::string ToHex(uint32_t const value, uint8_t const width)
   if (width > 8U)
     throw std::invalid_argument("ToHex: width invalid");
 
-  std::ostringstream oss;
-  oss << "0x" << std::uppercase << std::right;
-  if (width != 0U)
-    oss << std::setw(width) << std::setfill('0');
-  oss << std::hex << value;
+  char buffer[12];
+  #if defined(_NEWLIB_VERSION)
+  int status = sniprintf(buffer, sizeof(buffer), "0x%0*lX", static_cast<int>(width), static_cast<unsigned long>(value));
+  #else
+  int status = snprintf(buffer, sizeof(buffer), "0x%0*lX", static_cast<int>(width), static_cast<unsigned long>(value));
+  #endif
+    if (status < 0)
+    throw std::logic_error("snprintf failed");
+  else if (static_cast<size_t>(status) >= sizeof(buffer))
+    throw std::logic_error("buffer too small");
 
-  return oss.str();
+  return buffer;
 }
 
 /**
  * \ingroup GPCC_STRING
- * \brief Converts an uint32_t into an std::string using binary representation and prefix "0b".
+ * \brief Converts an `uint32_t` into an `std::string` using binary representation and prefix "0b".
  *
  * Example:\n
- * ToHex(11, 6) -> 0b001011
+ * ToBin(11, 6) -> 0b001011
  *
  * - - -
  *
@@ -1527,8 +1553,10 @@ std::string ToHex(uint32_t const value, uint8_t const width)
  *
  * \param value
  * Number that shall be converted.
+ *
  * \param width
  * Minimum number of digits. Range: 0..32.
+ *
  * \return
  * Result of the conversion.
  */
@@ -1566,12 +1594,12 @@ std::string ToBin(uint32_t value, uint8_t width)
 
 /**
  * \ingroup GPCC_STRING
- * \brief Converts an uint32_t into an std::string using hexadecimal representation with no prefix.
+ * \brief Converts an `uint32_t` into an `std::string` using hexadecimal representation with no prefix.
  *
  * Example:\n
  * ToHexNoPrefix(11, 2) -> 0B
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * This is thread-safe.
@@ -1580,34 +1608,41 @@ std::string ToBin(uint32_t value, uint8_t width)
  * Strong guarantee
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param value
  * Number that shall be converted.
+ *
  * \param width
  * Minimum number of digits. Range: 0..8.
+ *
  * \return
  * Result of the conversion.
  */
 std::string ToHexNoPrefix(uint32_t const value, uint8_t const width)
 {
   if (width > 8U)
-    throw std::invalid_argument("ToHexNo0x: witdh invalid");
+    throw std::invalid_argument("ToHexNoPrefix: width invalid");
 
-  std::ostringstream oss;
-  oss << std::uppercase << std::right;
-  if (width != 0)
-    oss << std::setw(width) << std::setfill('0');
-  oss << std::hex << value;
+  char buffer[12];
+  #if defined(_NEWLIB_VERSION)
+  int status = sniprintf(buffer, sizeof(buffer), "%0*lX", static_cast<int>(width), static_cast<unsigned long>(value));
+  #else
+  int status = snprintf(buffer, sizeof(buffer), "%0*lX", static_cast<int>(width), static_cast<unsigned long>(value));
+  #endif
+    if (status < 0)
+    throw std::logic_error("snprintf failed");
+  else if (static_cast<size_t>(status) >= sizeof(buffer))
+    throw std::logic_error("buffer too small");
 
-  return oss.str();
+  return buffer;
 }
 
 /**
  * \ingroup GPCC_STRING
- * \brief Converts an uint32_t into an std::string using decimal and hexadecimal representation.
+ * \brief Converts an `uint32_t` into an `std::string` using decimal and hexadecimal representation.
  *
  * Example:\n
  * ToDecAndHex(11, 2) -> 11 (0x0B)
@@ -1627,14 +1662,18 @@ std::string ToHexNoPrefix(uint32_t const value, uint8_t const width)
  *
  * \param value
  * Number that shall be converted.
+ *
  * \param width
  * Minimum number of digits used for the hexadecimal representation. Range: 0..8.
+ *
  * \return
  * Result of the conversion.
  */
 std::string ToDecAndHex(uint32_t const value, uint8_t const width)
 {
-  return std::to_string(value) + " (" + ToHex(value, width) + ")";
+  gpcc::string::StringComposer s;
+  s << value << " (" << ToHex(value, width) << ')';
+  return s.Get();
 }
 
 /**
@@ -1657,7 +1696,7 @@ std::string ToDecAndHex(uint32_t const value, uint8_t const width)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
  *
  * \throws std::out_of_range       The result of the conversion exceeds the range of `uint8_t`.
  *
@@ -1703,7 +1742,7 @@ uint8_t DecimalToU8(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
  *
  * \throws std::out_of_range       The result of the conversion exceeds the range of `uint8_t`.
  *
@@ -1748,7 +1787,7 @@ uint8_t AnyNumberToU8(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
  *
  * \throws std::out_of_range       The result of the conversion exceeds the range of `uint8_t`.
  *
@@ -1800,7 +1839,7 @@ uint8_t AnyStringToU8(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -1841,7 +1880,7 @@ uint8_t TwoDigitHexToU8(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -1882,7 +1921,7 @@ uint16_t FourDigitHexToU16(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
  *
  * \throws std::out_of_range       The result of the conversion exceeds the range of `uint32_t`.
  *
@@ -1926,7 +1965,7 @@ uint32_t DecimalToU32(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
  *
  * \throws std::out_of_range       The result of the conversion exceeds the range of [`min`;`max`].
  *
@@ -1972,7 +2011,7 @@ uint32_t DecimalToU32(std::string const & s, uint32_t const min, uint32_t const 
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
  *
  * \throws std::out_of_range       The result of the conversion exceeds the range of `uint32_t`.
  *
@@ -2012,7 +2051,7 @@ uint32_t HexToU32(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
  *
  * \throws std::out_of_range       The result of the conversion exceeds the range of [`min`;`max`].
  *
@@ -2063,7 +2102,7 @@ uint32_t HexToU32(std::string const & s, uint32_t const min, uint32_t const max)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
  *
  * \throws std::out_of_range       The result of the conversion exceeds the range of `uint32_t`.
  *
@@ -2107,7 +2146,7 @@ uint32_t AnyNumberToU32(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
  *
  * \throws std::out_of_range       The result of the conversion exceeds the range of [`min`;`max`].
  *
@@ -2167,7 +2206,7 @@ uint32_t AnyNumberToU32(std::string const & s, uint32_t const min, uint32_t cons
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a character.
+ * \throws std::invalid_argument   @p s contains no valid representation of a character.
  *
  * \throws std::out_of_range       The result of the conversion exceeds the range of `char`.
  *
@@ -2225,7 +2264,7 @@ char AnyStringToChar(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
  *
  * \throws std::out_of_range       The result of the conversion exceeds the range of `int32_t`.
  *
@@ -2269,7 +2308,7 @@ int32_t DecimalToI32(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
  *
  * \throws std::out_of_range       The result of the conversion exceeds the range of [`min`;`max`].
  *
@@ -2317,7 +2356,7 @@ int32_t DecimalToI32(std::string const & s, int32_t const min, int32_t const max
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
  *
  * \throws std::out_of_range       The result of the conversion exceeds the range of `int32_t`.
  *
@@ -2361,7 +2400,7 @@ int32_t AnyNumberToI32(std::string const & s)
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
  *
  * \throws std::out_of_range       The result of the conversion exceeds the range of [`min`;`max`].
  *
@@ -2436,7 +2475,7 @@ int32_t AnyNumberToI32(std::string const & s, int32_t const min, int32_t const m
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * \throws std::invalid_argument   `s` contains no valid representation of a number.
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
  *
  * \throws std::out_of_range       The result of the conversion exceeds the range of `double`.
  *
@@ -2480,8 +2519,8 @@ double ToDouble(std::string const & s)
 
 /**
  * \ingroup GPCC_STRING
- * \brief Disassembles strings similar to sample "Field1 = Value1, Field2 = Value2" (or configurable variants of the
- *        sample) into a vector of pairs of field and value.
+ * \brief Disassembles strings following the pattern "Field1 = Value1, Field2 = Value2" (or configurable variants of the
+ *        pattern) into a vector of pairs of field and value.
  *
  * __Example:__\n
  * _Input:_ Name: "Willy Black" Age: 50\n
@@ -2536,12 +2575,12 @@ double ToDouble(std::string const & s)
  * \param assignmentChar
  * Character that shall be recognized as separator between field and value _within a pair_.\n
  * Typical examples: colon or equality sign\n
- * If `separatorChar` is the space character, then the separator between field and value may be surrounded by any number
- * of space characters.
+ * If @p separatorChar is the space character, then the separator between field and value may be surrounded by any
+ * number of space characters.
  *
  * \param quotationMarkChar
  * Character that shall be recognized as quotation mark. Each field and value may be surrounded by quotation mark
- * characters. If so, then any occurrence of `separatorChar` and `assignmentChar` will be ignored within the quoted
+ * characters. If so, then any occurrence of @p separatorChar and @p assignmentChar will be ignored within the quoted
  * section. Quotation mark characters will be removed from the results.
  *
  * \return

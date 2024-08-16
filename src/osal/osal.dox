@@ -19,6 +19,7 @@
  * - Panic handling (see @ref GPCC_OSAL_PANIC for details)
  * - Multithreading primitives (see @ref GPCC_OSAL_THREADING for details)
  * - Time Flow Control (TFC) for unit tests (see @ref GPCC_TIME_FLOW_CONTROL for details)
+ * - Operating system specific constante (see @ref GPCC_OSAL_DEFS)
  *
  * Panic handling and threading primitives are provided for all supported operating systems. The API and the provided
  * functionality are the same or almost equivalent on all supported operating systems in order to achieve portability.
@@ -699,4 +700,10 @@
  * @defgroup GPCC_OSAL_EXCEPTIONS Exceptions
  *
  * \brief OSAL related exceptions.
+ */
+
+/**
+ * @ingroup GPCC_OSAL
+ * @defgroup GPCC_OSAL_DEFS Definitions
+ * \brief Common definitions with OS specific values.
  */

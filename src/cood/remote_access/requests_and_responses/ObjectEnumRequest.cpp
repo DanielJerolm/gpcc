@@ -5,14 +5,14 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2024 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp>
 #include <gpcc/stream/IStreamReader.hpp>
 #include <gpcc/stream/IStreamWriter.hpp>
+#include <gpcc/string/StringComposer.hpp>
 #include <gpcc/string/tools.hpp>
-#include <sstream>
 #include <stdexcept>
 
 namespace gpcc {
@@ -137,14 +137,14 @@ void ObjectEnumRequest::ToBinary(gpcc::stream::IStreamWriter & sw) const
 /// \copydoc gpcc::cood::RequestBase::ToString
 std::string ObjectEnumRequest::ToString(void) const
 {
-  std::ostringstream s;
+  gpcc::string::StringComposer s;
 
   s << "Object enum request. Start = "
     << gpcc::string::ToHex(startIndex, 4U) << ", Last = "
     << gpcc::string::ToHex(lastIndex, 4U) << ", AF = "
     << gpcc::string::ToHex(static_cast<uint16_t>(attrFilter), 4U);
 
-  return s.str();
+  return s.Get();
 }
 
 // --> RequestBase

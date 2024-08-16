@@ -5,15 +5,15 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2024 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/requests_and_responses/ReadRequest.hpp>
 #include <gpcc/cood/remote_access/requests_and_responses/ReadRequestResponse.hpp>
 #include <gpcc/stream/IStreamReader.hpp>
 #include <gpcc/stream/IStreamWriter.hpp>
+#include <gpcc/string/StringComposer.hpp>
 #include <gpcc/string/tools.hpp>
-#include <sstream>
 #include <stdexcept>
 
 namespace gpcc {
@@ -197,7 +197,7 @@ void ReadRequest::ToBinary(gpcc::stream::IStreamWriter & sw) const
 /// \copydoc gpcc::cood::RequestBase::ToString
 std::string ReadRequest::ToString(void) const
 {
-  std::ostringstream s;
+  gpcc::string::StringComposer s;
 
   s << "Read request (";
 
@@ -219,7 +219,7 @@ std::string ReadRequest::ToString(void) const
   s << ") for " << gpcc::string::ToHex(index, 4U) << ':' << static_cast<unsigned int>(subindex) << ", "
        "Permission = " << gpcc::string::ToHex(static_cast<uint16_t>(permissions), 4U);
 
-  return s.str();
+  return s.Get();
 }
 
 // --> RequestBase

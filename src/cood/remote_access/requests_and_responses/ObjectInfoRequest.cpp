@@ -5,14 +5,14 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2024 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoRequest.hpp>
 #include <gpcc/stream/IStreamReader.hpp>
 #include <gpcc/stream/IStreamWriter.hpp>
+#include <gpcc/string/StringComposer.hpp>
 #include <gpcc/string/tools.hpp>
-#include <sstream>
 #include <stdexcept>
 
 namespace gpcc {
@@ -162,7 +162,7 @@ void ObjectInfoRequest::ToBinary(gpcc::stream::IStreamWriter & sw) const
 /// \copydoc gpcc::cood::RequestBase::ToString
 std::string ObjectInfoRequest::ToString(void) const
 {
-  std::ostringstream s;
+  gpcc::string::StringComposer s;
 
   s << "Object info request for "
     << gpcc::string::ToHex(index, 4U) << ", SI range "
@@ -178,7 +178,7 @@ std::string ObjectInfoRequest::ToString(void) const
   else
     s << ", excl. asm";
 
-  return s.str();
+  return s.Get();
 }
 
 // --> RequestBase

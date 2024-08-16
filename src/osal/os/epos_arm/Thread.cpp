@@ -14,8 +14,7 @@
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
-#include <iomanip>
-#include <sstream>
+#include <gpcc/string/StringComposer.hpp>
 #include <stdexcept>
 #include <system_error>
 #include <cerrno>
@@ -230,7 +229,8 @@ Thread::~Thread(void)
  */
 std::string Thread::GetInfo(size_t const nameFieldWidth) const
 {
-  std::ostringstream infoLine;
+  using gpcc::string::StringComposer;
+  StringComposer infoLine;
 
   epos_thread_t* pEPOSThread = nullptr;
   {
@@ -263,14 +263,14 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
   else
   {
     if (name.size() <= nameFieldWidth)
-      infoLine << std::left << std::setw(nameFieldWidth) << std::setfill(' ') << name;
+      infoLine << StringComposer::AlignLeft << StringComposer::Width(nameFieldWidth) << name;
     else
       infoLine << name.substr(0, nameFieldWidth - 3U) << "...";
 
     infoLine << " -----";
   }
 
-  return infoLine.str();
+  return infoLine.Get();
 }
 
 /**

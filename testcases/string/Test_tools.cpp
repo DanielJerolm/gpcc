@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
 #include <gpcc/string/tools.hpp>
@@ -1317,13 +1317,13 @@ TEST(gpcc_string_tools_Tests, HexDump_8bit)
   };
 
   std::string result = HexDump(0x1234ABCDU, data, 8, 1, 8);
-  ASSERT_TRUE(result == "0x1234ABCD: 41 42 61 FF AB 21 7E 12 ABa..!~.");
+  ASSERT_STREQ(result.c_str(), "0x1234ABCD: 41 42 61 FF AB 21 7E 12 ABa..!~.");
 
   result = HexDump(0x1234ABCDU, data, 4, 1, 8);
-  ASSERT_TRUE(result == "0x1234ABCD: 41 42 61 FF             ABa.");
+  ASSERT_STREQ(result.c_str(), "0x1234ABCD: 41 42 61 FF             ABa.");
 
   result = HexDump(0x1234ABCDU, data, 0, 1, 8);
-  ASSERT_TRUE(result == "0x1234ABCD:                         ");
+  ASSERT_STREQ(result.c_str(), "0x1234ABCD:                         ");
 }
 TEST(gpcc_string_tools_Tests, HexDump_16bit)
 {
@@ -1336,13 +1336,13 @@ TEST(gpcc_string_tools_Tests, HexDump_16bit)
   };
 
   std::string result = HexDump(0x1234ABCDU, data, 8, 2, 4);
-  ASSERT_TRUE(result == "0x1234ABCD: 0102 0304 0506 0708 ........");
+  ASSERT_STREQ(result.c_str(), "0x1234ABCD: 0102 0304 0506 0708 ........");
 
   result = HexDump(0x1234ABCDU, data, 4, 2, 4);
-  ASSERT_TRUE(result == "0x1234ABCD: 0102 0304           ....");
+  ASSERT_STREQ(result.c_str(), "0x1234ABCD: 0102 0304           ....");
 
   result = HexDump(0x1234ABCDU, data, 0, 2, 4);
-  ASSERT_TRUE(result == "0x1234ABCD:                     ");
+  ASSERT_STREQ(result.c_str(), "0x1234ABCD:                     ");
 }
 TEST(gpcc_string_tools_Tests, HexDump_32bit)
 {
@@ -1353,13 +1353,13 @@ TEST(gpcc_string_tools_Tests, HexDump_32bit)
   };
 
   std::string result = HexDump(0x1234ABCDU, data, 8, 4, 2);
-  ASSERT_TRUE(result == "0x1234ABCD: 01020304 05060708 ........");
+  ASSERT_STREQ(result.c_str(), "0x1234ABCD: 01020304 05060708 ........");
 
   result = HexDump(0x1234ABCDU, data, 4, 4, 2);
-  ASSERT_TRUE(result == "0x1234ABCD: 01020304          ....");
+  ASSERT_STREQ(result.c_str(), "0x1234ABCD: 01020304          ....");
 
   result = HexDump(0x1234ABCDU, data, 0, 4, 2);
-  ASSERT_TRUE(result == "0x1234ABCD:                   ");
+  ASSERT_STREQ(result.c_str(), "0x1234ABCD:                   ");
 }
 TEST(gpcc_string_tools_Tests, HexDump_Errors)
 {

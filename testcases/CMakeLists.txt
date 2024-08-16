@@ -155,8 +155,25 @@ else()
                  stream/TestMemStreamReader.cpp
                  stream/TestMemStreamWriter.cpp
                  string/Test_levenshtein_distance.cpp
-                 string/TestSharedString.cpp
                  string/Test_tools.cpp
+                 string/TestSharedString.cpp
+                 string/TestStringComposer_bool.cpp
+                 string/TestStringComposer_char.cpp
+                 string/TestStringComposer_cstring.cpp
+                 string/TestStringComposer_double.cpp
+                 string/TestStringComposer_float.cpp
+                 string/TestStringComposer_int.cpp
+                 string/TestStringComposer_long_long.cpp
+                 string/TestStringComposer_long.cpp
+                 string/TestStringComposer_longdouble.cpp
+                 string/TestStringComposer_short.cpp
+                 string/TestStringComposer_stdstring.cpp
+                 string/TestStringComposer_unsigned_char.cpp
+                 string/TestStringComposer_unsigned_int.cpp
+                 string/TestStringComposer_unsigned_long_long.cpp
+                 string/TestStringComposer_unsigned_long.cpp
+                 string/TestStringComposer_unsigned_short.cpp
+                 string/TestStringComposer.cpp
                  time/Test_clock.cpp
                  time/TestTimePoint.cpp
                  time/TestTimeSpan.cpp

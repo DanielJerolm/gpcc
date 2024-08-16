@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2024 Daniel Jerolm
 */
 
 #ifndef SKIP_TFC_BASED_TESTS
@@ -678,12 +678,7 @@ gpcc::cood::SDOAbortCode TestbenchBase::OnBeforeReadCallback(gpcc::cood::Object 
           << gpcc::string::ToHex(pObject->GetIndex(), 4U)
           << ", SI "
           << static_cast<unsigned int>(subindex)
-          << ", ca = ";
-
-      if (ca)
-        oss << "true";
-      else
-        oss << "false";
+          << ", ca = " << std::boolalpha << ca;
 
       tbLogger.Log(gpcc::log::LogType::Info, oss.str());
     }
@@ -770,12 +765,7 @@ gpcc::cood::SDOAbortCode TestbenchBase::OnBeforeWriteCallback(gpcc::cood::Object
           << gpcc::string::ToHex(pObject->GetIndex(), 4U)
           << ", SI "
           << static_cast<unsigned int>(subindex)
-          << ", ca = ";
-
-      if (ca)
-        oss << "true";
-      else
-        oss << "false";
+          << ", ca = " << std::boolalpha << ca;
 
       tbLogger.Log(gpcc::log::LogType::Info, oss.str());
     }
@@ -840,12 +830,7 @@ void TestbenchBase::OnAfterWriteCallback(gpcc::cood::Object const * pObject, uin
           << gpcc::string::ToHex(pObject->GetIndex(), 4U)
           << ", SI "
           << static_cast<unsigned int>(subindex)
-          << ", ca = ";
-
-      if (ca)
-        oss << "true";
-      else
-        oss << "false";
+          << ", ca = " << std::boolalpha << ca;
 
       tbLogger.Log(gpcc::log::LogType::Info, oss.str());
     }
