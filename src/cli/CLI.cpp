@@ -989,8 +989,8 @@ void CLI::Terminal_MoveCursorX(int16_t deltaX)
 
     // build and transmit command
     char str[8];
-    int const result = snprintf(str, sizeof(str), "\x1B[%d%c", static_cast<int>(deltaX), lastChar);
-    if ((result < 0) || (static_cast<size_t>(result) >= sizeof(str)))
+    int const status = snprintf(str, sizeof(str), "\x1B[%d%c", static_cast<int>(deltaX), lastChar);
+    if ((status < 0) || (static_cast<size_t>(status) >= sizeof(str)))
       PANIC();
     Terminal_Write(str);
   } // if (deltaX != 0)
@@ -2289,8 +2289,8 @@ void CLI::PrintException(std::exception const & e, size_t const level)
   // scope used to safe stack during recursive calls
   {
     char str[6];
-    int const result = snprintf(str, sizeof(str), "%u", static_cast<unsigned int>(level)) >= static_cast<int>(sizeof(str));
-    if ((result < 0) || (static_cast<size_t>(result) >= sizeof(str)))
+    int const status = snprintf(str, sizeof(str), "%u", static_cast<unsigned int>(level)) >= static_cast<int>(sizeof(str));
+    if ((status < 0) || (static_cast<size_t>(status) >= sizeof(str)))
       PANIC();
 
     Terminal_Write(str);

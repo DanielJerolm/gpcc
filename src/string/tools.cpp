@@ -1517,9 +1517,9 @@ std::string ToHex(uint32_t const value, uint8_t const width)
 
   char buffer[12];
   #if defined(_NEWLIB_VERSION)
-  int status = sniprintf(buffer, sizeof(buffer), "0x%0*lX", static_cast<int>(width), static_cast<unsigned long>(value));
+  int const status = sniprintf(buffer, sizeof(buffer), "0x%0*lX", static_cast<int>(width), static_cast<unsigned long>(value));
   #else
-  int status = snprintf(buffer, sizeof(buffer), "0x%0*lX", static_cast<int>(width), static_cast<unsigned long>(value));
+  int const status = snprintf(buffer, sizeof(buffer), "0x%0*lX", static_cast<int>(width), static_cast<unsigned long>(value));
   #endif
     if (status < 0)
     throw std::logic_error("snprintf failed");
@@ -1628,9 +1628,9 @@ std::string ToHexNoPrefix(uint32_t const value, uint8_t const width)
 
   char buffer[12];
   #if defined(_NEWLIB_VERSION)
-  int status = sniprintf(buffer, sizeof(buffer), "%0*lX", static_cast<int>(width), static_cast<unsigned long>(value));
+  int const status = sniprintf(buffer, sizeof(buffer), "%0*lX", static_cast<int>(width), static_cast<unsigned long>(value));
   #else
-  int status = snprintf(buffer, sizeof(buffer), "%0*lX", static_cast<int>(width), static_cast<unsigned long>(value));
+  int const status = snprintf(buffer, sizeof(buffer), "%0*lX", static_cast<int>(width), static_cast<unsigned long>(value));
   #endif
     if (status < 0)
     throw std::logic_error("snprintf failed");
