@@ -23,6 +23,17 @@
 namespace gpcc {
 namespace string {
 
+/**
+ * \ingroup GPCC_STRING
+ * \brief Maximum nesting level for translation of nested exceptions to a string.
+ *
+ * This is used to limit the number of nested exceptions processed by
+ * @ref ExceptionDescriptionToString(std::exception const &) and
+ * @ref ExceptionDescriptionToString(std::exception_ptr const &).
+ */
+constexpr size_t maxDepthForExceptionToStringTranslation = 6U;
+
+
 // String manipulation --------------------------------------------------------
 std::string Trim(std::string const & s);
 std::string Trim(std::string const & s, char const c);

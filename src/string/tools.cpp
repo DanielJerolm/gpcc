@@ -28,6 +28,10 @@ namespace
  *
  * This is used by @ref ExceptionDescriptionToString().
  *
+ * \note  If the number of nested exceptions exceeds @ref maxDepthForExceptionToStringTranslation, then evaluation
+ *        of nested exceptions will stop and a message will be appended to the returned string:\n
+ *        `**Max depth reached. Skipping the rest**`
+ *
  * - - -
  *
  * __Thread safety:__\n
@@ -66,7 +70,15 @@ void ExceptionDescriptionToStringHelper(std::exception const & e, size_t level, 
   catch (std::exception const & e2)
   {
     s << gpcc::osal::endLine;
-    ExceptionDescriptionToStringHelper(e2, level + 1U, s);
+
+    if (level < gpcc::string::maxDepthForExceptionToStringTranslation)
+    {
+      ExceptionDescriptionToStringHelper(e2, level + 1U, s);
+    }
+    else
+    {
+      s << "**Max depth reached. Skipping the rest**";
+    }
   }
   catch (...)
   {
@@ -1285,6 +1297,10 @@ bool IsDecimalDigitsOnly(std::string const & s) noexcept
  * \brief Creates an `std::string` from the description (returned by `what()`) of an exception and all nested
  *        exceptions (if any).
  *
+ * \note  If the number of nested exceptions exceeds @ref maxDepthForExceptionToStringTranslation, then evaluation
+ *        of nested exceptions will stop and a message will be appended to the returned string:\n
+ *        `**Max depth reached. Skipping the rest**`
+ *
  * - - -
  *
  * __Thread safety:__\n
@@ -1323,6 +1339,10 @@ std::string ExceptionDescriptionToString(std::exception const & e)
  * \ingroup GPCC_STRING
  * \brief Creates an std::string from the description (returned by `what()`) of an exception and all nested
  *        exceptions (if any).
+ *
+ * \note  If the number of nested exceptions exceeds @ref maxDepthForExceptionToStringTranslation, then evaluation
+ *        of nested exceptions will stop and a message will be appended to the returned string:\n
+ *        `**Max depth reached. Skipping the rest**`
  *
  * - - -
  *

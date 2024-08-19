@@ -4,7 +4,6 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
-- Limit number of recursions in gpcc::string::ExceptionDescriptionToString()
 - BugFix: IsPowerOf2 returns true for zero, but zero is not a power of 2
 - Check usage of postfixes for literals ([0-9]U <<)
 
@@ -190,6 +189,9 @@ Next to do:
 
 History:
 ===============================================================================
+2024-08-19
+- Limit number of recursions in gpcc::string::ExceptionDescriptionToString()
+
 2024-08-16
 - Add gpcc::string::StringComposer.
   All components from gpcc use StringComposer instead of std::ostringstream now.
