@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
 #ifdef COMPILER_GCC_ARM
@@ -14,127 +14,278 @@
 #define BUILTINS_HPP_202206112144
 
 #include <limits>
+#include <type_traits>
 #include <cstdint>
 
-namespace gpcc
-{
-namespace Compiler
-{
+namespace gpcc     {
+namespace compiler {
 
-bool OverflowAwareAdd(int64_t const a, int64_t const b, int64_t * const pResult) noexcept;
-bool OverflowAwareAdd(int64_t const a, int64_t const b, int32_t * const pResult) noexcept;
-bool OverflowAwareSub(int64_t const a, int64_t const b, int64_t * const pResult) noexcept;
-bool OverflowAwareSub(int64_t const a, int64_t const b, int32_t * const pResult) noexcept;
+/**
+ * \ingroup GPCC_COMPILER_BUILTINS
+ * \brief Overflow-aware addition.
+ *
+ * The types @p TA, @p TB, and @p TRES may all be different types.\n
+ * The width of @p TRES may be less that @p TA and/or @p TB.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is reentrant if different pointers @p pResult are used.
+ *
+ * __Exception safety:__\n
+ * No-throw guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \tparam TA   Type of first operand @p a.
+ * \tparam TB   Type of second operand @p b.
+ * \tparam TRES Type of result.
+ *
+ * \param a
+ * First operand.
+ *
+ * \param b
+ * Second operand.
+ *
+ * \param pResult
+ * The result is stored into the referenced variable.\n
+ * `nullptr` is not allowed.
+ *
+ * \retval false  No overflow occurred.
+ * \retval true   Arithmetic overflow. Undefined data may have been written to @p pResult.
+ */
+template<typename TA, typename TB, typename TRES>
+bool OverflowAwareAdd(TA const a, TB const b, TRES* const pResult) noexcept
+{
+  return __builtin_add_overflow(a, b, pResult);
+}
 
-inline int CountLeadingZeros(unsigned int const x) noexcept
+/**
+ * \ingroup GPCC_COMPILER_BUILTINS
+ * \brief Overflow-aware subtraction.
+ *
+ * The types @p TA, @p TB, and @p TRES may all be different types.\n
+ * The width of @p TRES may be less that @p TA and/or @p TB.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is reentrant if different pointers @p pResult are used.
+ *
+ * __Exception safety:__\n
+ * No-throw guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \tparam TA   Type of first operand @p a.
+ * \tparam TB   Type of second operand @p b.
+ * \tparam TRES Type of result.
+ *
+ * \param a
+ * First operand.
+ *
+ * \param b
+ * Second operand.
+ *
+ * \param pResult
+ * The result of the subtraction `a - b` is stored into the referenced variable.\n
+ * `nullptr` is not allowed.
+ *
+ * \retval false  No overflow occurred.
+ * \retval true   Arithmetic overflow. Undefined data may have been written to @p pResult.
+ */
+template<typename T1, typename T2, typename T3>
+bool OverflowAwareSub(T1 const a, T2 const b, T3* const pResult) noexcept
+{
+  return __builtin_sub_overflow(a, b, pResult);
+}
+
 /**
  * \ingroup GPCC_COMPILER_BUILTINS
  * \brief Counts the leading zeros in a value.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * This is thread-safe.
  *
  * __Exception safety:__\n
- * No-throw guarantee:\n
+ * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param x Value to be examined.
+ * \tparam T
+ * Type of the value that shall be examined.\n
+ * The type must be an integral unsigned type.
+ *
+ * \param x
+ * Value to be examined.
+ *
  * \return
- * Number of leading zeros in `x`.\n
- * Example: CountLeadingZeros(8) = 28 (on a machine where unsigned int is 32 bit)\n
- * If `x` is zero, than the number of bits in the underlying data type is returned.
+ * Number of leading zeros in @p x. \n
+ * If @p x is zero, then the bit width of @p T is returned.
  */
+template<typename T>
+int CountLeadingZeros(T const x) noexcept
 {
+  static_assert(std::is_integral_v<T> == true, "CountLeadingZeros() is only defined for unsigned integral types");
+  static_assert(std::is_unsigned_v<T> == true, "CountLeadingZeros() is undefined for signed types");
+
   if (x != 0)
-    return __builtin_clz(x);
+  {
+    #if UINTPTR_MAX == UINT64_MAX
+      // ARM64
+      static_assert(std::numeric_limits<unsigned long long>::digits == 64);
+      return __builtin_clzll(x) - (64 - std::numeric_limits<T>::digits);
+    #else
+      // 32bit ARM
+      static_assert(std::numeric_limits<unsigned long>::digits == 32);
+      static_assert(std::numeric_limits<unsigned long long>::digits == 64);
+      if (std::numeric_limits<T>::digits == 64)
+        return __builtin_clzll(x);
+      else
+        return __builtin_clzl(x) - (32 - std::numeric_limits<T>::digits);
+    #endif
+  }
   else
-    return std::numeric_limits<unsigned int>::digits;
+  {
+    return std::numeric_limits<T>::digits;
+  }
 }
-inline int CountLeadingOnes(unsigned int const x) noexcept
+
 /**
  * \ingroup GPCC_COMPILER_BUILTINS
  * \brief Counts the leading ones in a value.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * This is thread-safe.
  *
  * __Exception safety:__\n
- * No-throw guarantee:\n
+ * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param x Value to be examined.
+ * \tparam T
+ * Type of the value that shall be examined.\n
+ * The type must be an integral unsigned type.
+ *
+ * \param x
+ * Value to be examined.
+ *
  * \return
- * Number of leading ones in `x`.\n
- * Example: CountLeadingZeros(0xFF...FF0) = 28 (on a machine where unsigned int is 32 bit)\n
- * If `x` is 0xFFF...FF (all ones), than the number of bits in the underlying data type is returned.
+ * Number of leading ones in @p x. \n
+ * If @p x is all '1', then the bit width of @p T is returned.
  */
+template<typename T>
+int CountLeadingOnes(T const x) noexcept
 {
-  return CountLeadingZeros(~x);
+  return CountLeadingZeros(static_cast<T>(~x));
 }
 
-inline int CountTrailingZeros(unsigned int const x) noexcept
 /**
  * \ingroup GPCC_COMPILER_BUILTINS
  * \brief Counts the trailing zeros in a value.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * This is thread-safe.
  *
  * __Exception safety:__\n
- * No-throw guarantee:\n
+ * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param x Value to be examined.
+ * \tparam T
+ * Type of the value that shall be examined.\n
+ * The type must be an integral unsigned type.
+ *
+ * \param x
+ * Value to be examined.
+ *
  * \return
- * Number of trailing zeros in `x`.\n
- * Example: CountTrailingZeros(8) = 3\n
- * If `x` is zero, than the number of bits in the underlying data type is returned.
+ * Number of trailing zeros in @p x. \n
+ * If @p x is zero, then the bit width of @p T is returned.
  */
+template<typename T>
+int CountTrailingZeros(T const x) noexcept
 {
+  static_assert(std::is_integral_v<T> == true, "CountTrailingZeros() is only defined for unsigned integral types");
+  static_assert(std::is_unsigned_v<T> == true, "CountTrailingZeros() is undefined for signed types");
+
   if (x != 0)
-    return __builtin_ctz(x);
+  {
+    #if UINTPTR_MAX == UINT64_MAX
+      // ARM64
+      static_assert(std::numeric_limits<unsigned long long>::digits == 64);
+      return __builtin_ctzll(x);
+    #else
+      // 32bit ARM
+      static_assert(std::numeric_limits<unsigned long>::digits == 32);
+      static_assert(std::numeric_limits<unsigned long long>::digits == 64);
+      if (std::numeric_limits<T>::digits == 64)
+        return __builtin_ctzll(x);
+      else
+        return __builtin_ctzl(x);
+    #endif
+  }
   else
-    return std::numeric_limits<unsigned int>::digits;
+  {
+    return std::numeric_limits<T>::digits;
+  }
 }
-inline int CountTrailingOnes(unsigned int const x) noexcept
+
 /**
  * \ingroup GPCC_COMPILER_BUILTINS
  * \brief Counts the trailing ones in a value.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * This is thread-safe.
  *
  * __Exception safety:__\n
- * No-throw guarantee:\n
+ * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param x Value to be examined.
+ * \tparam T
+ * Type of the value that shall be examined.\n
+ * The type must be an integral unsigned type.
+ *
+ * \param x
+ * Value to be examined.
+ *
  * \return
- * Number of trailing ones in `x`.\n
- * Example: CountTrailingOnes(7) = 3\n
- * If `x` is 0xFFF...FF (all ones), than the number of bits in the underlying data type is returned.
+ * Number of trailing ones in @p x. \n
+ * If @p x is all '1', then the bit width of @p T is returned.
  */
+template<typename T>
+int CountTrailingOnes(T const x) noexcept
 {
-  return CountTrailingZeros(~x);
+  return CountTrailingZeros(static_cast<T>(~x));
 }
 
-inline uint8_t ReverseBits8(uint8_t const value) noexcept
 /**
  * \ingroup GPCC_COMPILER_BUILTINS
  * \brief Reverses the bit order in an 8 bit value (abcdefgh => hgfedcba)
@@ -154,16 +305,17 @@ inline uint8_t ReverseBits8(uint8_t const value) noexcept
  *
  * \param value
  * Input value.
+ *
  * \return
- * `value` with bits being reversed: abcdefgh => hgfedcba
+ * @p value with bits being reversed: abcdefgh => hgfedcba
  */
+inline uint8_t ReverseBits8(uint8_t const value) noexcept
 {
   uint32_t result;
   asm("rbit %1,%0" : "=r" (result) : "r" (value));
   return result >> 24U;
 }
 
-inline uint16_t ReverseBits16(uint16_t const value) noexcept
 /**
  * \ingroup GPCC_COMPILER_BUILTINS
  * \brief Reverses the bit order in an 16 bit value.
@@ -183,16 +335,17 @@ inline uint16_t ReverseBits16(uint16_t const value) noexcept
  *
  * \param value
  * Input value.
+ *
  * \return
- * `value` with bits being reversed.
+ * @p value with bits being reversed.
  */
+inline uint16_t ReverseBits16(uint16_t const value) noexcept
 {
   uint32_t result;
   asm("rbit %1,%0" : "=r" (result) : "r" (value));
   return result >> 16U;
 }
 
-inline uint32_t ReverseBits32(uint32_t const value) noexcept
 /**
  * \ingroup GPCC_COMPILER_BUILTINS
  * \brief Reverses the bit order in an 32 bit value.
@@ -212,17 +365,19 @@ inline uint32_t ReverseBits32(uint32_t const value) noexcept
  *
  * \param value
  * Input value.
+ *
  * \return
- * `value` with bits being reversed.
+ * @p value with bits being reversed.
  */
+inline uint32_t ReverseBits32(uint32_t const value) noexcept
 {
   uint32_t result;
   asm("rbit %1,%0" : "=r" (result) : "r" (value));
   return result;
 }
 
-} // namespace Compiler
+} // namespace compiler
 } // namespace gpcc
 
-#endif /* BUILTINS_HPP_202206112144 */
-#endif /* COMPILER_GCC_ARM */
+#endif // BUILTINS_HPP_202206112144
+#endif // COMPILER_GCC_ARM

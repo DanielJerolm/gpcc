@@ -871,7 +871,7 @@ size_t BitField::FindFirstSetBit(size_t const startIndex) const noexcept
   size_t index = storageIdx * storage_t_size_in_bit;
   while (true)
   {
-    int const tz = Compiler::CountTrailingZeros(value);
+    int const tz = compiler::CountTrailingZeros(value);
 
     if (tz == std::numeric_limits<storage_t>::digits)
     {
@@ -932,7 +932,7 @@ size_t BitField::FindFirstClearedBit(size_t const startIndex) const noexcept
   size_t index = storageIdx * storage_t_size_in_bit;
   while (true)
   {
-    int const tz = Compiler::CountTrailingOnes(value);
+    int const tz = compiler::CountTrailingOnes(value);
 
     if (tz == std::numeric_limits<storage_t>::digits)
     {
@@ -1000,7 +1000,7 @@ size_t BitField::FindFirstSetBitReverse(size_t startIndex) const noexcept
   size_t index = storageIdx * storage_t_size_in_bit;
   while (true)
   {
-    int const lz = Compiler::CountLeadingZeros(value);
+    int const lz = compiler::CountLeadingZeros(value);
 
     if (lz == std::numeric_limits<storage_t>::digits)
     {
@@ -1065,7 +1065,7 @@ size_t BitField::FindFirstClearedBitReverse(size_t startIndex) const noexcept
   size_t index = storageIdx * storage_t_size_in_bit;
   while (true)
   {
-    int const lz = Compiler::CountLeadingOnes(value);
+    int const lz = compiler::CountLeadingOnes(value);
 
     if (lz == std::numeric_limits<storage_t>::digits)
     {

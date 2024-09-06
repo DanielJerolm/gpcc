@@ -5,6 +5,7 @@ GPCC Implementation History and Current Activities
 Next to do:
 ===============================================================================
 - Check usage of postfixes for literals ([0-9]U <<)
+- Check usage of plain types (e.g. unsigned int)
 
 - check usage of std::system_error:
   - use std::generic_category with POSIX values of errno
@@ -188,6 +189,9 @@ Next to do:
 
 History:
 ===============================================================================
+2024-09-06
+- Revise gpcc::compiler
+
 2024-08-19
 - Limit number of recursions in gpcc::string::ExceptionDescriptionToString()
 - BugFix: IsPowerOf2 returned true for zero, but zero is not a power of 2

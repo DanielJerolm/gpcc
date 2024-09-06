@@ -528,21 +528,12 @@ void TFCCore::IncrementEmulatedClocks(uint64_t const delta_ns)
   UnmanagedMutexLocker timeMutexLocker(timeMutex);
 
   struct ::timespec ts_realtime;
+  if (compiler::OverflowAwareAdd(timeRealtime.tv_sec, sec, &ts_realtime.tv_sec))
+    throw std::overflow_error("TFCCore::IncrementEmulatedClocks: Overflow adding seconds to timeRealtime");
+
   struct ::timespec ts_monotonic;
-  if (sizeof(::timespec::tv_sec) == 4U)
-  {
-    if (Compiler::OverflowAwareAdd(timeRealtime.tv_sec, sec, reinterpret_cast<int32_t*>(&ts_realtime.tv_sec)))
-      throw std::overflow_error("TFCCore::IncrementEmulatedClocks: Overflow adding seconds to timeRealtime");
-    if (Compiler::OverflowAwareAdd(timeMonotonic.tv_sec, sec, reinterpret_cast<int32_t*>(&ts_monotonic.tv_sec)))
-      throw std::overflow_error("TFCCore::IncrementEmulatedClocks: Overflow adding seconds to timeMonotonic");
-  }
-  else
-  {
-    if (Compiler::OverflowAwareAdd(timeRealtime.tv_sec, sec, reinterpret_cast<int64_t*>(&ts_realtime.tv_sec)))
-      throw std::overflow_error("TFCCore::IncrementEmulatedClocks: Overflow adding seconds to timeRealtime");
-    if (Compiler::OverflowAwareAdd(timeMonotonic.tv_sec, sec, reinterpret_cast<int64_t*>(&ts_monotonic.tv_sec)))
-      throw std::overflow_error("TFCCore::IncrementEmulatedClocks: Overflow adding seconds to timeMonotonic");
-  }
+  if (compiler::OverflowAwareAdd(timeMonotonic.tv_sec, sec, &ts_monotonic.tv_sec))
+    throw std::overflow_error("TFCCore::IncrementEmulatedClocks: Overflow adding seconds to timeMonotonic");
 
   ts_realtime.tv_nsec = timeRealtime.tv_nsec + ns;
   ts_monotonic.tv_nsec = timeMonotonic.tv_nsec + ns;
