@@ -116,16 +116,18 @@ else()
                  math/Test_checks.cpp
                  math/Test_int_math.cpp
                  osal/linux_arm_tfc/TestAdvancedUnmanagedMutexLocker.cpp
-                 osal/linux_arm_tfc/TestTFC.cpp
+                 osal/linux_arm_tfc/TestTFCCore.cpp
                  osal/linux_arm_tfc/TestThreadBlocker.cpp
                  osal/linux_arm_tfc/TestTimeLimitedThreadBlocker.cpp
+                 osal/linux_arm_tfc/TestTraps.cpp
                  osal/linux_arm_tfc/TestUnmanagedConditionVariable.cpp
                  osal/linux_arm_tfc/TestUnmanagedMutex.cpp
                  osal/linux_arm_tfc/TestUnmanagedMutexLocker.cpp
                  osal/linux_x64_tfc/TestAdvancedUnmanagedMutexLocker.cpp
-                 osal/linux_x64_tfc/TestTFC.cpp
+                 osal/linux_x64_tfc/TestTFCCore.cpp
                  osal/linux_x64_tfc/TestThreadBlocker.cpp
                  osal/linux_x64_tfc/TestTimeLimitedThreadBlocker.cpp
+                 osal/linux_x64_tfc/TestTraps.cpp
                  osal/linux_x64_tfc/TestUnmanagedConditionVariable.cpp
                  osal/linux_x64_tfc/TestUnmanagedMutex.cpp
                  osal/linux_x64_tfc/TestUnmanagedMutexLocker.cpp

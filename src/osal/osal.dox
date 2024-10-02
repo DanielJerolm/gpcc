@@ -216,6 +216,8 @@
  * - R/W-Lock (see class [RWLock](@ref gpcc::osal::RWLock))
  * - Automatic mutex locker/unlocker (see classes [MutexLocker](@ref gpcc::osal::MutexLocker) and
  *   [AdvancedMutexLocker](@ref gpcc::osal::AdvancedMutexLocker))
+ * - Automatic RW-lock locker/unlocker (see classed [RWLockReadLocker](@ref gpcc::osal::RWLockReadLocker) and
+ *   [RWLockWriteLocker](@ref gpcc::osal::RWLockWriteLocker))
  * - Thread Registry (see class [ThreadRegistry](@ref gpcc::osal::ThreadRegistry))
  *
  * # Platform / Operating System specific differences
@@ -246,8 +248,8 @@
  * epos_arm      | FIFO
  * linux_arm     | ?
  * linux_x64     | ?
- * linux_arm_tfc | Thread with highest priority
- * linux_x64_tfc | Thread with highest priority
+ * linux_arm_tfc | Random
+ * linux_x64_tfc | Random
  *
  * ## Thread
  * OS / Platform | Sleep_ms() and Sleep_ns()
@@ -272,6 +274,7 @@
  * ### EPOS (epos_arm)
  * - Scheduling policies `Other`, `Idle`, and `Batch` are emulated by mapping them to specific fixed priorities (see
  *   figure below).
+ * - EPOS supports round-robin and FIFO scheduling.
  * - EPOS supports deferred thread cancellation, but system calls (e.g. blocking on a ConditionVariable) currently do
  *   not contain cancellation points. Currently there are only explicit cancellation points available.
  *
@@ -346,14 +349,13 @@
  * hardware in order to work in a meaningful way.\n
  * Here are two examples for scenarios, which require use of an hardware fake implemented in software:
  * - Test cases for low-level software components which are closely coupled to hardware.
- * - Simulation of an __complete embedded firmware__ inside unit tests.
+ * - Integration test of an __complete embedded firmware__.
  *
  * The main difficulty is that actions carried out in hardware consume physical time and that software often uses
  * timeouts to supervise these actions. Examples for actions which are usually supervised using a timeout are:
- * - Writing to an EEPROM device.
- * - Transmitting a message over a network.
+ * - Communication across a network or communication link.
  * - Communication with a peripheral chip.
- * - Driving an actuator and reception of feedback from a sensor.
+ * - Driving an mechanical actuator and reception of feedback from a sensor.
  *
  * TFC emulates the system time visible to the process executing the tests. All timed sleeps and all timeouts depend on
  * the system time emulated by TFC. TFC emulates the system time in such a way that the processing power and workload of
@@ -410,30 +412,65 @@
  * according to the operating system's scheduler (e.g. time-slice or round-robin) in order to provide the illusion of
  * parallel execution.
  *
- * The physical time is shown in the top lane of the figure. It increments strictly monotonous because execution of the
- * process' threads consumes time. The "physical time lane" in the figure may be viewed as a placeholder for the
- * machine's time _not_ emulated by GPCC (e.g. the time one can acquire via `clock()`, `clock_gettime()`, `std::chrono`
- * or similar). The machine's time also increments continously while the CPU is executing code.
+ * The __physical time__ is shown in the top lane of the figure. It increments strictly monotonous because execution of
+ * the process' threads consumes time.
  *
- * The emulated time is shown at the bottom lane. It does not change until all threads are blocked. At point (1)
+ * The __machine's local time__ looks about the same as the physical time shown in the figure above. The machine's local
+ * time is _not_ emulated by GPCC. Any reading from `clock()`, `clock_gettime()`, `std::chrono` or similar has no
+ * relation to the system time emulated by TFC. The machine's local time also increments continously while the CPU is
+ * executing code.
+ *
+ * The __emulated time__ is shown in the bottom lane. It does not change until all threads are blocked. At point (1)
  * thread 1 sleeps for one second of _emulated time_ (e.g. via @ref gpcc::osal::Thread::Sleep_ms()). The emulated system
  * time does not increment since thread 2 is still in a runnable state. At point (2), thread 2 attempts to decrement a
  * semaphore that is already zero and the thread is blocked on the semaphore. Since all threads in the process are
  * blocked now, the emulated system time is incremented to the next event that will occur. This is _always_ some kind of
- * timeout. In this scenario, the next event is the expiration of the sleep of thread 1. The emulated time is
- * incremented to that point in time and thread 1 is switched back into the runnable state. The fact that the emulated
- * time only increments if all threads are blocked on something creates the illusion of an CPU with infinite processing
- * power.
+ * timeout or the end of a thread's sleep. In this scenario, the next event is the expiration of the sleep of thread 1.
+ * The emulated time is incremented to that point in time and thread 1 is switched back into the runnable state. The
+ * fact that the emulated time only increments if all threads are blocked on something creates the illusion of a CPU
+ * with infinite processing power.
  *
  * At point (3), thread 1 takes another sleep of 1s. Since all threads are blocked, the emulated system time is
  * incremented immediately and thread 1 directly continues. At point (3), thread 1 does _not_ sleep. This is typical for
- * code executed with TFC: At least one thread is always working. This behaviour is unusable for productive code, but it
- * is perfect for unit test code: The test scenario is executed with maximum speed, even if the test includes sleeps or
- * timeouts.
+ * code executed with TFC: At least one thread is always runnable. This behaviour is unusable for productive code, but
+ * it is perfect for unit test code: The test scenario is executed with maximum speed, even if the test includes sleeps
+ * or timeouts.
  *
  * At point (4), thread 1 increments the semaphore on which thread 2 is blocked. Thread 2 is switched to the runnable
  * state and will execute code if the scheduler grants the CPU to the thread. The emulated system time is not
  * incremented at this point.
+ *
+ * \anchor GPCC_TIME_FLOW_CONTROL_REPRODUCIBILITY
+ * # Reproducibility of unit tests
+ * TFC makes the system time and the points in time when threads are resumed reproducible. Unit tests examining the
+ * timing behaviour of an UUT will reliably see the same timing behaviour among multiple runs of the same test case,
+ * independent of the machine's workload and even independent of the machine's processing power.
+ *
+ * __However, there are limitations:__\n
+ * If more than one thread is in a runnable state at the same time, then the order in which these threads are scheduled
+ * is undefined and may vary. This is just the same as in a normal execution environment without TFC: Just think about
+ * dynamic thread priorities (e.g. nice values on Linux) or multicore CPUs running both high and low priority threads
+ * simultaneously on different cores. A UUT using multithreading and its unittest code are typically aware of this and
+ * apply proper locking and do not make strict assumptions about the order in which threads are scheduled.
+ *
+ * __Unreproducible behaviour may occur, if multiple threads are blocked until the exactly same point in time__. When
+ * TFC increments the emulated system time to that point in time, then all these threads become runnable at the same
+ * time, but the order in which they are scheduled is undefined! If more than one of these threads issues a stimulus to
+ * the UUT, then the UUT will receive the stimuli indeed at the same point in time regarding the emulated system clock,
+ * __but in undefined order__ and thus may show different behaviour among multiple runs of the same test case.
+ *
+ * To avoid unreproducible behaviour, unit tests must not issue stimuli _simultaneously_ from _different_ threads.
+ *
+ * This can be accomplished by:\n
+ * a) using one thread for issuing stimuli only, or\n
+ * b) by ensuring that no more than one thread issues a stimulus at the same point in time (e.g. keep a distance of 1ns)
+ *
+ * To aid in applicance of strategy b), TFC offers two classes that can detect unreproducible behaviour:
+ * - @ref gpcc_tests::osal::tfc::PotentialUnreproducibleBehaviourTrap
+ * - @ref gpcc_tests::osal::tfc::UnreproducibleBehaviourTrap
+ *
+ * A test fixture may instantiate one or both of them. In case they trigger, TFC will print a notice to `std::cout` and
+ * TFC will add a failure to the current unit test case.
  *
  * # Availability
  * TFC is currently implemented for the following OS configurations:
@@ -446,13 +483,13 @@
  * - Do not implement an idle loop which does not contain any sleep or any blocking function.\n
  *   Sytem time would never be incremented in this case and your software (especially hardware fakes) could not proceed
  *   in a meaningful way.
- * - Do not use `clock()`, `clock_gettime()`, `std::chrono` or similar. Use @ref gpcc::time only.\n
+ * - Do not use non-gpcc APIs like `clock()`, `clock_gettime()`, `std::chrono` or similar. Use @ref gpcc::time only.\n
  *   After process creation, TFC synchronizes the emulated time with the machine's time.\n
  *   From that point on, the emulated time and the machine's time will be out of sync.\n
- *   @ref gpcc::time provides the emulated time, other functions (e.g. offered by your C library) provide the machine's
+ *   @ref gpcc::time provides the emulated time, non-gpcc APIs (e.g. offered by your C library) provide the machine's
  *   time.
- * - Do not use pthread- or STL- threading primitives. Use @ref gpcc::osal only.\n
- *   TFC cannot monitor calls to those primitives and therefore cannot track the activities of the threads inside the
+ * - Do not use non-gpcc threading APIs like pthread or STL threads. Use @ref gpcc::osal only.\n
+ *   TFC cannot monitor calls to those APIs and therefore cannot track the activities of the threads inside the
  *   software using other threading primitives than those offered by @ref gpcc::osal.
  * - Do not use `sleep()`, `usleep()`, `nanosleep()`, `clock_nanosleep()` or similar.\n
  *   These functions are based on the machine's time and TFC cannot monitor calls to these functions. For TFC these
@@ -460,7 +497,7 @@
  *   Instead use @ref gpcc::osal::Thread::Sleep_ms() or @ref gpcc::osal::Thread::Sleep_ns() only.
  * - Do not process time information from file metadata (e.g. creation timestamp or last change timestamp).\n
  *   These timing information is based on the machine's time, not on TFC's emulated time. Both times are not
- *   synchronized to each other.
+ *   synchronized with each other.
  *
  * ## Do's
  * - TFC welcomes an event driven software design.
@@ -707,3 +744,29 @@
  * @defgroup GPCC_OSAL_DEFS Definitions
  * \brief Common definitions with OS specific values.
  */
+
+#if !defined(OS_LINUX_ARM_TFC) && !defined(OS_LINUX_X64_TFC)
+/**
+ * \class gpcc_tests::osal::tfc::BlockWithExpiredTimeoutTrap
+ * \brief Detection of threads that want to block on an OSAL primitive with timeout already expired.
+ *
+ * This class is intended to be used by unit test cases only. It is only available if an OSAL variant with TFC is used.
+ * The currently configured OSAL does not provide TFC.
+ */
+
+/**
+ * \class gpcc_tests::osal::tfc::PotentialUnreproducibleBehaviourTrap
+ * \brief Detection of potential unreproducible behaviour in unit test cases.
+ *
+ * This class is intended to be used by unit test cases only. It is only available if an OSAL variant with TFC is used.
+ * The currently configured OSAL does not provide TFC.
+ */
+
+/**
+ * \class gpcc_tests::osal::tfc::UnreproducibleBehaviourTrap
+ * \brief Detection of unreproducible behaviour in unit test cases.
+ *
+ * This class is intended to be used by unit test cases only. It is only available if an OSAL variant with TFC is used.
+ * The currently configured OSAL does not provide TFC.
+ */
+#endif

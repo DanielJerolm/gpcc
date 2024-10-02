@@ -4,7 +4,7 @@
 # If a copy of the MPL was not distributed with this file,
 # You can obtain one at https://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2022 Daniel Jerolm
+# Copyright (C) 2022, 2024 Daniel Jerolm
 
 
 # Sub-CMakeLists-file for GPCC, specific for the "unittest" target environment
@@ -46,6 +46,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE . PUBLIC include)
 SetupBasicDefines(${PROJECT_NAME})
 SetRequiredCompilerOptionsAndFeatures(${PROJECT_NAME})
 SetupLinkLibraries(${PROJECT_NAME})
+
+target_link_libraries(${PROJECT_NAME} PRIVATE gmock)
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Artifact: gpcc_testcases object library containing unit test cases for library "gpcc"

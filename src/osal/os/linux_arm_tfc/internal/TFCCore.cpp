@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
 #ifdef OS_LINUX_ARM_TFC
@@ -18,6 +18,7 @@
 #include "TimeLimitedThreadBlocker.hpp"
 #include "UnmanagedMutexLocker.hpp"
 #include <algorithm>
+#include <iostream>
 #include <limits>
 #include <stdexcept>
 #include <system_error>
@@ -104,7 +105,7 @@ void TFCCore::ReportThreadTermination(void) noexcept
 /**
  * \brief Announces that an thread is going to block permanently using an unmanaged POSIX primitive.
  *
- * __Note: This may increment the emulated system time!__
+ * \note  This may increment the emulated system time!
  *
  * ---
  *
@@ -128,12 +129,12 @@ void TFCCore::ReportThreadPermanentlyBlockedBegin(void) noexcept
 }
 
 /**
- * \brief Announces that an thread is going to block permanently using an unmanaged POSIX primitive and
- * an @ref TimeLimitedThreadBlocker to realize a timeout.
+ * \brief Announces that a thread is going to block permanently using an unmanaged POSIX primitive and
+ *        an @ref TimeLimitedThreadBlocker to realize a timeout.
  *
- * __Note: This may increment the emulated system time!__
+ * \note  This may increment the emulated system time!
  *
- * ---
+ * - - -
  *
  * __Thread-safety:__\n
  * TFC's big lock must be acquired.
@@ -142,9 +143,9 @@ void TFCCore::ReportThreadPermanentlyBlockedBegin(void) noexcept
  * No-throw guarantee.
  *
  * __Thread-cancellation-safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param blocker
  * @ref TimeLimitedThreadBlocker instance that will be notified if the timeout expires.
@@ -153,15 +154,34 @@ void TFCCore::ReportThreadPermanentlyBlockedBegin(TimeLimitedThreadBlocker & blo
 {
   try
   {
-    // timeout already reached
+    // timeout already reached?
     bool const timeout = (blocker.absTimeout <= gpcc::time::TimePoint(timeMonotonic));
 
     if (!timeout)
     {
       // add to list of blocked threads
-      auto insertHereCheck = [&](TimeLimitedThreadBlocker const * e) { return (blocker.absTimeout < e->absTimeout); };
+      auto insertHereCheck = [&](TimeLimitedThreadBlocker const * e) { return (blocker.absTimeout <= e->absTimeout); };
       auto it = std::find_if(threadsBlockedByTimeout.begin(), threadsBlockedByTimeout.end(), insertHereCheck);
+
+      if (   (watchForBlockWithSameTimeout)
+          && (it != threadsBlockedByTimeout.end())
+          && ((*it)->absTimeout == blocker.absTimeout))
+      {
+        std::cout << "TFC: Unreproducible behaviour may occur in the future." << std::endl
+                  << "     (At least two threads blocked until same point in time)" << std::endl;
+
+        blockWithSameTimeoutDetected = true;
+      }
+
       threadsBlockedByTimeout.insert(it, &blocker);
+    }
+    else
+    {
+      if (watchForAlreadyExpiredTimeout)
+      {
+        std::cout << "TFC: A thread wants to block with an already expired timeout value!" << std::endl;
+        alreadyExpiredTimeoutDetected = true;
+      }
     }
 
     nbOfBlockedThreads++;
@@ -378,11 +398,195 @@ void TFCCore::GetEmulatedMonotonicTime(struct ::timespec & ts) const noexcept
 }
 
 /**
+ * \brief Enables watching for threads that attempt to block with an already expired timeout.
+ *
+ * \pre   Watching for threads that attempt to block with an already expired timeout is disabled.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ */
+void TFCCore::EnableWatchForAlreadyExpiredTimeout(void)
+{
+  UnmanagedMutexLocker bigLockLocker(bigLock);
+
+  if (watchForAlreadyExpiredTimeout)
+    throw std::logic_error("TFCCore::EnableWatchForAlreadyExpiredTimeout: Already enabled");
+
+  watchForAlreadyExpiredTimeout = true;
+  alreadyExpiredTimeoutDetected = false;
+}
+
+/**
+ * \brief Disables watching for threads that attempt to block with an already expired timeout, and returns if any such
+ *        attempt has occurred since watching has been enabled.
+ *
+ * \pre   Watching for threads that attempt to block with an already expired timeout is enabled.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \retval true   There was at least one attempt by a thread to block with an already expired timeout.
+ * \retval false  There was no attempt by any thread to block with an already expired timeout.
+ */
+bool TFCCore::DisableWatchForAlreadyExpiredTimeout(void)
+{
+  UnmanagedMutexLocker bigLockLocker(bigLock);
+
+  if (!watchForAlreadyExpiredTimeout)
+    throw std::logic_error("TFCCore::DisableWatchForAlreadyExpiredTimeout: Not enabled");
+
+  watchForAlreadyExpiredTimeout = false;
+  return alreadyExpiredTimeoutDetected;
+}
+
+/**
+ * \brief Enables watching for threads that block with same timeout.
+ *
+ * \pre   Watching for threads that block with same timeout is disabled.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ */
+void TFCCore::EnableWatchForBlockWithSameTimeout(void)
+{
+  UnmanagedMutexLocker bigLockLocker(bigLock);
+
+  if (watchForBlockWithSameTimeout)
+    throw std::logic_error("TFCCore::EnableWatchForBlockWithSameTimeout: Already enabled");
+
+  watchForBlockWithSameTimeout = true;
+  blockWithSameTimeoutDetected = false;
+}
+
+/**
+ * \brief Disables watching for threads that block with same timeout, and returns if any such situation has occurred
+ *        since watching has been enabled.
+ *
+ * \pre   Watching for threads that block with same timeout is enabled.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \retval true   There was at least one situation in which multiple threads blocked until the same timeout.
+ * \retval false  All threads blocked with unique timeouts.
+ */
+bool TFCCore::DisableWatchForBlockWithSameTimeout(void)
+{
+  UnmanagedMutexLocker bigLockLocker(bigLock);
+
+  if (!watchForBlockWithSameTimeout)
+    throw std::logic_error("TFCCore::DisableWatchForBlockWithSameTimeout: Not enabled");
+
+  watchForBlockWithSameTimeout = false;
+  return blockWithSameTimeoutDetected;
+}
+
+/**
+ * \brief Enables watching for simultaneous resume of multiple threads after increment of the system time.
+ *
+ * \pre   Watching for simultaneous resume of multiple threads after increment of the system time is disabled.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ */
+void TFCCore::EnableWatchForSimultaneousResumeOfMultipleThreads(void)
+{
+  UnmanagedMutexLocker bigLockLocker(bigLock);
+
+  if (watchForSimultaneousResumeOfMultipleThreads)
+    throw std::logic_error("TFCCore::EnableWatchForSimultaneousResumeOfMultipleThreads: Already enabled");
+
+  watchForSimultaneousResumeOfMultipleThreads = true;
+  simultaneousResumeOfMultipleThreadsDetected = false;
+}
+
+/**
+ * \brief Disables watching for simultaneous resume of multiple threads after increment of the system time, and returns
+ *        if any such situation has occurred since watching has been enabled.
+ *
+ * \pre   Watching for simultaneous resume of multiple threads after increment of the system time is enabled.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \retval true   More than one thread has been resumed after increment of the system time at least once.
+ * \retval false  Only single threads have been resumed after any increment of the system time.
+ */
+bool TFCCore::DisableWatchForSimultaneousResumeOfMultipleThreads(void)
+{
+  UnmanagedMutexLocker bigLockLocker(bigLock);
+
+  if (!watchForSimultaneousResumeOfMultipleThreads)
+    throw std::logic_error("TFCCore::DisableWatchForSimultaneousResumeOfMultipleThreads: Not enabled");
+
+  watchForSimultaneousResumeOfMultipleThreads = false;
+  return simultaneousResumeOfMultipleThreadsDetected;
+}
+
+/**
  * \brief Constructor.
  *
- * The emulated clocks are initialized with the system's native clocks.
+ * - The emulated clocks are initialized with the system's native clocks.
+ * - Monitoring for special situations is disabled:
+ *   - attempt to block with already expired timeout value
+ *   - multiple threads block until same point in time
+ *   - resume of multiple threads after increment of the emulated system time
  *
- * ---
+ * - - -
  *
  * __Exception-safety:__\n
  * Strong guarantee.
@@ -400,6 +604,12 @@ TFCCore::TFCCore(void)
 , nbOfThreadsAboutToWakeUp(0)
 , nbOfCancellationRequests(0)
 , threadsBlockedByTimeout()
+, watchForAlreadyExpiredTimeout(false)
+, alreadyExpiredTimeoutDetected(false)
+, watchForBlockWithSameTimeout(false)
+, blockWithSameTimeoutDetected(false)
+, watchForSimultaneousResumeOfMultipleThreads(false)
+, simultaneousResumeOfMultipleThreadsDetected(false)
 {
   auto ret = clock_gettime(CLOCK_REALTIME, &timeRealtime);
   if (ret != 0)
@@ -415,9 +625,11 @@ TFCCore::TFCCore(void)
  *
  * The following actions are performed:
  * 1. System time is advanced to the timeout of the next blocked thread.
- * 2. The next blocked threads and all further threads with the same timeout are woken up
+ * 2. The next blocked thread and all further threads with the same timeout are woken up.
  *
- * ---
+ * \pre   All threads are blocked.
+ *
+ * - - -
  *
  * __Thread-safety:__\n
  * TFC's big lock must be acquired.
@@ -426,66 +638,74 @@ TFCCore::TFCCore(void)
  * No-throw guarantee.
  *
  * __Thread-cancellation-safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  */
 void TFCCore::AllThreadsBlocked(void) noexcept
 {
   try
   {
     if (nbOfThreadsAboutToWakeUp != 0)
-      PANIC(); // Not all threads blocked
+      PANIC(); // Precondition violated: Not all threads blocked
 
     if (threadsBlockedByTimeout.empty())
     {
       if (nbOfCancellationRequests == 0)
-        Panic("TFCCore::AllThreadsBlocked: Dead-Lock detected. All threads permanently blocked.");
-      return;
-    }
-
-    gpcc::time::TimePoint const now(timeMonotonic);
-    auto it = threadsBlockedByTimeout.begin();
-    while (it != threadsBlockedByTimeout.end())
-    {
-      TimeLimitedThreadBlocker* tb = *it;
-
-      gpcc::time::TimeSpan const delta = tb->absTimeout - now;
-      if (delta.ns() >= 0)
       {
-        // increment system clock if there is any delta
-        if (delta.ns() != 0)
-          IncrementEmulatedClocks(delta.ns());
-
-        // wake up thread
-        tb->SignalTimeout();
-
-        // wake up all other threads whose timeout has also expired
-        it = threadsBlockedByTimeout.erase(it);
-        while (it != threadsBlockedByTimeout.end())
-        {
-          tb = *it;
-
-          if (tb->absTimeout == now)
-          {
-            tb->SignalTimeout();
-            it = threadsBlockedByTimeout.erase(it);
-          }
-          else if (tb->absTimeout > now)
-          {
-            return;
-          }
-          else
-          {
-            PANIC(); // Thread with bad timeout in threadsBlockedByTimeout (2)
-          }
-        } // while (it != threadsBlockedByTimeout.end())
-        return;
+        Panic("TFCCore::AllThreadsBlocked: Dead-Lock detected. All threads permanently blocked.");
       }
       else
       {
-        PANIC(); // Thread with bad timeout in threadsBlockedByTimeout (1)
+        // dead-lock detection is disabled while at least one thread has a cancellation request pending
+        return;
       }
+    }
 
-      ++it;
+    gpcc::time::TimePoint now(timeMonotonic);
+
+    auto it = threadsBlockedByTimeout.begin();
+    TimeLimitedThreadBlocker* tb = *it;
+
+    gpcc::time::TimeSpan const delta = tb->absTimeout - now;
+    if (delta.ns() <= 0)
+    {
+      // There should be no thread with expired timeout in threadsBlockedByTimeout
+      PANIC();
+    }
+
+    // increment system clock
+    IncrementEmulatedClocks(delta.ns());
+    now = timeMonotonic;
+
+    // wake up thread
+    tb->SignalTimeout();
+
+    // wake up all other threads whose timeout has also expired
+    it = threadsBlockedByTimeout.erase(it);
+    while (it != threadsBlockedByTimeout.end())
+    {
+      tb = *it;
+
+      if (tb->absTimeout == now)
+      {
+        if (watchForSimultaneousResumeOfMultipleThreads)
+        {
+          std::cout << "TFC: Unreproducible behaviour." << std::endl
+                    << "     (resumed more than one thread after increase of emulated system time)" << std::endl;
+          simultaneousResumeOfMultipleThreadsDetected = true;
+        }
+
+        tb->SignalTimeout();
+        it = threadsBlockedByTimeout.erase(it);
+      }
+      else if (tb->absTimeout > now)
+      {
+        break;
+      }
+      else
+      {
+        // threads in threadsBlockedByTimeout are not properly sorted
+        PANIC();
+      }
     } // while (it != threadsBlockedByTimeout.end())
   }
   catch (std::exception const & e)
@@ -506,7 +726,7 @@ void TFCCore::AllThreadsBlocked(void) noexcept
  * ---
  *
  * __Thread-safety:__\n
- * This is thread-safe.
+ * TFC's big lock must be acquired.
  *
  * __Exception-safety:__\n
  * Strong guarantee.

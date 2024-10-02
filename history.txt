@@ -4,6 +4,10 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
+- Use multiple CMakeLists.txt in gpcc/testcases
+- Use github's issue tracking instead of this file
+- Remove machine's architecture from OS. The OS should hide any machine specific stuff.
+
 - Check usage of postfixes for literals ([0-9]U <<)
 - Check usage of plain types (e.g. unsigned int)
 
@@ -189,6 +193,9 @@ Next to do:
 
 History:
 ===============================================================================
+2024-10-02
+- TFC: Add traps for unreproducible behaviour
+
 2024-09-06
 - Revise gpcc::compiler
 
