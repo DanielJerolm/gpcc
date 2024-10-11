@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2019 Daniel Jerolm
+    Copyright (C) 2019, 2024 Daniel Jerolm
 */
 
 /**
@@ -14,25 +14,28 @@
  *
  * \brief Portable abstractions for compiler-specific stuff.
  *
- * GPCC provides an abstraction for several compiler-specific functions and language specifics based on:
+ * GPCC provides abstractions for selected compiler-specific functions and key-words based on:
  * - Compiler
  * - CPU architecture
  *
- * The following stuff is provided by GPCC's compiler abstraction:
+ * The following abstractions are provided:
  * - Portable keywords for packet structs
  * - Portable keywords for declaring non-returning functions
  * - `#defines` indicating the system's endian
  * - Overflow-aware arithmethic functions
  *
+ * Note that there are additional abstractions for compiler-specific stuff, that are available in the unittest
+ * environment only. See @ref GPCC_TESTS_COMPILER for details.
+ *
  * # Usage
- * To access any of GPCC's compiler abstraction stuff you just have to include the
- * desired header files located in GPCC/Compiler.
+ * To access GPCC's compiler abstractions, the appropriate header files located in gpcc/compiler have to be
+ * included:
+ * ~~~{.cpp}
+ * #include <gpcc/compiler/builtins.hpp>
+ * #include <gpcc/compiler/definitions.hpp>
+ * ~~~
  *
- * _Do not include headers from the subdirectorys of GPCC/Compiler._\n
- * The headers located in GPCC/Compiler will include the required headers according to your
- * specific compiler and CPU architecture. For details please refer to section "Configuration" below:
- *
- * # Configuration
- * To select a sepcific compiler abstraction implementation for your project please set the defines as
- * described in GPCC/readme.txt.
+ * __Do not include headers from the subdirectorys of gpcc/compiler.__\n
+ * The headers located in gpcc/compiler will include the required specific headers according to the compiler in use
+ * and the configured CPU architecture.
  */

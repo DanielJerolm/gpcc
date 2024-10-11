@@ -9,6 +9,7 @@
 */
 
 #include <gpcc/container/BitField.hpp>
+#include <gpcc_test/compiler/warnings.hpp>
 #include <gtest/gtest.h>
 #include <string>
 
@@ -251,7 +252,9 @@ TEST(gpcc_container_BitField_Tests, MoveAssign_Self)
 
   BitField uut(8, &data);
 
+  GPCC_DISABLE_WARN_SELFMOVE();
   uut = std::move(uut);
+  GPCC_RESTORE_WARN_SELFMOVE();
 
   ASSERT_TRUE(TestBits(uut, 8, &data));
 }

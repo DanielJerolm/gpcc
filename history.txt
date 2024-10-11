@@ -4,6 +4,9 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
+- Add workaround for misbehaviour of std::sto* on some platforms
+- Update doxyfiles to doxygen 1.9.8
+
 - Use multiple CMakeLists.txt in gpcc/testcases
 - Use github's issue tracking instead of this file
 - Remove machine's architecture from OS. The OS should hide any machine specific stuff.
@@ -193,6 +196,9 @@ Next to do:
 
 History:
 ===============================================================================
+2024-10-11
+- Fix warnings from new gcc 13.2.0
+
 2024-10-02
 - TFC: Add traps for unreproducible behaviour
 
