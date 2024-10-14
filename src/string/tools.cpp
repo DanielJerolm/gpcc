@@ -188,6 +188,7 @@ void ThrowOutOfRange(std::string const & s, T const min, T const max)
  * Special values:
  * - 0 = auto detect base by prefix (0 = octal, 0x or 0X = hex, other = decimal)
  * - 2 = binary
+ * - 8 = octal (prefix 0 is ignored if present)
  * - 10 = decimal
  * - 16 = hexadecimal (prefix 0x or 0X is ignored if present)
  *
@@ -209,6 +210,19 @@ uint32_t ToU32(std::string const & s, uint_fast8_t const base, uint32_t const mi
   if ((s.empty()) || (std::isspace(s.front()) != 0))
     ThrowInvalidNumberRepresentation(s);
 
+#if defined(__GLIBC__)
+  // std::stoul() typically uses strtoul() from the C library. In recent versions of glibc (e.g. 2.39), strtoul()
+  // shows unexpected behaviour: It recognizes prefix "0b"/"0B" for binary numbers if base is 2 or 0, though prefix
+  // "b0"/"B0" is not specified to be recognized at all. The prefix "0b"/"0B" should result in an error.
+  // To ensure proper function of ToU32(), we have to test for invalid input here.
+  if (   ((base == 0U) || (base == 2U))
+      && (   (gpcc::string::StartsWith(s, "0b"))
+          || (gpcc::string::StartsWith(s, "0B"))))
+  {
+    ThrowInvalidNumberRepresentation(s);
+  }
+#endif
+
   size_t n;
   unsigned long value;
   try
@@ -224,6 +238,7 @@ uint32_t ToU32(std::string const & s, uint_fast8_t const base, uint32_t const mi
     ThrowInvalidNumberRepresentation(s);
   }
 
+  // reject if the whole string has not been consumed
   if (n != s.size())
     ThrowInvalidNumberRepresentation(s);
 
@@ -268,6 +283,7 @@ uint32_t ToU32(std::string const & s, uint_fast8_t const base, uint32_t const mi
  * Special values:
  * - 0 = auto detect base by prefix (0 = octal, 0x or 0X = hex, other = decimal)
  * - 2 = binary
+ * - 8 = octal (prefix 0 is ignored if present)
  * - 10 = decimal
  * - 16 = hexadecimal (prefix 0x or 0X is ignored if present)
  *
@@ -289,6 +305,23 @@ int32_t ToI32(std::string const & s, uint_fast8_t const base, int32_t const min,
   if ((s.empty()) || (std::isspace(s.front()) != 0))
     ThrowInvalidNumberRepresentation(s);
 
+#if defined(__GLIBC__)
+  // std::stoi() typically uses strtol() from the C library. In recent versions of glibc (e.g. 2.39), strtol()
+  // shows unexpected behaviour: It recognizes prefix "0b"/"0B" for binary numbers if base is 2 or 0, though prefix
+  // "b0"/"B0" is not specified to be recognized at all. The prefix "0b"/"0B" should result in an error.
+  // To ensure proper function of ToI32(), we have to test for invalid input here.
+  if (   ((base == 0U) || (base == 2U))
+      && (   (gpcc::string::StartsWith(s, "0b"))
+          || (gpcc::string::StartsWith(s, "0B"))
+          || (gpcc::string::StartsWith(s, "+0b"))
+          || (gpcc::string::StartsWith(s, "+0B"))
+          || (gpcc::string::StartsWith(s, "-0b"))
+          || (gpcc::string::StartsWith(s, "-0B"))))
+  {
+    ThrowInvalidNumberRepresentation(s);
+  }
+#endif
+
   size_t n;
   int value;
   try
@@ -304,6 +337,7 @@ int32_t ToI32(std::string const & s, uint_fast8_t const base, int32_t const min,
     ThrowInvalidNumberRepresentation(s);
   }
 
+  // reject if the whole string has not been consumed
   if (n != s.size())
     ThrowInvalidNumberRepresentation(s);
 
@@ -2017,6 +2051,7 @@ uint32_t DecimalToU32(std::string const & s, uint32_t const min, uint32_t const 
  * \brief Converts a string containing a number in hexadecimal representation into a value of type `uint32_t`.
  *
  * This function accepts the following textual representations of data of type `uint32_t`:
+ * - Prefix "0x" is mandatory
  * - Hexadecimal numbers, digits 0..9, a..f, A..F only; Range: 0..2^32-1
  * - Leading and trailing space characters are not allowed.
  *
@@ -2057,6 +2092,7 @@ uint32_t HexToU32(std::string const & s)
  *        the result against a given `min` and `max`.
  *
  * This function accepts the following textual representations of data of type `uint32_t`:
+ * - Prefix "0x" is mandatory
  * - Hexadecimal numbers, digits 0..9, a..f, A..F only; Range: [`min`;`max`]
  * - Leading and trailing space characters are not allowed.
  *
