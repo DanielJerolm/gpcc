@@ -9,6 +9,7 @@
 */
 
 #include "FakeEEPROM.hpp"
+#include <gpcc_test/compiler/warnings.hpp>
 #include <gtest/gtest.h>
 #include <cstring>
 
@@ -206,7 +207,9 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_FakeEEPROM_Tests, MoveAssignSelf)
 
   uut.Write(12, sizeof(data), data);
 
+  GPCC_DISABLE_WARN_SELFMOVE();
   uut = std::move(uut);
+  GPCC_RESTORE_WARN_SELFMOVE();
 
   uint8_t readBuf[4];
 

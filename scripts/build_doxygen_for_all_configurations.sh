@@ -6,7 +6,7 @@
 # If a copy of the MPL was not distributed with this file,
 # You can obtain one at https://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2019 Daniel Jerolm
+# Copyright (C) 2019, 2024 Daniel Jerolm
 
 
 # This script will generate the doxygen documentation for GPCC for all operating system
@@ -22,7 +22,7 @@
 #
 # The current documentation gpcc/doc/doxygen/html/ and the current warnings.log will be deleted.
 
-CONFIGURATIONS="chibios_arm linux_arm linux_arm_tfc linux_x64 linux_x64_tfc"
+CONFIGURATIONS="chibios_arm epos_arm linux_arm linux_arm_tfc linux_x64 linux_x64_tfc"
 
 echo "Remove existing documentation"
 echo "================================================================================"

@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
 #ifdef OS_LINUX_X64_TFC
@@ -70,10 +70,10 @@ class TFCCore;
  * _running_ state when it starts executing the referenced thread entry function. As shown in the example below,
  * optional parameters can be passed to the thread entry function via the functor passed to @ref Start().
  *
- * After returning from the thread entry function or after thread cancellation, the thread has _terminated_.
- * _Terminated_ threads must be _joined_ via @ref Join() in order to release the resources occupied by the thread
- * (e.g. the thread's stack). After "joining" a thread, the @ref Thread object may be either destroyed or a new thread
- * may be started by invoking @ref Start().
+ * After returning from the thread entry function, or after invocation of @ref TerminateNow(), or after deferred thread
+ * cancellation, the thread has _terminated_. _Terminated_ threads must be _joined_ via @ref Join() in order to release
+ * the resources occupied by the thread (e.g. the thread's stack). After "joining" a thread, the @ref Thread object may
+ * be either destroyed or a new thread may be started by invoking @ref Start().
  *
  * The thread-entry function must always return `void*`. The return value of the thread entry function will be returned
  * by the @ref Join() method when the thread is later "joined". This mechanism can be used to transport results or
@@ -175,8 +175,7 @@ class TFCCore;
  * ~~~
  *
  * The default configuration for any new thread is that deferred cancellation is _enabled_.\n
- * Threads can retrieve and change their own cancelabilty state by invoking @ref GetCancelabilityEnabled() and
- * @ref SetCancelabilityEnabled().
+ * Threads can retrieve and change their own cancelabilty state via @ref SetCancelabilityEnabled().
  *
  * Threads can invoke @ref IsCancellationPending() to figure out if a cancellation request is pending. The function
  * does not care if cancelabilty is currently enabled or disabled.
@@ -234,19 +233,12 @@ class TFCCore;
  *
  * # Operating System specific notes
  * GPCC's OSAL has been designed to be portable and to provide _equivalent functionality_ on different operating
- * systems. Though currently Linux and ChibiOS/RT are the only supported operating systems, GPCC's OSAL can be easily
- * ported to other operating systems. The greater an OS' affinity to POSIX threads, the more simple is the
+ * systems. Though currently Linux, EPOS, and ChibiOS/RT are the only supported operating systems, GPCC's OSAL can be
+ * easily ported to other operating systems. The greater an OS' affinity to POSIX threads, the more simple is the
  * corresponding GPCC OSAL implementation.
  *
  * However the scheduling policies offered by GPCC's OSAL are not supported by all operating systems. Please check out
  * the sections below.
- *
- * ## Linux (linux_x64, linux_arm)
- * Full support.\n
- * Be aware that some scheduling policies might require special user rights/permissions.
- *
- * \htmlonly <style>div.image img[src="osal/os/priority_mapping_linux.png"]{width:50%;}</style> \endhtmlonly
- * \image html "osal/os/priority_mapping_linux.png" "Priority Mapping for Linux"
  *
  * ## ChibiOS/RT (chibios_arm)
  * - Scheduling policies `Other`, `Idle`, and `Batch` are emulated by mapping them to specific fixed priorities (see
@@ -258,6 +250,21 @@ class TFCCore;
  * \htmlonly <style>div.image img[src="osal/os/priority_mapping_chibiosrt.png"]{width:50%;}</style> \endhtmlonly
  * \image html "osal/os/priority_mapping_chibiosrt.png" "Priority Mapping for ChibiOS/RT"
  *
+ * ## EPOS (epos_arm)
+ * - Scheduling policies `Other`, `Idle`, and `Batch` are emulated by mapping them to specific fixed priorities (see
+ *   figure below).
+ * - System calls (e.g. blocking on a ConditionVariable) do currently not support deferred cancellation.
+ *
+ * \htmlonly <style>div.image img[src="osal/os/priority_mapping_epos.png"]{width:50%;}</style> \endhtmlonly
+ * \image html "osal/os/priority_mapping_epos.png" "Priority Mapping for EPOS"
+ *
+ * ## Linux (linux_x64, linux_arm)
+ * Full support.\n
+ * Be aware that some scheduling policies might require special user rights/permissions.
+ *
+ * \htmlonly <style>div.image img[src="osal/os/priority_mapping_linux.png"]{width:50%;}</style> \endhtmlonly
+ * \image html "osal/os/priority_mapping_linux.png" "Priority Mapping for Linux"
+ *
  * ## Time-Flow-Control (linux_x64_tfc, linux_arm_tfc)
  * Full support.\n
  * Be aware that all scheduling policies are mapped to the Linux scheduling policy "OTHER".\n
@@ -267,9 +274,9 @@ class TFCCore;
  * ## Exception- and Cancellation-safety-notes
  * Each method of this class contains notes about the exception and thread-cancellation safety of the specific method.
  *
- * Note that these specifications often specify a lower guarantee than the actual implementation of this class does.
- * The reason is that this class is operating system specific and portable. The specifications must be so low that they
- * can be fulfilled by any implementation.
+ * Note that these specifications often specify a lower guarantee than the actual implementation of this class actually
+ * provides. The reason is that this class is operating system specific and portable. The specifications must be so low
+ * that they can be fulfilled by any implementation.
  *
  * - - -
  *
@@ -366,8 +373,7 @@ class Thread final
     void AdviceTFC_JoiningThreadWillNotBlockPermanently(void);
 
     // public methods allowed to be called ONLY by the thread managed by this object
-    void SetCancelabilityEnabled(bool const enable);
-    bool GetCancelabilityEnabled(void) const;
+    bool SetCancelabilityEnabled(bool const enable);
 
     bool IsCancellationPending(void) const;
     void TestForCancellation(void);
@@ -424,12 +430,6 @@ class Thread final
     /// Flag indicating if a thread is waiting for joining with the managed thread.
     /** @ref spMutex is required. */
     bool threadWaitingForJoin;
-
-    /// Flag controlling if thread cancellation is currently enabled or disabled.
-    /** No mutex required: This is only accessed by the thread managed by this object and before thread start.\n
-        true  = enabled\n
-        false = disabled (note: cancellation requests are not ignored, but queued!) */
-    bool cancelabilityEnabled;
 
     /// Thread cancellation pending flag.
     /** true  = thread cancellation is pending\n

@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
 #ifdef COMPILER_GCC_X64
@@ -119,5 +119,5 @@
 
 /**@}*/
 
-#endif /* DEFINITIONS_HPP_202206112145 */
-#endif /* COMPILER_GCC_X64 */
+#endif // DEFINITIONS_HPP_202206112145
+#endif // COMPILER_GCC_X64

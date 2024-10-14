@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2024 Daniel Jerolm
 */
 
 #ifndef NONBLOCKINGSEMAPHORE_HPP_202104021310
@@ -29,7 +29,7 @@ namespace semaphores          {
  *
  * # Features
  * - Initial value configurable during instantiation.
- * - Post/inkrement and wait/decrement.
+ * - Post/increment and wait/decrement.
  * - Wait/decrement is non-blocking. Instead of blocking, a callback will be invoked when the semaphore is decremented.
  *
  * # Constraints/Restrictions

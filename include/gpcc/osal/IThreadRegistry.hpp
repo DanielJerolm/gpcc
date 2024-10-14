@@ -5,17 +5,17 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
 #ifndef ITHREADREGISTRY_HPP_201701271623
 #define ITHREADREGISTRY_HPP_201701271623
 
-#ifdef OS_LINUX_X64
+#ifdef OS_CHIBIOS_ARM
 #include "universal/IThreadRegistry.hpp"
 #endif
 
-#ifdef OS_LINUX_X64_TFC
+#ifdef OS_EPOS_ARM
 #include "universal/IThreadRegistry.hpp"
 #endif
 
@@ -27,7 +27,11 @@
 #include "universal/IThreadRegistry.hpp"
 #endif
 
-#ifdef OS_CHIBIOS_ARM
+#ifdef OS_LINUX_X64
+#include "universal/IThreadRegistry.hpp"
+#endif
+
+#ifdef OS_LINUX_X64_TFC
 #include "universal/IThreadRegistry.hpp"
 #endif
 

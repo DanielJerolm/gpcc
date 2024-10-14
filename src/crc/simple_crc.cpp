@@ -610,7 +610,7 @@ void CalcCRC8_noInputReverse(uint8_t & crc, void const * const pData, size_t n, 
  */
 void CalcCRC8_withInputReverse(uint8_t & crc, uint8_t const data, uint8_t const table[256]) noexcept
 {
-  crc = table[crc ^ gpcc::Compiler::ReverseBits8(data)];
+  crc = table[crc ^ gpcc::compiler::ReverseBits8(data)];
 }
 
 /**
@@ -654,7 +654,7 @@ void CalcCRC8_withInputReverse(uint8_t & crc, void const * const pData, size_t n
   uint8_t const * p = static_cast<uint8_t const *>(pData);
 
   while (n-- != 0)
-    crc = table[crc ^ gpcc::Compiler::ReverseBits8(*p++)];
+    crc = table[crc ^ gpcc::compiler::ReverseBits8(*p++)];
 }
 
 /**
@@ -772,7 +772,7 @@ void CalcCRC16_normal_noInputReverse(uint16_t & crc, void const * const pData, s
  */
 void CalcCRC16_normal_withInputReverse(uint16_t & crc, uint8_t const data, uint16_t const table[256]) noexcept
 {
-  crc = (crc << 8U) ^ table[(crc >> 8U) ^ gpcc::Compiler::ReverseBits8(data)];
+  crc = (crc << 8U) ^ table[(crc >> 8U) ^ gpcc::compiler::ReverseBits8(data)];
 }
 
 /**
@@ -930,7 +930,7 @@ void CalcCRC16_reflected_noInputReverse(uint16_t & crc, void const * const pData
  */
 void CalcCRC16_reflected_withInputReverse(uint16_t & crc, uint8_t const data, uint16_t const table[256]) noexcept
 {
-  crc = (crc >> 8U) ^ table[(crc & 0xFFU) ^ gpcc::Compiler::ReverseBits8(data)];
+  crc = (crc >> 8U) ^ table[(crc & 0xFFU) ^ gpcc::compiler::ReverseBits8(data)];
 }
 
 /**
@@ -1091,7 +1091,7 @@ void CalcCRC32_normal_noInputReverse(uint32_t & crc, void const * const pData, s
  */
 void CalcCRC32_normal_withInputReverse(uint32_t & crc, uint8_t const data, uint32_t const table[256]) noexcept
 {
-  crc = (crc << 8U) ^ table[(crc >> 24U) ^ gpcc::Compiler::ReverseBits8(data)];
+  crc = (crc << 8U) ^ table[(crc >> 24U) ^ gpcc::compiler::ReverseBits8(data)];
 }
 
 /**
@@ -1253,7 +1253,7 @@ void CalcCRC32_reflected_noInputReverse(uint32_t & crc, void const * const pData
  */
 void CalcCRC32_reflected_withInputReverse(uint32_t & crc, uint8_t const data, uint32_t const table[256]) noexcept
 {
-  crc = (crc >> 8U) ^ table[(crc & 0xFFU) ^ gpcc::Compiler::ReverseBits8(data)];
+  crc = (crc >> 8U) ^ table[(crc & 0xFFU) ^ gpcc::compiler::ReverseBits8(data)];
 }
 
 /**

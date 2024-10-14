@@ -5,17 +5,15 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
 #ifdef COMPILER_GCC_X64
 
 #include <gpcc/compiler/compiler/gcc_x64/builtins.hpp>
 
-namespace gpcc
-{
-namespace Compiler
-{
+namespace gpcc     {
+namespace compiler {
 
 namespace internal
 {
@@ -41,214 +39,6 @@ namespace internal
   };
 }
 
-bool OverflowAwareAdd(int64_t const a, int64_t const b, int64_t * const pResult) noexcept
-/**
- * \ingroup GPCC_COMPILER_BUILTINS
- * \brief Overflow-aware addition of `int64_t` and `int64_t` resulting in `int64_t`.
- *
- * This is intended to be replaced by `__builtin_add_overflow(...)` in the future, as soon as a
- * suitable version of gcc is available.
- *
- * ---
- *
- * __Thread safety:__\n
- * This is reentrant if different data is used.
- *
- * __Exception safety:__\n
- * No-throw guarantee:\n
- * Operations are guaranteed to succeed and satisfy all requirements even in exceptional situations. If an exception occurs, it will be handled internally and not observed by clients.
- *
- * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
- *
- * ---
- *
- * \param a First operand.
- * \param b Second operand.
- * \param pResult
- * The result is stored into the referenced variable.\n
- * _Be aware that future versions of this function may set the referenced variable to an_
- * _undefined value even though they detect and report an overflow._
- * \return
- * true  = overflow occurred
- * false = no overflow occurred
- */
-{
-  if ((a > 0) && (b > 0))
-  {
-    if (a > std::numeric_limits<int64_t>::max() - b)
-      return true;
-  }
-  else if ((a < 0) && (b < 0))
-  {
-    if (a < std::numeric_limits<int64_t>::min() - b)
-      return true;
-  }
-
-  *pResult = a + b;
-  return false;
-}
-bool OverflowAwareAdd(int64_t const a, int64_t const b, int32_t * const pResult) noexcept
-/**
- * \ingroup GPCC_COMPILER_BUILTINS
- * \brief Overflow-aware addition of `int64_t` and `int64_t` resulting in `int32_t`.
- *
- * This is intended to be replaced by `__builtin_add_overflow(...)` in the future, as soon as a
- * suitable version of gcc is available.
- *
- * ---
- *
- * __Thread safety:__\n
- * This is reentrant if different data is used.
- *
- * __Exception safety:__\n
- * No-throw guarantee:\n
- * Operations are guaranteed to succeed and satisfy all requirements even in exceptional situations. If an exception occurs, it will be handled internally and not observed by clients.
- *
- * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
- *
- * ---
- *
- * \param a First operand.
- * \param b Second operand.
- * \param pResult
- * The result is stored into the referenced variable.\n
- * _Be aware that future versions of this function may set the referenced variable to an_
- * _undefined value even though they detect and report an overflow._
- * \return
- * true  = overflow occurred
- * false = no overflow occurred
- */
-{
-  if ((a > 0) && (b > 0))
-  {
-    if (a > std::numeric_limits<int32_t>::max() - b)
-      return true;
-    *pResult = a + b;
-  }
-  else if ((a < 0) && (b < 0))
-  {
-    if (a < std::numeric_limits<int32_t>::min() - b)
-      return true;
-    *pResult = a + b;
-  }
-  else
-  {
-    int64_t const result = a + b;
-    if ((result < std::numeric_limits<int32_t>::min()) ||
-        (result > std::numeric_limits<int32_t>::max()))
-      return true;
-    *pResult = result;
-  }
-
-  return false;
-}
-bool OverflowAwareSub(int64_t const a, int64_t const b, int64_t * const pResult) noexcept
-/**
- * \ingroup GPCC_COMPILER_BUILTINS
- * \brief Overflow-aware subtraction of `int64_t` and `int64_t` resulting in `int64_t`.
- *
- * This is intended to be replaced by `__builtin_sub_overflow(...)` in the future, as soon as a
- * suitable version of gcc is available.
- *
- * ---
- *
- * __Thread safety:__\n
- * This is reentrant if different data is used.
- *
- * __Exception safety:__\n
- * No-throw guarantee:\n
- * Operations are guaranteed to succeed and satisfy all requirements even in exceptional situations. If an exception occurs, it will be handled internally and not observed by clients.
- *
- * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
- *
- * ---
- *
- * \param a First operand.
- * \param b Second operand.
- * \param pResult
- * The result is stored into the referenced variable.\n
- * _Be aware that future versions of this function may set the referenced variable to an_
- * _undefined value even though they detect and report an overflow._
- * \return
- * true  = overflow occurred
- * false = no overflow occurred
- */
-{
-  if ((a > 0) && (b < 0))
-  {
-    if (b < a - std::numeric_limits<int64_t>::max())
-      return true;
-  }
-  else if ((a < 0) && (b > 0))
-  {
-    if (a < b - std::numeric_limits<int64_t>::max())
-      return true;
-  }
-
-  *pResult = a - b;
-  return false;
-}
-bool OverflowAwareSub(int64_t const a, int64_t const b, int32_t * const pResult) noexcept
-/**
- * \ingroup GPCC_COMPILER_BUILTINS
- * \brief Overflow-aware subtraction of `int64_t` and `int64_t` resulting in `int32_t`.
- *
- * This is intended to be replaced by `__builtin_sub_overflow(...)` in the future, as soon as a
- * suitable version of gcc is available.
- *
- * ---
- *
- * __Thread safety:__\n
- * This is reentrant if different data is used.
- *
- * __Exception safety:__\n
- * No-throw guarantee:\n
- * Operations are guaranteed to succeed and satisfy all requirements even in exceptional situations. If an exception occurs, it will be handled internally and not observed by clients.
- *
- * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
- *
- * ---
- *
- * \param a First operand.
- * \param b Second operand.
- * \param pResult
- * The result is stored into the referenced variable.\n
- * _Be aware that future versions of this function may set the referenced variable to an_
- * _undefined value even though they detect and report an overflow._
- * \return
- * true  = overflow occurred
- * false = no overflow occurred
- */
-{
-  if ((a > 0) && (b < 0))
-  {
-    if (b < a - std::numeric_limits<int32_t>::max())
-      return true;
-    *pResult = a - b;
-  }
-  else if ((a < 0) && (b > 0))
-  {
-    if (a < b - std::numeric_limits<int32_t>::max())
-      return true;
-    *pResult = a - b;
-  }
-  else
-  {
-    int64_t const result = a - b;
-    if ((result < std::numeric_limits<int32_t>::min()) ||
-        (result > std::numeric_limits<int32_t>::max()))
-      return true;
-    *pResult = result;
-  }
-
-  return false;
-}
-
-uint16_t ReverseBits16(uint16_t const value) noexcept
 /**
  * \ingroup GPCC_COMPILER_BUILTINS
  * \brief Reverses the bit order in an 16 bit value.
@@ -268,15 +58,16 @@ uint16_t ReverseBits16(uint16_t const value) noexcept
  *
  * \param value
  * Input value.
+ *
  * \return
- * `value` with bits being reversed.
+ * @p value with bits being reversed.
  */
+uint16_t ReverseBits16(uint16_t const value) noexcept
 {
   return (static_cast<uint16_t>(ReverseBits8((value >>  0U) & 0xFFU)) << 8U) |
          (static_cast<uint16_t>(ReverseBits8((value >>  8U) & 0xFFU)) << 0U);
 }
 
-uint32_t ReverseBits32(uint32_t const value) noexcept
 /**
  * \ingroup GPCC_COMPILER_BUILTINS
  * \brief Reverses the bit order in an 32 bit value.
@@ -296,9 +87,11 @@ uint32_t ReverseBits32(uint32_t const value) noexcept
  *
  * \param value
  * Input value.
+ *
  * \return
- * `value` with bits being reversed.
+ * @p value with bits being reversed.
  */
+uint32_t ReverseBits32(uint32_t const value) noexcept
 {
   return (static_cast<uint32_t>(ReverseBits8((value >>  0U) & 0xFFU)) << 24U) |
          (static_cast<uint32_t>(ReverseBits8((value >>  8U) & 0xFFU)) << 16U) |
@@ -306,7 +99,7 @@ uint32_t ReverseBits32(uint32_t const value) noexcept
          (static_cast<uint32_t>(ReverseBits8((value >> 24U) & 0xFFU)) <<  0U);
 }
 
-} // namespace Compiler
+} // namespace compiler
 } // namespace gpcc
 
-#endif /* COMPILER_GCC_X64 */
+#endif // COMPILER_GCC_X64

@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
 #include <gpcc/osal/Thread.hpp>
@@ -75,7 +75,7 @@ class gpcc_osal_Thread_TestsF: public Test
     void* ThreadEntry_Throw(void);
     void* ThreadEntry_AttemptToJoinSelf(Thread* const pThread);
     void* ThreadEntry_JoinOtherThread(Thread* const pThread);
-    void* ThreadEntry_GetSetCancelabilityEnabled(Thread* const pThread);
+    void* ThreadEntry_SetCancelabilityEnabled(Thread* const pThread);
     void* ThreadEntry_DisableCancelability(Thread* const pThread);
     void* ThreadEntry_DisableAndEnableCancelability(Thread* const pThread);
     void* ThreadEntry_CancelOnTestForCancellation(Thread* const pThread);
@@ -207,39 +207,30 @@ void* gpcc_osal_Thread_TestsF::ThreadEntry_JoinOtherThread(Thread* const pThread
   return nullptr;
 }
 
-void* gpcc_osal_Thread_TestsF::ThreadEntry_GetSetCancelabilityEnabled(Thread* const pThread)
+void* gpcc_osal_Thread_TestsF::ThreadEntry_SetCancelabilityEnabled(Thread* const pThread)
 {
   std::unique_ptr<bool> spRetVal(new bool);
 
   *spRetVal = true;
 
-  // must be initially true
-  if (!pThread->GetCancelabilityEnabled())
-    *spRetVal = false;
-
-  // set must be ignored
-  pThread->SetCancelabilityEnabled(true);
-  if (!pThread->GetCancelabilityEnabled())
+  // must be initially true and set must be ignored
+  if (!pThread->SetCancelabilityEnabled(true))
     *spRetVal = false;
 
   // set to false
-  pThread->SetCancelabilityEnabled(false);
-  if (pThread->GetCancelabilityEnabled())
+  if (!pThread->SetCancelabilityEnabled(false))
     *spRetVal = false;
 
   // 2nd set to false must be ignored
-  pThread->SetCancelabilityEnabled(false);
-  if (pThread->GetCancelabilityEnabled())
+  if (pThread->SetCancelabilityEnabled(false))
     *spRetVal = false;
 
   // set back to true
-  pThread->SetCancelabilityEnabled(true);
-  if (!pThread->GetCancelabilityEnabled())
+  if (pThread->SetCancelabilityEnabled(true))
     *spRetVal = false;
 
   // 2nd set to true must be ignored
-  pThread->SetCancelabilityEnabled(true);
-  if (!pThread->GetCancelabilityEnabled())
+  if (!pThread->SetCancelabilityEnabled(true))
     *spRetVal = false;
 
   return spRetVal.release();
@@ -247,7 +238,7 @@ void* gpcc_osal_Thread_TestsF::ThreadEntry_GetSetCancelabilityEnabled(Thread* co
 
 void* gpcc_osal_Thread_TestsF::ThreadEntry_DisableCancelability(Thread* const pThread)
 {
-  pThread->SetCancelabilityEnabled(false);
+  (void)pThread->SetCancelabilityEnabled(false);
 
   do
   {
@@ -264,7 +255,7 @@ void* gpcc_osal_Thread_TestsF::ThreadEntry_DisableCancelability(Thread* const pT
 
 void* gpcc_osal_Thread_TestsF::ThreadEntry_DisableAndEnableCancelability(Thread* const pThread)
 {
-  pThread->SetCancelabilityEnabled(false);
+  (void)pThread->SetCancelabilityEnabled(false);
 
   do
   {
@@ -276,7 +267,7 @@ void* gpcc_osal_Thread_TestsF::ThreadEntry_DisableAndEnableCancelability(Thread*
   pThread->TestForCancellation();
 
   // this must have no effect
-  pThread->SetCancelabilityEnabled(true);
+  (void)pThread->SetCancelabilityEnabled(true);
 
   // return something that is not nullptr
   return this;
@@ -284,7 +275,7 @@ void* gpcc_osal_Thread_TestsF::ThreadEntry_DisableAndEnableCancelability(Thread*
 
 void* gpcc_osal_Thread_TestsF::ThreadEntry_CancelOnTestForCancellation(Thread* const pThread)
 {
-  pThread->SetCancelabilityEnabled(false);
+  (void)pThread->SetCancelabilityEnabled(false);
 
   do
   {
@@ -295,7 +286,7 @@ void* gpcc_osal_Thread_TestsF::ThreadEntry_CancelOnTestForCancellation(Thread* c
   // this must have no effect
   pThread->TestForCancellation();
 
-  pThread->SetCancelabilityEnabled(true);
+  (void)pThread->SetCancelabilityEnabled(true);
 
   flag = true;
 
@@ -962,20 +953,20 @@ TEST_F(gpcc_osal_Thread_DeathTestsF, UncaughtException)
 {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
 
-  EXPECT_DEATH(TestUncaughtException(), ".*Local error or uncaught exception from user's thread entry function.*");
+  EXPECT_DEATH(TestUncaughtException(), ".*Caught exception: TestException.*");
 }
 
 TEST_F(gpcc_osal_Thread_TestsF, SetCancelabilityEnabled_WrongThread)
 {
   Thread uut("Test");
-  ASSERT_THROW(uut.SetCancelabilityEnabled(true), std::logic_error);
+  ASSERT_THROW((void)uut.SetCancelabilityEnabled(true), std::logic_error);
 }
 
-TEST_F(gpcc_osal_Thread_TestsF, GetSetCancelabilityEnabled)
+TEST_F(gpcc_osal_Thread_TestsF, SetCancelabilityEnabled)
 {
   Thread uut("Test");
 
-  uut.Start(std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_osal_Thread_TestsF, GetSetCancelabilityEnabled)::ThreadEntry_GetSetCancelabilityEnabled, this, &uut),
+  uut.Start(std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_osal_Thread_TestsF, SetCancelabilityEnabled)::ThreadEntry_SetCancelabilityEnabled, this, &uut),
             Thread::SchedPolicy::Other, 0, Thread::GetDefaultStackSize());
 
   std::unique_ptr<bool> spRetVal(static_cast<bool*>(uut.Join()));

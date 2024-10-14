@@ -11,6 +11,7 @@
 #include <gpcc/cood/ObjectDictionary.hpp>
 #include <gpcc/cood/ObjectPtr.hpp>
 #include <gpcc/cood/ObjectVAR.hpp>
+#include <gpcc_test/compiler/warnings.hpp>
 #include <gtest/gtest.h>
 #include <memory>
 
@@ -292,7 +293,11 @@ TEST_F(gpcc_cood_ObjectPtr_TestsF, CopyAssign_ptr_to_ptr_differentOD)
 TEST(gpcc_cood_ObjectPtr_Tests, MoveAssign_Self_nullptr)
 {
   ObjectPtr p;
+
+  GPCC_DISABLE_WARN_SELFMOVE();
   p = std::move(p);
+  GPCC_RESTORE_WARN_SELFMOVE();
+
   EXPECT_TRUE(!p);
 }
 
@@ -301,7 +306,10 @@ TEST_F(gpcc_cood_ObjectPtr_TestsF, MoveAssign_SelfNoNullptr)
   auto p1 = spOD1->GetObject(0x1000U);
   ASSERT_TRUE(p1);
 
+  GPCC_DISABLE_WARN_SELFMOVE();
   p1 = std::move(p1);
+  GPCC_RESTORE_WARN_SELFMOVE();
+
   ASSERT_TRUE(p1);
 
   EXPECT_EQ(p1->GetIndex(), 0x1000U);
@@ -924,7 +932,10 @@ TEST_F(gpcc_cood_ObjectPtr_DeathTestsF, MoveAssign_SelfNoNullptr_ODLock)
   auto p1 = spOD1->GetObject(0x1000U);
   ASSERT_TRUE(p1);
 
+  GPCC_DISABLE_WARN_SELFMOVE();
   p1 = std::move(p1);
+  GPCC_RESTORE_WARN_SELFMOVE();
+
   ASSERT_TRUE(p1);
 
   EXPECT_DEATH(spOD1->Remove(0x1001U), ".*Dead-Lock detected. All threads permanently blocked.*");

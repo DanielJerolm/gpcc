@@ -105,7 +105,7 @@ TEST(gpcc_crc_SimpleCRC_Tests, crc32ab_table_normal_ReceiverMagicValue3)
 
   // transmitter finishes and receiver continues
   uint32_t crcRx = crcTx;
-  crcTx = gpcc::Compiler::ReverseBits32(~crcTx);
+  crcTx = gpcc::compiler::ReverseBits32(~crcTx);
 
   // The receiver includes the transmitted CRC into its calculation.
   // We use the normal form (shift left) with data/CRC bit reverse, so the low byte of crcTx must be processed first
@@ -113,7 +113,7 @@ TEST(gpcc_crc_SimpleCRC_Tests, crc32ab_table_normal_ReceiverMagicValue3)
   gpcc::crc::CalcCRC32_normal_withInputReverse(crcRx, (crcTx >>  8U) & 0xFFU, gpcc::crc::crc32ab_table_normal);
   gpcc::crc::CalcCRC32_normal_withInputReverse(crcRx, (crcTx >> 16U) & 0xFFU, gpcc::crc::crc32ab_table_normal);
   gpcc::crc::CalcCRC32_normal_withInputReverse(crcRx, (crcTx >> 24U) & 0xFFU, gpcc::crc::crc32ab_table_normal);
-  crcRx = gpcc::Compiler::ReverseBits32(~crcRx);
+  crcRx = gpcc::compiler::ReverseBits32(~crcRx);
 
   // in case of no error, the result must match the magic value for CRC-32B (Ethernet)
   ASSERT_EQ(crcRx, 0x2144DF1CUL);
@@ -133,7 +133,7 @@ TEST(gpcc_crc_SimpleCRC_Tests, crc32ab_table_normal_ReceiverMagicValue4)
 
   // transmitter finishes and receiver continues
   uint32_t crcRx = crcTx;
-  crcTx = gpcc::Compiler::ReverseBits32(~crcTx);
+  crcTx = gpcc::compiler::ReverseBits32(~crcTx);
 
   // The receiver includes the transmitted CRC into its calculation.
   // We use the normal form (shift left) with data/CRC bit reverse, so the low byte of crcTx must be processed first
@@ -141,7 +141,7 @@ TEST(gpcc_crc_SimpleCRC_Tests, crc32ab_table_normal_ReceiverMagicValue4)
   gpcc::crc::CalcCRC32_normal_withInputReverse(crcRx, (crcTx >>  8U) & 0xFFU, gpcc::crc::crc32ab_table_normal);
   gpcc::crc::CalcCRC32_normal_withInputReverse(crcRx, (crcTx >> 16U) & 0xFFU, gpcc::crc::crc32ab_table_normal);
   gpcc::crc::CalcCRC32_normal_withInputReverse(crcRx, (crcTx >> 24U) & 0xFFU, gpcc::crc::crc32ab_table_normal);
-  crcRx = gpcc::Compiler::ReverseBits32(~crcRx);
+  crcRx = gpcc::compiler::ReverseBits32(~crcRx);
 
   // in case of no error, the result must match the magic value for CRC-32B (Ethernet)
   ASSERT_EQ(crcRx, 0x2144DF1CUL);
@@ -169,7 +169,7 @@ TEST(gpcc_crc_SimpleCRC_Tests, crc32ab_table_reflected_ReceiverMagicValue1)
 
   // transmitter finishes and receiver continues
   uint32_t crcRx = crcTx;
-  crcTx = gpcc::Compiler::ReverseBits32(~crcTx);
+  crcTx = gpcc::compiler::ReverseBits32(~crcTx);
 
   // The receiver inclues the transmitted CRC into its calculation.
   // We use the reflected form (shift right) with data/CRC bit reverse, so the high byte of crcTx must be processed first
@@ -177,7 +177,7 @@ TEST(gpcc_crc_SimpleCRC_Tests, crc32ab_table_reflected_ReceiverMagicValue1)
   gpcc::crc::CalcCRC32_reflected_withInputReverse(crcRx, (crcTx >> 16U) & 0xFFU, gpcc::crc::crc32ab_table_reflected);
   gpcc::crc::CalcCRC32_reflected_withInputReverse(crcRx, (crcTx >>  8U) & 0xFFU, gpcc::crc::crc32ab_table_reflected);
   gpcc::crc::CalcCRC32_reflected_withInputReverse(crcRx, (crcTx >>  0U) & 0xFFU, gpcc::crc::crc32ab_table_reflected);
-  crcRx = gpcc::Compiler::ReverseBits32(~crcRx);
+  crcRx = gpcc::compiler::ReverseBits32(~crcRx);
 
   // in case of no error, the result must match the magic value for CRC-32A (BZIP2)
   ASSERT_EQ(crcRx, 0x38FB2284UL);
@@ -197,7 +197,7 @@ TEST(gpcc_crc_SimpleCRC_Tests, crc32ab_table_reflected_ReceiverMagicValue2)
 
   // transmitter finishes and receiver continues
   uint32_t crcRx = crcTx;
-  crcTx = gpcc::Compiler::ReverseBits32(~crcTx);
+  crcTx = gpcc::compiler::ReverseBits32(~crcTx);
 
   // The receiver inclues the transmitted CRC into its calculation.
   // We use the reflected form (shift right) with data/CRC bit reverse, so the high byte of crcTx must be processed first
@@ -205,7 +205,7 @@ TEST(gpcc_crc_SimpleCRC_Tests, crc32ab_table_reflected_ReceiverMagicValue2)
   gpcc::crc::CalcCRC32_reflected_withInputReverse(crcRx, (crcTx >> 16U) & 0xFFU, gpcc::crc::crc32ab_table_reflected);
   gpcc::crc::CalcCRC32_reflected_withInputReverse(crcRx, (crcTx >>  8U) & 0xFFU, gpcc::crc::crc32ab_table_reflected);
   gpcc::crc::CalcCRC32_reflected_withInputReverse(crcRx, (crcTx >>  0U) & 0xFFU, gpcc::crc::crc32ab_table_reflected);
-  crcRx = gpcc::Compiler::ReverseBits32(~crcRx);
+  crcRx = gpcc::compiler::ReverseBits32(~crcRx);
 
   // in case of no error, the result must match the magic value for CRC-32A (BZIP2)
   ASSERT_EQ(crcRx, 0x38FB2284UL);
@@ -491,12 +491,12 @@ TEST(gpcc_crc_SimpleCRC_Tests, CalcCRC8_withInputReverse_singleByte)
   // We can use the reflected form, if we reverse both data bytes and final CRC.
 
   uint8_t table[256];
-  gpcc::crc::GenerateCRC8Table_reflected(gpcc::Compiler::ReverseBits8(0x07U), table);
+  gpcc::crc::GenerateCRC8Table_reflected(gpcc::compiler::ReverseBits8(0x07U), table);
 
   uint8_t crc = 0x00U;
   for (auto const c : check_data)
     gpcc::crc::CalcCRC8_withInputReverse(crc, c, table);
-  crc = gpcc::Compiler::ReverseBits8(crc);
+  crc = gpcc::compiler::ReverseBits8(crc);
   crc ^= 0x55U;
 
   ASSERT_EQ(crc, 0xA1U);
@@ -510,14 +510,14 @@ TEST(gpcc_crc_SimpleCRC_Tests, CalcCRC8_withInputReverse_block)
   // We can use the reflected form, if we reverse both data bytes and final CRC.
 
   uint8_t table[256];
-  gpcc::crc::GenerateCRC8Table_reflected(gpcc::Compiler::ReverseBits8(0x07U), table);
+  gpcc::crc::GenerateCRC8Table_reflected(gpcc::compiler::ReverseBits8(0x07U), table);
 
   void const * pData = check_data.data();
   auto const n       = check_data.length();
 
   uint8_t crc = 0x00U;
   gpcc::crc::CalcCRC8_withInputReverse(crc, pData, n, table);
-  crc = gpcc::Compiler::ReverseBits8(crc);
+  crc = gpcc::compiler::ReverseBits8(crc);
   crc ^= 0x55U;
 
   ASSERT_EQ(crc, 0xA1U);
@@ -566,7 +566,7 @@ TEST(gpcc_crc_SimpleCRC_Tests, CalcCRC16_normal_withInputReverse_singleByte)
   uint16_t crc = 0xFFFFU;
   for (auto const c: check_data)
     gpcc::crc::CalcCRC16_normal_withInputReverse(crc, c, table);
-  crc = gpcc::Compiler::ReverseBits16(crc);
+  crc = gpcc::compiler::ReverseBits16(crc);
   crc = ~crc;
 
   ASSERT_EQ(crc, 0x906EU);
@@ -585,7 +585,7 @@ TEST(gpcc_crc_SimpleCRC_Tests, CalcCRC16_normal_withInputReverse_block)
   // calculate CRC
   uint16_t crc = 0xFFFFU;
   gpcc::crc::CalcCRC16_normal_withInputReverse(crc, pData, n, table);
-  crc = gpcc::Compiler::ReverseBits16(crc);
+  crc = gpcc::compiler::ReverseBits16(crc);
   crc = ~crc;
 
   ASSERT_EQ(crc, 0x906EU);
@@ -599,7 +599,7 @@ TEST(gpcc_crc_SimpleCRC_Tests, CalcCRC16_reflected_noInputReverse_singleByte)
   // If we use the reflected form, then we do not need to reverse data bytes and final CRC.
 
   uint16_t table[256];
-  gpcc::crc::GenerateCRC16Table_reflected(gpcc::Compiler::ReverseBits16(0x8005U), table);
+  gpcc::crc::GenerateCRC16Table_reflected(gpcc::compiler::ReverseBits16(0x8005U), table);
 
   // calculate CRC
   uint16_t crc = 0x0000U;
@@ -617,7 +617,7 @@ TEST(gpcc_crc_SimpleCRC_Tests, CalcCRC16_reflected_noInputReverse_block)
   // If we use the reflected form, then we do not need to reverse data bytes and final CRC.
 
   uint16_t table[256];
-  gpcc::crc::GenerateCRC16Table_reflected(gpcc::Compiler::ReverseBits16(0x8005U), table);
+  gpcc::crc::GenerateCRC16Table_reflected(gpcc::compiler::ReverseBits16(0x8005U), table);
 
   void const * pData = check_data.data();
   auto const n       = check_data.length();
@@ -637,13 +637,13 @@ TEST(gpcc_crc_SimpleCRC_Tests, CalcCRC16_reflected_withInputReverse_singleByte)
   // We can use the reflected form, if we reverse both data bytes and final CRC.
 
   uint16_t table[256];
-  gpcc::crc::GenerateCRC16Table_reflected(gpcc::Compiler::ReverseBits16(0x1021U), table);
+  gpcc::crc::GenerateCRC16Table_reflected(gpcc::compiler::ReverseBits16(0x1021U), table);
 
   // calculate CRC
   uint16_t crc = 0xFFFFU;
   for (auto const c: check_data)
     gpcc::crc::CalcCRC16_reflected_withInputReverse(crc, c, table);
-  crc = gpcc::Compiler::ReverseBits16(crc);
+  crc = gpcc::compiler::ReverseBits16(crc);
 
   ASSERT_EQ(crc, 0x29B1U);
 }
@@ -656,7 +656,7 @@ TEST(gpcc_crc_SimpleCRC_Tests, CalcCRC16_reflected_withInputReverse_block)
   // We can use the reflected form, if we reverse both data bytes and final CRC.
 
   uint16_t table[256];
-  gpcc::crc::GenerateCRC16Table_reflected(gpcc::Compiler::ReverseBits16(0x1021U), table);
+  gpcc::crc::GenerateCRC16Table_reflected(gpcc::compiler::ReverseBits16(0x1021U), table);
 
   void const * pData = check_data.data();
   auto const n       = check_data.length();
@@ -664,7 +664,7 @@ TEST(gpcc_crc_SimpleCRC_Tests, CalcCRC16_reflected_withInputReverse_block)
   // calculate CRC
   uint16_t crc = 0xFFFFU;
   gpcc::crc::CalcCRC16_reflected_withInputReverse(crc, pData, n, table);
-  crc = gpcc::Compiler::ReverseBits16(crc);
+  crc = gpcc::compiler::ReverseBits16(crc);
 
   ASSERT_EQ(crc, 0x29B1U);
 }
@@ -705,7 +705,7 @@ TEST(gpcc_crc_SimpleCRC_Tests, CalcCRC32_normal_withInputReverse_singleByte)
   uint32_t crc = 0xFFFFFFFFUL;
   for (auto const c: check_data)
     gpcc::crc::CalcCRC32_normal_withInputReverse(crc, c, gpcc::crc::crc32ab_table_normal);
-  crc = gpcc::Compiler::ReverseBits32(crc);
+  crc = gpcc::compiler::ReverseBits32(crc);
   crc = ~crc;
 
   ASSERT_EQ(crc, 0xCBF43926UL);
@@ -721,7 +721,7 @@ TEST(gpcc_crc_SimpleCRC_Tests, CalcCRC32_normal_withInputReverse_block)
   // calculate CRC
   uint32_t crc = 0xFFFFFFFFUL;
   gpcc::crc::CalcCRC32_normal_withInputReverse(crc, pData, n, gpcc::crc::crc32ab_table_normal);
-  crc = gpcc::Compiler::ReverseBits32(crc);
+  crc = gpcc::compiler::ReverseBits32(crc);
   crc = ~crc;
 
   ASSERT_EQ(crc, 0xCBF43926UL);
@@ -763,7 +763,7 @@ TEST(gpcc_crc_SimpleCRC_Tests, CalcCRC32_reflected_withInputReverse_singleByte)
   uint32_t crc = 0xFFFFFFFFUL;
   for (auto const c: check_data)
     gpcc::crc::CalcCRC32_reflected_withInputReverse(crc, c, gpcc::crc::crc32ab_table_reflected);
-  crc = gpcc::Compiler::ReverseBits32(crc);
+  crc = gpcc::compiler::ReverseBits32(crc);
   crc = ~crc;
 
   ASSERT_EQ(crc, 0xFC891918UL);
@@ -779,7 +779,7 @@ TEST(gpcc_crc_SimpleCRC_Tests, CalcCRC32_reflected_withInputReverse_block)
   // calculate CRC
   uint32_t crc = 0xFFFFFFFFUL;
   gpcc::crc::CalcCRC32_reflected_withInputReverse(crc, pData, n, gpcc::crc::crc32ab_table_reflected);
-  crc = gpcc::Compiler::ReverseBits32(crc);
+  crc = gpcc::compiler::ReverseBits32(crc);
   crc = ~crc;
 
   ASSERT_EQ(crc, 0xFC891918UL);

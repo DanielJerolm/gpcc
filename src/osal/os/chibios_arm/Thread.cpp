@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
 #ifdef OS_CHIBIOS_ARM
@@ -14,10 +14,9 @@
 #include <gpcc/osal/AdvancedMutexLocker.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
+#include <gpcc/string/StringComposer.hpp>
 #include <gpcc/string/tools.hpp>
 #include <cxxabi.h>
-#include <iomanip>
-#include <sstream>
 #include <stdexcept>
 #include <system_error>
 
@@ -226,7 +225,8 @@ Thread::~Thread(void)
  * - - -
  *
  * __Thread safety:__\n
- * This is thread-safe.
+ * This is thread-safe.\n
+ * This can be invoked by any thread.
  *
  * __Exception safety:__\n
  * Strong guarantee.
@@ -358,11 +358,13 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
     throw std::invalid_argument("Thread::GetInfo: 'nameFieldWidth' too small");
 
   // the information is build into "infoLine"
-  std::ostringstream infoLine;
+  using gpcc::string::StringComposer;
+  StringComposer infoLine;
+  infoLine << StringComposer::AlignLeft;
 
   // start with thread's name
   if (name.size() <= nameFieldWidth)
-    infoLine << std::left << std::setw(nameFieldWidth) << std::setfill(' ') << name;
+    infoLine << StringComposer::Width(nameFieldWidth) << name;
   else
     infoLine << name.substr(0, nameFieldWidth - 3U) << "...";
 
@@ -370,33 +372,34 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
 
   bool detailsRequired = false;
 
+  infoLine << ' ' << StringComposer::Width(6);
   switch (threadState)
   {
     case ThreadState::noThreadOrJoined:
-      infoLine << " no     ";
+      infoLine << "no";
       break;
 
     case ThreadState::starting:
-      infoLine << " start  ";
+      infoLine << "start";
       break;
 
     case ThreadState::running:
-      infoLine << " run    ";
+      infoLine << "run";
       detailsRequired = true;
       break;
 
     case ThreadState::terminated:
-      infoLine << " term   ";
+      infoLine << "term";
       break;
   } // switch (threadState)
 
   if (detailsRequired)
   {
     // ChibiOS priority
-    infoLine << std::right << std::setw(3) << std::setfill(' ') << pThread->prio << ' ';
+    infoLine << StringComposer::AlignRight << StringComposer::Width(4) << static_cast<unsigned int>(pThread->prio) << ' ';
 
     // stack size
-    infoLine << std::right << std::setw(10) << std::setfill(' ') << totalStackSize << ' ';
+    infoLine << StringComposer::Width(10) << totalStackSize << ' ';
 
     // stack usage
     size_t const used = InternalMeasureStack();
@@ -404,8 +407,8 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
     {
       // perentage: round up
       uint_fast8_t const percentage = ((used * 100U) + (totalStackSize - 1U)) / totalStackSize;
-      infoLine << std::right << std::setw(10) << std::setfill(' ') << used
-               << " (" << std::right << std::setw(3) << std::setfill(' ') << static_cast<unsigned int>(percentage) << "%) ";
+      infoLine << StringComposer::Width(10) << used
+               << " (" << StringComposer::Width(3) << static_cast<unsigned int>(percentage) << "%) ";
     }
     else
       infoLine << "       Err (Err%) ";
@@ -418,10 +421,10 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
   }
   else
   {
-    infoLine << "--- ---------- ---------- ------ ---------- ----------";
+    infoLine << " --- ---------- ---------- ------ ---------- ----------";
   }
 
-  return infoLine.str();
+  return infoLine.Get();
 }
 
 /**
@@ -710,7 +713,12 @@ void* Thread::Join(bool* const pCancelled)
 }
 
 /**
- * \brief Enables/disables cancelability.
+ * \brief Enables/disables cancelability and retrieves the previous state.
+ *
+ * This function has no effect, if the current cancelability state already equals @p enable.
+ *
+ * Note that if cancelability is disabled, any cancellation request will _not be dropped_ but _queued_ until
+ * cancellation is enabled again or until the thread terminates.
  *
  * - - -
  *
@@ -728,11 +736,14 @@ void* Thread::Join(bool* const pCancelled)
  * \param enable
  * New cancelability state:\n
  * true = cancellation shall be enabled\n
- * false = cancellation shall be disabled\n
- * Note that if cancelability is disabled, any cancellation request will _not be dropped_ but _queued_ until
- * cancellation is enabled again or until the thread terminates.
+ * false = cancellation shall be disabled
+ *
+ * \return
+ * Previous cancelability state.\n
+ * This could be stored and used to recover the previous state at a later point in time, e.g. if cancelability shall
+ * be disabled temporarily only.
  */
-void Thread::SetCancelabilityEnabled(bool const enable)
+bool Thread::SetCancelabilityEnabled(bool const enable)
 {
   MutexLocker mutexLocker(mutex);
 
@@ -740,39 +751,9 @@ void Thread::SetCancelabilityEnabled(bool const enable)
   if ((threadState != ThreadState::running) || (chThdGetSelfX() != pThread))
     throw std::logic_error("Thread::SetCancelabilityEnabled: Not invoked by the managed thread");
 
+  bool const oldState = cancelabilityEnabled;
   cancelabilityEnabled = enable;
-}
-
-/**
- * \brief Retrieves if cancelability is enabled or disabled.
- *
- * - - -
- *
- * __Thread safety:__\n
- * Only the thread managed by this object is allowed to call this method.
- *
- * __Exception safety:__\n
- * Strong guarantee.
- *
- * __Thread cancellation safety:__\n
- * No cancellation point included.
- *
- * - - -
- *
- * \return
- * Current cancelability state:\n
- * true  = cancellation enabled\n
- * false = cancellation disabled
- */
-bool Thread::GetCancelabilityEnabled(void) const
-{
-  MutexLocker mutexLocker(mutex);
-
-  // verify that the current thread is the one managed by this object
-  if ((threadState != ThreadState::running) || (chThdGetSelfX() != pThread))
-    throw std::logic_error("Thread::GetCancelabilityEnabled: Not invoked by the managed thread");
-
-  return cancelabilityEnabled;
+  return oldState;
 }
 
 /**
@@ -808,7 +789,7 @@ void Thread::TestForCancellation(void)
 /**
  * \brief This allows the thread managed by this object to terminate itself.
  *
- * The method will never return.
+ * This method will never return.
  *
  * __Note:__\n
  * __Stack-unwinding will take place.__\n
@@ -1003,10 +984,13 @@ msg_t Thread::InternalThreadEntry2(void) noexcept
       // catching abi::__forced_unwind should be impossible on this platform
       PANIC();
     }
+    catch (std::exception const & e)
+    {
+      Panic("Thread::InternalThreadEntry2: Caught exception: ", e);
+    }
     catch (...)
     {
-      // the thread has terminated due to an uncaught exception
-      Panic("Thread::InternalThreadEntry2: Uncaught exception propagated into thread entry function");
+      Panic("Thread::InternalThreadEntry2: Caught unknown exception");
     }
 
     // the thread has terminated by leaving the thread entry function

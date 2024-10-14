@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2024 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/infrastructure/RODACLIClientBase.hpp>
@@ -22,12 +22,14 @@
 #include <gpcc/cood/remote_access/requests_and_responses/WriteRequest.hpp>
 #include <gpcc/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp>
 #include <gpcc/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccess.hpp>
+#include <gpcc/osal/definitions.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
 #include <gpcc/stream/MemStreamReader.hpp>
 #include <gpcc/stream/MemStreamWriter.hpp>
+#include <gpcc/string/StringComposer.hpp>
 #include <gpcc/string/tools.hpp>
 #include "src/cood/cli/internal/CAReadArgsParser.hpp"
 #include "src/cood/cli/internal/CAWriteArgsParser.hpp"
@@ -35,8 +37,6 @@
 #include "src/cood/cli/internal/InfoArgsParser.hpp"
 #include "src/cood/cli/internal/ReadArgsParser.hpp"
 #include "src/cood/cli/internal/WriteArgsParser.hpp"
-#include <iomanip>
-#include <sstream>
 #include <stdexcept>
 #include <cstring>
 
@@ -363,12 +363,13 @@ void RODACLIClientBase::CLI_Enumerate(std::string const & restOfLine)
       auto const objName  = spInfoResponse->GetObjectName();
 
       // ...then print to CLI
-      std::ostringstream oss;
-      oss << gpcc::string::ToHex(index, 4U) << ' ';
-      oss << std::left << std::setw(Object::largestObjectCodeNameLength) << std::setfill(' ') << Object::ObjectCodeToString(objCode) << ' '
-          << std::left << std::setw(15) << std::setfill(' ') << DataTypeToString(dataType) << '"' << objName << '"';
+      using gpcc::string::StringComposer;
+      StringComposer sc;
+      sc << gpcc::string::ToHex(index, 4U) << ' '
+          << StringComposer::AlignLeft << StringComposer::Width(Object::largestObjectCodeNameLength) << Object::ObjectCodeToString(objCode) << ' '
+          << StringComposer::AlignLeft << StringComposer::Width(15) << DataTypeToString(dataType) << " \"" << objName << '"';
 
-      cli.WriteLine(oss.str());
+      cli.WriteLine(sc.Get());
     }
 
     firstLoopCycle = false;
@@ -420,36 +421,40 @@ void RODACLIClientBase::CLI_Info(std::string const & restOfLine)
   // ============================================
   // Print to CLI
   // ============================================
-  std::ostringstream oss;
+  using gpcc::string::StringComposer;
+  StringComposer sc;
 
   // -- print info about object --
-  oss << "Object " << gpcc::string::ToHex(args.GetIndex(), 4U) << ": " << Object::ObjectCodeToString(spInfo->GetObjectCode())
+  sc << "Object " << gpcc::string::ToHex(args.GetIndex(), 4U) << ": " << Object::ObjectCodeToString(spInfo->GetObjectCode())
       << " (" << DataTypeToString(spInfo->GetObjectDataType()) << ") \"" << spInfo->GetObjectName() << '"';
-  cli.WriteLine(oss.str());
+  cli.WriteLine(sc.Get());
 
-  // small tool: Appends info about a subindex to 'oss'
+  // small tool: Appends info about a subindex to 'sc'
   auto appendSubIndexInfoToOSS = [&](uint_fast8_t const si)
   {
     size_t  const s     = spInfo->GetSubIdxMaxSize(si);
     size_t  const bytes = s / 8U;
     uint8_t const bits  = s % 8U;
-    oss << std::left << std::setw(15U) << std::setfill(' ') << DataTypeToString(spInfo->GetSubIdxDataType(si)) << ' '
-        << std::left << std::setw(attributeStringMaxLength) << std::setfill(' ') << AttributesToStringHook(spInfo->GetSubIdxAttributes(si)) << ' '
-        << std::right << std::setw(5U) << std::setfill(' ') << bytes << '.' << static_cast<uint32_t>(bits) << " Byte(s) \"" << spInfo->GetSubIdxName(si) << '"';
+    sc << StringComposer::AlignLeft << StringComposer::Width(15U)
+        << DataTypeToString(spInfo->GetSubIdxDataType(si)) << ' '
+        << StringComposer::Width(attributeStringMaxLength)
+        << AttributesToStringHook(spInfo->GetSubIdxAttributes(si)) << ' '
+        << StringComposer::AlignRight << StringComposer::Width(5U)
+        << bytes << '.' << static_cast<uint32_t>(bits) << " Byte(s) \"" << spInfo->GetSubIdxName(si) << '"';
   };
 
-  // small tool: Appends human readable textual representation of the app-specific meta data of a subindex to 'oss'
+  // small tool: Appends human readable textual representation of the app-specific meta data of a subindex to 'sc'
   auto appendAppSpecMetaDataToOSS = [&](uint_fast8_t const si)
   {
     size_t const s = spInfo->GetAppSpecificMetaDataSize(si);
     if (s == 0U)
     {
-      oss << "No app-specific meta data.";
+      sc << "No app-specific meta data.";
     }
     else
     {
       auto const data = spInfo->GetAppSpecificMetaData(si);
-      oss << AppSpecificMetaDataToStringHook(data);
+      sc << AppSpecificMetaDataToStringHook(data);
     }
   };
 
@@ -463,31 +468,28 @@ void RODACLIClientBase::CLI_Info(std::string const & restOfLine)
   // compress the output for ARRAY objects if possible
   if ((!args.GetInclASM()) && (spInfo->GetObjectCode() == Object::ObjectCode::Array))
   {
-    oss.str("");
-    oss << "  Subindex    ";
-    for (uint_fast8_t i = 1U; i < digitsForSubindices; i++)
-      oss << ' ';
-    oss << "0: ";
+    sc.Clear();
+    sc << "  Subindex    " << StringComposer::AlignRight << StringComposer::Width(digitsForSubindices + 2U) << "0: ";
     appendSubIndexInfoToOSS(0U);
-    cli.WriteLine(oss.str());
+    cli.WriteLine(sc.Get());
 
     if (maxNbOfSIs > 1U)
     {
-      oss.str("");
-      oss << "  Subindex 1.." << static_cast<uint32_t>(maxNbOfSIs - 1U) << ": ";
+      sc.Clear();
+      sc << "  Subindex 1.." << static_cast<uint32_t>(maxNbOfSIs - 1U) << ": ";
       appendSubIndexInfoToOSS(1U);
-      cli.WriteLine(oss.str());
+      cli.WriteLine(sc.Get());
     }
   }
   else
   {
     for (uint_fast16_t i = 0U; i < maxNbOfSIs; i++)
     {
-      oss.str("");
-      oss << "  Subindex " << std::setw(digitsForSubindices) << std::setfill(' ') << static_cast<uint32_t>(i) << ": ";
+      sc.Clear();
+      sc << "  Subindex " << StringComposer::Width(digitsForSubindices) << static_cast<uint32_t>(i) << ": ";
       if (spInfo->IsSubIndexEmpty(i))
       {
-        oss << "empty";
+        sc << "empty";
       }
       else
       {
@@ -496,13 +498,13 @@ void RODACLIClientBase::CLI_Info(std::string const & restOfLine)
 
       if (args.GetInclASM())
       {
-        oss << std::endl << "             ";
+        sc << gpcc::osal::endLine << "             ";
         for (uint_fast8_t j = 0U; j < digitsForSubindices; j++)
-          oss << ' ';
+          sc << ' ';
         appendAppSpecMetaDataToOSS(i);
       }
 
-      cli.WriteLine(oss.str());
+      cli.WriteLine(sc.Get());
     }
   }
 }
@@ -662,6 +664,7 @@ void RODACLIClientBase::CLI_CARead(std::string const & restOfLine)
 
   // extract value of SI0
   uint8_t const si0 = msr.Read_uint8();
+  auto const digitsForSubIdx = DigitsInSubindex(si0);
 
   if (args.GetVerbose())
   {
@@ -691,34 +694,36 @@ void RODACLIClientBase::CLI_CARead(std::string const & restOfLine)
     // print each SI to CLI
     for (uint_fast16_t subIdx = 0U; subIdx <= si0; ++subIdx)
     {
+      using gpcc::string::StringComposer;
       auto const dataType = spSIInfo->GetSubIdxDataType(subIdx);
 
-      std::ostringstream oss;
-      oss << "SI " << std::left << std::setw(3) << std::setfill(' ') << subIdx << " ("
-          << std::left << std::setw(paddingDataType) << std::setfill('.') << DataTypeToString(dataType) << ".."
-          << std::left << std::setw(paddingName) << std::setfill('.') << spSIInfo->GetSubIdxName(subIdx) << "..: ";
+      StringComposer sc;
+      sc << "SI " << StringComposer::AlignLeft << StringComposer::Width(digitsForSubIdx) << subIdx << ' '
+          << StringComposer::Width(paddingDataType) << DataTypeToString(dataType) << ' '
+          << StringComposer::Width(paddingName) << spSIInfo->GetSubIdxName(subIdx) << " : ";
 
       if (subIdx == 0U)
-        oss << static_cast<unsigned int>(si0);
+        sc << static_cast<unsigned int>(si0);
       else
-        oss << CANopenEncodedDataToString(msr, spSIInfo->GetSubIdxMaxSize(subIdx), dataType);
+        sc << CANopenEncodedDataToString(msr, spSIInfo->GetSubIdxMaxSize(subIdx), dataType);
 
-      cli.WriteLine(oss.str());
+      cli.WriteLine(sc.Get());
     }
   }
   else
   {
     for (uint_fast16_t subIdx = 0U; subIdx <= si0; ++subIdx)
     {
-      std::ostringstream oss;
-      oss << "SI " << subIdx << ": ";
+      using gpcc::string::StringComposer;
+      StringComposer sc;
+      sc << "SI " << StringComposer::AlignLeft << StringComposer::Width(digitsForSubIdx) << subIdx << ": ";
 
       if (subIdx == 0U)
-        oss << static_cast<unsigned int>(si0);
+        sc << static_cast<unsigned int>(si0);
       else
-        oss << CANopenEncodedDataToString(msr, spSIInfo->GetSubIdxMaxSize(subIdx), spSIInfo->GetSubIdxDataType(subIdx));
+        sc << CANopenEncodedDataToString(msr, spSIInfo->GetSubIdxMaxSize(subIdx), spSIInfo->GetSubIdxDataType(subIdx));
 
-      cli.WriteLine(oss.str());
+      cli.WriteLine(sc.Get());
     }
   }
 
@@ -868,12 +873,12 @@ void RODACLIClientBase::CLI_CAWrite(std::string const & restOfLine)
     }
 
     // ask user to enter value
-    std::ostringstream oss;
-    oss << "Enter value for SI " << subIdx << ", "
+    gpcc::string::StringComposer sc;
+    sc << "Enter value for SI " << subIdx << ", "
         << DataTypeToString(dataType) << ", "
         << AttributesToStringHook(spInfo->GetSubIdxAttributes(subIdx)) << ", "
         << bytes << '.' << static_cast<uint32_t>(bits) << " Byte(s), \"" << spInfo->GetSubIdxName(subIdx) << '"';
-    cli.WriteLine(oss.str());
+    cli.WriteLine(sc.Get());
 
     auto val = cli.ReadLine("Value: ");
 
@@ -987,30 +992,32 @@ void RODACLIClientBase::CLI_CAWrite(std::string const & restOfLine)
 // Doc: See RODACLIClientBase.hpp
 std::string RODACLIClientBase::AppSpecificMetaDataToStringHook(std::vector<uint8_t> const & data)
 {
-  std::ostringstream oss;
-  oss << data.size() << " byte(s) of ASM";
+  using gpcc::string::StringComposer;
+  StringComposer s;
+  s << data.size() << " byte(s) of ASM";
 
   if (data.size() != 0U)
   {
-    oss << ':';
+    s << ':';
 
     uint_fast8_t maxPrintedBytes = 16U;
 
+    s << StringComposer::AlignRightPadZero << StringComposer::BaseHex << StringComposer::Uppercase;
     auto it = data.begin();
     while (it != data.end())
     {
       if (maxPrintedBytes-- == 0U)
       {
-        oss << "...";
+        s << "...";
         break;
       }
 
-      oss << ' ' << gpcc::string::ToHexNoPrefix(*it, 2U);
+      s << ' ' << StringComposer::Width(2) << static_cast<unsigned int>(*it);
       ++it;
     }
   }
 
-  return oss.str();
+  return s.Get();
 }
 
 /**

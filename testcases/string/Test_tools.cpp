@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
 #include <gpcc/string/tools.hpp>
@@ -1317,13 +1317,13 @@ TEST(gpcc_string_tools_Tests, HexDump_8bit)
   };
 
   std::string result = HexDump(0x1234ABCDU, data, 8, 1, 8);
-  ASSERT_TRUE(result == "0x1234ABCD: 41 42 61 FF AB 21 7E 12 ABa..!~.");
+  ASSERT_STREQ(result.c_str(), "0x1234ABCD: 41 42 61 FF AB 21 7E 12 ABa..!~.");
 
   result = HexDump(0x1234ABCDU, data, 4, 1, 8);
-  ASSERT_TRUE(result == "0x1234ABCD: 41 42 61 FF             ABa.");
+  ASSERT_STREQ(result.c_str(), "0x1234ABCD: 41 42 61 FF             ABa.");
 
   result = HexDump(0x1234ABCDU, data, 0, 1, 8);
-  ASSERT_TRUE(result == "0x1234ABCD:                         ");
+  ASSERT_STREQ(result.c_str(), "0x1234ABCD:                         ");
 }
 TEST(gpcc_string_tools_Tests, HexDump_16bit)
 {
@@ -1336,13 +1336,13 @@ TEST(gpcc_string_tools_Tests, HexDump_16bit)
   };
 
   std::string result = HexDump(0x1234ABCDU, data, 8, 2, 4);
-  ASSERT_TRUE(result == "0x1234ABCD: 0102 0304 0506 0708 ........");
+  ASSERT_STREQ(result.c_str(), "0x1234ABCD: 0102 0304 0506 0708 ........");
 
   result = HexDump(0x1234ABCDU, data, 4, 2, 4);
-  ASSERT_TRUE(result == "0x1234ABCD: 0102 0304           ....");
+  ASSERT_STREQ(result.c_str(), "0x1234ABCD: 0102 0304           ....");
 
   result = HexDump(0x1234ABCDU, data, 0, 2, 4);
-  ASSERT_TRUE(result == "0x1234ABCD:                     ");
+  ASSERT_STREQ(result.c_str(), "0x1234ABCD:                     ");
 }
 TEST(gpcc_string_tools_Tests, HexDump_32bit)
 {
@@ -1353,13 +1353,13 @@ TEST(gpcc_string_tools_Tests, HexDump_32bit)
   };
 
   std::string result = HexDump(0x1234ABCDU, data, 8, 4, 2);
-  ASSERT_TRUE(result == "0x1234ABCD: 01020304 05060708 ........");
+  ASSERT_STREQ(result.c_str(), "0x1234ABCD: 01020304 05060708 ........");
 
   result = HexDump(0x1234ABCDU, data, 4, 4, 2);
-  ASSERT_TRUE(result == "0x1234ABCD: 01020304          ....");
+  ASSERT_STREQ(result.c_str(), "0x1234ABCD: 01020304          ....");
 
   result = HexDump(0x1234ABCDU, data, 0, 4, 2);
-  ASSERT_TRUE(result == "0x1234ABCD:                   ");
+  ASSERT_STREQ(result.c_str(), "0x1234ABCD:                   ");
 }
 TEST(gpcc_string_tools_Tests, HexDump_Errors)
 {
@@ -1537,15 +1537,21 @@ TEST(gpcc_string_tools_Tests, DecimalToU8)
 {
   // valid numbers within range
   EXPECT_EQ(0U,   DecimalToU8("0"));
+  EXPECT_EQ(0U,   DecimalToU8("00"));
   EXPECT_EQ(0U,   DecimalToU8("+0"));
+  EXPECT_EQ(0U,   DecimalToU8("+00"));
   EXPECT_EQ(0U,   DecimalToU8("-0"));
+  EXPECT_EQ(0U,   DecimalToU8("-00"));
   EXPECT_EQ(1U,   DecimalToU8("1"));
   EXPECT_EQ(3U,   DecimalToU8("+3"));
+  EXPECT_EQ(12U,  DecimalToU8("012"));
+  EXPECT_EQ(12U,  DecimalToU8("+12"));
+  EXPECT_EQ(12U,  DecimalToU8("+012"));
   EXPECT_EQ(254U, DecimalToU8("254"));
   EXPECT_EQ(255U, DecimalToU8("255"));
   EXPECT_EQ(255U, DecimalToU8("+255"));
 
-  // values numbers out of range
+  // valid numbers out of range
   EXPECT_THROW(DecimalToU8("-1"),  std::out_of_range);
   EXPECT_THROW(DecimalToU8("256"), std::out_of_range);
 
@@ -1560,8 +1566,11 @@ TEST(gpcc_string_tools_Tests, DecimalToU8)
   EXPECT_THROW(DecimalToU8("7X"),  std::invalid_argument);
   EXPECT_THROW(DecimalToU8("0x0"), std::invalid_argument);
   EXPECT_THROW(DecimalToU8("0b0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToU8("0X0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToU8("0B0"), std::invalid_argument);
   EXPECT_THROW(DecimalToU8("c"),   std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, AnyNumberToU8)
 {
   // valid binary values within range
@@ -1569,6 +1578,7 @@ TEST(gpcc_string_tools_Tests, AnyNumberToU8)
   EXPECT_EQ(1U,   AnyNumberToU8("0b1"));
   EXPECT_EQ(2U,   AnyNumberToU8("0b10"));
   EXPECT_EQ(11U,  AnyNumberToU8("0b01011"));
+  EXPECT_EQ(11U,  AnyNumberToU8("0b000000001011"));
   EXPECT_EQ(255U, AnyNumberToU8("0b11111111"));
   EXPECT_EQ(255U, AnyNumberToU8("0b011111111"));
 
@@ -1595,15 +1605,16 @@ TEST(gpcc_string_tools_Tests, AnyNumberToU8)
   EXPECT_EQ(0U,   AnyNumberToU8("0"));
   EXPECT_EQ(0U,   AnyNumberToU8("+0"));
   EXPECT_EQ(0U,   AnyNumberToU8("-0"));
-  EXPECT_EQ(0U,   AnyNumberToU8("000"));
   EXPECT_EQ(1U,   AnyNumberToU8("1"));
+  EXPECT_EQ(3U,   AnyNumberToU8("+3"));
   EXPECT_EQ(12U,  AnyNumberToU8("12"));
+  EXPECT_EQ(12U,  AnyNumberToU8("+12"));
+  EXPECT_EQ(254U, AnyNumberToU8("254"));
   EXPECT_EQ(255U, AnyNumberToU8("255"));
   EXPECT_EQ(255U, AnyNumberToU8("+255"));
 
   // valid decimal values out of range
   EXPECT_THROW(AnyNumberToU8("-1"),   std::out_of_range);
-  EXPECT_THROW(AnyNumberToU8("-01"),  std::out_of_range);
   EXPECT_THROW(AnyNumberToU8("256"),  std::out_of_range);
   EXPECT_THROW(AnyNumberToU8("+256"), std::out_of_range);
 
@@ -1612,6 +1623,8 @@ TEST(gpcc_string_tools_Tests, AnyNumberToU8)
   EXPECT_THROW(AnyNumberToU8(" "),     std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToU8("0XC"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU8("00XC"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU8("00xC"),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU8(" 0xC"),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU8("0xC "),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU8("-0xC"),  std::invalid_argument);
@@ -1619,9 +1632,12 @@ TEST(gpcc_string_tools_Tests, AnyNumberToU8)
   EXPECT_THROW(AnyNumberToU8("+0xC"),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU8("++0xC"), std::invalid_argument);
   EXPECT_THROW(AnyNumberToU8("0x0xC"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU8("0x0XC"), std::invalid_argument);
   EXPECT_THROW(AnyNumberToU8("0xG"),   std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToU8("0B0"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU8("00B0"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU8("00b0"),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU8(" 0b0"),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU8("0b0 "),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU8("-0b1"),  std::invalid_argument);
@@ -1629,6 +1645,16 @@ TEST(gpcc_string_tools_Tests, AnyNumberToU8)
   EXPECT_THROW(AnyNumberToU8("+0b1"),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU8("++0b1"), std::invalid_argument);
   EXPECT_THROW(AnyNumberToU8("0b0b0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU8("0b0B0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU8("0b1b0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU8("0b1B0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU8("0b0x0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU8("0b0X0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU8("0b1x0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU8("0b1X0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU8("0b0c1"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU8("0b00b0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU8("0b00B0"), std::invalid_argument);
   EXPECT_THROW(AnyNumberToU8("0b2"),   std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToU8(" 0"),    std::invalid_argument);
@@ -1638,8 +1664,11 @@ TEST(gpcc_string_tools_Tests, AnyNumberToU8)
   EXPECT_THROW(AnyNumberToU8("12x"),   std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToU8("x12"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU8("X12"),   std::invalid_argument);
   EXPECT_THROW(AnyNumberToU8("b11"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU8("B11"),   std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, AnyStringToU8)
 {
   // valid binary values within range
@@ -1647,6 +1676,7 @@ TEST(gpcc_string_tools_Tests, AnyStringToU8)
   EXPECT_EQ(1U,   AnyStringToU8("0b1"));
   EXPECT_EQ(2U,   AnyStringToU8("0b10"));
   EXPECT_EQ(11U,  AnyStringToU8("0b01011"));
+  EXPECT_EQ(11U,  AnyStringToU8("0b000000001011"));
   EXPECT_EQ(255U, AnyStringToU8("0b11111111"));
   EXPECT_EQ(255U, AnyStringToU8("0b011111111"));
 
@@ -1673,15 +1703,16 @@ TEST(gpcc_string_tools_Tests, AnyStringToU8)
   EXPECT_EQ(0U,   AnyStringToU8("0"));
   EXPECT_EQ(0U,   AnyStringToU8("+0"));
   EXPECT_EQ(0U,   AnyStringToU8("-0"));
-  EXPECT_EQ(0U,   AnyStringToU8("000"));
   EXPECT_EQ(1U,   AnyStringToU8("1"));
+  EXPECT_EQ(3U,   AnyStringToU8("+3"));
   EXPECT_EQ(12U,  AnyStringToU8("12"));
+  EXPECT_EQ(12U,  AnyStringToU8("+12"));
+  EXPECT_EQ(254U, AnyStringToU8("254"));
   EXPECT_EQ(255U, AnyStringToU8("255"));
   EXPECT_EQ(255U, AnyStringToU8("+255"));
 
   // valid decimal values out of range
   EXPECT_THROW(AnyStringToU8("-1"),   std::out_of_range);
-  EXPECT_THROW(AnyStringToU8("-01"),  std::out_of_range);
   EXPECT_THROW(AnyStringToU8("256"),  std::out_of_range);
   EXPECT_THROW(AnyStringToU8("+256"), std::out_of_range);
 
@@ -1696,6 +1727,8 @@ TEST(gpcc_string_tools_Tests, AnyStringToU8)
   EXPECT_THROW(AnyStringToU8(" "),     std::invalid_argument);
 
   EXPECT_THROW(AnyStringToU8("0XC"),   std::invalid_argument);
+  EXPECT_THROW(AnyStringToU8("00XC"),  std::invalid_argument);
+  EXPECT_THROW(AnyStringToU8("00xC"),  std::invalid_argument);
   EXPECT_THROW(AnyStringToU8(" 0xC"),  std::invalid_argument);
   EXPECT_THROW(AnyStringToU8("0xC "),  std::invalid_argument);
   EXPECT_THROW(AnyStringToU8("-0xC"),  std::invalid_argument);
@@ -1703,9 +1736,12 @@ TEST(gpcc_string_tools_Tests, AnyStringToU8)
   EXPECT_THROW(AnyStringToU8("+0xC"),  std::invalid_argument);
   EXPECT_THROW(AnyStringToU8("++0xC"), std::invalid_argument);
   EXPECT_THROW(AnyStringToU8("0x0xC"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToU8("0x0XC"), std::invalid_argument);
   EXPECT_THROW(AnyStringToU8("0xG"),   std::invalid_argument);
 
   EXPECT_THROW(AnyStringToU8("0B0"),   std::invalid_argument);
+  EXPECT_THROW(AnyStringToU8("00B0"),  std::invalid_argument);
+  EXPECT_THROW(AnyStringToU8("00b0"),  std::invalid_argument);
   EXPECT_THROW(AnyStringToU8(" 0b0"),  std::invalid_argument);
   EXPECT_THROW(AnyStringToU8("0b0 "),  std::invalid_argument);
   EXPECT_THROW(AnyStringToU8("-0b1"),  std::invalid_argument);
@@ -1713,6 +1749,16 @@ TEST(gpcc_string_tools_Tests, AnyStringToU8)
   EXPECT_THROW(AnyStringToU8("+0b1"),  std::invalid_argument);
   EXPECT_THROW(AnyStringToU8("++0b1"), std::invalid_argument);
   EXPECT_THROW(AnyStringToU8("0b0b0"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToU8("0b0B0"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToU8("0b1b0"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToU8("0b1B0"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToU8("0b0x0"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToU8("0b0X0"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToU8("0b1x0"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToU8("0b1X0"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToU8("0b0c1"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToU8("0b00b0"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToU8("0b00B0"), std::invalid_argument);
   EXPECT_THROW(AnyStringToU8("0b2"),   std::invalid_argument);
 
   EXPECT_THROW(AnyStringToU8(" 0"),    std::invalid_argument);
@@ -1722,7 +1768,9 @@ TEST(gpcc_string_tools_Tests, AnyStringToU8)
   EXPECT_THROW(AnyStringToU8("12x"),   std::invalid_argument);
 
   EXPECT_THROW(AnyStringToU8("x12"),   std::invalid_argument);
+  EXPECT_THROW(AnyStringToU8("X12"),   std::invalid_argument);
   EXPECT_THROW(AnyStringToU8("b11"),   std::invalid_argument);
+  EXPECT_THROW(AnyStringToU8("B11"),   std::invalid_argument);
 
   EXPECT_THROW(AnyStringToU8("A"),     std::invalid_argument);
   EXPECT_THROW(AnyStringToU8("'A"),    std::invalid_argument);
@@ -1732,6 +1780,7 @@ TEST(gpcc_string_tools_Tests, AnyStringToU8)
   EXPECT_THROW(AnyStringToU8("'A' "),  std::invalid_argument);
   EXPECT_THROW(AnyStringToU8("'AB'"),  std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, TwoDigitHexToU8)
 {
   EXPECT_EQ(  0U, TwoDigitHexToU8("00"));
@@ -1755,7 +1804,10 @@ TEST(gpcc_string_tools_Tests, TwoDigitHexToU8)
   EXPECT_THROW(TwoDigitHexToU8("G0"),  std::invalid_argument);
   EXPECT_THROW(TwoDigitHexToU8("-1"),  std::invalid_argument);
   EXPECT_THROW(TwoDigitHexToU8("+1"),  std::invalid_argument);
+  EXPECT_THROW(TwoDigitHexToU8("-10"), std::invalid_argument);
+  EXPECT_THROW(TwoDigitHexToU8("+10"), std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, FourDigitHexToU16)
 {
   EXPECT_EQ(    0U, FourDigitHexToU16("0000"));
@@ -1779,42 +1831,62 @@ TEST(gpcc_string_tools_Tests, FourDigitHexToU16)
   EXPECT_THROW(FourDigitHexToU16("G0"),    std::invalid_argument);
   EXPECT_THROW(FourDigitHexToU16("-100"),  std::invalid_argument);
   EXPECT_THROW(FourDigitHexToU16("+100"),  std::invalid_argument);
+  EXPECT_THROW(FourDigitHexToU16("-1000"), std::invalid_argument);
+  EXPECT_THROW(FourDigitHexToU16("+1000"), std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, DecimalToU32)
 {
-  // valid values within range
-  EXPECT_EQ(0U,           DecimalToU32("-0"));
+  // valid numbers within range
+  EXPECT_EQ(0U,           DecimalToU32("0"));
+  EXPECT_EQ(0U,           DecimalToU32("00"));
   EXPECT_EQ(0U,           DecimalToU32("+0"));
+  EXPECT_EQ(0U,           DecimalToU32("+00"));
+  EXPECT_EQ(0U,           DecimalToU32("-0"));
+  EXPECT_EQ(0U,           DecimalToU32("-00"));
   EXPECT_EQ(1U,           DecimalToU32("1"));
-  EXPECT_EQ(1U,           DecimalToU32("+1"));
+  EXPECT_EQ(3U,           DecimalToU32("+3"));
+  EXPECT_EQ(12U,          DecimalToU32("012"));
+  EXPECT_EQ(12U,          DecimalToU32("+12"));
+  EXPECT_EQ(12U,          DecimalToU32("+012"));
   EXPECT_EQ(4294967294UL, DecimalToU32("4294967294"));
   EXPECT_EQ(4294967295UL, DecimalToU32("4294967295"));
   EXPECT_EQ(4294967295UL, DecimalToU32("+4294967295"));
 
-  // valid values out of range
+  // valid numbers out of range
   EXPECT_THROW(DecimalToU32("-1"),         std::out_of_range);
   EXPECT_THROW(DecimalToU32("4294967296"), std::out_of_range);
 
   // invalid values
   EXPECT_THROW(DecimalToU32(""),    std::invalid_argument);
   EXPECT_THROW(DecimalToU32(" "),   std::invalid_argument);
-  EXPECT_THROW(DecimalToU32("--3"), std::invalid_argument);
-  EXPECT_THROW(DecimalToU32("++3"), std::invalid_argument);
-  EXPECT_THROW(DecimalToU32("3 "),  std::invalid_argument);
-  EXPECT_THROW(DecimalToU32(" 3"),  std::invalid_argument);
+  EXPECT_THROW(DecimalToU32(" 0"),  std::invalid_argument);
+  EXPECT_THROW(DecimalToU32("0 "),  std::invalid_argument);
+  EXPECT_THROW(DecimalToU32("--0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToU32("++0"), std::invalid_argument);
   EXPECT_THROW(DecimalToU32("X7"),  std::invalid_argument);
+  EXPECT_THROW(DecimalToU32("7X"),  std::invalid_argument);
   EXPECT_THROW(DecimalToU32("0x0"), std::invalid_argument);
   EXPECT_THROW(DecimalToU32("0b0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToU32("0X0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToU32("0B0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToU32("c"),   std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, DecimalToU32_minmax)
 {
   // valid values within range
-  EXPECT_EQ(10U, DecimalToU32("10", 10, 20));
-  EXPECT_EQ(10U, DecimalToU32("+10", 10, 20));
-  EXPECT_EQ(11U, DecimalToU32("11", 10, 20));
-  EXPECT_EQ(19U, DecimalToU32("19", 10, 20));
-  EXPECT_EQ(20U, DecimalToU32("20", 10, 20));
-  EXPECT_EQ(20U, DecimalToU32("+20", 10, 20));
+  EXPECT_EQ(10U, DecimalToU32("10",   10, 20));
+  EXPECT_EQ(10U, DecimalToU32("010",  10, 20));
+  EXPECT_EQ(10U, DecimalToU32("+10",  10, 20));
+  EXPECT_EQ(10U, DecimalToU32("+010", 10, 20));
+  EXPECT_EQ(11U, DecimalToU32("11",   10, 20));
+  EXPECT_EQ(19U, DecimalToU32("19",   10, 20));
+  EXPECT_EQ(19U, DecimalToU32("019",  10, 20));
+  EXPECT_EQ(20U, DecimalToU32("20",   10, 20));
+  EXPECT_EQ(20U, DecimalToU32("020",  10, 20));
+  EXPECT_EQ(20U, DecimalToU32("+20",  10, 20));
+  EXPECT_EQ(20U, DecimalToU32("+020", 10, 20));
 
   // valid values out of range
   EXPECT_THROW(DecimalToU32("-1", 10, 20), std::out_of_range);
@@ -1822,16 +1894,21 @@ TEST(gpcc_string_tools_Tests, DecimalToU32_minmax)
   EXPECT_THROW(DecimalToU32("21", 10, 20), std::out_of_range);
 
   // invalid values
-  EXPECT_THROW(DecimalToU32("",       10, 20), std::invalid_argument);
-  EXPECT_THROW(DecimalToU32(" ",      10, 20), std::invalid_argument);
-  EXPECT_THROW(DecimalToU32("11 ",    10, 20), std::invalid_argument);
-  EXPECT_THROW(DecimalToU32(" 11",    10, 20), std::invalid_argument);
-  EXPECT_THROW(DecimalToU32("++11",   10, 20), std::invalid_argument);
-  EXPECT_THROW(DecimalToU32("XB",     10, 20), std::invalid_argument);
-  EXPECT_THROW(DecimalToU32("0xA",    10, 20), std::invalid_argument);
-  EXPECT_THROW(DecimalToU32("A",      10, 20), std::invalid_argument);
-  EXPECT_THROW(DecimalToU32("0b1011", 10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToU32("",    0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU32(" ",   0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU32(" 0",  0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU32("0 ",  0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU32("--0", 0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU32("++0", 0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU32("X7",  0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU32("7X",  0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU32("0x0", 0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU32("0b0", 0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU32("0X0", 0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU32("0B0", 0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU32("c",   0, 255), std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, HexToU32)
 {
   // valid hexadecimal values within range
@@ -1839,6 +1916,8 @@ TEST(gpcc_string_tools_Tests, HexToU32)
   EXPECT_EQ(16U,          HexToU32("0x10"));
   EXPECT_EQ(12U,          HexToU32("0xc"));
   EXPECT_EQ(12U,          HexToU32("0xC"));
+  EXPECT_EQ(12U,          HexToU32("0x0c"));
+  EXPECT_EQ(12U,          HexToU32("0x0C"));
   EXPECT_EQ(4294967294UL, HexToU32("0xFFFFFFFE"));
   EXPECT_EQ(4294967295UL, HexToU32("0xFFFFFFFF"));
   EXPECT_EQ(4294967295UL, HexToU32("0x0FFFFFFFF"));
@@ -1851,6 +1930,9 @@ TEST(gpcc_string_tools_Tests, HexToU32)
   // invalid values
   EXPECT_THROW(HexToU32(""),      std::invalid_argument);
   EXPECT_THROW(HexToU32(" "),     std::invalid_argument);
+
+  EXPECT_THROW(HexToU32("0"),     std::invalid_argument);
+  EXPECT_THROW(HexToU32("A"),     std::invalid_argument);
 
   EXPECT_THROW(HexToU32("0XC"),   std::invalid_argument);
   EXPECT_THROW(HexToU32(" 0xC"),  std::invalid_argument);
@@ -1881,52 +1963,57 @@ TEST(gpcc_string_tools_Tests, HexToU32)
   EXPECT_THROW(HexToU32("x12"),   std::invalid_argument);
   EXPECT_THROW(HexToU32("b11"),   std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, HexToU32_minmax)
 {
   // valid hexadecimal values within range
-  EXPECT_EQ(10U,  HexToU32("0xA", 10, 20));
-  EXPECT_EQ(11U,  HexToU32("0xb", 10, 20));
-  EXPECT_EQ(12U,  HexToU32("0xC", 10, 20));
-  EXPECT_EQ(20UL, HexToU32("0x14", 10, 20));
+  EXPECT_EQ(10U,  HexToU32("0xA",   10, 20));
+  EXPECT_EQ(11U,  HexToU32("0xb",   10, 20));
+  EXPECT_EQ(12U,  HexToU32("0xC",   10, 20));
+  EXPECT_EQ(20UL, HexToU32("0x14",  10, 20));
   EXPECT_EQ(20UL, HexToU32("0x014", 10, 20));
 
   // valid hexadecimal values out of range
-  EXPECT_THROW(HexToU32("0x9", 10, 20),  std::out_of_range);
-  EXPECT_THROW(HexToU32("0x15", 10, 20), std::out_of_range);
+  EXPECT_THROW(HexToU32("0x9",   10, 20), std::out_of_range);
+  EXPECT_THROW(HexToU32("0x15",  10, 20), std::out_of_range);
 
   // invalid values
-  EXPECT_THROW(HexToU32("", 10, 20),      std::invalid_argument);
-  EXPECT_THROW(HexToU32(" ", 10, 20),     std::invalid_argument);
+  EXPECT_THROW(HexToU32("",      10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU32(" ",     10, 20), std::invalid_argument);
 
-  EXPECT_THROW(HexToU32("0XC", 10, 20),   std::invalid_argument);
-  EXPECT_THROW(HexToU32(" 0xC", 10, 20),  std::invalid_argument);
-  EXPECT_THROW(HexToU32("0xC ", 10, 20),  std::invalid_argument);
-  EXPECT_THROW(HexToU32("-0xC", 10, 20),  std::invalid_argument);
+  EXPECT_THROW(HexToU32("0",     10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU32("A",     10, 20), std::invalid_argument);
+
+  EXPECT_THROW(HexToU32("0XC",   10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU32(" 0xC",  10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU32("0xC ",  10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU32("-0xC",  10, 20), std::invalid_argument);
   EXPECT_THROW(HexToU32("--0xC", 10, 20), std::invalid_argument);
-  EXPECT_THROW(HexToU32("+0xC", 10, 20),  std::invalid_argument);
+  EXPECT_THROW(HexToU32("+0xC",  10, 20), std::invalid_argument);
   EXPECT_THROW(HexToU32("++0xC", 10, 20), std::invalid_argument);
   EXPECT_THROW(HexToU32("0x0xC", 10, 20), std::invalid_argument);
-  EXPECT_THROW(HexToU32("0xG", 10, 20),   std::invalid_argument);
+  EXPECT_THROW(HexToU32("0xG",   10, 20), std::invalid_argument);
 
-  EXPECT_THROW(HexToU32("0B0", 10, 20),   std::invalid_argument);
-  EXPECT_THROW(HexToU32(" 0b0", 10, 20),  std::invalid_argument);
-  EXPECT_THROW(HexToU32("0b0 ", 10, 20),  std::invalid_argument);
-  EXPECT_THROW(HexToU32("-0b1", 10, 20),  std::invalid_argument);
+  EXPECT_THROW(HexToU32("0B0",   10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU32(" 0b0",  10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU32("0b0 ",  10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU32("-0b1",  10, 20), std::invalid_argument);
   EXPECT_THROW(HexToU32("--0b1", 10, 20), std::invalid_argument);
-  EXPECT_THROW(HexToU32("+0b1", 10, 20),  std::invalid_argument);
+  EXPECT_THROW(HexToU32("+0b1",  10, 20), std::invalid_argument);
   EXPECT_THROW(HexToU32("++0b1", 10, 20), std::invalid_argument);
   EXPECT_THROW(HexToU32("0b0b0", 10, 20), std::invalid_argument);
-  EXPECT_THROW(HexToU32("0b2", 10, 20),   std::invalid_argument);
+  EXPECT_THROW(HexToU32("0b2",   10, 20), std::invalid_argument);
 
-  EXPECT_THROW(HexToU32(" 0", 10, 20),    std::invalid_argument);
-  EXPECT_THROW(HexToU32("0 ", 10, 20),    std::invalid_argument);
-  EXPECT_THROW(HexToU32("--0", 10, 20),   std::invalid_argument);
-  EXPECT_THROW(HexToU32("++0", 10, 20),   std::invalid_argument);
-  EXPECT_THROW(HexToU32("12x", 10, 20),   std::invalid_argument);
+  EXPECT_THROW(HexToU32(" 0",    10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU32("0 ",    10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU32("--0",   10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU32("++0",   10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU32("12x",   10, 20), std::invalid_argument);
 
-  EXPECT_THROW(HexToU32("x12", 10, 20),   std::invalid_argument);
-  EXPECT_THROW(HexToU32("b11", 10, 20),   std::invalid_argument);
+  EXPECT_THROW(HexToU32("x12",   10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU32("b11",   10, 20), std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, AnyNumberToU32)
 {
   // valid binary values within range
@@ -1960,15 +2047,15 @@ TEST(gpcc_string_tools_Tests, AnyNumberToU32)
   EXPECT_EQ(0U,           AnyNumberToU32("0"));
   EXPECT_EQ(0U,           AnyNumberToU32("+0"));
   EXPECT_EQ(0U,           AnyNumberToU32("-0"));
-  EXPECT_EQ(0U,           AnyNumberToU32("000"));
   EXPECT_EQ(1U,           AnyNumberToU32("1"));
+  EXPECT_EQ(3U,           AnyNumberToU32("+3"));
   EXPECT_EQ(12U,          AnyNumberToU32("12"));
+  EXPECT_EQ(12U,          AnyNumberToU32("+12"));
   EXPECT_EQ(4294967295UL, AnyNumberToU32("4294967295"));
   EXPECT_EQ(4294967295UL, AnyNumberToU32("+4294967295"));
 
   // valid decimal values out of range
   EXPECT_THROW(AnyNumberToU32("-1"),          std::out_of_range);
-  EXPECT_THROW(AnyNumberToU32("-01"),         std::out_of_range);
   EXPECT_THROW(AnyNumberToU32("4294967296"),  std::out_of_range);
   EXPECT_THROW(AnyNumberToU32("+4294967296"), std::out_of_range);
 
@@ -1977,6 +2064,8 @@ TEST(gpcc_string_tools_Tests, AnyNumberToU32)
   EXPECT_THROW(AnyNumberToU32(" "),     std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToU32("0XC"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("00XC"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("00xC"),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32(" 0xC"),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("0xC "),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("-0xC"),  std::invalid_argument);
@@ -1984,9 +2073,12 @@ TEST(gpcc_string_tools_Tests, AnyNumberToU32)
   EXPECT_THROW(AnyNumberToU32("+0xC"),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("++0xC"), std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("0x0xC"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0x0XC"), std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("0xG"),   std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToU32("0B0"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("00B0"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("00b0"),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32(" 0b0"),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("0b0 "),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("-0b1"),  std::invalid_argument);
@@ -1994,6 +2086,16 @@ TEST(gpcc_string_tools_Tests, AnyNumberToU32)
   EXPECT_THROW(AnyNumberToU32("+0b1"),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("++0b1"), std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("0b0b0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b0B0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b1b0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b1B0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b0x0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b0X0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b1x0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b1X0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b0c1"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b00b0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b00B0"), std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("0b2"),   std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToU32(" 0"),    std::invalid_argument);
@@ -2003,44 +2105,47 @@ TEST(gpcc_string_tools_Tests, AnyNumberToU32)
   EXPECT_THROW(AnyNumberToU32("12x"),   std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToU32("x12"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("X12"),   std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("b11"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("B11"),   std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, AnyNumberToU32_minmax)
 {
   // valid binary values within range
-  EXPECT_EQ(10U, AnyNumberToU32("0b1010", 10, 20));
-  EXPECT_EQ(11U, AnyNumberToU32("0b1011", 10, 20));
-  EXPECT_EQ(12U, AnyNumberToU32("0b1100", 10, 20));
-  EXPECT_EQ(20U, AnyNumberToU32("0b10100", 10, 20));
+  EXPECT_EQ(10U, AnyNumberToU32("0b1010",   10, 20));
+  EXPECT_EQ(11U, AnyNumberToU32("0b1011",   10, 20));
+  EXPECT_EQ(12U, AnyNumberToU32("0b1100",   10, 20));
+  EXPECT_EQ(12U, AnyNumberToU32("0b01100",  10, 20));
+  EXPECT_EQ(20U, AnyNumberToU32("0b10100",  10, 20));
   EXPECT_EQ(20U, AnyNumberToU32("0b010100", 10, 20));
 
   // valid binary values out of range
-  EXPECT_THROW(AnyNumberToU32("0b1001", 10, 20),  std::out_of_range);
+  EXPECT_THROW(AnyNumberToU32("0b1001",  10, 20), std::out_of_range);
   EXPECT_THROW(AnyNumberToU32("0b10101", 10, 20), std::out_of_range);
 
   // valid hexadecimal values within range
-  EXPECT_EQ(10U,  AnyNumberToU32("0xA", 10, 20));
-  EXPECT_EQ(11U,  AnyNumberToU32("0xb", 10, 20));
-  EXPECT_EQ(12U,  AnyNumberToU32("0xC", 10, 20));
-  EXPECT_EQ(20UL, AnyNumberToU32("0x14", 10, 20));
+  EXPECT_EQ(10U,  AnyNumberToU32("0xA",   10, 20));
+  EXPECT_EQ(11U,  AnyNumberToU32("0xb",   10, 20));
+  EXPECT_EQ(12U,  AnyNumberToU32("0xC",   10, 20));
+  EXPECT_EQ(20UL, AnyNumberToU32("0x14",  10, 20));
   EXPECT_EQ(20UL, AnyNumberToU32("0x014", 10, 20));
 
   // valid hexadecimal values out of range
-  EXPECT_THROW(AnyNumberToU32("0x9", 10, 20),  std::out_of_range);
+  EXPECT_THROW(AnyNumberToU32("0x9",  10, 20), std::out_of_range);
   EXPECT_THROW(AnyNumberToU32("0x15", 10, 20), std::out_of_range);
 
   // valid decimal values within range
-  EXPECT_EQ(10U, AnyNumberToU32("10", 10, 20));
+  EXPECT_EQ(10U, AnyNumberToU32("10",  10, 20));
   EXPECT_EQ(10U, AnyNumberToU32("+10", 10, 20));
-  EXPECT_EQ(11U, AnyNumberToU32("11", 10, 20));
-  EXPECT_EQ(10U, AnyNumberToU32("010", 10, 20));
-  EXPECT_EQ(20U, AnyNumberToU32("20", 10, 20));
+  EXPECT_EQ(11U, AnyNumberToU32("11",  10, 20));
+  EXPECT_EQ(20U, AnyNumberToU32("20",  10, 20));
   EXPECT_EQ(20U, AnyNumberToU32("+20", 10, 20));
 
   // valid decimal values out of range
-  EXPECT_THROW(AnyNumberToU32("-1", 10, 20),  std::out_of_range);
-  EXPECT_THROW(AnyNumberToU32("9", 10, 20),   std::out_of_range);
-  EXPECT_THROW(AnyNumberToU32("21", 10, 20),  std::out_of_range);
+  EXPECT_THROW(AnyNumberToU32("-1",  10, 20), std::out_of_range);
+  EXPECT_THROW(AnyNumberToU32("9",   10, 20), std::out_of_range);
+  EXPECT_THROW(AnyNumberToU32("21",  10, 20), std::out_of_range);
   EXPECT_THROW(AnyNumberToU32("+21", 10, 20), std::out_of_range);
 
   // invalid values
@@ -2048,6 +2153,8 @@ TEST(gpcc_string_tools_Tests, AnyNumberToU32_minmax)
   EXPECT_THROW(AnyNumberToU32(" ", 10, 20),     std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToU32("0XC", 10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("00XC", 10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("00xC", 10, 20),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32(" 0xC", 10, 20),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("0xC ", 10, 20),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("-0xC", 10, 20),  std::invalid_argument);
@@ -2055,9 +2162,12 @@ TEST(gpcc_string_tools_Tests, AnyNumberToU32_minmax)
   EXPECT_THROW(AnyNumberToU32("+0xC", 10, 20),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("++0xC", 10, 20), std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("0x0xC", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0x0XC", 10, 20), std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("0xG", 10, 20),   std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToU32("0B0", 10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("00B0", 10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("00b0", 10, 20),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32(" 0b0", 10, 20),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("0b0 ", 10, 20),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("-0b1", 10, 20),  std::invalid_argument);
@@ -2065,6 +2175,16 @@ TEST(gpcc_string_tools_Tests, AnyNumberToU32_minmax)
   EXPECT_THROW(AnyNumberToU32("+0b1", 10, 20),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("++0b1", 10, 20), std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("0b0b0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b0B0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b1b0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b1B0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b0x0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b0X0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b1x0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b1X0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b0c1", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b00b0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("0b00B0", 10, 20), std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("0b2", 10, 20),   std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToU32(" 0", 10, 20),    std::invalid_argument);
@@ -2074,8 +2194,11 @@ TEST(gpcc_string_tools_Tests, AnyNumberToU32_minmax)
   EXPECT_THROW(AnyNumberToU32("12x", 10, 20),   std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToU32("x12", 10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("X12", 10, 20),   std::invalid_argument);
   EXPECT_THROW(AnyNumberToU32("b11", 10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU32("B11", 10, 20),   std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, AnyStringToChar)
 {
   // valid binary values within range
@@ -2110,9 +2233,10 @@ TEST(gpcc_string_tools_Tests, AnyStringToChar)
   EXPECT_EQ(0,    AnyStringToChar("0"));
   EXPECT_EQ(0,    AnyStringToChar("+0"));
   EXPECT_EQ(0,    AnyStringToChar("-0"));
-  EXPECT_EQ(0,    AnyStringToChar("000"));
   EXPECT_EQ(1,    AnyStringToChar("1"));
+  EXPECT_EQ(3,    AnyStringToChar("+3"));
   EXPECT_EQ(12,   AnyStringToChar("12"));
+  EXPECT_EQ(12,   AnyStringToChar("+12"));
   EXPECT_EQ(-128, AnyStringToChar("-128"));
   EXPECT_EQ(127,  AnyStringToChar("127"));
   EXPECT_EQ(127,  AnyStringToChar("+127"));
@@ -2133,6 +2257,8 @@ TEST(gpcc_string_tools_Tests, AnyStringToChar)
   EXPECT_THROW(AnyStringToChar(" "),     std::invalid_argument);
 
   EXPECT_THROW(AnyStringToChar("0XC"),   std::invalid_argument);
+  EXPECT_THROW(AnyStringToChar("00XC"),  std::invalid_argument);
+  EXPECT_THROW(AnyStringToChar("00xC"),  std::invalid_argument);
   EXPECT_THROW(AnyStringToChar(" 0xC"),  std::invalid_argument);
   EXPECT_THROW(AnyStringToChar("0xC "),  std::invalid_argument);
   EXPECT_THROW(AnyStringToChar("-0xC"),  std::invalid_argument);
@@ -2140,9 +2266,12 @@ TEST(gpcc_string_tools_Tests, AnyStringToChar)
   EXPECT_THROW(AnyStringToChar("+0xC"),  std::invalid_argument);
   EXPECT_THROW(AnyStringToChar("++0xC"), std::invalid_argument);
   EXPECT_THROW(AnyStringToChar("0x0xC"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToChar("0x0XC"), std::invalid_argument);
   EXPECT_THROW(AnyStringToChar("0xG"),   std::invalid_argument);
 
   EXPECT_THROW(AnyStringToChar("0B0"),   std::invalid_argument);
+  EXPECT_THROW(AnyStringToChar("00B0"),  std::invalid_argument);
+  EXPECT_THROW(AnyStringToChar("00b0"),  std::invalid_argument);
   EXPECT_THROW(AnyStringToChar(" 0b0"),  std::invalid_argument);
   EXPECT_THROW(AnyStringToChar("0b0 "),  std::invalid_argument);
   EXPECT_THROW(AnyStringToChar("-0b1"),  std::invalid_argument);
@@ -2150,6 +2279,16 @@ TEST(gpcc_string_tools_Tests, AnyStringToChar)
   EXPECT_THROW(AnyStringToChar("+0b1"),  std::invalid_argument);
   EXPECT_THROW(AnyStringToChar("++0b1"), std::invalid_argument);
   EXPECT_THROW(AnyStringToChar("0b0b0"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToChar("0b0B0"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToChar("0b1b0"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToChar("0b1B0"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToChar("0b0x0"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToChar("0b0X0"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToChar("0b1x0"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToChar("0b1X0"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToChar("0b0c1"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToChar("0b00b0"), std::invalid_argument);
+  EXPECT_THROW(AnyStringToChar("0b00B0"), std::invalid_argument);
   EXPECT_THROW(AnyStringToChar("0b2"),   std::invalid_argument);
 
   EXPECT_THROW(AnyStringToChar(" 0"),    std::invalid_argument);
@@ -2159,7 +2298,9 @@ TEST(gpcc_string_tools_Tests, AnyStringToChar)
   EXPECT_THROW(AnyStringToChar("12x"),   std::invalid_argument);
 
   EXPECT_THROW(AnyStringToChar("x12"),   std::invalid_argument);
+  EXPECT_THROW(AnyStringToChar("X12"),   std::invalid_argument);
   EXPECT_THROW(AnyStringToChar("b11"),   std::invalid_argument);
+  EXPECT_THROW(AnyStringToChar("B11"),   std::invalid_argument);
 
   EXPECT_THROW(AnyStringToChar("A"),    std::invalid_argument);
   EXPECT_THROW(AnyStringToChar("'A"),   std::invalid_argument);
@@ -2169,43 +2310,61 @@ TEST(gpcc_string_tools_Tests, AnyStringToChar)
   EXPECT_THROW(AnyStringToChar("'A' "), std::invalid_argument);
   EXPECT_THROW(AnyStringToChar("'AB'"), std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, DecimalToI32)
 {
-  // valid values in range
+  // valid numbers in range
   EXPECT_EQ(0,            DecimalToI32("0"));
+  EXPECT_EQ(0,            DecimalToI32("00"));
+  EXPECT_EQ(0,            DecimalToI32("+0"));
+  EXPECT_EQ(0,            DecimalToI32("+00"));
+  EXPECT_EQ(0,            DecimalToI32("-0"));
+  EXPECT_EQ(0,            DecimalToI32("-00"));
   EXPECT_EQ(1,            DecimalToI32("1"));
-  EXPECT_EQ(1,            DecimalToI32("+1"));
+  EXPECT_EQ(3,            DecimalToI32("+3"));
+  EXPECT_EQ(12,           DecimalToI32("012"));
+  EXPECT_EQ(12,           DecimalToI32("+12"));
+  EXPECT_EQ(12,           DecimalToI32("+012"));
   EXPECT_EQ(-1,           DecimalToI32("-1"));
+  EXPECT_EQ(-1,           DecimalToI32("-001"));
   EXPECT_EQ(2147483647L,  DecimalToI32("2147483647"));
   EXPECT_EQ(2147483647L,  DecimalToI32("+2147483647"));
   EXPECT_EQ(-2147483648L, DecimalToI32("-2147483648"));
 
-  // valid values out of range
+  // valid numbers out of range
   EXPECT_THROW(DecimalToI32("2147483648"),  std::out_of_range);
   EXPECT_THROW(DecimalToI32("-2147483649"), std::out_of_range);
 
   // invalid values
   EXPECT_THROW(DecimalToI32(""),    std::invalid_argument);
   EXPECT_THROW(DecimalToI32(" "),   std::invalid_argument);
-  EXPECT_THROW(DecimalToI32("3 "),  std::invalid_argument);
-  EXPECT_THROW(DecimalToI32(" 3"),  std::invalid_argument);
-  EXPECT_THROW(DecimalToI32("++3"), std::invalid_argument);
-  EXPECT_THROW(DecimalToI32("--3"), std::invalid_argument);
+  EXPECT_THROW(DecimalToI32(" 0"),  std::invalid_argument);
+  EXPECT_THROW(DecimalToI32("0 "),  std::invalid_argument);
+  EXPECT_THROW(DecimalToI32("++1"), std::invalid_argument);
+  EXPECT_THROW(DecimalToI32("--1"), std::invalid_argument);
   EXPECT_THROW(DecimalToI32("X7"),  std::invalid_argument);
   EXPECT_THROW(DecimalToI32("7X"),  std::invalid_argument);
   EXPECT_THROW(DecimalToI32("0x0"), std::invalid_argument);
   EXPECT_THROW(DecimalToI32("0b0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToI32("0X0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToI32("0B0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToI32("c"),   std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, DecimalToI32_minmax)
 {
   // valid values within range
   EXPECT_EQ(-10, DecimalToI32("-10", -10, 20));
+  EXPECT_EQ(-10, DecimalToI32("-010", -10, 20));
   EXPECT_EQ(10, DecimalToI32("10", -10, 20));
+  EXPECT_EQ(10, DecimalToI32("010", -10, 20));
   EXPECT_EQ(10, DecimalToI32("+10", -10, 20));
+  EXPECT_EQ(10, DecimalToI32("+010", -10, 20));
   EXPECT_EQ(11, DecimalToI32("11", -10, 20));
   EXPECT_EQ(19, DecimalToI32("19", -10, 20));
   EXPECT_EQ(20, DecimalToI32("20", -10, 20));
   EXPECT_EQ(20, DecimalToI32("+20", -10, 20));
+  EXPECT_EQ(20, DecimalToI32("+020", -10, 20));
 
   // valid values out of range
   EXPECT_THROW(DecimalToI32("-11", -10, 20), std::out_of_range);
@@ -2214,15 +2373,19 @@ TEST(gpcc_string_tools_Tests, DecimalToI32_minmax)
   // invalid values
   EXPECT_THROW(DecimalToI32("",       -10, 20), std::invalid_argument);
   EXPECT_THROW(DecimalToI32(" ",      -10, 20), std::invalid_argument);
-  EXPECT_THROW(DecimalToI32("11 ",    -10, 20), std::invalid_argument);
-  EXPECT_THROW(DecimalToI32(" 11",    -10, 20), std::invalid_argument);
-  EXPECT_THROW(DecimalToI32("++11",   -10, 20), std::invalid_argument);
-  EXPECT_THROW(DecimalToI32("--11",   -10, 20), std::invalid_argument);
-  EXPECT_THROW(DecimalToI32("XB",     -10, 20), std::invalid_argument);
-  EXPECT_THROW(DecimalToI32("0xA",    -10, 20), std::invalid_argument);
-  EXPECT_THROW(DecimalToI32("A",      -10, 20), std::invalid_argument);
-  EXPECT_THROW(DecimalToI32("0b1011", -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI32(" 0",    -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI32("0 ",    -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI32("--0",   -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI32("++0",   -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI32("X7",     -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI32("7X",     -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI32("0x0",    -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI32("0b0",    -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI32("0X0",    -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI32("0B0",    -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI32("c",      -10, 20), std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, AnyNumberToI32)
 {
   // valid binary values within range
@@ -2272,9 +2435,9 @@ TEST(gpcc_string_tools_Tests, AnyNumberToI32)
   EXPECT_EQ(0U,           AnyNumberToI32("0"));
   EXPECT_EQ(0U,           AnyNumberToI32("+0"));
   EXPECT_EQ(0U,           AnyNumberToI32("-0"));
-  EXPECT_EQ(0U,           AnyNumberToI32("000"));
   EXPECT_EQ(1U,           AnyNumberToI32("1"));
   EXPECT_EQ(12U,          AnyNumberToI32("12"));
+  EXPECT_EQ(12U,          AnyNumberToI32("+12"));
   EXPECT_EQ(2147483647L , AnyNumberToI32("2147483647"));
   EXPECT_EQ(2147483647L , AnyNumberToI32("+2147483647"));
 
@@ -2288,6 +2451,8 @@ TEST(gpcc_string_tools_Tests, AnyNumberToI32)
   EXPECT_THROW(AnyNumberToI32(" "),     std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToI32("0XC"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("00XC"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("00xC"),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32(" 0xC"),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("0xC "),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("-0xC"),  std::invalid_argument);
@@ -2295,9 +2460,12 @@ TEST(gpcc_string_tools_Tests, AnyNumberToI32)
   EXPECT_THROW(AnyNumberToI32("+0xC"),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("++0xC"), std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("0x0xC"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0x0XC"), std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("0xG"),   std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToI32("0B0"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("00B0"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("00b0"),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32(" 0b0"),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("0b0 "),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("-0b1"),  std::invalid_argument);
@@ -2305,6 +2473,16 @@ TEST(gpcc_string_tools_Tests, AnyNumberToI32)
   EXPECT_THROW(AnyNumberToI32("+0b1"),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("++0b1"), std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("0b0b0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b0B0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b1b0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b1B0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b0x0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b0X0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b1x0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b1X0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b0c1"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b00b0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b00B0"), std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("0b2"),   std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToI32(" 0"),    std::invalid_argument);
@@ -2314,16 +2492,23 @@ TEST(gpcc_string_tools_Tests, AnyNumberToI32)
   EXPECT_THROW(AnyNumberToI32("12x"),   std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToI32("x12"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("X12"),   std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("b11"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("B11"),   std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, AnyNumberToI32_minmax)
 {
   // valid binary values within range
   EXPECT_EQ(-10, AnyNumberToI32("0b11111111111111111111111111110110", -10, 20));
   EXPECT_EQ(-1,  AnyNumberToI32("0b11111111111111111111111111111111", -10, 20));
   EXPECT_EQ(0,   AnyNumberToI32("0b00000000000000000000000000000000", -10, 20));
-  EXPECT_EQ(19,  AnyNumberToI32("0b10011", -10, 20));
-  EXPECT_EQ(20,  AnyNumberToI32("0b10100", -10, 20));
+  EXPECT_EQ(0,   AnyNumberToI32("0b0",                                -10, 20));
+  EXPECT_EQ(1,   AnyNumberToI32("0b1",                                -10, 20));
+  EXPECT_EQ(1,   AnyNumberToI32("0b01",                               -10, 20));
+  EXPECT_EQ(2,   AnyNumberToI32("0b10",                               -10, 20));
+  EXPECT_EQ(19,  AnyNumberToI32("0b10011",                            -10, 20));
+  EXPECT_EQ(20,  AnyNumberToI32("0b10100",                            -10, 20));
 
   // valid binary values out of range
   EXPECT_THROW(AnyNumberToI32("0b11111111111111111111111111110101", -10, 20), std::out_of_range);
@@ -2333,27 +2518,28 @@ TEST(gpcc_string_tools_Tests, AnyNumberToI32_minmax)
   EXPECT_EQ(-10, AnyNumberToI32("0xFFFFFFF6", -10, 20));
   EXPECT_EQ(-1,  AnyNumberToI32("0xFFFFFFFF", -10, 20));
   EXPECT_EQ(0,   AnyNumberToI32("0x00000000", -10, 20));
-  EXPECT_EQ(0,   AnyNumberToI32("0x0", -10, 20));
-  EXPECT_EQ(19,  AnyNumberToI32("0x13", -10, 20));
-  EXPECT_EQ(20,  AnyNumberToI32("0x14", -10, 20));
+  EXPECT_EQ(0,   AnyNumberToI32("0x0",        -10, 20));
+  EXPECT_EQ(19,  AnyNumberToI32("0x13",       -10, 20));
+  EXPECT_EQ(20,  AnyNumberToI32("0x14",       -10, 20));
 
   // valid hexadecimal values out of range
   EXPECT_THROW(AnyNumberToI32("0xFFFFFFF5", -10, 20), std::out_of_range);
-  EXPECT_THROW(AnyNumberToI32("0x15", -10, 20),       std::out_of_range);
+  EXPECT_THROW(AnyNumberToI32("0x15",       -10, 20), std::out_of_range);
 
   // valid decimal values within range
   EXPECT_EQ(-10, AnyNumberToI32("-10", -10, 20));
-  EXPECT_EQ(0,   AnyNumberToI32("0", -10, 20));
-  EXPECT_EQ(0,   AnyNumberToI32("-0", -10, 20));
-  EXPECT_EQ(0,   AnyNumberToI32("+0", -10, 20));
-  EXPECT_EQ(1,   AnyNumberToI32("1", -10, 20));
-  EXPECT_EQ(10,  AnyNumberToI32("10", -10, 20));
-  EXPECT_EQ(19,  AnyNumberToI32("019", -10, 20));
-  EXPECT_EQ(20,  AnyNumberToI32("20", -10, 20));
+  EXPECT_EQ(0,   AnyNumberToI32("0",   -10, 20));
+  EXPECT_EQ(0,   AnyNumberToI32("+0",  -10, 20));
+  EXPECT_EQ(0,   AnyNumberToI32("-0",  -10, 20));
+  EXPECT_EQ(1,   AnyNumberToI32("1",   -10, 20));
+  EXPECT_EQ(12,  AnyNumberToI32("12",  -10, 20));
+  EXPECT_EQ(12,  AnyNumberToI32("+12", -10, 20));
+  EXPECT_EQ(19,  AnyNumberToI32("19",  -10, 20));
+  EXPECT_EQ(20,  AnyNumberToI32("20",  -10, 20));
 
   // valid decimal values out of range
   EXPECT_THROW(AnyNumberToI32("-11", -10, 20), std::out_of_range);
-  EXPECT_THROW(AnyNumberToI32("21", -10, 20),  std::out_of_range);
+  EXPECT_THROW(AnyNumberToI32("21",  -10, 20), std::out_of_range);
   EXPECT_THROW(AnyNumberToI32("+21", -10, 20), std::out_of_range);
 
   // invalid values
@@ -2361,6 +2547,8 @@ TEST(gpcc_string_tools_Tests, AnyNumberToI32_minmax)
   EXPECT_THROW(AnyNumberToI32(" ", -10, 20),     std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToI32("0XC", -10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("00XC", -10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("00xC", -10, 20),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32(" 0xC", -10, 20),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("0xC ", -10, 20),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("-0xC", -10, 20),  std::invalid_argument);
@@ -2368,9 +2556,12 @@ TEST(gpcc_string_tools_Tests, AnyNumberToI32_minmax)
   EXPECT_THROW(AnyNumberToI32("+0xC", -10, 20),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("++0xC", -10, 20), std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("0x0xC", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0x0XC", -10, 20), std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("0xG", -10, 20),   std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToI32("0B0", -10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("00B0", -10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("00b0", -10, 20),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32(" 0b0", -10, 20),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("0b0 ", -10, 20),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("-0b1", -10, 20),  std::invalid_argument);
@@ -2378,6 +2569,16 @@ TEST(gpcc_string_tools_Tests, AnyNumberToI32_minmax)
   EXPECT_THROW(AnyNumberToI32("+0b1", -10, 20),  std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("++0b1", -10, 20), std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("0b0b0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b0B0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b1b0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b1B0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b0x0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b0X0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b1x0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b1X0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b0c1", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b00b0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("0b00B0", -10, 20), std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("0b2", -10, 20),   std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToI32(" 0", -10, 20),    std::invalid_argument);
@@ -2387,8 +2588,11 @@ TEST(gpcc_string_tools_Tests, AnyNumberToI32_minmax)
   EXPECT_THROW(AnyNumberToI32("12x", -10, 20),   std::invalid_argument);
 
   EXPECT_THROW(AnyNumberToI32("x12", -10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("X12", -10, 20),   std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("b11", -10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI32("B11", -10, 20),   std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, ToDouble)
 {
   EXPECT_DOUBLE_EQ(0.0, ToDouble("0"));

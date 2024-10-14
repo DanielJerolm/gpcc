@@ -5,14 +5,14 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2024 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp>
 #include <gpcc/stream/IStreamReader.hpp>
 #include <gpcc/stream/IStreamWriter.hpp>
+#include <gpcc/string/StringComposer.hpp>
 #include <exception>
-#include <sstream>
 #include <stdexcept>
 
 namespace gpcc {
@@ -104,10 +104,10 @@ void WriteRequestResponse::ToBinary(gpcc::stream::IStreamWriter & sw) const
 /// \copydoc gpcc::cood::ResponseBase::ToString
 std::string WriteRequestResponse::ToString(void) const
 {
-  std::ostringstream s;
+  gpcc::string::StringComposer s;
   s << "Write request response: " << SDOAbortCodeToDescrString(result);
 
-  return s.str();
+  return s.Get();
 }
 
 // --> ResponseBase

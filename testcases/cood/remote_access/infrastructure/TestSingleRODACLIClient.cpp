@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2024 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/infrastructure/SingleRODACLIClient.hpp>
@@ -1156,16 +1156,16 @@ TEST_F(gpcc_cood_SingleRODACLIClient_TestsF, CARead_record)
   auto const str = terminal.GetDroppedOutLinesPlusCurrentScreenContent();
 
   EXPECT_TRUE(gpcc::string::TestSimplePatternMatch(str,
-  "*\nSI 0: 11\n"
-  "SI 1: TRUE\n"
-  "SI 2: 55\n"
-  "SI 3: 200 (0xC8)\n"
-  "SI 4: 3735928559 (0xDEADBEEF)\n"
-  "SI 5: 0b0\n"
-  "SI 6: 0b00\n"
-  "SI 7: 0b0\n"
-  "SI 8: 0b0000\n"
-  "SI 9: \"ABCD\"\n"
+  "*\nSI 0 : 11\n"
+  "SI 1 : TRUE\n"
+  "SI 2 : 55\n"
+  "SI 3 : 200 (0xC8)\n"
+  "SI 4 : 3735928559 (0xDEADBEEF)\n"
+  "SI 5 : 0b0\n"
+  "SI 6 : 0b00\n"
+  "SI 7 : 0b0\n"
+  "SI 8 : 0b0000\n"
+  "SI 9 : \"ABCD\"\n"
   "SI 10: 3405688830 (0xCAFEAFFE)\n"
   "SI 11: (hex) 01 02 03 04\n"
   ">\n*", true));

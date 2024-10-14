@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2018 Daniel Jerolm
+    Copyright (C) 2018, 2024 Daniel Jerolm
 */
 
 #include <gpcc/cood/data_types.hpp>
@@ -248,7 +248,7 @@ char const * DataTypeToString(DataType const dt)
     case DataType::reserved_0x001D             : return "RESERVED_0x001D";
     case DataType::reserved_0x001E             : return "RESERVED_0x001E";
     case DataType::reserved_0x001F             : return "RESERVED_0x001F";
-    case DataType::pdo_communication_parameter : return "PDO_COMMUNICTAION_PARAMETER";
+    case DataType::pdo_communication_parameter : return "PDO_COM_PARAM";
     case DataType::pdo_mapping                 : return "PDO_MAPPING";
     case DataType::sdo_parameter               : return "SDO_PARAMETER";
     case DataType::identity                    : return "IDENTITY";
@@ -558,9 +558,9 @@ std::string CANopenEncodedDataToString(gpcc::stream::IStreamReader& sr, size_t c
     {
       float const r32 = sr.Read_float();
       char buf[32];
-      size_t const n = snprintf(buf, sizeof(buf), "%G", r32);
-      if (n >= sizeof(buf))
-        throw std::runtime_error("CANopenEncodedDataToString: snprintf requires unexpected buffer size");
+      int const status = snprintf(buf, sizeof(buf), "%G", r32);
+      if ((status < 0) || (static_cast<size_t>(status) > sizeof(buf)))
+        throw std::runtime_error("CANopenEncodedDataToString: snprintf failed or requires unexpected buffer size");
 
       return buf;
     }
@@ -631,9 +631,9 @@ std::string CANopenEncodedDataToString(gpcc::stream::IStreamReader& sr, size_t c
       double const r64 = sr.Read_double();
 
       char buf[32];
-      size_t const n = snprintf(buf, sizeof(buf), "%G", r64);
-      if (n >= sizeof(buf))
-        throw std::runtime_error("CANopenEncodedDataToString: snprintf requires unexpected buffer size");
+      int const status = snprintf(buf, sizeof(buf), "%G", r64);
+      if ((status < 0) || (static_cast<size_t>(status) >= sizeof(buf)))
+        throw std::runtime_error("CANopenEncodedDataToString: snprintf failed or requires unexpected buffer size");
 
       return buf;
     }

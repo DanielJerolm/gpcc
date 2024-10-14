@@ -1,0 +1,39 @@
+/*
+    General Purpose Class Collection (GPCC)
+
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
+
+    Copyright (C) 2024 Daniel Jerolm
+*/
+
+/**
+ * @ingroup GPCC_TESTS
+ * @defgroup GPCC_TESTS_COMPILER Compiler (for unittest only)
+ *
+ * \brief Portable abstractions for compiler-specific stuff (for unittest only).
+ *
+ * This extends the abstractions for compiler-specific functions and key-words ([link](@ref GPCC_COMPILER)) by some more
+ * abstractions dedicated to the unittest environment only:
+ * - Temporary disabling of selected compiler warnings
+ *
+ * The abstractions provided here are available in the unittest environment only.
+ *
+ * # Usage
+ * To access GPCC's compiler abstractions that are exclusive for the unittest environment, the appropriate header files
+ * located in gpcc_test/compiler have to be included:
+ * ~~~{.cpp}
+ * #include <gpcc_test/compiler/warnings.hpp>
+ * ~~~
+ *
+ * __Do not include headers from the subdirectorys of gpcc_test/compiler.__\n
+ * The headers located in gpcc_test/compiler will include the required specific headers according to the compiler in use
+ * and the configured CPU architecture.
+ */
+
+/**
+ * @ingroup GPCC_TESTS_COMPILER
+ * @defgroup GPCC_TESTS_COMPILER_WARNINGS Disable compiler warnings
+ * \brief Macros used to disable selected compiler warnings in the unittest environment.
+ */

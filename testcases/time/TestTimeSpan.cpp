@@ -9,6 +9,7 @@
 */
 
 #include <gpcc/time/TimeSpan.hpp>
+#include <gpcc_test/compiler/warnings.hpp>
 #include <gtest/gtest.h>
 #include <limits>
 #include <stdexcept>
@@ -150,10 +151,7 @@ TEST(gpcc_time_Timespan_Tests, CopyAssignmentSelf)
 {
   TimeSpan ts1 = TimeSpan::ns(10);
 
-  // do it this way to avoid complaints from eclipse indexer
-  #define SELFASSIGNMENT ts1 = ts1;
-  SELFASSIGNMENT;
-  #undef SELFASSIGNMENT
+  ts1 = ts1;
 
   ASSERT_EQ(10, ts1.ns());
 }
@@ -170,10 +168,9 @@ TEST(gpcc_time_Timespan_Tests, MoveAssignmentSelf)
 {
   TimeSpan ts1 = TimeSpan::ns(10);
 
-  // do it this way to avoid complaints from eclipse indexer
-  #define SELFASSIGNMENT ts1 = std::move(ts1);
-  SELFASSIGNMENT;
-  #undef SELFASSIGNMENT
+  GPCC_DISABLE_WARN_SELFMOVE();
+  ts1 = std::move(ts1);
+  GPCC_RESTORE_WARN_SELFMOVE();
 
   ASSERT_EQ(10, ts1.ns());
 }

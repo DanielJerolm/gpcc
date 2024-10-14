@@ -208,16 +208,8 @@ TimePoint TimePoint::operator + (TimeSpan const & rhv) const
 
   // add second and nanosecond portion to this TimePoint's value and store the result in _ts
   struct ::timespec _ts;
-  if (sizeof(_ts.tv_sec) == 4U)
-  {
-    if (Compiler::OverflowAwareAdd(ts.tv_sec, rhv_sec, reinterpret_cast<int32_t*>(&_ts.tv_sec)))
-      throw std::overflow_error("TimePoint::operator+: Overflow adding seconds");
-  }
-  else
-  {
-    if (Compiler::OverflowAwareAdd(ts.tv_sec, rhv_sec, reinterpret_cast<int64_t*>(&_ts.tv_sec)))
-      throw std::overflow_error("TimePoint::operator+: Overflow adding seconds");
-  }
+  if (compiler::OverflowAwareAdd(ts.tv_sec, rhv_sec, &_ts.tv_sec))
+    throw std::overflow_error("TimePoint::operator+: Overflow adding seconds");
   _ts.tv_nsec = ts.tv_nsec + rhv_nsec;
 
   // Return a new TimePoint instance made from _ts.
@@ -254,16 +246,8 @@ TimePoint TimePoint::operator - (TimeSpan const & rhv) const
 
   // subtract second and nanosecond portion from this TimePoint's value and store the result in _ts
   struct ::timespec _ts;
-  if (sizeof(_ts.tv_sec) == 4U)
-  {
-    if (Compiler::OverflowAwareSub(ts.tv_sec, rhv_sec, reinterpret_cast<int32_t*>(&_ts.tv_sec)))
-      throw std::overflow_error("TimePoint::operator-(Timespan): Overflow subtracting seconds");
-  }
-  else
-  {
-    if (Compiler::OverflowAwareSub(ts.tv_sec, rhv_sec, reinterpret_cast<int64_t*>(&_ts.tv_sec)))
-      throw std::overflow_error("TimePoint::operator-(Timespan): Overflow subtracting seconds");
-  }
+  if (compiler::OverflowAwareSub(ts.tv_sec, rhv_sec, &_ts.tv_sec))
+    throw std::overflow_error("TimePoint::operator-(Timespan): Overflow subtracting seconds");
   _ts.tv_nsec = ts.tv_nsec - rhv_nsec;
 
   // Return a new TimePoint instance made from _ts.
@@ -295,7 +279,7 @@ TimePoint TimePoint::operator - (TimeSpan const & rhv) const
 TimeSpan TimePoint::operator - (TimePoint const & rhv) const
 {
   int64_t dsec;
-  if (Compiler::OverflowAwareSub(ts.tv_sec, rhv.ts.tv_sec, &dsec))
+  if (compiler::OverflowAwareSub(ts.tv_sec, rhv.ts.tv_sec, &dsec))
     throw std::overflow_error("TimePoint::operator-(Timepoint): Overflow subtracting seconds");
 
   // note: this check is not precise, but safe
@@ -339,16 +323,8 @@ TimePoint& TimePoint::operator+= (TimeSpan const & rhv)
 
   // add second and nanosecond portion to this TimePoint's value and store the result in _ts
   struct ::timespec _ts;
-  if (sizeof(_ts.tv_sec) == 4U)
-  {
-    if (Compiler::OverflowAwareAdd(ts.tv_sec, rhv_sec, reinterpret_cast<int32_t*>(&_ts.tv_sec)))
-      throw std::overflow_error("TimePoint::operator+=: Overflow adding seconds");
-  }
-  else
-  {
-    if (Compiler::OverflowAwareAdd(ts.tv_sec, rhv_sec, reinterpret_cast<int64_t*>(&_ts.tv_sec)))
-      throw std::overflow_error("TimePoint::operator+=: Overflow adding seconds");
-  }
+  if (compiler::OverflowAwareAdd(ts.tv_sec, rhv_sec, &_ts.tv_sec))
+    throw std::overflow_error("TimePoint::operator+=: Overflow adding seconds");
   _ts.tv_nsec = ts.tv_nsec + rhv_nsec;
 
   // tv_nsec may be out of bounds and required inc/dec of tv_sec
@@ -390,16 +366,8 @@ TimePoint& TimePoint::operator-= (TimeSpan const & rhv)
 
   // subtract second and nanosecond portion from this TimePoint's value and store the result in _ts
   struct ::timespec _ts;
-  if (sizeof(_ts.tv_sec) == 4U)
-  {
-    if (Compiler::OverflowAwareSub(ts.tv_sec, rhv_sec, reinterpret_cast<int32_t*>(&_ts.tv_sec)))
-      throw std::overflow_error("TimePoint::operator-=: Overflow subtracting seconds");
-  }
-  else
-  {
-    if (Compiler::OverflowAwareSub(ts.tv_sec, rhv_sec, reinterpret_cast<int64_t*>(&_ts.tv_sec)))
-      throw std::overflow_error("TimePoint::operator-=: Overflow subtracting seconds");
-  }
+  if (compiler::OverflowAwareSub(ts.tv_sec, rhv_sec, &_ts.tv_sec))
+    throw std::overflow_error("TimePoint::operator-=: Overflow subtracting seconds");
   _ts.tv_nsec = ts.tv_nsec - rhv_nsec;
 
   // tv_nsec may be out of bounds and required inc/dec of tv_sec
