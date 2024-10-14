@@ -192,6 +192,8 @@ Next to do:
 
 History:
 ===============================================================================
+2024-10-14 Release version V 3.0.0
+
 2024-10-14
 - Adapt to undocumented behaviour of std::sto* (acceptance of prefix 0b for binaray numbers) on some platforms.
   (first experienced with gcc 13.2.0 and glibc 2.39 on kubuntu 24.04)
