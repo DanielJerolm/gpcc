@@ -4,10 +4,6 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
-- Bugfix: Missing "::testing::FLAGS_gtest_death_test_style = "threadsafe";" in testcases:
-  gpcc_execution_async_SuspendableDWQwithThread_DeathTests.DestroyButSuspended
-  gpcc_execution_async_SuspendableDWQwithThread_DeathTests.DestroyButRunning
-
 - Move doxygen group definition for GPCC_COMPILER_* from hpp-files to dox-file
 - Update doxyfiles to doxygen 1.9.8
 
@@ -203,6 +199,9 @@ History:
 2024-10-14
 - Adapt to undocumented behaviour of std::sto* (acceptance of prefix 0b for binaray numbers) on some platforms.
   (first experienced with gcc 13.2.0 and glibc 2.39 on kubuntu 24.04)
+- Bugfix: Missing "::testing::FLAGS_gtest_death_test_style = "threadsafe";" in testcases:
+  gpcc_execution_async_SuspendableDWQwithThread_DeathTests.DestroyButSuspended
+  gpcc_execution_async_SuspendableDWQwithThread_DeathTests.DestroyButRunning
 
 2024-10-11
 - Fix warnings from new gcc 13.2.0
