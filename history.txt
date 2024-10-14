@@ -4,8 +4,6 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
-- Update doxyfiles to doxygen 1.9.8
-
 - Use multiple CMakeLists.txt in gpcc/testcases
 - Use github's issue tracking instead of this file
 - Remove machine's architecture from OS. The OS should hide any machine specific stuff.
@@ -202,6 +200,7 @@ History:
   gpcc_execution_async_SuspendableDWQwithThread_DeathTests.DestroyButSuspended
   gpcc_execution_async_SuspendableDWQwithThread_DeathTests.DestroyButRunning
 - Moved doxygen group definition for GPCC_COMPILER_* from hpp-files to dox-file
+- Update doxyfiles to doxygen 1.9.8
 
 2024-10-11
 - Fix warnings from new gcc 13.2.0
