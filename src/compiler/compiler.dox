@@ -39,3 +39,21 @@
  * The headers located in gpcc/compiler will include the required specific headers according to the compiler in use
  * and the configured CPU architecture.
  */
+
+/**
+ * @ingroup GPCC_COMPILER
+ * @defgroup GPCC_COMPILER_BUILTINS Compiler-builtins and special CPU instructions
+ * \brief Useful functions making use of compiler-builtins or special CPU instructions.
+ */
+
+/**
+ * @ingroup GPCC_COMPILER
+ * @defgroup GPCC_COMPILER_SYSTEM_ENDIAN System's endian
+ * \brief Definitions indicating the system's endian at compile-time.
+ */
+
+/**
+ * @ingroup GPCC_COMPILER
+ * @defgroup GPCC_COMPILER_ATTRIBUTES Attributes
+ * \brief Attributes for alignment of variables, packing structs etc.
+ */
