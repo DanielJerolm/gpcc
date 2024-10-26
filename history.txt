@@ -192,6 +192,9 @@ Next to do:
 
 History:
 ===============================================================================
+2024-10-26
+- Enhance CMakeLists.txt files: Remove comment with file's location, add license header
+
 2024-10-14 Release version V 3.0.0
 
 2024-10-14
