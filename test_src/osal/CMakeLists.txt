@@ -6,4 +6,7 @@
 #
 # Copyright (C) 2024 Daniel Jerolm
 
-add_subdirectory(os/${GPCC_OS})
+if((${GPCC_OS} STREQUAL "linux_arm_tfc") OR
+   (${GPCC_OS} STREQUAL "linux_x64_tfc"))
+  add_subdirectory(tfc)
+endif()

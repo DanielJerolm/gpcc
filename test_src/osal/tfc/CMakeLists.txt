@@ -6,6 +6,9 @@
 #
 # Copyright (C) 2024 Daniel Jerolm
 
+# Sources specific to an OSAL that provides TFC
 target_sources(${PROJECT_NAME}
                PRIVATE
-               tfc_traps.cpp)
+               BlockWithExpiredTimeoutTrap.cpp
+               PotentialUnreproducibleBehaviourTrap.cpp
+               UnreproducibleBehaviourTrap.cpp)

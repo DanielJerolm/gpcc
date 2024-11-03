@@ -104,7 +104,7 @@ TEST_F(gpcc_osal_internal_TFCCore_TestsF, DetectAttemptToBlockWithExpiredTimeout
   using namespace gpcc::time;
   using gpcc::osal::ConditionVariable;
 
-  // Sleep a millisecond to ensure that we can subtract 1ns from the system time below.
+  // sleep a millisecond to ensure that we can subtract 1ns from the system time below
   gpcc::osal::Thread::Sleep_ms(1);
 
   pUUT->EnableWatchForAlreadyExpiredTimeout();
@@ -120,6 +120,35 @@ TEST_F(gpcc_osal_internal_TFCCore_TestsF, DetectAttemptToBlockWithExpiredTimeout
 
   EXPECT_TRUE(pUUT->DisableWatchForAlreadyExpiredTimeout())
     << "Attempt to block with expired timeout has not been detected!";
+}
+
+TEST_F(gpcc_osal_internal_TFCCore_TestsF, QueryAndResetAttemptToBlockWithExpiredTimeoutTrap)
+{
+  using namespace gpcc::time;
+  using gpcc::osal::ConditionVariable;
+
+  pUUT->EnableWatchForAlreadyExpiredTimeout();
+
+  // sleep a millisecond to ensure that we can subtract 1ns from the system time below
+  gpcc::osal::Thread::Sleep_ms(1);
+
+  EXPECT_FALSE(pUUT->QueryAndResetWatchForAlreadyExpiredTimeout())
+    << "Trap triggered, but there was no incident yet";
+
+  ConditionVariable cv;
+  TimePoint const timeout = TimePoint::FromSystemClock(ConditionVariable::clockID) - TimeSpan::ns(1);
+
+  {
+    gpcc::osal::Mutex m;
+    gpcc::osal::MutexLocker ml(m);
+    ASSERT_TRUE(cv.TimeLimitedWait(m, timeout));
+  }
+
+  EXPECT_TRUE(pUUT->QueryAndResetWatchForAlreadyExpiredTimeout())
+    << "Trap did not trigger";
+
+  EXPECT_FALSE(pUUT->DisableWatchForAlreadyExpiredTimeout())
+    << "Trap's trigger state was not reset";
 }
 
 TEST_F(gpcc_osal_internal_TFCCore_TestsF, EnableAndDisableWatchForBlockWithSameTimeout)
@@ -150,10 +179,39 @@ TEST_F(gpcc_osal_internal_TFCCore_TestsF, DetectAttemptToBlockWithSameTimeout)
                 Thread::SchedPolicy::Other, 0, Thread::GetDefaultStackSize());
   ON_SCOPE_EXIT(joinThread2) { (void)thread2.Join(nullptr); };
 
-  Thread::Sleep_ms(50U);
+  Thread::Sleep_ms(1U);
 
   EXPECT_TRUE(pUUT->DisableWatchForBlockWithSameTimeout())
     << "Attempt to block with same timeout has not been detected!";
+}
+
+TEST_F(gpcc_osal_internal_TFCCore_TestsF, QueryAndResetAttemptToBlockWithSameTimeoutTrap)
+{
+  using gpcc::osal::Thread;
+
+  pUUT->EnableWatchForBlockWithSameTimeout();
+
+  Thread thread1("Thread1");
+  Thread thread2("Thread2");
+
+  EXPECT_FALSE(pUUT->QueryAndResetWatchForBlockWithSameTimeout())
+    << "Trap triggered, but there was no incident yet";
+
+  thread1.Start(std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_osal_internal_TFCCore_TestsF, QueryAndResetAttemptToBlockWithSameTimeoutTrap)::ThreadEntry_Sleep100ms, this),
+                Thread::SchedPolicy::Other, 0, Thread::GetDefaultStackSize());
+  ON_SCOPE_EXIT(joinThread1) { (void)thread1.Join(nullptr); };
+
+  thread2.Start(std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_osal_internal_TFCCore_TestsF, QueryAndResetAttemptToBlockWithSameTimeoutTrap)::ThreadEntry_Sleep100ms, this),
+                Thread::SchedPolicy::Other, 0, Thread::GetDefaultStackSize());
+  ON_SCOPE_EXIT(joinThread2) { (void)thread2.Join(nullptr); };
+
+  Thread::Sleep_ms(1U);
+
+  EXPECT_TRUE(pUUT->QueryAndResetWatchForBlockWithSameTimeout())
+    << "Trap did not trigger";
+
+  EXPECT_FALSE(pUUT->DisableWatchForBlockWithSameTimeout())
+    << "Trap's trigger state was not reset";
 }
 
 TEST_F(gpcc_osal_internal_TFCCore_TestsF, EnableAndDisableWatchForSimultaneousResumeOfMultipleThreads)
@@ -171,6 +229,7 @@ TEST_F(gpcc_osal_internal_TFCCore_TestsF, EnableAndDisableWatchForSimultaneousRe
 TEST_F(gpcc_osal_internal_TFCCore_TestsF, DetectSimultaneousResumeOfMultipleThreads)
 {
   using gpcc::osal::Thread;
+
   Thread thread1("Thread1");
   Thread thread2("Thread2");
 
@@ -182,14 +241,43 @@ TEST_F(gpcc_osal_internal_TFCCore_TestsF, DetectSimultaneousResumeOfMultipleThre
                 Thread::SchedPolicy::Other, 0, Thread::GetDefaultStackSize());
   ON_SCOPE_EXIT(joinThread2) { (void)thread2.Join(nullptr); };
 
-  Thread::Sleep_ms(50U);
+  Thread::Sleep_ms(99U);
 
   pUUT->EnableWatchForSimultaneousResumeOfMultipleThreads();
 
-  Thread::Sleep_ms(100U);
+  Thread::Sleep_ms(2U);
 
   EXPECT_TRUE(pUUT->DisableWatchForSimultaneousResumeOfMultipleThreads())
     << "Unblocking of multiple threads after increment of system time has not been detected!";
+}
+
+TEST_F(gpcc_osal_internal_TFCCore_TestsF, QueryAndResetSimultaneousResumeOfMultipleThreadsTrap)
+{
+  using gpcc::osal::Thread;
+
+  pUUT->EnableWatchForSimultaneousResumeOfMultipleThreads();
+
+  Thread thread1("Thread1");
+  Thread thread2("Thread2");
+
+  thread1.Start(std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_osal_internal_TFCCore_TestsF, QueryAndResetSimultaneousResumeOfMultipleThreadsTrap)::ThreadEntry_Sleep100ms, this),
+                Thread::SchedPolicy::Other, 0, Thread::GetDefaultStackSize());
+  ON_SCOPE_EXIT(joinThread1) { (void)thread1.Join(nullptr); };
+
+  thread2.Start(std::bind(&GTEST_TEST_CLASS_NAME_(gpcc_osal_internal_TFCCore_TestsF, QueryAndResetSimultaneousResumeOfMultipleThreadsTrap)::ThreadEntry_Sleep100ms, this),
+                Thread::SchedPolicy::Other, 0, Thread::GetDefaultStackSize());
+  ON_SCOPE_EXIT(joinThread2) { (void)thread2.Join(nullptr); };
+
+  Thread::Sleep_ms(99U);
+  EXPECT_FALSE(pUUT->QueryAndResetWatchForSimultaneousResumeOfMultipleThreads())
+    << "Trap triggered, but there was no incident yet";
+
+  Thread::Sleep_ms(2U);
+  EXPECT_TRUE(pUUT->QueryAndResetWatchForSimultaneousResumeOfMultipleThreads())
+    << "Trap did not trigger";
+
+  EXPECT_FALSE(pUUT->DisableWatchForSimultaneousResumeOfMultipleThreads())
+    << "Trap's trigger state was not reset";
 }
 
 } // namespace internal

@@ -4,8 +4,11 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
+
 - Use github's issue tracking instead of this file
 - Remove machine's architecture from OS. The OS should hide any machine specific stuff.
+
+- Doxygen: No documentation generated for members of template classes (e.g. MultiCallback, IntegralFilter)
 
 - Check usage of postfixes for literals ([0-9]U <<)
 - Check usage of plain types (e.g. unsigned int)
@@ -125,6 +128,8 @@ Next to do:
 
 - rename Thread::priority_t to Thread::tPriority
 
+- Thread::GetName() should return a "std::string const &"
+
 - Options for enhancements identified during header restructuring:
   - [  ] Simplify TestBlockAccessor (long namespaces)
   - [  ] Simplify TestEEPROMSectionSystem (long namespaces)
@@ -192,6 +197,9 @@ Next to do:
 
 History:
 ===============================================================================
+2024-11-03
+- Enhance TFC traps: Add API to query and reset state; refactor implementation
+
 2024-10-26
 - Enhance CMakeLists.txt files: Remove comment with file's location, add license header
 

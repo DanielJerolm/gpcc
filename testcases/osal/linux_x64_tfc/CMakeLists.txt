@@ -12,7 +12,6 @@ target_sources(${PROJECT_NAME}_testcases
                TestTFCCore.cpp
                TestThreadBlocker.cpp
                TestTimeLimitedThreadBlocker.cpp
-               TestTraps.cpp
                TestUnmanagedConditionVariable.cpp
                TestUnmanagedMutex.cpp
                TestUnmanagedMutexLocker.cpp)

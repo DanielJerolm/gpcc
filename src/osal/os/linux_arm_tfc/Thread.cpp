@@ -350,15 +350,17 @@ void Thread::Sleep_ns(uint32_t const ns)
  * This method is intended to be used to create human-readable information about the threads registered in the
  * application's thread-registry (see @ref GetThreadRegistry()).
  *
- * Output format:\n
- * <tt>          1         2         3         4         5         6         7         8</tt>\n
- * <tt> 12345678901234567890123456789012345678901234567890123456789012345678901234567890</tt>\n
- * <tt> Name State DS  Scope Policy   prio   Guard   Stack  StackU</tt>\n
- * <tt> ...  no    D   SYS   IH other pppp ggggggg sssssss sssssss</tt>\n
- * <tt>      start J   PRC   EX idle  ?    ?       ?       ?</tt>\n
- * <tt>      run   ?   ?     xx batch</tt>\n
- * <tt>      term            xx FIFO</tt>\n
- * <tt>                      xx RR</tt>\n
+ * Output format:
+ * ~~~{.txt}
+ *          1         2         3         4         5         6         7         8
+ * 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+ * Name State DS  Scope Policy   prio   Guard   Stack  StackU
+ * ...  no    D   SYS   IH other pppp ggggggg sssssss sssssss
+ *      start J   PRC   EX idle  ?    ?       ?       ?
+ *      run   ?   ?     xx batch
+ *      term            xx FIFO
+ *                      xx RR
+ * ~~~
  *
  * States:\n
  * no    = thread (currently) not registered at OS or thread has been joined\n

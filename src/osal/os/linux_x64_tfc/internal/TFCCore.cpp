@@ -425,6 +425,41 @@ void TFCCore::EnableWatchForAlreadyExpiredTimeout(void)
 }
 
 /**
+ * \brief Queries, if a thread attempted to block with already expired timeout and forgets the attempt.
+ *
+ * The query and forgetting a potential attempt are one atomic operation.
+ *
+ * \pre   Watching for threads that attempt to block with an already expired timeout is enabled.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \retval true   There was at least one attempt to block with already expired timeout.
+ * \retval false  There was no attempt to block with already expired timeout.
+ */
+bool TFCCore::QueryAndResetWatchForAlreadyExpiredTimeout(void)
+{
+  UnmanagedMutexLocker bigLockLocker(bigLock);
+
+  if (!watchForAlreadyExpiredTimeout)
+    throw std::logic_error("TFCCore::QueryAndResetWatchForAlreadyExpiredTimeout: Not enabled");
+
+  bool const retVal = alreadyExpiredTimeoutDetected;
+  alreadyExpiredTimeoutDetected = false;
+  return retVal;
+}
+
+/**
  * \brief Disables watching for threads that attempt to block with an already expired timeout, and returns if any such
  *        attempt has occurred since watching has been enabled.
  *
@@ -482,6 +517,41 @@ void TFCCore::EnableWatchForBlockWithSameTimeout(void)
 
   watchForBlockWithSameTimeout = true;
   blockWithSameTimeoutDetected = false;
+}
+
+/**
+ * \brief Queries, if any two threads attempted to block with same timeout and forgets the attempt.
+ *
+ * The query and forgetting a potential attempt are one atomic operation.
+ *
+ * \pre   Watching for threads that block with same timeout is enabled.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \retval true   There was at least one attempt by at least two threads to block with same timeout.
+ * \retval false  There was no attempt by any threads to block with same timeout.
+ */
+bool TFCCore::QueryAndResetWatchForBlockWithSameTimeout(void)
+{
+  UnmanagedMutexLocker bigLockLocker(bigLock);
+
+  if (!watchForBlockWithSameTimeout)
+    throw std::logic_error("TFCCore::QueryAndResetWatchForBlockWithSameTimeout: Not enabled");
+
+  bool const retVal = blockWithSameTimeoutDetected;
+  blockWithSameTimeoutDetected = false;
+  return retVal;
 }
 
 /**
@@ -545,6 +615,42 @@ void TFCCore::EnableWatchForSimultaneousResumeOfMultipleThreads(void)
 }
 
 /**
+ * \brief Queries, if more than one thread was resumed simultaneously after an increment of the system time and forgets
+ *        the incident.
+ *
+ * The query and forgetting a potential incident are one atomic operation.
+ *
+ * \pre   Watching for simultaneous resume of multiple threads after increment of the system time is enabled.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \retval true   More than one thread has been resumed after increment of the system time at least once.
+ * \retval false  No thread, or only single threads have been resumed after any increment of the system time.
+ */
+bool TFCCore::QueryAndResetWatchForSimultaneousResumeOfMultipleThreads(void)
+{
+  UnmanagedMutexLocker bigLockLocker(bigLock);
+
+  if (!watchForSimultaneousResumeOfMultipleThreads)
+    throw std::logic_error("TFCCore::QueryAndResetWatchForSimultaneousResumeOfMultipleThreads: Not enabled");
+
+  bool const retVal = simultaneousResumeOfMultipleThreadsDetected;
+  simultaneousResumeOfMultipleThreadsDetected = false;
+  return retVal;
+}
+
+/**
  * \brief Disables watching for simultaneous resume of multiple threads after increment of the system time, and returns
  *        if any such situation has occurred since watching has been enabled.
  *
@@ -564,7 +670,7 @@ void TFCCore::EnableWatchForSimultaneousResumeOfMultipleThreads(void)
  * - - -
  *
  * \retval true   More than one thread has been resumed after increment of the system time at least once.
- * \retval false  Only single threads have been resumed after any increment of the system time.
+ * \retval false  No thread, or only single threads have been resumed after any increment of the system time.
  */
 bool TFCCore::DisableWatchForSimultaneousResumeOfMultipleThreads(void)
 {

@@ -103,12 +103,15 @@ class TFCCore final
     void GetEmulatedMonotonicTime(struct ::timespec & ts) const noexcept;
 
     void EnableWatchForAlreadyExpiredTimeout(void);
+    bool QueryAndResetWatchForAlreadyExpiredTimeout(void);
     bool DisableWatchForAlreadyExpiredTimeout(void);
 
     void EnableWatchForBlockWithSameTimeout(void);
+    bool QueryAndResetWatchForBlockWithSameTimeout(void);
     bool DisableWatchForBlockWithSameTimeout(void);
 
     void EnableWatchForSimultaneousResumeOfMultipleThreads(void);
+    bool QueryAndResetWatchForSimultaneousResumeOfMultipleThreads(void);
     bool DisableWatchForSimultaneousResumeOfMultipleThreads(void);
 
   private:

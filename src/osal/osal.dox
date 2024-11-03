@@ -15,47 +15,59 @@
  * \brief Portable Operating System Abstraction Layer.
  *
  * # Provided functionality
- * GPCC's OSAL provides three groups of functionality:
+ * GPCC's OSAL provides four groups of functionality:
  * - Panic handling (see @ref GPCC_OSAL_PANIC for details)
  * - Multithreading primitives (see @ref GPCC_OSAL_THREADING for details)
  * - Time Flow Control (TFC) for unit tests (see @ref GPCC_TIME_FLOW_CONTROL for details)
- * - Operating system specific constante (see @ref GPCC_OSAL_DEFS)
- *
- * Panic handling and threading primitives are provided for all supported operating systems. The API and the provided
- * functionality are the same or almost equivalent on all supported operating systems in order to achieve portability.
- * If there are any differences or specific topics, then they will be clearly pointed out in the documenation. Please
- * pay attention to section "Documentation" below.
+ * - Operating system specific constants and definitions (see @ref GPCC_OSAL_DEFS)
  *
  * TFC is only available for selected operating systems. See section "Configuration" below.
  *
+ * Panic handling and threading primitives are provided for all supported operating systems. The API and the provided
+ * functionality are the same for all supported operating systems in order to achieve cross-platform portability.
+ *
+ * However, if we zoom deeply into the very details of scheduling behaviour, then there will be of course differences
+ * between the supported operating systems. If there are any remarkable differences or remarkable specific topics, then
+ * they will be clearly pointed out in GPCC's doxygen documenation. Please pay attention to section "Documentation"
+ * below.
+ *
  * # Usage
- * To access any of the classes offered by GPCC's OSAL you just have to include the desired header files located in
- * folder "gpcc/src/osal".
+ * To use the functionality offered by GPCC's OSAL you just have to include the desired header files located in
+ * folder "include/gpcc/osal". Example:
+ * ~~~{.cpp}
+ * #include <gpcc/osal/Mutex.hpp>
+ * ~~~
  *
- * __Do not include headers from the subdirectories of "gpcc/src/osal"!__
- *
- * The headers located in "gpcc/src/osal" will include the required headers according to your specific operating system.
- * For details please refer to section "Configuration" below.
+ * __Do not include headers from the subdirectories of "gpcc/osal"!__\n
+ * If required, then the headers located in "gpcc/osal" will include operating system specific headers according to your
+ * specific operating system. For details please refer to section "Configuration" below.
  *
  * # Configuration
- * To select a specific OSAL implementation for your project please set the defines as described in
- * "gpcc/readme_gpcc_configuration.txt". When using the cmake project files supplied with GPCC, then this happens
- * automatically.
+ * The OSAL variant that will be used in your project is configured via CMake during the CMake configuration step.
+ * The OS in use is selected by setting the CMake cache variable `GPCC_OS` to the appropriate value.
  *
- * Currenty the following platforms and operating systems are supported:
- * - ChibiOS/RT (Kernel 6.0.3) for ARM
- * - EPOS for ARM
- * - Linux ARM (32/64 bit)
- * - Linux ARM (32/64 bit) with TFC for unit tests
- * - Linux x64
- * - Linux x64 with TFC for unit tests
+ * Currently the following platforms and operating systems are supported:
+ * OS                                            | Value for GPCC_OS
+ * --------------------------------------------- | -----------------
+ * ChibiOS/RT (Kernel 6.0.3) for ARM             | chibios_arm
+ * EPOS for ARM                                  | epos_arm
+ * Linux ARM (32/64 bit)                         | linux_arm
+ * Linux ARM (32/64 bit) with TFC for unit tests | linux_arm_tfc
+ * Linux x64                                     | linux_x64
+ * Linux x64 with TFC for unit tests             | linux_x64_tfc
  *
  * # Documentation
  * Though the OSAL's API is identical among all supported platforms and operating systems, there are small differences
- * (e.g. constants, mapping of scheduling policies, availability of deferred thread cancellation, etc.) that are pointed
- * out in the doxygen documentation. There is a specific doxygen documentation dedicated to each supported platform and
- * operating system available. Ensure that you have generated the correct doxygen documentation for your platform. It
- * will point out important differences to other platforms.
+ * that are sometimes worth to be pointed out in the doxygen documentation (e.g. mapping of scheduling policies and
+ * thread priorities, availability of deferred thread cancellation, etc.). For this reason there is a specific doxyfile
+ * available for each supported platform/operating system. Ensure that you have generated the correct doxygen
+ * documentation for your platform.
+ *
+ * The doxygen documentation of the OSAL's API contains specifications of the exception safety and thread-cancellation
+ * safety guarantees provided by the API functions. Note that these specifications often specify a lower guarantee than
+ * the actual implementation of the OSAL variant in use provides. The reason is that the OSAL's implementation is
+ * operating system specific, but the API and the provided guarantees are the same for all variants. The provided
+ * guarantees must be so low that they can be fulfilled by any OSAL variant.
  */
 
 /**
@@ -220,6 +232,7 @@
  *   [RWLockWriteLocker](@ref gpcc::osal::RWLockWriteLocker))
  * - Thread Registry (see class [ThreadRegistry](@ref gpcc::osal::ThreadRegistry))
  *
+ * @anchor GPCC_OSAL_THREADING_OSSPECIFICS
  * # Platform / Operating System specific differences
  * ## Condition Variable
  * OS / Platform | Thread unblocked upon signal
@@ -236,8 +249,8 @@
  * ------------- | ----------------------------- | --------------------------------------------- | --------------------
  * chibios_arm   | Yes                           | Thread with highest priority                  | unlock without lock, unlock order violation
  * epos_arm      | Yes                           | Thread with highest priority                  | unlock without lock, unlock order violation
- * linux_arm     | Yes                           | Thread with highest priority                  | ?
- * linux_x64     | Yes                           | Thread with highest priority                  | ?
+ * linux_arm     | Yes                           | Thread with highest priority                  | none
+ * linux_x64     | Yes                           | Thread with highest priority                  | none
  * linux_arm_tfc | No                            | Random                                        | Recursion, unlock without lock
  * linux_x64_tfc | No                            | Random                                        | Recursion, unlock without lock
  *
@@ -246,20 +259,20 @@
  * ------------- | ------------------------------------
  * chibios_arm   | FIFO if `CH_CFG_USE_SEMAPHORES_PRIORITY = false` (default), otherwise thread with highest priority
  * epos_arm      | FIFO
- * linux_arm     | ?
- * linux_x64     | ?
+ * linux_arm     | Thread with highest priority and longest wait-time.
+ * linux_x64     | Thread with highest priority and longest wait-time.
  * linux_arm_tfc | Random
  * linux_x64_tfc | Random
  *
  * ## Thread
- * OS / Platform | Sleep_ms() and Sleep_ns()
- * ------------- | -------------------------
- * chibios_arm   | Minimum sleep time: Round up to system tick period + 0..1 system tick periods
- * epos_arm      | Same as chibios_arm or better
- * linux_arm     | Same as chibios_arm or better
- * linux_x64     | Same as chibios_arm or better
- * linux_arm_tfc | One nanosecond precision
- * linux_x64_tfc | One nanosecond precision
+ * OS / Platform | Increase of sleep time by Sleep_ms() and Sleep_ns()
+ * ------------- | ---------------------------------------------------
+ * chibios_arm   | Round up to system tick period + 0..1 system tick periods
+ * epos_arm      | __Periodic tick:__ Round up to system tick period + 0..1 system tick periods __Dynamic tick:__ Down to sub-microseconds
+ * linux_arm     | Same as epos_arm
+ * linux_x64     | Same as epos_arm
+ * linux_arm_tfc | Zero
+ * linux_x64_tfc | Zero
  *
  * ### ChibiOS/RT (chibios_arm)
  * - Scheduling policies `Other`, `Idle`, and `Batch` are emulated by mapping them to specific fixed priorities (see
@@ -301,10 +314,13 @@
  * be used with the primitives provided by @ref gpcc::osal. A thread may also hold mutex locks from different threading
  * APIs at the same time.
  *
- * However, there are also some restrictions and some points worth to note:
- * ## TFC
- * If you want to use GPCC's @ref GPCC_TIME_FLOW_CONTROL in your unit tests, then code must solely use GPCC's OSAL only.
+ * However, the restrictions and points in the chapters below are worth to note.
  *
+ * ## TFC
+ * If you want to use GPCC's @ref GPCC_TIME_FLOW_CONTROL in your unit tests, then all code involved in a test case
+ * (the UUT, the test fixture and any components used by the UUT) must solely use GPCC's OSAL only.
+ *
+ * @anchor GPCC_OSAL_THREADING_INTEROP_CANCELLATION
  * ## Deferred Cancellation
  * If the underlying platform supports deferred cancellation, then a thread from @ref gpcc::osal::Thread will terminate
  * properly if it hits any implicit or explicit cancellation point.
@@ -312,27 +328,28 @@
  * Deferred cancellation of threads created via @ref gpcc::osal::Thread can be enabled and disabled via other APIs
  * on the following platforms:
  *
- * OS / Platform | Alternative APIs for enable/disable deferred cancellation
- * ------------- | ---------------------------------------------------------
- * chibios_arm   | None
- * epos_arm      | `epos_thread_EnableDeferredCancellation()`, `pthread_setcancelstate()`
- * linux_arm     | `pthread_setcancelstate()`
- * linux_x64     | `pthread_setcancelstate()`
- * linux_arm_tfc | `pthread_setcancelstate()`
- * linux_x64_tfc | `pthread_setcancelstate()`
+ * OS / Platform | Alternative APIs for enable/disable deferred cancellation              | Stack unwind | POSIX cleanup handlers
+ * ------------- | ---------------------------------------------------------------------- | ------------ | --------------------------------
+ * chibios_arm   | None                                                                   | yes          | not supported
+ * epos_arm      | `epos_thread_EnableDeferredCancellation()`, `pthread_setcancelstate()` | yes          | Full integration in stack unwind
+ * linux_arm     | `pthread_setcancelstate()`                                             | yes          | Full integration in stack unwind
+ * linux_x64     | `pthread_setcancelstate()`                                             | yes          | Full integration in stack unwind
+ * linux_arm_tfc | `pthread_setcancelstate()`                                             | yes          | Full integration in stack unwind
+ * linux_x64_tfc | `pthread_setcancelstate()`                                             | yes          | Full integration in stack unwind
  *
+ * @anchor GPCC_OSAL_THREADING_INTEROP_THDEXIT
  * ## Thread exit
  * A thread can terminate itself immediatedly via @ref gpcc::osal::Thread::TerminateNow(). Threads created via
  * @ref gpcc::osal::Thread can also terminate via the following other APIs:
  *
- * OS / Platform | Alternative APIs for thread termination
- * ------------- | ---------------------------------------------------------
- * chibios_arm   | None
- * epos_arm      | `epos_thread_TerminateNow()`, `pthread_exit()`
- * linux_arm     | `pthread_exit()`
- * linux_x64     | `pthread_exit()`
- * linux_arm_tfc | `pthread_exit()`
- * linux_x64_tfc | `pthread_exit()`
+ * OS / Platform | Alternative APIs for thread termination        | Stack unwind | POSIX cleanup handlers
+ * ------------- | ---------------------------------------------- | ------------ | --------------------------------
+ * chibios_arm   | None                                           | yes          | not supported
+ * epos_arm      | `epos_thread_TerminateNow()`, `pthread_exit()` | yes          | Full integration in stack unwind
+ * linux_arm     | `pthread_exit()`                               | yes          | Full integration in stack unwind
+ * linux_x64     | `pthread_exit()`                               | yes          | Full integration in stack unwind
+ * linux_arm_tfc | `pthread_exit()`                               | yes          | Full integration in stack unwind
+ * linux_x64_tfc | `pthread_exit()`                               | yes          | Full integration in stack unwind
  *
  */
 

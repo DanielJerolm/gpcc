@@ -306,11 +306,13 @@ void Thread::Sleep_ns(uint32_t const ns)
  * application's thread-registry (see @ref GetThreadRegistry()).
  *
  * Output format:\n
- * <tt>Name             State Prio  StackSize  UsedStack        [Bottom----Top[</tt>\n
- * <tt>...              no     ppp ssssssssss ssssssssss (xxx%) 0xXXXXXXXX 0xXXXXXXXX</tt>\n
- * <tt>                 start</tt>\n
- * <tt>                 run</tt>\n
- * <tt>                 term</tt>\n
+ * ~~~{.txt}
+ * Name             State Prio  StackSize  UsedStack        [Bottom----Top[
+ * ...              no     ppp ssssssssss ssssssssss (xxx%) 0xXXXXXXXX 0xXXXXXXXX
+ *                  start
+ *                  run
+ *                  term
+ * ~~~
  * \n
  * States:\n
  * no    = thread (currently) not registered at OS or thread has been joined\n

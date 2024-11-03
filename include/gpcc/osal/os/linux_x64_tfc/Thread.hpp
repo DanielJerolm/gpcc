@@ -35,7 +35,7 @@ class TFCCore;
 
 /**
  * \ingroup GPCC_OSAL_THREADING
- * \brief A class used to create and manage a thread.
+ * \brief Creation and management of a thread.
  *
  * __Note:__\n
  * __This thread is managed by GPCC's TFC feature.__\n
@@ -45,16 +45,16 @@ class TFCCore;
  * __infinite speed and an infinite number of CPU cores.__
  *
  * # Features
- * - Management of a single thread per @ref Thread class instance.
- * - Execution of any entry function or method given by a functor.
- * - The functor allows to pass zero, one, or more parameters of any type to the thread entry function.
+ * - Management of a single thread.
+ * - Execution of any thread entry function given by a functor.\n
+ *   The functor allows to pass zero, one, or more parameters of any type to the thread entry function.
  * - Configurable scheduling policy, priority, and stack size.\n
- *   _Please pay attention to the section "Operating System specific notes" at the end of class Thread's documentation._
+ *   (Please take note of the [operating system specifics](@ref GPCC_OSAL_THREADING_OSSPECIFICS)).
  * - Well-defined thread life-cycle: Starting, running, terminated, joined.
  * - Creation of a new thread is possible after the previous one has been terminated and joined.
  * - A thread may terminate itself at any time via @ref TerminateNow() or by returning from the thread entry function.
  * - A thread may be cancelled by other threads using deferred cancellation.\n
- *   _Please pay attention to the section "Operating System specific notes" at the end of class Thread's documentation._
+ *   (Please take note of the [operating system specifics](@ref GPCC_OSAL_THREADING_OSSPECIFICS)).
  * - Deferred cancellation can be enabled and disabled by the thread.
  * - The @ref Join() method allows to retrieve a `void*` pointer returned by the thread on termination.
  * - Class @ref Thread keeps the application's thread registry (instance of class @ref ThreadRegistry).
@@ -93,7 +93,7 @@ class TFCCore;
  *
  * int main(int argc, char** argv)
  * {
- *   Thread myThread;
+ *   Thread myThread("My_thread");
  *
  *   // start thread and pass a reference to myThread and the value "12" as parameters
  *   // to the thread entry function
@@ -121,7 +121,9 @@ class TFCCore;
  * be returned by @ref Join() when the thread is joined.
  *
  * @ref TerminateNow() terminates the thread using a special exception. All objects instantiated on the thread's stack
- * will be properly released when the thread terminates due to a call to @ref TerminateNow(). The exception can even be
+ * will be properly released when the thread terminates due to a call to @ref TerminateNow(). If the operating system
+ * and the C/C++ runtime support POSIX cleanup handlers, then they will be invoked too. Please take note of the
+ * [interoperability notes for thread exit](@ref GPCC_OSAL_THREADING_INTEROP_THDEXIT). The special exception can even be
  * caught via `catch (...)`, but it __must__ be thrown again afterwards via `throw`:
  * ~~~{.cpp}
  * try
@@ -157,8 +159,10 @@ class TFCCore;
  * operating system.
  *
  * Deferred cancellation is implemented using a special exception. All objects instantiated on the thread's stack will
- * be properly released when the thread terminates due to deferred cancellation. The exception can be caught via
- * `catch (...)`, but it __must__ be thrown again afterwards via `throw`:
+ * be properly released when the thread terminates due to deferred cancellation. If the operating system and the
+ * C/C++ runtime support POSIX cleanup handlers, then they will be invoked too. Please take note of the
+ * [interoperability notes for thread cancellation](@ref GPCC_OSAL_THREADING_INTEROP_CANCELLATION). The exception can be
+ * caught via `catch (...)`, but it __must__ be thrown again afterwards via `throw`:
  * ~~~{.cpp}
  * try
  * {
@@ -186,8 +190,8 @@ class TFCCore;
  * ## Immediate Cancellation
  * Immediate cancellation is not supported, though your operating system might support it. Immediate cancellation is
  * hard to use correctly and program corruption is almost sure.\n
- * Deferred cancellation or -even better- your own custom mechanism for requesting a thread to terminate is usually
- * what you want to use. See section "user-implemented thread cancellation" below.
+ * Deferred cancellation or -even better- your own custom mechanism for requesting a thread to terminate gracefully is
+ * usually what you want to use. See section "user-implemented thread cancellation" below.
  *
  * ## User-implemented thread cancellation
  * The best way to terminate a thread is to write your software in a way that it provides mechanisms to ask a service
@@ -197,9 +201,10 @@ class TFCCore;
  * However, deferred cancellation can be useful in some situations e.g. to get a thread out of a blocking system call.
  *
  * # Threads and C++ exceptions
- * The application will be terminated via @ref gpcc::osal::Panic(), if an uncaught exception leaves the thread entry
- * function. If this is not what you want, then you should catch all exceptions in your thread entry function and
- * handle them properly:
+ * Class @ref Thread will terminate the application via @ref gpcc::osal::Panic(), if an uncaught exception leaves the
+ * thread entry function. If this is not what you want, then you should catch all exceptions in the thread entry
+ * function and handle them properly. Note that anonymous exceptions that are not derived from `std::exception` must
+ * be rethrown.
  * ~~~{.cpp}
  * void* ThreadEntryFunction(void)
  * {
@@ -211,14 +216,22 @@ class TFCCore;
  *   {
  *     // handle error
  *   }
+ *   catch (...)
+ *   {
+ *     // optional handling or clean-up
+ *     // ...
+ *
+ *     // Anything but std::exception must be rethrown!
+ *     throw;
+ *   }
  *
  *   return nullptr;
  * }
  * ~~~
  *
  * # Thread Registry
- * Any application containing GPCC will contain a thread registry. Class @ref Thread provides access to one global
- * instance of class @ref ThreadRegistry. Class @ref ThreadRegistry is a singleton.
+ * Any application that creates threads via class @ref Thread will contain an instance of class @ref ThreadRegistry.
+ * Class @ref Thread provides access to the @ref ThreadRegistry instance. Class @ref ThreadRegistry is a singleton.
  *
  * All instances of class @ref Thread will register and unregister themselves at the thread registry upon creation
  * and destruction.
@@ -226,57 +239,11 @@ class TFCCore;
  * The thread registry can be used to retrieve information about the number of threads and to retrieve pointers to the
  * @ref Thread objects managing the threads. The pointers in turn can be used to e.g. gather detailed information about
  * each thread using @ref Thread::GetInfo(). However, the thread registry only contains threads created via class
- * @ref Thread. Threads created using the API of your specific operating system will not be contained in the registry.
+ * @ref Thread. Threads created using a different API that may be available on your platform/operating system will not
+ * be contained in the registry.
  *
  * The global thread registry can be accessed via interface @ref IThreadRegistry which can be retrieved from class
  * @ref Thread's static public method @ref GetThreadRegistry().
- *
- * # Operating System specific notes
- * GPCC's OSAL has been designed to be portable and to provide _equivalent functionality_ on different operating
- * systems. Though currently Linux, EPOS, and ChibiOS/RT are the only supported operating systems, GPCC's OSAL can be
- * easily ported to other operating systems. The greater an OS' affinity to POSIX threads, the more simple is the
- * corresponding GPCC OSAL implementation.
- *
- * However the scheduling policies offered by GPCC's OSAL are not supported by all operating systems. Please check out
- * the sections below.
- *
- * ## ChibiOS/RT (chibios_arm)
- * - Scheduling policies `Other`, `Idle`, and `Batch` are emulated by mapping them to specific fixed priorities (see
- *   figure below).
- * - Scheduling policies `Fifo` and `RR` have the same behavior (both `RR`). Priority is always above the other
- *   policies (see figure below).
- * - System calls (e.g. blocking on a ConditionVariable) do not support deferred cancellation.
- *
- * \htmlonly <style>div.image img[src="osal/os/priority_mapping_chibiosrt.png"]{width:50%;}</style> \endhtmlonly
- * \image html "osal/os/priority_mapping_chibiosrt.png" "Priority Mapping for ChibiOS/RT"
- *
- * ## EPOS (epos_arm)
- * - Scheduling policies `Other`, `Idle`, and `Batch` are emulated by mapping them to specific fixed priorities (see
- *   figure below).
- * - System calls (e.g. blocking on a ConditionVariable) do currently not support deferred cancellation.
- *
- * \htmlonly <style>div.image img[src="osal/os/priority_mapping_epos.png"]{width:50%;}</style> \endhtmlonly
- * \image html "osal/os/priority_mapping_epos.png" "Priority Mapping for EPOS"
- *
- * ## Linux (linux_x64, linux_arm)
- * Full support.\n
- * Be aware that some scheduling policies might require special user rights/permissions.
- *
- * \htmlonly <style>div.image img[src="osal/os/priority_mapping_linux.png"]{width:50%;}</style> \endhtmlonly
- * \image html "osal/os/priority_mapping_linux.png" "Priority Mapping for Linux"
- *
- * ## Time-Flow-Control (linux_x64_tfc, linux_arm_tfc)
- * Full support.\n
- * Be aware that all scheduling policies are mapped to the Linux scheduling policy "OTHER".\n
- * This is not a problem, because TFC pretends that the software is executed on a machine with infinite speed and an
- * infinite number of CPU cores.
- *
- * ## Exception- and Cancellation-safety-notes
- * Each method of this class contains notes about the exception and thread-cancellation safety of the specific method.
- *
- * Note that these specifications often specify a lower guarantee than the actual implementation of this class actually
- * provides. The reason is that this class is operating system specific and portable. The specifications must be so low
- * that they can be fulfilled by any implementation.
  *
  * - - -
  *
@@ -290,8 +257,8 @@ class Thread final
     typedef uint8_t priority_t;
 
     /// Scheduling policies.
-    /** Please refer to chapter "Operating System specific notes" in the documentation of class @ref Thread for more
-        information about how the scheduling policies are mapped to specific operating systems. */
+    /** Please refer to chapter [Platform/Operating System specific differences](@ref GPCC_OSAL_THREADING_OSSPECIFICS)
+        for information about how the scheduling policies are mapped to specific operating systems. */
     enum class SchedPolicy
     {
       Inherit,      ///<Inherit scheduling policy and priority from the creating thread.

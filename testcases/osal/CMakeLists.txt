@@ -9,6 +9,7 @@
 if((${GPCC_OS} STREQUAL "linux_arm_tfc") OR
    (${GPCC_OS} STREQUAL "linux_x64_tfc"))
   add_subdirectory(${GPCC_OS})
+  add_subdirectory(tfc)
 endif()
 
 target_sources(${PROJECT_NAME}_testcases

@@ -6,6 +6,9 @@
 #
 # Copyright (C) 2024 Daniel Jerolm
 
-target_sources(${PROJECT_NAME}
+target_sources(${PROJECT_NAME}_testcases
                PRIVATE
-               tfc_traps.cpp)
+               TestBlockWithExpiredTimeoutTrap.cpp
+               TestPotentialUnreproducibleBehaviourTrap.cpp
+               TestTrapsCommon.cpp
+               TestUnreproducibleBehaviourTrap.cpp)
