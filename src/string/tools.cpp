@@ -69,7 +69,7 @@ void ExceptionDescriptionToStringHelper(std::exception const & e, size_t level, 
   }
   catch (std::exception const & e2)
   {
-    s << gpcc::osal::endLine;
+    s << gpcc::osal::endl;
 
     if (level < gpcc::string::maxDepthForExceptionToStringTranslation)
     {
@@ -82,7 +82,7 @@ void ExceptionDescriptionToStringHelper(std::exception const & e, size_t level, 
   }
   catch (...)
   {
-    s << gpcc::osal::endLine;
+    s << gpcc::osal::endl;
     s << (level + 1U) << ": " << "Unknown exception";
   }
 }

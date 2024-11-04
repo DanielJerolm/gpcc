@@ -280,7 +280,7 @@ std::string WriteRequest::ToString(void) const
 
   if (data.size() <= 16U)
   {
-    s << ':' << gpcc::osal::endLine;
+    s << ':' << gpcc::osal::endl;
 
     s << StringComposer::BaseHex << StringComposer::Uppercase << StringComposer::AlignRightPadZero;
     for (uint_fast8_t i = 0U; i < data.size(); i++)

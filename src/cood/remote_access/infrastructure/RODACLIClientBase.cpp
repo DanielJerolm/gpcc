@@ -498,7 +498,7 @@ void RODACLIClientBase::CLI_Info(std::string const & restOfLine)
 
       if (args.GetInclASM())
       {
-        sc << gpcc::osal::endLine << "             ";
+        sc << gpcc::osal::endl << "             ";
         for (uint_fast8_t j = 0U; j < digitsForSubindices; j++)
           sc << ' ';
         appendAppSpecMetaDataToOSS(i);

@@ -23,21 +23,21 @@ namespace osal {
  *
  * Usage:
  * ~~~{.cpp}
- * std::string multilineText("Line1" GPCC_OSAL_ENDL \\
- *                           "Line2" GPCC_OSAL_ENDL \\
- *                           "Line3" GPCC_OSAL_ENDL);
+ * std::string multilineText("Line1" GPCC_ENDL \\
+ *                           "Line2" GPCC_ENDL \\
+ *                           "Line3" GPCC_ENDL);
  * ~~~
  *
- * \see gpcc::osal::endLine
+ * \see gpcc::osal::endl
  */
-#define GPCC_OSAL_ENDL   "\n"
+#define GPCC_ENDL   "\n"
 
 /**
  * \ingroup GPCC_OSAL_DEFS
  * \brief Null-terminated string containing the character or character sequence used to indicate a line ending on the
  *        underlying platform.
  */
-constexpr char const endLine[] = GPCC_OSAL_ENDL;
+constexpr char const endl[] = GPCC_ENDL;
 
 } // namespace osal
 } // namespace gpcc

@@ -197,6 +197,9 @@ Next to do:
 
 History:
 ===============================================================================
+2024-11-04
+- Rename constants and #defines for end-of-line
+
 2024-11-03
 - Enhance TFC traps: Add API to query and reset state; refactor implementation
 

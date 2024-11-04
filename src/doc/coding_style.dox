@@ -133,6 +133,11 @@
  *   };
  *   ~~~
  *
+ * \subsection GCS_NAMING_DEFINES #defines
+ * - All preprocessor defines and macros shall be prefixed with `GPCC_`.
+ * - Additional prefixes e.g. for namespace emulation are optional.
+ * - Note that constants defined with `constexpr` and inline functions shall be preferred above preprocessor #defines.
+ *
  * \subsection GCS_NAMING_PREFIXES Prefixes
  * - Typedefs shall be prefixed with 't':
  *   ~~~{.cpp}
