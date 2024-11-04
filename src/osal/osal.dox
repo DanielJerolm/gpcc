@@ -241,8 +241,8 @@
  * epos_arm      | Thread with highest priority
  * linux_arm     | Thread with highest priority
  * linux_x64     | Thread with highest priority
- * linux_arm_tfc | Latest blocked thread (LIFO)
- * linux_x64_tfc | Latest blocked thread (LIFO)
+ * linux_arm_tfc | LIFO (not relevant in TFC environment)
+ * linux_x64_tfc | LIFO (not relevant in TFC environment)
  *
  * ## Mutex
  * OS / Platform | Priority Inheritance Protocol | Thread that locks when another thread unlocks | Runtime error checks
@@ -251,18 +251,18 @@
  * epos_arm      | Yes                           | Thread with highest priority                  | unlock without lock, unlock order violation
  * linux_arm     | Yes                           | Thread with highest priority                  | none
  * linux_x64     | Yes                           | Thread with highest priority                  | none
- * linux_arm_tfc | No                            | Random                                        | Recursion, unlock without lock
- * linux_x64_tfc | No                            | Random                                        | Recursion, unlock without lock
+ * linux_arm_tfc | No                            | Random (not relevant in TFC environment)      | Recursion, unlock without lock
+ * linux_x64_tfc | No                            | Random (not relevant in TFC environment)      | Recursion, unlock without lock
  *
  * ## Semaphore
  * OS / Platform | Thread unblocked upon post/increment
  * ------------- | ------------------------------------
  * chibios_arm   | FIFO if `CH_CFG_USE_SEMAPHORES_PRIORITY = false` (default), otherwise thread with highest priority
  * epos_arm      | FIFO
- * linux_arm     | Thread with highest priority and longest wait-time.
- * linux_x64     | Thread with highest priority and longest wait-time.
- * linux_arm_tfc | Random
- * linux_x64_tfc | Random
+ * linux_arm     | Thread with highest priority and longest wait-time
+ * linux_x64     | Thread with highest priority and longest wait-time
+ * linux_arm_tfc | Random (not relevant in TFC environment)
+ * linux_x64_tfc | Random (not relevant in TFC environment)
  *
  * ## Thread
  * OS / Platform | Increase of sleep time by Sleep_ms() and Sleep_ns()
