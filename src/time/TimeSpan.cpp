@@ -331,7 +331,7 @@ TimeSpan TimeSpan::PositiveMaximum(void) noexcept
 TimeSpan TimeSpan::operator+(TimeSpan const & rhv) const
 {
   int64_t result;
-  if (Compiler::OverflowAwareAdd(value, rhv.value, &result))
+  if (compiler::OverflowAwareAdd(value, rhv.value, &result))
     throw std::overflow_error("TimeSpan::operator+");
   return TimeSpan(result);
 }
@@ -360,7 +360,7 @@ TimeSpan TimeSpan::operator+(TimeSpan const & rhv) const
 TimeSpan TimeSpan::operator-(TimeSpan const & rhv) const
 {
   int64_t result;
-  if (Compiler::OverflowAwareSub(value, rhv.value, &result))
+  if (compiler::OverflowAwareSub(value, rhv.value, &result))
     throw std::overflow_error("TimeSpan::operator-");
   return TimeSpan(result);
 }
@@ -391,7 +391,7 @@ TimeSpan TimeSpan::operator-(TimeSpan const & rhv) const
 TimeSpan& TimeSpan::operator+=(TimeSpan const & rhv)
 {
   int64_t result;
-  if (Compiler::OverflowAwareAdd(value, rhv.value, &result))
+  if (compiler::OverflowAwareAdd(value, rhv.value, &result))
     throw std::overflow_error("TimeSpan::operator+=");
   value = result;
   return *this;
@@ -423,7 +423,7 @@ TimeSpan& TimeSpan::operator+=(TimeSpan const & rhv)
 TimeSpan& TimeSpan::operator-=(TimeSpan const & rhv)
 {
   int64_t result;
-  if (Compiler::OverflowAwareSub(value, rhv.value, &result))
+  if (compiler::OverflowAwareSub(value, rhv.value, &result))
     throw std::overflow_error("TimeSpan::operator-=");
   value = result;
   return *this;

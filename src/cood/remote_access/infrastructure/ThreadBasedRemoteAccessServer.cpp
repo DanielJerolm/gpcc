@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2024 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/infrastructure/ThreadBasedRemoteAccessServer.hpp>
@@ -222,7 +222,7 @@ void* ThreadBasedRemoteAccessServer::ThreadEntry(void) noexcept
   try
   {
     // Disable deferred thread cancellation. We cancel gracefully using our own logic.
-    thread.SetCancelabilityEnabled(false);
+    (void)thread.SetCancelabilityEnabled(false);
 
     OnStart();
     ServeRequests();

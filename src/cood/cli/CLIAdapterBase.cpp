@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2019 Daniel Jerolm
+    Copyright (C) 2019, 2024 Daniel Jerolm
 */
 
 #include <gpcc/cood/cli/CLIAdapterBase.hpp>
@@ -15,11 +15,13 @@
 #include <gpcc/cood/cli/string_conversion.hpp>
 #include <gpcc/cood/IObjectAccess.hpp>
 #include <gpcc/cood/ObjectPtr.hpp>
+#include <gpcc/osal/definitions.hpp>
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/stream/MemStreamReader.hpp>
 #include <gpcc/stream/MemStreamWriter.hpp>
+#include <gpcc/string/StringComposer.hpp>
 #include <gpcc/string/tools.hpp>
 #include "internal/CAReadArgsParser.hpp"
 #include "internal/CAWriteArgsParser.hpp"
@@ -28,10 +30,8 @@
 #include "internal/ReadArgsParser.hpp"
 #include "internal/WriteArgsParser.hpp"
 #include <functional>
-#include <iomanip>
 #include <limits>
 #include <memory>
-#include <sstream>
 #include <stdexcept>
 #include <cstring>
 
@@ -188,30 +188,32 @@ void CLIAdapterBase::UnregisterCLICommand(void) noexcept
 // Doc: See CLIAdapterBase.hpp
 std::string CLIAdapterBase::AppSpecificMetaDataToStringHook(std::vector<uint8_t> const & data)
 {
-  std::ostringstream oss;
-  oss << data.size() << " byte(s) of ASM";
+  using gpcc::string::StringComposer;
+  StringComposer s;
+  s << data.size() << " byte(s) of ASM";
 
   if (data.size() != 0U)
   {
-    oss << ':';
+    s << ':';
 
     uint_fast8_t maxPrintedBytes = 16U;
 
+    s << StringComposer::AlignRightPadZero << StringComposer::BaseHex << StringComposer::Uppercase;
     auto it = data.begin();
     while (it != data.end())
     {
       if (maxPrintedBytes-- == 0U)
       {
-        oss << "...";
+        s << "...";
         break;
       }
 
-      oss << ' ' << gpcc::string::ToHexNoPrefix(*it, 2U);
+      s << ' ' << StringComposer::Width(2) << static_cast<unsigned int>(*it);
       ++it;
     }
   }
 
-  return oss.str();
+  return s.Get();
 }
 
 /**
@@ -331,12 +333,14 @@ void CLIAdapterBase::CLI_Enumerate(std::string const & restOfLine)
     auto const objName  = objPtr->GetObjectName();
 
     // ...then print to CLI
-    std::ostringstream oss;
-    oss << gpcc::string::ToHex(index, 4U) << ' ';
-    oss << std::left << std::setw(Object::largestObjectCodeNameLength) << std::setfill(' ') << Object::ObjectCodeToString(objCode) << ' '
-        << std::left << std::setw(15) << std::setfill(' ') << DataTypeToString(dataType) << '"' << objName << '"';
+    using gpcc::string::StringComposer;
+    StringComposer s;
+    s << gpcc::string::ToHex(index, 4U) << ' '
+      << StringComposer::AlignLeft << StringComposer::Width(Object::largestObjectCodeNameLength)
+      << Object::ObjectCodeToString(objCode) << ' '
+      << StringComposer::Width(15) << DataTypeToString(dataType) << " \"" << objName << '"';
 
-    cli.WriteLine(oss.str());
+    cli.WriteLine(s.Get());
 
     ++objPtr;
   }
@@ -390,36 +394,39 @@ void CLIAdapterBase::CLI_Info(std::string const & restOfLine)
   // ============================================
   // Print to CLI
   // ============================================
-  std::ostringstream oss;
+  using gpcc::string::StringComposer;
+  StringComposer sc;
 
   // -- print info about object --
-  oss << "Object " << gpcc::string::ToHex(idx, 4U) << ": " << Object::ObjectCodeToString(objPtr->GetObjectCode())
+  sc << "Object " << gpcc::string::ToHex(idx, 4U) << ": " << Object::ObjectCodeToString(objPtr->GetObjectCode())
       << " (" << DataTypeToString(objPtr->GetObjectDataType()) << ") \"" << objPtr->GetObjectName() << '"';
-  cli.WriteLine(oss.str());
+  cli.WriteLine(sc.Get());
 
-  // small tool: Appends info about a subindex to 'oss'
+
+  // small tool: Appends info about a subindex to 'sc'
   auto appendSubIndexInfoToOSS = [&](uint_fast8_t const si)
   {
     size_t  const s     = objPtr->GetSubIdxMaxSize(si);
     size_t  const bytes = s / 8U;
     uint8_t const bits  = s % 8U;
-    oss << std::left << std::setw(15U) << std::setfill(' ') << DataTypeToString(objPtr->GetSubIdxDataType(si)) << ' '
-        << std::left << std::setw(attributeStringMaxLength) << std::setfill(' ') << AttributesToStringHook(objPtr->GetSubIdxAttributes(si)) << ' '
-        << std::right << std::setw(5U) << std::setfill(' ') << bytes << '.' << static_cast<uint32_t>(bits) << " Byte(s) \"" << objPtr->GetSubIdxName(si) << '"';
+    sc << StringComposer::AlignLeft << StringComposer::Width(15U) << DataTypeToString(objPtr->GetSubIdxDataType(si)) << ' '
+        << StringComposer::Width(attributeStringMaxLength) << AttributesToStringHook(objPtr->GetSubIdxAttributes(si)) << ' '
+        << StringComposer::AlignRight << StringComposer::Width(5U) << bytes << '.' << static_cast<uint32_t>(bits)
+        << " Byte(s) \"" << objPtr->GetSubIdxName(si) << '"';
   };
 
-  // small tool: Appends human readable textual representation of the app-specific meta data of a subindex to 'oss'
+  // small tool: Appends human readable textual representation of the app-specific meta data of a subindex to 'sc'
   auto appendAppSpecMetaDataToOSS = [&](uint_fast8_t const si)
   {
     size_t const s = objPtr->GetAppSpecificMetaDataSize(si);
     if (s == 0U)
     {
-      oss << "No app-specific meta data.";
+      sc << "No app-specific meta data.";
     }
     else
     {
       auto const data = objPtr->GetAppSpecificMetaData(si);
-      oss << AppSpecificMetaDataToStringHook(data);
+      sc << AppSpecificMetaDataToStringHook(data);
     }
   };
 
@@ -433,31 +440,28 @@ void CLIAdapterBase::CLI_Info(std::string const & restOfLine)
   // compress the output for ARRAY objects if possible
   if ((!inclASM) && (objPtr->GetObjectCode() == Object::ObjectCode::Array))
   {
-    oss.str("");
-    oss << "  Subindex    ";
-    for (uint_fast8_t i = 1U; i < digitsForSubindices; i++)
-      oss << ' ';
-    oss << "0: ";
+    sc.Clear();
+    sc << "  Subindex    " << StringComposer::AlignRight << StringComposer::Width(digitsForSubindices + 2U) << "0: ";
     appendSubIndexInfoToOSS(0U);
-    cli.WriteLine(oss.str());
+    cli.WriteLine(sc.Get());
 
     if (maxNbOfSIs > 1U)
     {
-      oss.str("");
-      oss << "  Subindex 1.." << static_cast<uint32_t>(maxNbOfSIs - 1U) << ": ";
+      sc.Clear();
+      sc << "  Subindex 1.." << static_cast<uint32_t>(maxNbOfSIs - 1U) << ": ";
       appendSubIndexInfoToOSS(1U);
-      cli.WriteLine(oss.str());
+      cli.WriteLine(sc.Get());
     }
   }
   else
   {
     for (uint_fast16_t i = 0U; i < maxNbOfSIs; i++)
     {
-      oss.str("");
-      oss << "  Subindex " << std::setw(digitsForSubindices) << std::setfill(' ') << static_cast<uint32_t>(i) << ": ";
+      sc.Clear();
+      sc << "  Subindex " << StringComposer::Width(digitsForSubindices) << static_cast<uint32_t>(i) << ": ";
       if (objPtr->IsSubIndexEmpty(i))
       {
-        oss << "empty";
+        sc << "empty";
       }
       else
       {
@@ -466,13 +470,13 @@ void CLIAdapterBase::CLI_Info(std::string const & restOfLine)
 
       if (inclASM)
       {
-        oss << std::endl << "             ";
+        sc << gpcc::osal::endl << "             ";
         for (uint_fast8_t j = 0U; j < digitsForSubindices; j++)
-          oss << ' ';
+          sc << ' ';
         appendAppSpecMetaDataToOSS(i);
       }
 
-      cli.WriteLine(oss.str());
+      cli.WriteLine(sc.Get());
     }
   }
 }
@@ -764,6 +768,7 @@ void CLIAdapterBase::CLI_CARead(std::string const & restOfLine)
 
   // extract value of SI0
   uint8_t const si0 = msr.Read_uint8();
+  auto const digitsForSubIdx = DigitsInSubindex(si0);
 
   if (args.GetVerbose())
   {
@@ -795,32 +800,34 @@ void CLIAdapterBase::CLI_CARead(std::string const & restOfLine)
     {
       auto const dataType = objPtr->GetSubIdxDataType(subIdx);
 
-      std::ostringstream oss;
-      oss << "SI " << std::left << std::setw(3) << std::setfill(' ') << subIdx << " ("
-          << std::left << std::setw(paddingDataType) << std::setfill('.') << DataTypeToString(dataType) << ".."
-          << std::left << std::setw(paddingName) << std::setfill('.') << objPtr->GetSubIdxName(subIdx) << "..: ";
+      using gpcc::string::StringComposer;
+      StringComposer sc;
+      sc << "SI " << StringComposer::AlignLeft << StringComposer::Width(digitsForSubIdx) << subIdx << ' '
+          << StringComposer::Width(paddingDataType) << DataTypeToString(dataType) << ' '
+          << StringComposer::Width(paddingName) << objPtr->GetSubIdxName(subIdx) << " : ";
 
       if (subIdx == 0U)
-        oss << static_cast<unsigned int>(si0);
+        sc << static_cast<unsigned int>(si0);
       else
-        oss << CANopenEncodedDataToString(msr, objPtr->GetSubIdxMaxSize(subIdx), dataType);
+        sc << CANopenEncodedDataToString(msr, objPtr->GetSubIdxMaxSize(subIdx), dataType);
 
-      cli.WriteLine(oss.str());
+      cli.WriteLine(sc.Get());
     }
   }
   else
   {
     for (uint_fast16_t subIdx = 0U; subIdx <= si0; ++subIdx)
     {
-      std::ostringstream oss;
-      oss << "SI " << subIdx << ": ";
+      using gpcc::string::StringComposer;
+      StringComposer sc;
+      sc << "SI " << StringComposer::AlignLeft << StringComposer::Width(digitsForSubIdx) << subIdx << ": ";
 
       if (subIdx == 0U)
-        oss << static_cast<unsigned int>(si0);
+        sc << static_cast<unsigned int>(si0);
       else
-        oss << CANopenEncodedDataToString(msr, objPtr->GetSubIdxMaxSize(subIdx), objPtr->GetSubIdxDataType(subIdx));
+        sc << CANopenEncodedDataToString(msr, objPtr->GetSubIdxMaxSize(subIdx), objPtr->GetSubIdxDataType(subIdx));
 
-      cli.WriteLine(oss.str());
+      cli.WriteLine(sc.Get());
     }
   }
 
@@ -989,12 +996,13 @@ void CLIAdapterBase::CLI_CAWrite(std::string const & restOfLine)
     }
 
     // ask user to enter value
-    std::ostringstream oss;
-    oss << "Enter value for SI " << subIdx << ", "
+    using gpcc::string::StringComposer;
+    StringComposer sc;
+    sc << "Enter value for SI " << subIdx << ", "
         << DataTypeToString(dataType) << ", "
         << AttributesToStringHook(objPtr->GetSubIdxAttributes(subIdx)) << ", "
         << bytes << '.' << static_cast<uint32_t>(bits) << " Byte(s), \"" << objPtr->GetSubIdxName(subIdx) << '"';
-    cli.WriteLine(oss.str());
+    cli.WriteLine(sc.Get());
 
     auto val = cli.ReadLine("Value: ");
 

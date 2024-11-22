@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2019 Daniel Jerolm
+    Copyright (C) 2019, 2024 Daniel Jerolm
 */
 
 /**
@@ -15,44 +15,59 @@
  * \brief Portable Operating System Abstraction Layer.
  *
  * # Provided functionality
- * GPCC's OSAL provides three groups of functionality:
+ * GPCC's OSAL provides four groups of functionality:
  * - Panic handling (see @ref GPCC_OSAL_PANIC for details)
  * - Multithreading primitives (see @ref GPCC_OSAL_THREADING for details)
  * - Time Flow Control (TFC) for unit tests (see @ref GPCC_TIME_FLOW_CONTROL for details)
- *
- * Panic handling and threading primitives are provided for all supported operating systems. The API and the provided
- * functionality are the same or almost equivalent on all supported operating systems in order to achieve portability.
- * If there are any differences or specific topics, then they will be clearly pointed out in the documenation. Please
- * pay attention to section "Documentation" below.
+ * - Operating system specific constants and definitions (see @ref GPCC_OSAL_DEFS)
  *
  * TFC is only available for selected operating systems. See section "Configuration" below.
  *
+ * Panic handling and threading primitives are provided for all supported operating systems. The API and the provided
+ * functionality are the same for all supported operating systems in order to achieve cross-platform portability.
+ *
+ * However, if we zoom deeply into the very details of scheduling behaviour, then there will be of course differences
+ * between the supported operating systems. If there are any remarkable differences or remarkable specific topics, then
+ * they will be clearly pointed out in GPCC's doxygen documenation. Please pay attention to section "Documentation"
+ * below.
+ *
  * # Usage
- * To access any of the classes offered by GPCC's OSAL you just have to include the desired header files located in
- * folder "gpcc/src/osal".
+ * To use the functionality offered by GPCC's OSAL you just have to include the desired header files located in
+ * folder "include/gpcc/osal". Example:
+ * ~~~{.cpp}
+ * #include <gpcc/osal/Mutex.hpp>
+ * ~~~
  *
- * __Do not include headers from the subdirectories of "gpcc/src/osal"!__
- *
- * The headers located in "gpcc/src/osal" will include the required headers according to your specific operating system.
- * For details please refer to section "Configuration" below.
+ * __Do not include headers from the subdirectories of "gpcc/osal"!__\n
+ * If required, then the headers located in "gpcc/osal" will include operating system specific headers according to your
+ * specific operating system. For details please refer to section "Configuration" below.
  *
  * # Configuration
- * To select a specific OSAL implementation for your project please set the defines as described in
- * "gpcc/readme_gpcc_configuration.txt".
+ * The OSAL variant that will be used in your project is configured via CMake during the CMake configuration step.
+ * The OS in use is selected by setting the CMake cache variable `GPCC_OS` to the appropriate value.
  *
- * Currenty the following platforms and operating systems are supported:
- * - Linux x64
- * - Linux x64 with TFC for unit tests
- * - Linux ARM (32/64 bit)
- * - Linux ARM (32/64 bit) with TFC for unit tests
- * - ChibiOS/RT (Kernel 6.0.3) for ARM
+ * Currently the following platforms and operating systems are supported:
+ * OS                                            | Value for GPCC_OS
+ * --------------------------------------------- | -----------------
+ * ChibiOS/RT (Kernel 6.0.3) for ARM             | chibios_arm
+ * EPOS for ARM                                  | epos_arm
+ * Linux ARM (32/64 bit)                         | linux_arm
+ * Linux ARM (32/64 bit) with TFC for unit tests | linux_arm_tfc
+ * Linux x64                                     | linux_x64
+ * Linux x64 with TFC for unit tests             | linux_x64_tfc
  *
  * # Documentation
  * Though the OSAL's API is identical among all supported platforms and operating systems, there are small differences
- * (e.g. constants, mapping of scheduling policies, availability of deferred thread cancellation, etc.) that are pointed
- * out in the doxygen documentation. There is a specific doxygen documentation dedicated to each supported platform and
- * operating system available. Ensure that you have generated the correct doxygen documentation for your platform. It
- * will point out important differences to other platforms.
+ * that are sometimes worth to be pointed out in the doxygen documentation (e.g. mapping of scheduling policies and
+ * thread priorities, availability of deferred thread cancellation, etc.). For this reason there is a specific doxyfile
+ * available for each supported platform/operating system. Ensure that you have generated the correct doxygen
+ * documentation for your platform.
+ *
+ * The doxygen documentation of the OSAL's API contains specifications of the exception safety and thread-cancellation
+ * safety guarantees provided by the API functions. Note that these specifications often specify a lower guarantee than
+ * the actual implementation of the OSAL variant in use provides. The reason is that the OSAL's implementation is
+ * operating system specific, but the API and the provided guarantees are the same for all variants. The provided
+ * guarantees must be so low that they can be fulfilled by any OSAL variant.
  */
 
 /**
@@ -194,8 +209,9 @@
  * The default panic handlers provide the following behaviour:
  * Operating system | Behaviour
  * ---------------- | ---------------------------------------------------------------------------------------------
- * Linux            | Dumps the text message passed to Panic() to `stderr` and aborts the process.
  * ChibiOS/RT       | Forwards the text message passed to Panic() to `chSysHalt()`.
+ * EPOS             | Forwards the text message passed to Panic() to `epos_Panic()`.
+ * Linux            | Dumps the text message passed to Panic() to `stderr` and aborts the process.
  */
 
 /**
@@ -212,51 +228,51 @@
  * - R/W-Lock (see class [RWLock](@ref gpcc::osal::RWLock))
  * - Automatic mutex locker/unlocker (see classes [MutexLocker](@ref gpcc::osal::MutexLocker) and
  *   [AdvancedMutexLocker](@ref gpcc::osal::AdvancedMutexLocker))
+ * - Automatic RW-lock locker/unlocker (see classed [RWLockReadLocker](@ref gpcc::osal::RWLockReadLocker) and
+ *   [RWLockWriteLocker](@ref gpcc::osal::RWLockWriteLocker))
  * - Thread Registry (see class [ThreadRegistry](@ref gpcc::osal::ThreadRegistry))
  *
+ * @anchor GPCC_OSAL_THREADING_OSSPECIFICS
  * # Platform / Operating System specific differences
  * ## Condition Variable
  * OS / Platform | Thread unblocked upon signal
  * ------------- | ----------------------------
  * chibios_arm   | Thread with highest priority
+ * epos_arm      | Thread with highest priority
  * linux_arm     | Thread with highest priority
  * linux_x64     | Thread with highest priority
- * linux_arm_tfc | Latest blocked thread (LIFO)
- * linux_x64_tfc | Latest blocked thread (LIFO)
+ * linux_arm_tfc | LIFO (not relevant in TFC environment)
+ * linux_x64_tfc | LIFO (not relevant in TFC environment)
  *
  * ## Mutex
  * OS / Platform | Priority Inheritance Protocol | Thread that locks when another thread unlocks | Runtime error checks
  * ------------- | ----------------------------- | --------------------------------------------- | --------------------
  * chibios_arm   | Yes                           | Thread with highest priority                  | unlock without lock, unlock order violation
- * linux_arm     | Yes                           | Thread with highest priority                  | ?
- * linux_x64     | Yes                           | Thread with highest priority                  | ?
- * linux_arm_tfc | No                            | Random                                        | Recursion, unlock without lock
- * linux_x64_tfc | No                            | Random                                        | Recursion, unlock without lock
+ * epos_arm      | Yes                           | Thread with highest priority                  | unlock without lock, unlock order violation
+ * linux_arm     | Yes                           | Thread with highest priority                  | none
+ * linux_x64     | Yes                           | Thread with highest priority                  | none
+ * linux_arm_tfc | No                            | Random (not relevant in TFC environment)      | Recursion, unlock without lock
+ * linux_x64_tfc | No                            | Random (not relevant in TFC environment)      | Recursion, unlock without lock
  *
  * ## Semaphore
  * OS / Platform | Thread unblocked upon post/increment
  * ------------- | ------------------------------------
  * chibios_arm   | FIFO if `CH_CFG_USE_SEMAPHORES_PRIORITY = false` (default), otherwise thread with highest priority
- * linux_arm     | ?
- * linux_x64     | ?
- * linux_arm_tfc | Thread with highest priority
- * linux_x64_tfc | Thread with highest priority
+ * epos_arm      | FIFO
+ * linux_arm     | Thread with highest priority and longest wait-time
+ * linux_x64     | Thread with highest priority and longest wait-time
+ * linux_arm_tfc | Random (not relevant in TFC environment)
+ * linux_x64_tfc | Random (not relevant in TFC environment)
  *
  * ## Thread
- * OS / Platform | Sleep_ms() and Sleep_ns()
- * ------------- | -------------------------
- * chibios_arm   | Minimum sleep time: Round up to system tick period + 0..1 system tick periods
- * linux_arm     | Same as chibios_arm or better
- * linux_x64     | Same as chibios_arm or better
- * linux_arm_tfc | One nanosecond precision
- * linux_x64_tfc | One nanosecond precision
- *
- * ### Linux (linux_x64, linux_arm)
- * Full support.\n
- * Be aware that some scheduling policies might require special user rights/permissions.
- *
- * \htmlonly <style>div.image img[src="osal/os/priority_mapping_linux.png"]{width:50%;}</style> \endhtmlonly
- * \image html "osal/os/priority_mapping_linux.png" "Priority Mapping for Linux"
+ * OS / Platform | Increase of sleep time by Sleep_ms() and Sleep_ns()
+ * ------------- | ---------------------------------------------------
+ * chibios_arm   | Round up to system tick period + 0..1 system tick periods
+ * epos_arm      | __Periodic tick:__ Round up to system tick period + 0..1 system tick periods __Dynamic tick:__ Down to sub-microseconds
+ * linux_arm     | Same as epos_arm
+ * linux_x64     | Same as epos_arm
+ * linux_arm_tfc | Zero
+ * linux_x64_tfc | Zero
  *
  * ### ChibiOS/RT (chibios_arm)
  * - Scheduling policies `Other`, `Idle`, and `Batch` are emulated by mapping them to specific fixed priorities (see
@@ -268,10 +284,73 @@
  * \htmlonly <style>div.image img[src="osal/os/priority_mapping_chibiosrt.png"]{width:50%;}</style> \endhtmlonly
  * \image html "osal/os/priority_mapping_chibiosrt.png" "Priority Mapping for ChibiOS/RT"
  *
+ * ### EPOS (epos_arm)
+ * - Scheduling policies `Other`, `Idle`, and `Batch` are emulated by mapping them to specific fixed priorities (see
+ *   figure below).
+ * - EPOS supports round-robin and FIFO scheduling.
+ * - EPOS supports deferred thread cancellation, but system calls (e.g. blocking on a ConditionVariable) currently do
+ *   not contain cancellation points. Currently there are only explicit cancellation points available.
+ *
+ * \htmlonly <style>div.image img[src="osal/os/priority_mapping_epos.png"]{width:50%;}</style> \endhtmlonly
+ * \image html "osal/os/priority_mapping_epos.png" "Priority Mapping for EPOS"
+ *
+ * ### Linux (linux_x64, linux_arm)
+ * Full support.\n
+ * Be aware that some scheduling policies might require special user rights/permissions.
+ *
+ * \htmlonly <style>div.image img[src="osal/os/priority_mapping_linux.png"]{width:50%;}</style> \endhtmlonly
+ * \image html "osal/os/priority_mapping_linux.png" "Priority Mapping for Linux"
+ *
  * ### TFC (linux_arm_tfc, linux_x64_tfc)
  * - All scheduling policies and priorities are mapped to Linux scheduling policy `Other`.\n
  *   This is OK, because TFC provides the illusion of an CPU with infinite speed and infinite number of cores.
  * - System calls (e.g. blocking on a ConditionVariable) support deferred cancellation.
+ *
+ * # Interoperability with other threading APIs
+ * Beside GPCC, other threading APIs may be available on the platform, e.g. POSIX Threads or the native API of an RTOS.
+ *
+ * Thread's created via @ref gpcc::osal::Thread can be used with mutexes, condition variables, and other primitives from
+ * any other threading API available on the platform. The other way round, threads created by another threading API can
+ * be used with the primitives provided by @ref gpcc::osal. A thread may also hold mutex locks from different threading
+ * APIs at the same time.
+ *
+ * However, the restrictions and points in the chapters below are worth to note.
+ *
+ * ## TFC
+ * If you want to use GPCC's @ref GPCC_TIME_FLOW_CONTROL in your unit tests, then all code involved in a test case
+ * (the UUT, the test fixture and any components used by the UUT) must solely use GPCC's OSAL only.
+ *
+ * @anchor GPCC_OSAL_THREADING_INTEROP_CANCELLATION
+ * ## Deferred Cancellation
+ * If the underlying platform supports deferred cancellation, then a thread from @ref gpcc::osal::Thread will terminate
+ * properly if it hits any implicit or explicit cancellation point.
+ *
+ * Deferred cancellation of threads created via @ref gpcc::osal::Thread can be enabled and disabled via other APIs
+ * on the following platforms:
+ *
+ * OS / Platform | Alternative APIs for enable/disable deferred cancellation              | Stack unwind | POSIX cleanup handlers
+ * ------------- | ---------------------------------------------------------------------- | ------------ | --------------------------------
+ * chibios_arm   | None                                                                   | yes          | not supported
+ * epos_arm      | `epos_thread_EnableDeferredCancellation()`, `pthread_setcancelstate()` | yes          | Full integration in stack unwind
+ * linux_arm     | `pthread_setcancelstate()`                                             | yes          | Full integration in stack unwind
+ * linux_x64     | `pthread_setcancelstate()`                                             | yes          | Full integration in stack unwind
+ * linux_arm_tfc | `pthread_setcancelstate()`                                             | yes          | Full integration in stack unwind
+ * linux_x64_tfc | `pthread_setcancelstate()`                                             | yes          | Full integration in stack unwind
+ *
+ * @anchor GPCC_OSAL_THREADING_INTEROP_THDEXIT
+ * ## Thread exit
+ * A thread can terminate itself immediatedly via @ref gpcc::osal::Thread::TerminateNow(). Threads created via
+ * @ref gpcc::osal::Thread can also terminate via the following other APIs:
+ *
+ * OS / Platform | Alternative APIs for thread termination        | Stack unwind | POSIX cleanup handlers
+ * ------------- | ---------------------------------------------- | ------------ | --------------------------------
+ * chibios_arm   | None                                           | yes          | not supported
+ * epos_arm      | `epos_thread_TerminateNow()`, `pthread_exit()` | yes          | Full integration in stack unwind
+ * linux_arm     | `pthread_exit()`                               | yes          | Full integration in stack unwind
+ * linux_x64     | `pthread_exit()`                               | yes          | Full integration in stack unwind
+ * linux_arm_tfc | `pthread_exit()`                               | yes          | Full integration in stack unwind
+ * linux_x64_tfc | `pthread_exit()`                               | yes          | Full integration in stack unwind
+ *
  */
 
 /**
@@ -287,14 +366,13 @@
  * hardware in order to work in a meaningful way.\n
  * Here are two examples for scenarios, which require use of an hardware fake implemented in software:
  * - Test cases for low-level software components which are closely coupled to hardware.
- * - Simulation of an __complete embedded firmware__ inside unit tests.
+ * - Integration test of an __complete embedded firmware__.
  *
  * The main difficulty is that actions carried out in hardware consume physical time and that software often uses
  * timeouts to supervise these actions. Examples for actions which are usually supervised using a timeout are:
- * - Writing to an EEPROM device.
- * - Transmitting a message over a network.
+ * - Communication across a network or communication link.
  * - Communication with a peripheral chip.
- * - Driving an actuator and reception of feedback from a sensor.
+ * - Driving an mechanical actuator and reception of feedback from a sensor.
  *
  * TFC emulates the system time visible to the process executing the tests. All timed sleeps and all timeouts depend on
  * the system time emulated by TFC. TFC emulates the system time in such a way that the processing power and workload of
@@ -351,30 +429,65 @@
  * according to the operating system's scheduler (e.g. time-slice or round-robin) in order to provide the illusion of
  * parallel execution.
  *
- * The physical time is shown in the top lane of the figure. It increments strictly monotonous because execution of the
- * process' threads consumes time. The "physical time lane" in the figure may be viewed as a placeholder for the
- * machine's time _not_ emulated by GPCC (e.g. the time one can acquire via `clock()`, `clock_gettime()`, `std::chrono`
- * or similar). The machine's time also increments continously while the CPU is executing code.
+ * The __physical time__ is shown in the top lane of the figure. It increments strictly monotonous because execution of
+ * the process' threads consumes time.
  *
- * The emulated time is shown at the bottom lane. It does not change until all threads are blocked. At point (1)
+ * The __machine's local time__ looks about the same as the physical time shown in the figure above. The machine's local
+ * time is _not_ emulated by GPCC. Any reading from `clock()`, `clock_gettime()`, `std::chrono` or similar has no
+ * relation to the system time emulated by TFC. The machine's local time also increments continously while the CPU is
+ * executing code.
+ *
+ * The __emulated time__ is shown in the bottom lane. It does not change until all threads are blocked. At point (1)
  * thread 1 sleeps for one second of _emulated time_ (e.g. via @ref gpcc::osal::Thread::Sleep_ms()). The emulated system
  * time does not increment since thread 2 is still in a runnable state. At point (2), thread 2 attempts to decrement a
  * semaphore that is already zero and the thread is blocked on the semaphore. Since all threads in the process are
  * blocked now, the emulated system time is incremented to the next event that will occur. This is _always_ some kind of
- * timeout. In this scenario, the next event is the expiration of the sleep of thread 1. The emulated time is
- * incremented to that point in time and thread 1 is switched back into the runnable state. The fact that the emulated
- * time only increments if all threads are blocked on something creates the illusion of an CPU with infinite processing
- * power.
+ * timeout or the end of a thread's sleep. In this scenario, the next event is the expiration of the sleep of thread 1.
+ * The emulated time is incremented to that point in time and thread 1 is switched back into the runnable state. The
+ * fact that the emulated time only increments if all threads are blocked on something creates the illusion of a CPU
+ * with infinite processing power.
  *
  * At point (3), thread 1 takes another sleep of 1s. Since all threads are blocked, the emulated system time is
  * incremented immediately and thread 1 directly continues. At point (3), thread 1 does _not_ sleep. This is typical for
- * code executed with TFC: At least one thread is always working. This behaviour is unusable for productive code, but it
- * is perfect for unit test code: The test scenario is executed with maximum speed, even if the test includes sleeps or
- * timeouts.
+ * code executed with TFC: At least one thread is always runnable. This behaviour is unusable for productive code, but
+ * it is perfect for unit test code: The test scenario is executed with maximum speed, even if the test includes sleeps
+ * or timeouts.
  *
  * At point (4), thread 1 increments the semaphore on which thread 2 is blocked. Thread 2 is switched to the runnable
  * state and will execute code if the scheduler grants the CPU to the thread. The emulated system time is not
  * incremented at this point.
+ *
+ * \anchor GPCC_TIME_FLOW_CONTROL_REPRODUCIBILITY
+ * # Reproducibility of unit tests
+ * TFC makes the system time and the points in time when threads are resumed reproducible. Unit tests examining the
+ * timing behaviour of an UUT will reliably see the same timing behaviour among multiple runs of the same test case,
+ * independent of the machine's workload and even independent of the machine's processing power.
+ *
+ * __However, there are limitations:__\n
+ * If more than one thread is in a runnable state at the same time, then the order in which these threads are scheduled
+ * is undefined and may vary. This is just the same as in a normal execution environment without TFC: Just think about
+ * dynamic thread priorities (e.g. nice values on Linux) or multicore CPUs running both high and low priority threads
+ * simultaneously on different cores. A UUT using multithreading and its unittest code are typically aware of this and
+ * apply proper locking and do not make strict assumptions about the order in which threads are scheduled.
+ *
+ * __Unreproducible behaviour may occur, if multiple threads are blocked until the exactly same point in time__. When
+ * TFC increments the emulated system time to that point in time, then all these threads become runnable at the same
+ * time, but the order in which they are scheduled is undefined! If more than one of these threads issues a stimulus to
+ * the UUT, then the UUT will receive the stimuli indeed at the same point in time regarding the emulated system clock,
+ * __but in undefined order__ and thus may show different behaviour among multiple runs of the same test case.
+ *
+ * To avoid unreproducible behaviour, unit tests must not issue stimuli _simultaneously_ from _different_ threads.
+ *
+ * This can be accomplished by:\n
+ * a) using one thread for issuing stimuli only, or\n
+ * b) by ensuring that no more than one thread issues a stimulus at the same point in time (e.g. keep a distance of 1ns)
+ *
+ * To aid in applicance of strategy b), TFC offers two classes that can detect unreproducible behaviour:
+ * - @ref gpcc_tests::osal::tfc::PotentialUnreproducibleBehaviourTrap
+ * - @ref gpcc_tests::osal::tfc::UnreproducibleBehaviourTrap
+ *
+ * A test fixture may instantiate one or both of them. In case they trigger, TFC will print a notice to `std::cout` and
+ * TFC will add a failure to the current unit test case.
  *
  * # Availability
  * TFC is currently implemented for the following OS configurations:
@@ -387,13 +500,13 @@
  * - Do not implement an idle loop which does not contain any sleep or any blocking function.\n
  *   Sytem time would never be incremented in this case and your software (especially hardware fakes) could not proceed
  *   in a meaningful way.
- * - Do not use `clock()`, `clock_gettime()`, `std::chrono` or similar. Use @ref gpcc::time only.\n
+ * - Do not use non-gpcc APIs like `clock()`, `clock_gettime()`, `std::chrono` or similar. Use @ref gpcc::time only.\n
  *   After process creation, TFC synchronizes the emulated time with the machine's time.\n
  *   From that point on, the emulated time and the machine's time will be out of sync.\n
- *   @ref gpcc::time provides the emulated time, other functions (e.g. offered by your C library) provide the machine's
+ *   @ref gpcc::time provides the emulated time, non-gpcc APIs (e.g. offered by your C library) provide the machine's
  *   time.
- * - Do not use pthread- or STL- threading primitives. Use @ref gpcc::osal only.\n
- *   TFC cannot monitor calls to those primitives and therefore cannot track the activities of the threads inside the
+ * - Do not use non-gpcc threading APIs like pthread or STL threads. Use @ref gpcc::osal only.\n
+ *   TFC cannot monitor calls to those APIs and therefore cannot track the activities of the threads inside the
  *   software using other threading primitives than those offered by @ref gpcc::osal.
  * - Do not use `sleep()`, `usleep()`, `nanosleep()`, `clock_nanosleep()` or similar.\n
  *   These functions are based on the machine's time and TFC cannot monitor calls to these functions. For TFC these
@@ -401,7 +514,7 @@
  *   Instead use @ref gpcc::osal::Thread::Sleep_ms() or @ref gpcc::osal::Thread::Sleep_ns() only.
  * - Do not process time information from file metadata (e.g. creation timestamp or last change timestamp).\n
  *   These timing information is based on the machine's time, not on TFC's emulated time. Both times are not
- *   synchronized to each other.
+ *   synchronized with each other.
  *
  * ## Do's
  * - TFC welcomes an event driven software design.
@@ -642,3 +755,35 @@
  *
  * \brief OSAL related exceptions.
  */
+
+/**
+ * @ingroup GPCC_OSAL
+ * @defgroup GPCC_OSAL_DEFS Definitions
+ * \brief Common definitions with OS specific values.
+ */
+
+#if !defined(OS_LINUX_ARM_TFC) && !defined(OS_LINUX_X64_TFC)
+/**
+ * \class gpcc_tests::osal::tfc::BlockWithExpiredTimeoutTrap
+ * \brief Detection of threads that want to block on an OSAL primitive with timeout already expired.
+ *
+ * This class is intended to be used by unit test cases only. It is only available if an OSAL variant with TFC is used.
+ * The currently configured OSAL does not provide TFC.
+ */
+
+/**
+ * \class gpcc_tests::osal::tfc::PotentialUnreproducibleBehaviourTrap
+ * \brief Detection of potential unreproducible behaviour in unit test cases.
+ *
+ * This class is intended to be used by unit test cases only. It is only available if an OSAL variant with TFC is used.
+ * The currently configured OSAL does not provide TFC.
+ */
+
+/**
+ * \class gpcc_tests::osal::tfc::UnreproducibleBehaviourTrap
+ * \brief Detection of unreproducible behaviour in unit test cases.
+ *
+ * This class is intended to be used by unit test cases only. It is only available if an OSAL variant with TFC is used.
+ * The currently configured OSAL does not provide TFC.
+ */
+#endif

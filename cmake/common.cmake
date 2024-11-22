@@ -4,7 +4,7 @@
 # If a copy of the MPL was not distributed with this file,
 # You can obtain one at https://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2022 Daniel Jerolm
+# Copyright (C) 2022, 2024 Daniel Jerolm
 
 
 function(Validate_GPCC_Compiler)
@@ -48,6 +48,8 @@ function(SetupBasicDefines target)
 
   if(${GPCC_OS} STREQUAL "chibios_arm")
     target_compile_definitions(${target} PUBLIC OS_CHIBIOS_ARM)
+  elseif(${GPCC_OS} STREQUAL "epos_arm")
+    target_compile_definitions(${target} PUBLIC OS_EPOS_ARM)
   elseif(${GPCC_OS} STREQUAL "linux_arm")
     target_compile_definitions(${target} PUBLIC OS_LINUX_ARM)
   elseif(${GPCC_OS} STREQUAL "linux_arm_tfc")
@@ -91,6 +93,9 @@ function(SetupLinkLibraries target)
   if(${GPCC_OS} STREQUAL "chibios_arm")
     # The top-level project will provide the required linkage to a library containing ChibiOS/RT.
 
+  elseif(${GPCC_OS} STREQUAL "epos_arm")
+    target_link_libraries(${target} PUBLIC epos)
+
   elseif((${GPCC_OS} STREQUAL "linux_arm") OR
          (${GPCC_OS} STREQUAL "linux_arm_tfc") OR
          (${GPCC_OS} STREQUAL "linux_x64") OR
@@ -101,7 +106,7 @@ function(SetupLinkLibraries target)
       message(FATAL_ERROR "Error: Couldn't find package 'Threads' (pthreads)!")
     endif()
 
-    target_link_libraries(${target} PRIVATE Threads::Threads rt)
+    target_link_libraries(${target} PUBLIC Threads::Threads PRIVATE rt)
 
   else()
     message(FATAL_ERROR "Error: Value of 'GPCC_OS' is not supported by function 'SetupLinkLibraries'.")

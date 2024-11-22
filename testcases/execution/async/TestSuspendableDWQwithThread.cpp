@@ -84,6 +84,8 @@ TEST(gpcc_execution_async_SuspendableDWQwithThread_DeathTests, StopButNeverStart
 
 TEST(gpcc_execution_async_SuspendableDWQwithThread_DeathTests, DestroyButSuspended)
 {
+  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+
   std::unique_ptr<SuspendableDWQwithThread> spUUT;
 
   ASSERT_NO_THROW(spUUT = std::make_unique<SuspendableDWQwithThread>("UUT"));
@@ -100,6 +102,8 @@ TEST(gpcc_execution_async_SuspendableDWQwithThread_DeathTests, DestroyButSuspend
 
 TEST(gpcc_execution_async_SuspendableDWQwithThread_DeathTests, DestroyButRunning)
 {
+  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+
   std::unique_ptr<SuspendableDWQwithThread> spUUT;
 
   ASSERT_NO_THROW(spUUT = std::make_unique<SuspendableDWQwithThread>("UUT"));

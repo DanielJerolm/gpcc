@@ -4,7 +4,34 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
-- BugFix: IsPowerOf2 returns true for zero, but zero is not a power of 2
+
+- Use github's issue tracking instead of this file
+- Remove machine's architecture from OS. The OS should hide any machine specific stuff.
+
+- Doxygen: No documentation generated for members of template classes (e.g. MultiCallback, IntegralFilter)
+
+- Check usage of postfixes for literals ([0-9]U <<)
+- Check usage of plain types (e.g. unsigned int)
+
+- check usage of std::system_error:
+  - use std::generic_category with POSIX values of errno
+  - do not use std::generic_category with non-POSIX values of errno
+  - on POSIX based platforms, std::system_error can be used with any errno value
+
+- Introduce gpcc::cood::largestDataTypeNameLength (15)
+
+- Replace '\n' in string literals with definitions from gpcc::osal
+
+- Review exception messages (short, helpful, effective)
+  (grep -n -r "throw .*\(.*\);")
+
+- fix constant definition and turn to constexpr where applicable
+
+- Add TimeSpan::Abs()
+- Add class MinMaxAvg
+- Add class MinMaxAvg specialization for TimeSpans
+
+- Bugfix: Include pathes displayed by doxygen are wrong for OS-dependent items
 
 - COOD remote access
   ==================
@@ -101,12 +128,11 @@ Next to do:
 
 - rename Thread::priority_t to Thread::tPriority
 
+- Thread::GetName() should return a "std::string const &"
+
 - Options for enhancements identified during header restructuring:
   - [  ] Simplify TestBlockAccessor (long namespaces)
   - [  ] Simplify TestEEPROMSectionSystem (long namespaces)
-
-- Review text messages passed to exception's ctors
-  (grep -n -r "throw .*\(.*\);")
 
 - cleanup osal/universal
 
@@ -116,8 +142,6 @@ Next to do:
 
 - Evaluate Feature Request:
   - SharedLogger with prefix ("Instanzidentifier") that allows multiple users of a SharedLogger to log to one Logger.
-
-- fix constant definition and turn to constexpr where applicable
 
 - Add unit test cases for cood::ObjectVAR testing writing data read from a file to a VARIABLE object of type
   VISIBLE_STRING. Intention:
@@ -149,11 +173,6 @@ Next to do:
   - add CLI commands for IFileAndDirectoryStorage
   - EEPROMSectionSystem (impl + unit tests)
 
-- check usage of std::system_error:
-  - use std::generic_category with POSIX values of errno
-  - do not use std::generic_category with non-POSIX values of errno
-  - on POSIX based platforms, std::system_error can be used with any errno value
-
 - Enhance unit tests:
   TestConditionVariable.cpp: Measure timeout
 
@@ -178,6 +197,56 @@ Next to do:
 
 History:
 ===============================================================================
+2024-11-04
+- Rename constants and #defines for end-of-line
+- Enhance doxygen: Behaviour and policies in TFC
+
+2024-11-03
+- Enhance TFC traps: Add API to query and reset state; refactor implementation
+
+2024-10-26
+- Enhance CMakeLists.txt files: Remove comment with file's location, add license header
+
+2024-10-14 Release version V 3.0.0
+
+2024-10-14
+- Adapt to undocumented behaviour of std::sto* (acceptance of prefix 0b for binaray numbers) on some platforms.
+  (first experienced with gcc 13.2.0 and glibc 2.39 on kubuntu 24.04)
+- Bugfix: Missing "::testing::FLAGS_gtest_death_test_style = "threadsafe";" in testcases:
+  gpcc_execution_async_SuspendableDWQwithThread_DeathTests.DestroyButSuspended
+  gpcc_execution_async_SuspendableDWQwithThread_DeathTests.DestroyButRunning
+- Moved doxygen group definition for GPCC_COMPILER_* from hpp-files to dox-file
+- Update doxyfiles to doxygen 1.9.8
+- Use multiple CMakeLists.txt in gpcc/testcases
+
+2024-10-11
+- Fix warnings from new gcc 13.2.0
+
+2024-10-02
+- TFC: Add traps for unreproducible behaviour
+
+2024-09-06
+- Revise gpcc::compiler
+
+2024-08-19
+- Limit number of recursions in gpcc::string::ExceptionDescriptionToString()
+- BugFix: IsPowerOf2 returned true for zero, but zero is not a power of 2
+
+2024-08-16
+- Add gpcc::string::StringComposer.
+  All components from gpcc use StringComposer instead of std::ostringstream now.
+- Checked evaluation of return value of snprintf()
+
+2024-08-06
+- Add support for EPOS
+
+2024-07-12
+- Bugfix: Evaluation of return value of nanosleep().
+- Enhanced API of class Thread regarding deferred cancellation.
+
+2024-06-18
+- Enable rewriting the previous line in CLI
+
 2023-12-07 (Release 2.4.0)
 - Fixed bug in clock.cpp for chibios_arm: Panic was always invoked
 

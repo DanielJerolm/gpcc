@@ -4,7 +4,7 @@
 # If a copy of the MPL was not distributed with this file,
 # You can obtain one at https://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2022 Daniel Jerolm
+# Copyright (C) 2022, 2024 Daniel Jerolm
 
 
 # Sub-CMakeLists-file for GPCC, specific for the "unittest" target environment
@@ -47,6 +47,8 @@ SetupBasicDefines(${PROJECT_NAME})
 SetRequiredCompilerOptionsAndFeatures(${PROJECT_NAME})
 SetupLinkLibraries(${PROJECT_NAME})
 
+target_link_libraries(${PROJECT_NAME} PRIVATE gmock)
+
 # ---------------------------------------------------------------------------------------------------------------------
 # Artifact: gpcc_testcases object library containing unit test cases for library "gpcc"
 # ---------------------------------------------------------------------------------------------------------------------
@@ -58,6 +60,8 @@ target_include_directories(${PROJECT_NAME}_testcases PRIVATE .)
 
 if(${GPCC_OS} STREQUAL "chibios_arm")
   message(FATAL_ERROR "Error: 'GPCC_OS=chibios_arm' not supported for unit test environment.")
+elseif(${GPCC_OS} STREQUAL "epos_arm")
+  message(FATAL_ERROR "Error: 'GPCC_OS=epos_arm' not supported for unit test environment.")
 endif()
 
 # SetupBasicDefines() is not required. All defines made there are public and will be pulled in from library "gpcc".

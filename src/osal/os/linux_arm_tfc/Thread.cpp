@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
 #ifdef OS_LINUX_ARM_TFC
@@ -14,6 +14,7 @@
 #include <gpcc/osal/ConditionVariable.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/string/StringComposer.hpp>
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
 #include "internal/AdvancedUnmanagedMutexLocker.hpp"
@@ -25,8 +26,6 @@
 #include <cxxabi.h>
 #include <sched.h>
 #include <unistd.h>
-#include <iomanip>
-#include <sstream>
 #include <stdexcept>
 #include <system_error>
 #include <cerrno>
@@ -207,7 +206,6 @@ Thread::Thread(std::string const & _name)
 , spThreadStateRunningCondVar(std::make_unique<internal::UnmanagedConditionVariable>())
 , thread_id()
 , threadWaitingForJoin(false)
-, cancelabilityEnabled(false)
 , cancellationPending(false)
 , joiningThreadWillNotBlockPerm(false)
 {
@@ -254,7 +252,8 @@ Thread::~Thread(void)
  * - - -
  *
  * __Thread safety:__\n
- * This is thread-safe.
+ * This is thread-safe.\n
+ * This can be invoked by any thread.
  *
  * __Exception safety:__\n
  * Strong guarantee.
@@ -351,15 +350,17 @@ void Thread::Sleep_ns(uint32_t const ns)
  * This method is intended to be used to create human-readable information about the threads registered in the
  * application's thread-registry (see @ref GetThreadRegistry()).
  *
- * Output format:\n
- * <tt>          1         2         3         4         5         6         7         8</tt>\n
- * <tt> 12345678901234567890123456789012345678901234567890123456789012345678901234567890</tt>\n
- * <tt> Name State DS  Scope Policy   prio   Guard   Stack  StackU</tt>\n
- * <tt> ...  no    D   SYS   IH other pppp ggggggg sssssss sssssss</tt>\n
- * <tt>      start J   PRC   EX idle  ?    ?       ?       ?</tt>\n
- * <tt>      run   ?   ?     xx batch</tt>\n
- * <tt>      term            xx FIFO</tt>\n
- * <tt>                      xx RR</tt>\n
+ * Output format:
+ * ~~~{.txt}
+ *          1         2         3         4         5         6         7         8
+ * 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+ * Name State DS  Scope Policy   prio   Guard   Stack  StackU
+ * ...  no    D   SYS   IH other pppp ggggggg sssssss sssssss
+ *      start J   PRC   EX idle  ?    ?       ?       ?
+ *      run   ?   ?     xx batch
+ *      term            xx FIFO
+ *                      xx RR
+ * ~~~
  *
  * States:\n
  * no    = thread (currently) not registered at OS or thread has been joined\n
@@ -429,11 +430,13 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
     throw std::invalid_argument("Thread::GetInfo: 'nameFieldWidth' too small");
 
   // the information is build into "infoLine"
-  std::ostringstream infoLine;
+  using gpcc::string::StringComposer;
+  StringComposer infoLine;
+  infoLine << StringComposer::AlignLeft;
 
   // start with thread's name
   if (name.size() <= nameFieldWidth)
-    infoLine << std::left << std::setw(nameFieldWidth) << std::setfill(' ') << name;
+    infoLine << StringComposer::Width(nameFieldWidth) << name;
   else
     infoLine << name.substr(0, nameFieldWidth - 3U) << "...";
 
@@ -441,23 +444,24 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
 
   bool detailsRequired = false;
 
+  infoLine << ' ' << StringComposer::Width(6);
   switch (threadState)
   {
     case ThreadState::noThreadOrJoined:
-      infoLine << " no    ";
+      infoLine << "no";
       break;
 
     case ThreadState::starting:
-      infoLine << " start ";
+      infoLine << "start";
       break;
 
     case ThreadState::running:
-      infoLine << " run   ";
+      infoLine << "run";
       detailsRequired = true;
       break;
 
     case ThreadState::terminated:
-      infoLine << " term  ";
+      infoLine << "term";
       break;
   } // switch (threadState)
 
@@ -471,86 +475,96 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
     struct sched_param sp;
 
     // DS (Detach state)
+    infoLine << StringComposer::Width(4);
     status = pthread_attr_getdetachstate(attr, &i);
     if (status == 0)
     {
       if (i == PTHREAD_CREATE_DETACHED)
-        infoLine << "D   ";
+        infoLine << 'D';
       else if (i == PTHREAD_CREATE_JOINABLE)
-        infoLine << "J   ";
+        infoLine << 'J';
       else
-        infoLine << "?   ";
-    }
-    else
-      infoLine << "Err ";
-
-    // Scope (Scheduling scope)
-    status = pthread_attr_getscope(attr, &i);
-    if (status == 0)
-    {
-      if (i == PTHREAD_SCOPE_SYSTEM)
-        infoLine << "SYS   ";
-      else if (i == PTHREAD_SCOPE_PROCESS)
-        infoLine << "PRC   ";
-      else
-        infoLine << "?     ";
-    }
-    else
-      infoLine << "Err   ";
-
-    // Policy (Scheduling policy)
-    status = pthread_attr_getinheritsched(attr, &i);
-    if (status == 0)
-    {
-      if (i == PTHREAD_INHERIT_SCHED)
-        infoLine << "IH ";
-      else if (i == PTHREAD_EXPLICIT_SCHED)
-        infoLine << "EX ";
-      else
-        infoLine << "?  ";
+        infoLine << '?';
     }
     else
       infoLine << "Err";
 
+    // Scope (Scheduling scope)
+    infoLine << StringComposer::Width(6);
+    status = pthread_attr_getscope(attr, &i);
+    if (status == 0)
+    {
+      if (i == PTHREAD_SCOPE_SYSTEM)
+        infoLine << "SYS";
+      else if (i == PTHREAD_SCOPE_PROCESS)
+        infoLine << "PRC";
+      else
+        infoLine << '?';
+    }
+    else
+      infoLine << "Err";
+
+    // Policy (Scheduling policy)
+    infoLine << StringComposer::Width(3);
+    status = pthread_attr_getinheritsched(attr, &i);
+    if (status == 0)
+    {
+      if (i == PTHREAD_INHERIT_SCHED)
+        infoLine << "IH";
+      else if (i == PTHREAD_EXPLICIT_SCHED)
+        infoLine << "EX";
+      else
+        infoLine << '?';
+    }
+    else
+      infoLine << "Err";
+
+    infoLine << StringComposer::Width(6);
     status = pthread_attr_getschedpolicy(attr, &i);
     if (status == 0)
     {
       if (i == SCHED_OTHER)
-        infoLine << "other ";
+        infoLine << "other";
       else if (i == SCHED_IDLE)
-        infoLine << "idle  ";
+        infoLine << "idle";
       else if (i == SCHED_BATCH)
-        infoLine << "batch ";
+        infoLine << "batch";
       else if (i == SCHED_FIFO)
-        infoLine << "FIFO  ";
+        infoLine << "FIFO";
       else if (i == SCHED_RR)
-        infoLine << "RR    ";
+        infoLine << "RR";
       else
-        infoLine << "?     ";
+        infoLine << '?';
     }
     else
-      infoLine << "Err   ";
+      infoLine << "Err";
 
     // priority
+    infoLine << StringComposer::AlignRight << StringComposer::Width(4);
     status = pthread_attr_getschedparam(attr, &sp);
     if (status == 0)
-      infoLine << std::right << std::setw(4) << std::setfill(' ') << sp.__sched_priority << ' ';
+      infoLine << sp.__sched_priority;
     else
-      infoLine << "Err  ";
+      infoLine << "Err";
+    infoLine << ' ';
 
     // stack guard size
+    infoLine << StringComposer::Width(7);
     status = pthread_attr_getguardsize(attr, &s);
     if (status == 0)
-      infoLine << std::right << std::setw(7) << std::setfill(' ') << s << ' ';
+      infoLine << s;
     else
-      infoLine << "Err     ";
+      infoLine << "Err";
+    infoLine << ' ';
 
     // stack size
+    infoLine << StringComposer::Width(7);
     status = pthread_attr_getstacksize(attr, &s);
     if (status == 0)
-      infoLine << std::right << std::setw(7) << std::setfill(' ') << s << ' ';
+      infoLine << s;
     else
-      infoLine << "Err     ";
+      infoLine << "Err";
+    infoLine << ' ';
 
     // stack usage
     infoLine << "not imp";
@@ -560,7 +574,7 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
     infoLine << "--- ----- -- ----- ---- ------- ------- -------";
   }
 
-  return infoLine.str();
+  return infoLine.Get();
 }
 
 /**
@@ -711,7 +725,6 @@ void Thread::Start(tEntryFunction const & _entryFunction,
   entryFunction                 = _entryFunction;
   threadState                   = ThreadState::starting;
   threadWaitingForJoin          = false;
-  cancelabilityEnabled          = true;
   cancellationPending           = false;
   joiningThreadWillNotBlockPerm = false;
 
@@ -1072,7 +1085,12 @@ void Thread::AdviceTFC_JoiningThreadWillNotBlockPermanently(void)
 }
 
 /**
- * \brief Enables/disables cancelability.
+ * \brief Enables/disables cancelability and retrieves the previous state.
+ *
+ * This function has no effect, if the current cancelability state already equals @p enable.
+ *
+ * Note that if cancelability is disabled, any cancellation request will _not be dropped_ but _queued_ until
+ * cancellation is enabled again or until the thread terminates.
  *
  * - - -
  *
@@ -1090,11 +1108,14 @@ void Thread::AdviceTFC_JoiningThreadWillNotBlockPermanently(void)
  * \param enable
  * New cancelability state:\n
  * true = cancellation shall be enabled\n
- * false = cancellation shall be disabled\n
- * Note that if cancelability is disabled, any cancellation request will _not be dropped_ but _queued_ until
- * cancellation is enabled again or until the thread terminates.
+ * false = cancellation shall be disabled
+ *
+ * \return
+ * Previous cancelability state.\n
+ * This could be stored and used to recover the previous state at a later point in time, e.g. if cancelability shall
+ * be disabled temporarily only.
  */
-void Thread::SetCancelabilityEnabled(bool const enable)
+bool Thread::SetCancelabilityEnabled(bool const enable)
 {
   // verify that the current thread is the one managed by this object
   {
@@ -1103,54 +1124,13 @@ void Thread::SetCancelabilityEnabled(bool const enable)
       throw std::logic_error("Thread::SetCancelabilityEnabled: Not invoked by the managed thread");
   }
 
-  // requested value different from current one?
-  if (cancelabilityEnabled != enable)
-  {
-    cancelabilityEnabled = enable;
+  int oldstate;
+  int const status = pthread_setcancelstate(enable ? PTHREAD_CANCEL_ENABLE : PTHREAD_CANCEL_DISABLE, &oldstate);
 
-    int status;
-    if (enable)
-      status = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, nullptr);
-    else
-      status = pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, nullptr);
-    if (status != 0)
-    {
-      cancelabilityEnabled = !cancelabilityEnabled;
-      throw std::system_error(status, std::generic_category(), "Thread::SetCancelabilityEnabled: pthread_setcancelstate() failed");
-    }
-  }
-}
+  if (status != 0)
+    throw std::system_error(status, std::generic_category(), "Thread::SetCancelabilityEnabled: pthread_setcancelstate() failed");
 
-/**
- * \brief Retrieves if cancelability is enabled or disabled.
- *
- * - - -
- *
- * __Thread safety:__\n
- * Only the thread managed by this object is allowed to call this method.
- *
- * __Exception safety:__\n
- * Strong guarantee.
- *
- * __Thread cancellation safety:__\n
- * No cancellation point included.
- *
- * - - -
- *
- * \return
- * Current cancelability state:\n
- * true  = cancellation enabled\n
- * false = cancellation disabled
- */
-bool Thread::GetCancelabilityEnabled(void) const
-{
-  internal::UnmanagedMutexLocker mutexLocker(*spMutex);
-
-  // verify that the current thread is the one managed by this object
-  if ((threadState != ThreadState::running) || (pthread_equal(thread_id, pthread_self()) == 0))
-    throw std::logic_error("Thread::GetCancelabilityEnabled: Not invoked by the managed thread");
-
-  return cancelabilityEnabled;
+  return (oldstate == PTHREAD_CANCEL_ENABLE);
 }
 
 /**
@@ -1187,7 +1167,7 @@ void Thread::TestForCancellation(void)
 /**
  * \brief This allows the thread managed by this object to terminate itself.
  *
- * The method will never return.
+ * This method will never return.
  *
  * __Note:__\n
  * __Stack-unwinding will take place.__\n
@@ -1381,9 +1361,13 @@ void* Thread::InternalThreadEntry2(void)
 
     throw;
   }
+  catch (std::exception const & e)
+  {
+    Panic("Thread::InternalThreadEntry2: Caught exception: ", e);
+  }
   catch (...)
   {
-    Panic("Thread::InternalThreadEntry2: Local error or uncaught exception from user's thread entry function");
+    Panic("Thread::InternalThreadEntry2: Caught unknown exception");
   }
 
   return retVal;

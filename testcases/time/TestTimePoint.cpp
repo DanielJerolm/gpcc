@@ -10,6 +10,7 @@
 
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
+#include <gpcc_test/compiler/warnings.hpp>
 #include <gtest/gtest.h>
 #include <limits>
 #include <stdexcept>
@@ -280,10 +281,9 @@ TEST(gpcc_time_TimePoint_Tests, MoveAssignSelf)
   ASSERT_EQ(10, uut.Get_sec());
   ASSERT_EQ(10, uut.Get_nsec());
 
-  // this construct avoids complaints from the eclipse indexer
-  #define SELFASSIGN uut = std::move(uut)
-  SELFASSIGN;
-  #undef SELFASSIGN
+  GPCC_DISABLE_WARN_SELFMOVE();
+  uut = std::move(uut);
+  GPCC_RESTORE_WARN_SELFMOVE();
 
   ASSERT_EQ(10, uut.Get_sec());
   ASSERT_EQ(10, uut.Get_nsec());

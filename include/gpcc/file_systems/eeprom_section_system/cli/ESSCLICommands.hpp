@@ -12,6 +12,7 @@
 #define SRC_GPCC_FILESYSTEMS_EEPROMSECTIONSYSTEM_CLI_ESSCLICOMMANDS_HPP_
 
 #include <string>
+#include <cstdint>
 
 namespace gpcc
 {
