@@ -228,6 +228,10 @@ uint32_t ToU32(std::string const & s, uint_fast8_t const base, uint32_t const mi
   try
   {
     value = std::stoul(s, &n, base);
+
+    // std::stoul accepts negative values. The only value with leading minus we accept here is zero.
+    if ((s.front() == '-') && (value != 0U))
+      ThrowOutOfRange(s, min, max);
   }
   catch (std::out_of_range const &)
   {
@@ -423,6 +427,10 @@ uint64_t ToU64(std::string const & s, uint_fast8_t const base, uint64_t const mi
   try
   {
     value = std::stoull(s, &n, base);
+
+    // std::stoull accepts negative values. The only value with leading minus we accept here is zero.
+    if ((s.front() == '-') && (value != 0U))
+      ThrowOutOfRange(s, min, max);
   }
   catch (std::out_of_range const &)
   {
