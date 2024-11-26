@@ -3183,7 +3183,7 @@ int64_t AnyNumberToI64(std::string const & s, int64_t const min, int64_t const m
     int64_t value = static_cast<int64_t>(ToU64(s,
                                                16U,
                                                0U,
-                                               std::numeric_limits<int64_t>::max()));
+                                               std::numeric_limits<uint64_t>::max()));
 
     if ((value < min) || (value > max))
       ThrowOutOfRange(s, min, max);
@@ -3195,7 +3195,7 @@ int64_t AnyNumberToI64(std::string const & s, int64_t const min, int64_t const m
     int64_t value = static_cast<int64_t>(ToU64(s.substr(2),
                                                2U,
                                                0U,
-                                               std::numeric_limits<int64_t>::max()));
+                                               std::numeric_limits<uint64_t>::max()));
 
     if ((value < min) || (value > max))
       ThrowOutOfRange(s, min, max);
