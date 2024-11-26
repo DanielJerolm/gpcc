@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
 #ifndef TOOLS_HPP_201701151802
@@ -66,18 +66,35 @@ uint8_t DecimalToU8(std::string const & s);
 uint8_t AnyNumberToU8(std::string const & s);
 uint8_t AnyStringToU8(std::string const & s);
 uint8_t TwoDigitHexToU8(std::string const & s);
+
 uint16_t FourDigitHexToU16(std::string const & s);
+
 uint32_t DecimalToU32(std::string const & s);
 uint32_t DecimalToU32(std::string const & s, uint32_t const min, uint32_t const max);
 uint32_t HexToU32(std::string const & s);
 uint32_t HexToU32(std::string const & s, uint32_t const min, uint32_t const max);
 uint32_t AnyNumberToU32(std::string const & s);
 uint32_t AnyNumberToU32(std::string const & s, uint32_t const min, uint32_t const max);
+
+uint64_t DecimalToU64(std::string const & s);
+uint64_t DecimalToU64(std::string const & s, uint64_t const min, uint64_t const max);
+uint64_t HexToU64(std::string const & s);
+uint64_t HexToU64(std::string const & s, uint64_t const min, uint64_t const max);
+uint64_t AnyNumberToU64(std::string const & s);
+uint64_t AnyNumberToU64(std::string const & s, uint64_t const min, uint64_t const max);
+
 char AnyStringToChar(std::string const & s);
+
 int32_t DecimalToI32(std::string const & s);
 int32_t DecimalToI32(std::string const & s, int32_t const min, int32_t const max);
 int32_t AnyNumberToI32(std::string const & s);
 int32_t AnyNumberToI32(std::string const & s, int32_t const min, int32_t const max);
+
+int64_t DecimalToI64(std::string const & s);
+int64_t DecimalToI64(std::string const & s, int64_t const min, int64_t const max);
+int64_t AnyNumberToI64(std::string const & s);
+int64_t AnyNumberToI64(std::string const & s, int64_t const min, int64_t const max);
+
 double ToDouble(std::string const & s);
 
 // Extraction and breakdown ---------------------------------------------------

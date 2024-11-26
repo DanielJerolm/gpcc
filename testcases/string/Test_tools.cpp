@@ -2199,6 +2199,370 @@ TEST(gpcc_string_tools_Tests, AnyNumberToU32_minmax)
   EXPECT_THROW(AnyNumberToU32("B11", 10, 20),   std::invalid_argument);
 }
 
+TEST(gpcc_string_tools_Tests, DecimalToU64)
+{
+  // valid numbers within range
+  EXPECT_EQ(0U,                      DecimalToU64("0"));
+  EXPECT_EQ(0U,                      DecimalToU64("00"));
+  EXPECT_EQ(0U,                      DecimalToU64("+0"));
+  EXPECT_EQ(0U,                      DecimalToU64("+00"));
+  EXPECT_EQ(0U,                      DecimalToU64("-0"));
+  EXPECT_EQ(0U,                      DecimalToU64("-00"));
+  EXPECT_EQ(1U,                      DecimalToU64("1"));
+  EXPECT_EQ(3U,                      DecimalToU64("+3"));
+  EXPECT_EQ(12U,                     DecimalToU64("012"));
+  EXPECT_EQ(12U,                     DecimalToU64("+12"));
+  EXPECT_EQ(12U,                     DecimalToU64("+012"));
+  EXPECT_EQ(18446744073709551614ULL, DecimalToU64("18446744073709551614"));
+  EXPECT_EQ(18446744073709551615ULL, DecimalToU64("18446744073709551615"));
+  EXPECT_EQ(18446744073709551615ULL, DecimalToU64("+18446744073709551615"));
+
+  // valid numbers out of range
+  EXPECT_THROW(DecimalToU64("-1"),                   std::out_of_range);
+  EXPECT_THROW(DecimalToU64("18446744073709551616"), std::out_of_range);
+
+  // invalid values
+  EXPECT_THROW(DecimalToU64(""),    std::invalid_argument);
+  EXPECT_THROW(DecimalToU64(" "),   std::invalid_argument);
+  EXPECT_THROW(DecimalToU64(" 0"),  std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("0 "),  std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("--0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("++0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("X7"),  std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("7X"),  std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("0x0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("0b0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("0X0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("0B0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("c"),   std::invalid_argument);
+}
+
+TEST(gpcc_string_tools_Tests, DecimalToU64_minmax)
+{
+  // valid values within range
+  EXPECT_EQ(10U, DecimalToU64("10",   10, 20));
+  EXPECT_EQ(10U, DecimalToU64("010",  10, 20));
+  EXPECT_EQ(10U, DecimalToU64("+10",  10, 20));
+  EXPECT_EQ(10U, DecimalToU64("+010", 10, 20));
+  EXPECT_EQ(11U, DecimalToU64("11",   10, 20));
+  EXPECT_EQ(19U, DecimalToU64("19",   10, 20));
+  EXPECT_EQ(19U, DecimalToU64("019",  10, 20));
+  EXPECT_EQ(20U, DecimalToU64("20",   10, 20));
+  EXPECT_EQ(20U, DecimalToU64("020",  10, 20));
+  EXPECT_EQ(20U, DecimalToU64("+20",  10, 20));
+  EXPECT_EQ(20U, DecimalToU64("+020", 10, 20));
+
+  // valid values out of range
+  EXPECT_THROW(DecimalToU64("-1", 10, 20), std::out_of_range);
+  EXPECT_THROW(DecimalToU64("9",  10, 20), std::out_of_range);
+  EXPECT_THROW(DecimalToU64("21", 10, 20), std::out_of_range);
+
+  // invalid values
+  EXPECT_THROW(DecimalToU64("",    0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU64(" ",   0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU64(" 0",  0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("0 ",  0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("--0", 0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("++0", 0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("X7",  0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("7X",  0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("0x0", 0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("0b0", 0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("0X0", 0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("0B0", 0, 255), std::invalid_argument);
+  EXPECT_THROW(DecimalToU64("c",   0, 255), std::invalid_argument);
+}
+
+TEST(gpcc_string_tools_Tests, HexToU64)
+{
+  // valid hexadecimal values within range
+  EXPECT_EQ(0U,                      HexToU64("0x0"));
+  EXPECT_EQ(16U,                     HexToU64("0x10"));
+  EXPECT_EQ(12U,                     HexToU64("0xc"));
+  EXPECT_EQ(12U,                     HexToU64("0xC"));
+  EXPECT_EQ(12U,                     HexToU64("0x0c"));
+  EXPECT_EQ(12U,                     HexToU64("0x0C"));
+  EXPECT_EQ(18446744073709551614ULL, HexToU64("0xFFFFFFFFFFFFFFFE"));
+  EXPECT_EQ(18446744073709551615ULL, HexToU64("0xFFFFFFFFFFFFFFFF"));
+  EXPECT_EQ(18446744073709551615ULL, HexToU64("0x0FFFFFFFFFFFFFFFF"));
+
+  // valid hexadecimal values out of range
+  EXPECT_THROW(HexToU64("0x10000000000000000"), std::out_of_range);
+  EXPECT_THROW(HexToU64("0x10000000000000001"), std::out_of_range);
+  EXPECT_THROW(HexToU64("0xFFFFFFFFFFFFFFFFF"), std::out_of_range);
+
+  // invalid values
+  EXPECT_THROW(HexToU64(""),      std::invalid_argument);
+  EXPECT_THROW(HexToU64(" "),     std::invalid_argument);
+
+  EXPECT_THROW(HexToU64("0"),     std::invalid_argument);
+  EXPECT_THROW(HexToU64("A"),     std::invalid_argument);
+
+  EXPECT_THROW(HexToU64("0XC"),   std::invalid_argument);
+  EXPECT_THROW(HexToU64(" 0xC"),  std::invalid_argument);
+  EXPECT_THROW(HexToU64("0xC "),  std::invalid_argument);
+  EXPECT_THROW(HexToU64("-0xC"),  std::invalid_argument);
+  EXPECT_THROW(HexToU64("--0xC"), std::invalid_argument);
+  EXPECT_THROW(HexToU64("+0xC"),  std::invalid_argument);
+  EXPECT_THROW(HexToU64("++0xC"), std::invalid_argument);
+  EXPECT_THROW(HexToU64("0x0xC"), std::invalid_argument);
+  EXPECT_THROW(HexToU64("0xG"),   std::invalid_argument);
+
+  EXPECT_THROW(HexToU64("0B0"),   std::invalid_argument);
+  EXPECT_THROW(HexToU64(" 0b0"),  std::invalid_argument);
+  EXPECT_THROW(HexToU64("0b0 "),  std::invalid_argument);
+  EXPECT_THROW(HexToU64("-0b1"),  std::invalid_argument);
+  EXPECT_THROW(HexToU64("--0b1"), std::invalid_argument);
+  EXPECT_THROW(HexToU64("+0b1"),  std::invalid_argument);
+  EXPECT_THROW(HexToU64("++0b1"), std::invalid_argument);
+  EXPECT_THROW(HexToU64("0b0b0"), std::invalid_argument);
+  EXPECT_THROW(HexToU64("0b2"),   std::invalid_argument);
+
+  EXPECT_THROW(HexToU64(" 0"),    std::invalid_argument);
+  EXPECT_THROW(HexToU64("0 "),    std::invalid_argument);
+  EXPECT_THROW(HexToU64("--0"),   std::invalid_argument);
+  EXPECT_THROW(HexToU64("++0"),   std::invalid_argument);
+  EXPECT_THROW(HexToU64("12x"),   std::invalid_argument);
+
+  EXPECT_THROW(HexToU64("x12"),   std::invalid_argument);
+  EXPECT_THROW(HexToU64("b11"),   std::invalid_argument);
+}
+
+TEST(gpcc_string_tools_Tests, HexToU64_minmax)
+{
+  // valid hexadecimal values within range
+  EXPECT_EQ(10U,  HexToU64("0xA",   10, 20));
+  EXPECT_EQ(11U,  HexToU64("0xb",   10, 20));
+  EXPECT_EQ(12U,  HexToU64("0xC",   10, 20));
+  EXPECT_EQ(20UL, HexToU64("0x14",  10, 20));
+  EXPECT_EQ(20UL, HexToU64("0x014", 10, 20));
+
+  // valid hexadecimal values out of range
+  EXPECT_THROW(HexToU64("0x9",   10, 20), std::out_of_range);
+  EXPECT_THROW(HexToU64("0x15",  10, 20), std::out_of_range);
+
+  // invalid values
+  EXPECT_THROW(HexToU64("",      10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64(" ",     10, 20), std::invalid_argument);
+
+  EXPECT_THROW(HexToU64("0",     10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("A",     10, 20), std::invalid_argument);
+
+  EXPECT_THROW(HexToU64("0XC",   10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64(" 0xC",  10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("0xC ",  10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("-0xC",  10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("--0xC", 10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("+0xC",  10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("++0xC", 10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("0x0xC", 10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("0xG",   10, 20), std::invalid_argument);
+
+  EXPECT_THROW(HexToU64("0B0",   10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64(" 0b0",  10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("0b0 ",  10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("-0b1",  10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("--0b1", 10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("+0b1",  10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("++0b1", 10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("0b0b0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("0b2",   10, 20), std::invalid_argument);
+
+  EXPECT_THROW(HexToU64(" 0",    10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("0 ",    10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("--0",   10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("++0",   10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("12x",   10, 20), std::invalid_argument);
+
+  EXPECT_THROW(HexToU64("x12",   10, 20), std::invalid_argument);
+  EXPECT_THROW(HexToU64("b11",   10, 20), std::invalid_argument);
+}
+
+TEST(gpcc_string_tools_Tests, AnyNumberToU64)
+{
+  // valid binary values within range
+  EXPECT_EQ(0U,                      AnyNumberToU64("0b0"));
+  EXPECT_EQ(1U,                      AnyNumberToU64("0b1"));
+  EXPECT_EQ(2U,                      AnyNumberToU64("0b10"));
+  EXPECT_EQ(11U,                     AnyNumberToU64("0b01011"));
+  EXPECT_EQ(18446744073709551615ULL, AnyNumberToU64("0b1111111111111111111111111111111111111111111111111111111111111111"));
+  EXPECT_EQ(18446744073709551615ULL, AnyNumberToU64("0b01111111111111111111111111111111111111111111111111111111111111111"));
+
+  // valid binary values out of range
+  EXPECT_THROW(AnyNumberToU64("0b10000000000000000000000000000000000000000000000000000000000000000"), std::out_of_range);
+  EXPECT_THROW(AnyNumberToU64("0b10000000000000000000000000000000000000000000000000000000000000001"), std::out_of_range);
+  EXPECT_THROW(AnyNumberToU64("0b11111111111111111111111111111111111111111111111111111111111111111"), std::out_of_range);
+
+  // valid hexadecimal values within range
+  EXPECT_EQ(0U,                      AnyNumberToU64("0x0"));
+  EXPECT_EQ(16U,                     AnyNumberToU64("0x10"));
+  EXPECT_EQ(12U,                     AnyNumberToU64("0xc"));
+  EXPECT_EQ(12U,                     AnyNumberToU64("0xC"));
+  EXPECT_EQ(18446744073709551614ULL, AnyNumberToU64("0xFFFFFFFFFFFFFFFE"));
+  EXPECT_EQ(18446744073709551615ULL, AnyNumberToU64("0xFFFFFFFFFFFFFFFF"));
+  EXPECT_EQ(18446744073709551615ULL, AnyNumberToU64("0x0FFFFFFFFFFFFFFFF"));
+
+  // valid hexadecimal values out of range
+  EXPECT_THROW(AnyNumberToU64("0x10000000000000000"), std::out_of_range);
+  EXPECT_THROW(AnyNumberToU64("0x10000000000000001"), std::out_of_range);
+  EXPECT_THROW(AnyNumberToU64("0xFFFFFFFFFFFFFFFFF"), std::out_of_range);
+
+  // valid decimal values within range
+  EXPECT_EQ(0U,                      AnyNumberToU64("0"));
+  EXPECT_EQ(0U,                      AnyNumberToU64("+0"));
+  EXPECT_EQ(0U,                      AnyNumberToU64("-0"));
+  EXPECT_EQ(1U,                      AnyNumberToU64("1"));
+  EXPECT_EQ(3U,                      AnyNumberToU64("+3"));
+  EXPECT_EQ(12U,                     AnyNumberToU64("12"));
+  EXPECT_EQ(12U,                     AnyNumberToU64("+12"));
+  EXPECT_EQ(18446744073709551615ULL, AnyNumberToU64("18446744073709551615"));
+  EXPECT_EQ(18446744073709551615ULL, AnyNumberToU64("+18446744073709551615"));
+
+  // valid decimal values out of range
+  EXPECT_THROW(AnyNumberToU64("-1"),                    std::out_of_range);
+  EXPECT_THROW(AnyNumberToU64("18446744073709551616"),  std::out_of_range);
+  EXPECT_THROW(AnyNumberToU64("+18446744073709551616"), std::out_of_range);
+
+  // invalid values
+  EXPECT_THROW(AnyNumberToU64(""),      std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64(" "),     std::invalid_argument);
+
+  EXPECT_THROW(AnyNumberToU64("0XC"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("00XC"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("00xC"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64(" 0xC"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0xC "),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("-0xC"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("--0xC"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("+0xC"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("++0xC"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0x0xC"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0x0XC"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0xG"),   std::invalid_argument);
+
+  EXPECT_THROW(AnyNumberToU64("0B0"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("00B0"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("00b0"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64(" 0b0"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b0 "),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("-0b1"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("--0b1"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("+0b1"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("++0b1"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b0b0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b0B0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b1b0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b1B0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b0x0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b0X0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b1x0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b1X0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b0c1"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b00b0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b00B0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b2"),   std::invalid_argument);
+
+  EXPECT_THROW(AnyNumberToU64(" 0"),    std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0 "),    std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("--0"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("++0"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("12x"),   std::invalid_argument);
+
+  EXPECT_THROW(AnyNumberToU64("x12"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("X12"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("b11"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("B11"),   std::invalid_argument);
+}
+
+TEST(gpcc_string_tools_Tests, AnyNumberToU64_minmax)
+{
+  // valid binary values within range
+  EXPECT_EQ(10U, AnyNumberToU64("0b1010",   10, 20));
+  EXPECT_EQ(11U, AnyNumberToU64("0b1011",   10, 20));
+  EXPECT_EQ(12U, AnyNumberToU64("0b1100",   10, 20));
+  EXPECT_EQ(12U, AnyNumberToU64("0b01100",  10, 20));
+  EXPECT_EQ(20U, AnyNumberToU64("0b10100",  10, 20));
+  EXPECT_EQ(20U, AnyNumberToU64("0b010100", 10, 20));
+
+  // valid binary values out of range
+  EXPECT_THROW(AnyNumberToU64("0b1001",  10, 20), std::out_of_range);
+  EXPECT_THROW(AnyNumberToU64("0b10101", 10, 20), std::out_of_range);
+
+  // valid hexadecimal values within range
+  EXPECT_EQ(10U,  AnyNumberToU64("0xA",   10, 20));
+  EXPECT_EQ(11U,  AnyNumberToU64("0xb",   10, 20));
+  EXPECT_EQ(12U,  AnyNumberToU64("0xC",   10, 20));
+  EXPECT_EQ(20UL, AnyNumberToU64("0x14",  10, 20));
+  EXPECT_EQ(20UL, AnyNumberToU64("0x014", 10, 20));
+
+  // valid hexadecimal values out of range
+  EXPECT_THROW(AnyNumberToU64("0x9",  10, 20), std::out_of_range);
+  EXPECT_THROW(AnyNumberToU64("0x15", 10, 20), std::out_of_range);
+
+  // valid decimal values within range
+  EXPECT_EQ(10U, AnyNumberToU64("10",  10, 20));
+  EXPECT_EQ(10U, AnyNumberToU64("+10", 10, 20));
+  EXPECT_EQ(11U, AnyNumberToU64("11",  10, 20));
+  EXPECT_EQ(20U, AnyNumberToU64("20",  10, 20));
+  EXPECT_EQ(20U, AnyNumberToU64("+20", 10, 20));
+
+  // valid decimal values out of range
+  EXPECT_THROW(AnyNumberToU64("-1",  10, 20), std::out_of_range);
+  EXPECT_THROW(AnyNumberToU64("9",   10, 20), std::out_of_range);
+  EXPECT_THROW(AnyNumberToU64("21",  10, 20), std::out_of_range);
+  EXPECT_THROW(AnyNumberToU64("+21", 10, 20), std::out_of_range);
+
+  // invalid values
+  EXPECT_THROW(AnyNumberToU64("", 10, 20),      std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64(" ", 10, 20),     std::invalid_argument);
+
+  EXPECT_THROW(AnyNumberToU64("0XC", 10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("00XC", 10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("00xC", 10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64(" 0xC", 10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0xC ", 10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("-0xC", 10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("--0xC", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("+0xC", 10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("++0xC", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0x0xC", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0x0XC", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0xG", 10, 20),   std::invalid_argument);
+
+  EXPECT_THROW(AnyNumberToU64("0B0", 10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("00B0", 10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("00b0", 10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64(" 0b0", 10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b0 ", 10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("-0b1", 10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("--0b1", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("+0b1", 10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("++0b1", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b0b0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b0B0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b1b0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b1B0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b0x0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b0X0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b1x0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b1X0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b0c1", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b00b0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b00B0", 10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0b2", 10, 20),   std::invalid_argument);
+
+  EXPECT_THROW(AnyNumberToU64(" 0", 10, 20),    std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("0 ", 10, 20),    std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("--0", 10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("++0", 10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("12x", 10, 20),   std::invalid_argument);
+
+  EXPECT_THROW(AnyNumberToU64("x12", 10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("X12", 10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("b11", 10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToU64("B11", 10, 20),   std::invalid_argument);
+}
+
 TEST(gpcc_string_tools_Tests, AnyStringToChar)
 {
   // valid binary values within range
@@ -2591,6 +2955,288 @@ TEST(gpcc_string_tools_Tests, AnyNumberToI32_minmax)
   EXPECT_THROW(AnyNumberToI32("X12", -10, 20),   std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("b11", -10, 20),   std::invalid_argument);
   EXPECT_THROW(AnyNumberToI32("B11", -10, 20),   std::invalid_argument);
+}
+
+TEST(gpcc_string_tools_Tests, DecimalToI64)
+{
+  // valid numbers in range
+  EXPECT_EQ(0,         DecimalToI64("0"));
+  EXPECT_EQ(0,         DecimalToI64("00"));
+  EXPECT_EQ(0,         DecimalToI64("+0"));
+  EXPECT_EQ(0,         DecimalToI64("+00"));
+  EXPECT_EQ(0,         DecimalToI64("-0"));
+  EXPECT_EQ(0,         DecimalToI64("-00"));
+  EXPECT_EQ(1,         DecimalToI64("1"));
+  EXPECT_EQ(3,         DecimalToI64("+3"));
+  EXPECT_EQ(12,        DecimalToI64("012"));
+  EXPECT_EQ(12,        DecimalToI64("+12"));
+  EXPECT_EQ(12,        DecimalToI64("+012"));
+  EXPECT_EQ(-1,        DecimalToI64("-1"));
+  EXPECT_EQ(-1,        DecimalToI64("-001"));
+  EXPECT_EQ(INT64_MAX, DecimalToI64("9223372036854775807"));
+  EXPECT_EQ(INT64_MAX, DecimalToI64("+9223372036854775807"));
+  EXPECT_EQ(INT64_MIN, DecimalToI64("-9223372036854775808"));
+
+  // valid numbers out of range
+  EXPECT_THROW(DecimalToI64("9223372036854775808"),  std::out_of_range);
+  EXPECT_THROW(DecimalToI64("-9223372036854775809"), std::out_of_range);
+
+  // invalid values
+  EXPECT_THROW(DecimalToI64(""),    std::invalid_argument);
+  EXPECT_THROW(DecimalToI64(" "),   std::invalid_argument);
+  EXPECT_THROW(DecimalToI64(" 0"),  std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("0 "),  std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("++1"), std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("--1"), std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("X7"),  std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("7X"),  std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("0x0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("0b0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("0X0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("0B0"), std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("c"),   std::invalid_argument);
+}
+
+TEST(gpcc_string_tools_Tests, DecimalToI64_minmax)
+{
+  // valid values within range
+  EXPECT_EQ(-10, DecimalToI64("-10", -10, 20));
+  EXPECT_EQ(-10, DecimalToI64("-010", -10, 20));
+  EXPECT_EQ(10, DecimalToI64("10", -10, 20));
+  EXPECT_EQ(10, DecimalToI64("010", -10, 20));
+  EXPECT_EQ(10, DecimalToI64("+10", -10, 20));
+  EXPECT_EQ(10, DecimalToI64("+010", -10, 20));
+  EXPECT_EQ(11, DecimalToI64("11", -10, 20));
+  EXPECT_EQ(19, DecimalToI64("19", -10, 20));
+  EXPECT_EQ(20, DecimalToI64("20", -10, 20));
+  EXPECT_EQ(20, DecimalToI64("+20", -10, 20));
+  EXPECT_EQ(20, DecimalToI64("+020", -10, 20));
+
+  // valid values out of range
+  EXPECT_THROW(DecimalToI64("-11", -10, 20), std::out_of_range);
+  EXPECT_THROW(DecimalToI64("21", -10, 20),  std::out_of_range);
+
+  // invalid values
+  EXPECT_THROW(DecimalToI64("",       -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI64(" ",      -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI64(" 0",    -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("0 ",    -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("--0",   -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("++0",   -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("X7",     -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("7X",     -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("0x0",    -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("0b0",    -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("0X0",    -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("0B0",    -10, 20), std::invalid_argument);
+  EXPECT_THROW(DecimalToI64("c",      -10, 20), std::invalid_argument);
+}
+
+TEST(gpcc_string_tools_Tests, AnyNumberToI64)
+{
+  // valid binary values within range
+  EXPECT_EQ(INT64_MIN,   AnyNumberToI64("0b1000000000000000000000000000000000000000000000000000000000000000"));
+  EXPECT_EQ(INT64_MIN+1, AnyNumberToI64("0b1000000000000000000000000000000000000000000000000000000000000001"));
+  EXPECT_EQ(INT64_MIN,   AnyNumberToI64("0b01000000000000000000000000000000000000000000000000000000000000000"));
+  EXPECT_EQ(INT64_MIN+1, AnyNumberToI64("0b01000000000000000000000000000000000000000000000000000000000000001"));
+  EXPECT_EQ(-1,          AnyNumberToI64("0b1111111111111111111111111111111111111111111111111111111111111111"));
+  EXPECT_EQ(-1,          AnyNumberToI64("0b01111111111111111111111111111111111111111111111111111111111111111"));
+  EXPECT_EQ(0,           AnyNumberToI64("0b0"));
+  EXPECT_EQ(1,           AnyNumberToI64("0b1"));
+  EXPECT_EQ(1,           AnyNumberToI64("0b01"));
+  EXPECT_EQ(2,           AnyNumberToI64("0b10"));
+  EXPECT_EQ(11,          AnyNumberToI64("0b01011"));
+  EXPECT_EQ(INT64_MAX,   AnyNumberToI64("0b0111111111111111111111111111111111111111111111111111111111111111"));
+  EXPECT_EQ(INT64_MAX,   AnyNumberToI64("0b00111111111111111111111111111111111111111111111111111111111111111"));
+
+  // valid binary values out of range
+  EXPECT_THROW(AnyNumberToI64("0b10000000000000000000000000000000000000000000000000000000000000000"), std::out_of_range);
+  EXPECT_THROW(AnyNumberToI64("0b10000000000000000000000000000000000000000000000000000000000000001"), std::out_of_range);
+  EXPECT_THROW(AnyNumberToI64("0b11111111111111111111111111111111111111111111111111111111111111111"), std::out_of_range);
+
+  // valid hexadecimal values within range
+  EXPECT_EQ(INT64_MIN,   AnyNumberToI64("0x8000000000000000"));
+  EXPECT_EQ(INT64_MIN+1, AnyNumberToI64("0x8000000000000001"));
+  EXPECT_EQ(INT64_MIN,   AnyNumberToI64("0x08000000000000000"));
+  EXPECT_EQ(INT64_MIN+1, AnyNumberToI64("0x08000000000000001"));
+  EXPECT_EQ(-1,          AnyNumberToI64("0xFFFFFFFFFFFFFFFF"));
+  EXPECT_EQ(-1,          AnyNumberToI64("0x0FFFFFFFFFFFFFFFF"));
+  EXPECT_EQ(0,           AnyNumberToI64("0x0"));
+  EXPECT_EQ(1,           AnyNumberToI64("0x1"));
+  EXPECT_EQ(1,           AnyNumberToI64("0x01"));
+  EXPECT_EQ(2,           AnyNumberToI64("0x2"));
+  EXPECT_EQ(11,          AnyNumberToI64("0xB"));
+  EXPECT_EQ(11,          AnyNumberToI64("0xb"));
+  EXPECT_EQ(INT64_MAX,   AnyNumberToI64("0x7FFFFFFFFFFFFFFF"));
+  EXPECT_EQ(INT64_MAX,   AnyNumberToI64("0x07FFFFFFFFFFFFFFF"));
+
+  // valid hexadecimal values out of range
+  EXPECT_THROW(AnyNumberToI64("0x10000000000000000"), std::out_of_range);
+  EXPECT_THROW(AnyNumberToI64("0x10000000000000001"), std::out_of_range);
+  EXPECT_THROW(AnyNumberToI64("0xFFFFFFFFFFFFFFFFF"), std::out_of_range);
+
+  // valid decimal values within range
+  EXPECT_EQ(INT64_MIN,   AnyNumberToI64("-9223372036854775808"));
+  EXPECT_EQ(INT64_MIN+1, AnyNumberToI64("-9223372036854775807"));
+  EXPECT_EQ(0U,          AnyNumberToI64("0"));
+  EXPECT_EQ(0U,          AnyNumberToI64("+0"));
+  EXPECT_EQ(0U,          AnyNumberToI64("-0"));
+  EXPECT_EQ(1U,          AnyNumberToI64("1"));
+  EXPECT_EQ(12U,         AnyNumberToI64("12"));
+  EXPECT_EQ(12U,         AnyNumberToI64("+12"));
+  EXPECT_EQ(INT64_MAX,   AnyNumberToI64("9223372036854775807"));
+  EXPECT_EQ(INT64_MAX,   AnyNumberToI64("+9223372036854775807"));
+
+  // valid decimal values out of range
+  EXPECT_THROW(AnyNumberToI64("-9223372036854775809"), std::out_of_range);
+  EXPECT_THROW(AnyNumberToI64("9223372036854775808"),  std::out_of_range);
+  EXPECT_THROW(AnyNumberToI64("+9223372036854775808"), std::out_of_range);
+
+  // invalid values
+  EXPECT_THROW(AnyNumberToI64(""),      std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64(" "),     std::invalid_argument);
+
+  EXPECT_THROW(AnyNumberToI64("0XC"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("00XC"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("00xC"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64(" 0xC"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0xC "),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("-0xC"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("--0xC"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("+0xC"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("++0xC"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0x0xC"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0x0XC"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0xG"),   std::invalid_argument);
+
+  EXPECT_THROW(AnyNumberToI64("0B0"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("00B0"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("00b0"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64(" 0b0"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b0 "),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("-0b1"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("--0b1"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("+0b1"),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("++0b1"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b0b0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b0B0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b1b0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b1B0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b0x0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b0X0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b1x0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b1X0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b0c1"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b00b0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b00B0"), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b2"),   std::invalid_argument);
+
+  EXPECT_THROW(AnyNumberToI64(" 0"),    std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0 "),    std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("--0"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("++0"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("12x"),   std::invalid_argument);
+
+  EXPECT_THROW(AnyNumberToI64("x12"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("X12"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("b11"),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("B11"),   std::invalid_argument);
+}
+
+TEST(gpcc_string_tools_Tests, AnyNumberToI64_minmax)
+{
+  // valid binary values within range
+  EXPECT_EQ(-10, AnyNumberToI64("0b1111111111111111111111111111111111111111111111111111111111110110", -10, 20));
+  EXPECT_EQ(-1,  AnyNumberToI64("0b1111111111111111111111111111111111111111111111111111111111111111", -10, 20));
+  EXPECT_EQ(0,   AnyNumberToI64("0b0000000000000000000000000000000000000000000000000000000000000000", -10, 20));
+  EXPECT_EQ(0,   AnyNumberToI64("0b0",                                -10, 20));
+  EXPECT_EQ(1,   AnyNumberToI64("0b1",                                -10, 20));
+  EXPECT_EQ(1,   AnyNumberToI64("0b01",                               -10, 20));
+  EXPECT_EQ(2,   AnyNumberToI64("0b10",                               -10, 20));
+  EXPECT_EQ(19,  AnyNumberToI64("0b10011",                            -10, 20));
+  EXPECT_EQ(20,  AnyNumberToI64("0b10100",                            -10, 20));
+
+  // valid binary values out of range
+  EXPECT_THROW(AnyNumberToI64("0b1111111111111111111111111111111111111111111111111111111111110101", -10, 20), std::out_of_range);
+  EXPECT_THROW(AnyNumberToI64("0b10101", -10, 20),                            std::out_of_range);
+
+  // valid hexadecimal values within range
+  EXPECT_EQ(-10, AnyNumberToI64("0xFFFFFFFFFFFFFFF6", -10, 20));
+  EXPECT_EQ(-1,  AnyNumberToI64("0xFFFFFFFFFFFFFFFF", -10, 20));
+  EXPECT_EQ(0,   AnyNumberToI64("0x0000000000000000", -10, 20));
+  EXPECT_EQ(0,   AnyNumberToI64("0x0",        -10, 20));
+  EXPECT_EQ(19,  AnyNumberToI64("0x13",       -10, 20));
+  EXPECT_EQ(20,  AnyNumberToI64("0x14",       -10, 20));
+
+  // valid hexadecimal values out of range
+  EXPECT_THROW(AnyNumberToI64("0xFFFFFFFFFFFFFFF5", -10, 20), std::out_of_range);
+  EXPECT_THROW(AnyNumberToI64("0x15",       -10, 20), std::out_of_range);
+
+  // valid decimal values within range
+  EXPECT_EQ(-10, AnyNumberToI64("-10", -10, 20));
+  EXPECT_EQ(0,   AnyNumberToI64("0",   -10, 20));
+  EXPECT_EQ(0,   AnyNumberToI64("+0",  -10, 20));
+  EXPECT_EQ(0,   AnyNumberToI64("-0",  -10, 20));
+  EXPECT_EQ(1,   AnyNumberToI64("1",   -10, 20));
+  EXPECT_EQ(12,  AnyNumberToI64("12",  -10, 20));
+  EXPECT_EQ(12,  AnyNumberToI64("+12", -10, 20));
+  EXPECT_EQ(19,  AnyNumberToI64("19",  -10, 20));
+  EXPECT_EQ(20,  AnyNumberToI64("20",  -10, 20));
+
+  // valid decimal values out of range
+  EXPECT_THROW(AnyNumberToI64("-11", -10, 20), std::out_of_range);
+  EXPECT_THROW(AnyNumberToI64("21",  -10, 20), std::out_of_range);
+  EXPECT_THROW(AnyNumberToI64("+21", -10, 20), std::out_of_range);
+
+  // invalid values
+  EXPECT_THROW(AnyNumberToI64("", -10, 20),      std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64(" ", -10, 20),     std::invalid_argument);
+
+  EXPECT_THROW(AnyNumberToI64("0XC", -10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("00XC", -10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("00xC", -10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64(" 0xC", -10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0xC ", -10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("-0xC", -10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("--0xC", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("+0xC", -10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("++0xC", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0x0xC", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0x0XC", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0xG", -10, 20),   std::invalid_argument);
+
+  EXPECT_THROW(AnyNumberToI64("0B0", -10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("00B0", -10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("00b0", -10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64(" 0b0", -10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b0 ", -10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("-0b1", -10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("--0b1", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("+0b1", -10, 20),  std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("++0b1", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b0b0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b0B0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b1b0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b1B0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b0x0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b0X0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b1x0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b1X0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b0c1", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b00b0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b00B0", -10, 20), std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0b2", -10, 20),   std::invalid_argument);
+
+  EXPECT_THROW(AnyNumberToI64(" 0", -10, 20),    std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("0 ", -10, 20),    std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("--0", -10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("++0", -10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("12x", -10, 20),   std::invalid_argument);
+
+  EXPECT_THROW(AnyNumberToI64("x12", -10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("X12", -10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("b11", -10, 20),   std::invalid_argument);
+  EXPECT_THROW(AnyNumberToI64("B11", -10, 20),   std::invalid_argument);
 }
 
 TEST(gpcc_string_tools_Tests, ToDouble)

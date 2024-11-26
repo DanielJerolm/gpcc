@@ -347,6 +347,201 @@ int32_t ToI32(std::string const & s, uint_fast8_t const base, int32_t const min,
   return static_cast<int32_t>(value);
 }
 
+/**
+ * \ingroup GPCC_STRING
+ * \brief Wrapper for `std::stoull` adding verbose error checks.
+ *
+ * Additional functionality:
+ * - Checks if the result is within a given range [`min`;`max`].
+ * - Does not accept any leading or trailing extra characters (incl. whitespace characters), except for one optional
+ *   leading sign character (+/-).
+ * - Throws verbose exceptions in case of any error.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
+ *
+ * \throws std::out_of_range       The result of the conversion exceeds the range [`min`;`max`].
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String that shall be converted into an `uint64_t`.
+ *
+ * \param base
+ * Base for interpreting @p s. Valid range: 0..36\n
+ * Special values:
+ * - 0 = auto detect base by prefix (0 = octal, 0x or 0X = hex, other = decimal)
+ * - 2 = binary
+ * - 8 = octal (prefix 0 is ignored if present)
+ * - 10 = decimal
+ * - 16 = hexadecimal (prefix 0x or 0X is ignored if present)
+ *
+ * \param min
+ * Minimum allowed value for the result of the conversion.
+ *
+ * \param max
+ * Maximum allowed value for the result of the conversion.\n
+ * If `max` < `min`, then the range-check will always fail.
+ *
+ * \return
+ * Result of the conversion.
+ */
+uint64_t ToU64(std::string const & s, uint_fast8_t const base, uint64_t const min, uint64_t const max)
+{
+  static_assert(sizeof(unsigned long long) >= sizeof(uint64_t),
+                "Unexpected size of 'unsigned long long' on this platform.");
+
+  // reject empty strings and leading whitespace characters
+  if ((s.empty()) || (std::isspace(s.front()) != 0))
+    ThrowInvalidNumberRepresentation(s);
+
+#if defined(__GLIBC__)
+  // std::stoull() typically uses strtoull() from the C library. In recent versions of glibc (e.g. 2.39), strtoull()
+  // shows unexpected behaviour: It recognizes prefix "0b"/"0B" for binary numbers if base is 2 or 0, though prefix
+  // "b0"/"B0" is not specified to be recognized at all. The prefix "0b"/"0B" should result in an error.
+  // To ensure proper function of ToU64(), we have to test for invalid input here.
+  if (   ((base == 0U) || (base == 2U))
+      && (   (gpcc::string::StartsWith(s, "0b"))
+          || (gpcc::string::StartsWith(s, "0B"))))
+  {
+    ThrowInvalidNumberRepresentation(s);
+  }
+#endif
+
+  size_t n;
+  unsigned long long value;
+  try
+  {
+    value = std::stoull(s, &n, base);
+  }
+  catch (std::out_of_range const &)
+  {
+    ThrowOutOfRange(s, min, max);
+  }
+  catch (std::exception const &)
+  {
+    ThrowInvalidNumberRepresentation(s);
+  }
+
+  // reject if the whole string has not been consumed
+  if (n != s.size())
+    ThrowInvalidNumberRepresentation(s);
+
+  if ((value < min) || (value > max))
+    ThrowOutOfRange(s, min, max);
+
+  return static_cast<uint64_t>(value);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Wrapper for `std::stoll` adding verbose error checks.
+ *
+ * Additional functionality:
+ * - Checks if the result is within a given range [`min`;`max`].
+ * - Does not accept any leading or trailing extra characters (incl. whitespace characters), except for one optional
+ *   leading sign character (+/-).
+ * - Throws verbose exceptions in case of any error.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
+ *
+ * \throws std::out_of_range       The result of the conversion exceeds the range [`min`;`max`].
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String that shall be converted into an `int64_t`.
+ *
+ * \param base
+ * Base for interpreting @p s. Valid range: 0..36\n
+ * Special values:
+ * - 0 = auto detect base by prefix (0 = octal, 0x or 0X = hex, other = decimal)
+ * - 2 = binary
+ * - 8 = octal (prefix 0 is ignored if present)
+ * - 10 = decimal
+ * - 16 = hexadecimal (prefix 0x or 0X is ignored if present)
+ *
+ * \param min
+ * Minimum allowed value for the result of the conversion.
+ *
+ * \param max
+ * Maximum allowed value for the result of the conversion.\n
+ * If `max` < `min`, then the range-check will always fail.
+ *
+ * \return
+ * Result of the conversion.
+ */
+int64_t ToI64(std::string const & s, uint_fast8_t const base, int64_t const min, int64_t const max)
+{
+  static_assert(sizeof(long long) >= sizeof(int64_t), "Unexpected size of 'long long' on this platform.");
+
+  // reject empty strings and leading whitespace characters
+  if ((s.empty()) || (std::isspace(s.front()) != 0))
+    ThrowInvalidNumberRepresentation(s);
+
+#if defined(__GLIBC__)
+  // std::stoll() typically uses strtoll() from the C library. In recent versions of glibc (e.g. 2.39), strtoll()
+  // shows unexpected behaviour: It recognizes prefix "0b"/"0B" for binary numbers if base is 2 or 0, though prefix
+  // "b0"/"B0" is not specified to be recognized at all. The prefix "0b"/"0B" should result in an error.
+  // To ensure proper function of ToI64(), we have to test for invalid input here.
+  if (   ((base == 0U) || (base == 2U))
+      && (   (gpcc::string::StartsWith(s, "0b"))
+          || (gpcc::string::StartsWith(s, "0B"))
+          || (gpcc::string::StartsWith(s, "+0b"))
+          || (gpcc::string::StartsWith(s, "+0B"))
+          || (gpcc::string::StartsWith(s, "-0b"))
+          || (gpcc::string::StartsWith(s, "-0B"))))
+  {
+    ThrowInvalidNumberRepresentation(s);
+  }
+#endif
+
+  size_t n;
+  long long value;
+  try
+  {
+    value = std::stoll(s, &n, base);
+  }
+  catch (std::out_of_range const &)
+  {
+    ThrowOutOfRange(s, min, max);
+  }
+  catch (std::exception const &)
+  {
+    ThrowInvalidNumberRepresentation(s);
+  }
+
+  // reject if the whole string has not been consumed
+  if (n != s.size())
+    ThrowInvalidNumberRepresentation(s);
+
+  if ((value < min) || (value > max))
+    ThrowOutOfRange(s, min, max);
+
+  return static_cast<int64_t>(value);
+}
+
 } // anonymous namespace
 
 namespace gpcc {
@@ -2242,6 +2437,291 @@ uint32_t AnyNumberToU32(std::string const & s, uint32_t const min, uint32_t cons
 
 /**
  * \ingroup GPCC_STRING
+ * \brief Converts a string containing a number in decimal representation into a value of type `uint64_t`.
+ *
+ * This function accepts the following textual representations of data of type `uint64_t`:
+ * - Decimal numbers, digits 0..9 only; Range: 0..2^64-1
+ * - Leading and trailing space characters are not allowed.
+ * - A leading +/- character is optional.
+ *
+ * This function is intended to be used for interpreting user input. Potential exceptions will contain a verbose error
+ * message.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
+ *
+ * \throws std::out_of_range       The result of the conversion exceeds the range of `uint64_t`.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String containing the number that shall be converted into an `uint64_t`.
+ *
+ * \return
+ * Result of the conversion.
+ */
+uint64_t DecimalToU64(std::string const & s)
+{
+  return ToU64(s,
+               10U,
+               std::numeric_limits<uint64_t>::min(),
+               std::numeric_limits<uint64_t>::max());
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing a number in decimal representation into a value of type `uint64_t` and checks
+ *        the result against a given `min` and `max`.
+ *
+ * This function accepts the following textual representations of data of type `uint64_t`:
+ * - Decimal numbers, digits 0..9 only; Range: [`min`;`max`]
+ * - Leading and trailing space characters are not allowed.
+ * - A leading +/- character is optional.
+ *
+ * This function is intended to be used for interpreting user input. Potential exceptions will contain a verbose error
+ * message.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
+ *
+ * \throws std::out_of_range       The result of the conversion exceeds the range of [`min`;`max`].
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String containing the number that shall be converted into an `uint64_t`.
+ *
+ * \param min
+ * Minimum allowed value.
+ *
+ * \param max
+ * Maximum allowed value.\n
+ * If `max` < `min`, then the range-check will always fail.
+ *
+ * \return
+ * Result of the conversion.
+ */
+uint64_t DecimalToU64(std::string const & s, uint64_t const min, uint64_t const max)
+{
+  return ToU64(s, 10U, min, max);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing a number in hexadecimal representation into a value of type `uint64_t`.
+ *
+ * This function accepts the following textual representations of data of type `uint64_t`:
+ * - Prefix "0x" is mandatory
+ * - Hexadecimal numbers, digits 0..9, a..f, A..F only; Range: 0..2^64-1
+ * - Leading and trailing space characters are not allowed.
+ *
+ * This function is intended to be used for interpreting user input. Potential exceptions will contain a verbose error
+ * message.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
+ *
+ * \throws std::out_of_range       The result of the conversion exceeds the range of `uint64_t`.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String containing the number that shall be converted into an `uint64_t`.
+ *
+ * \return
+ * Result of the conversion.
+ */
+uint64_t HexToU64(std::string const & s)
+{
+  return HexToU64(s, std::numeric_limits<uint64_t>::min(), std::numeric_limits<uint64_t>::max());
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing a number in hexadecimal representation into a value of type `uint64_t` and checks
+ *        the result against a given `min` and `max`.
+ *
+ * This function accepts the following textual representations of data of type `uint64_t`:
+ * - Prefix "0x" is mandatory
+ * - Hexadecimal numbers, digits 0..9, a..f, A..F only; Range: [`min`;`max`]
+ * - Leading and trailing space characters are not allowed.
+ *
+ * This function is intended to be used for interpreting user input. Potential exceptions will contain a verbose error
+ * message.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
+ *
+ * \throws std::out_of_range       The result of the conversion exceeds the range of [`min`;`max`].
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String containing the number that shall be converted into an `uint64_t`.
+ *
+ * \param min
+ * Minimum allowed value.
+ *
+ * \param max
+ * Maximum allowed value.\n
+ * If `max` < `min`, then the range-check will always fail.
+ *
+ * \return
+ * Result of the conversion.
+ */
+uint64_t HexToU64(std::string const & s, uint64_t const min, uint64_t const max)
+{
+  if (!StartsWith(s, "0x"))
+    ThrowInvalidNumberRepresentation(s);
+
+  return ToU64(s, 16U, min, max);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing any valid number representation into a value of type `uint64_t`.
+ *
+ * This function accepts the following textual representations of data of type `uint64_t`:
+ * - Hex values: 0x12000000000000CD, 0xAB00000000000000, 0xab00
+ * - Binary values: 0b01, 0b001000
+ * - Decimal numbers, digits 0..9 only. A leading +/- character is optional.
+ * - Leading and trailing space characters are not allowed.
+ *
+ * This function is intended to be used for interpreting user input. It provides maximum flexibility to the user when
+ * a `uint64_t` shall be entered. Potential exceptions will contain a verbose error message.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
+ *
+ * \throws std::out_of_range       The result of the conversion exceeds the range of `uint64_t`.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String that shall be converted into an `uint64_t`.
+ *
+ * \return
+ * Result of the conversion.
+ */
+uint64_t AnyNumberToU64(std::string const & s)
+{
+  return AnyNumberToU64(s,
+                        std::numeric_limits<uint64_t>::min(),
+                        std::numeric_limits<uint64_t>::max());
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing any valid number representation into a value of type `uint64_t` and checks
+ *        the result against a given `min` and `max`.
+ *
+ * This function accepts the following textual representations of data of type `uint64_t`:
+ * - Hex values: 0x12000000000000CD, 0xAB00000000000000, 0xab00
+ * - Binary values: 0b01, 0b001000
+ * - Decimal numbers, digits 0..9 only. A leading +/- character is optional.
+ * - Leading and trailing space characters are not allowed.
+ *
+ * This function is intended to be used for interpreting user input. It provides maximum flexibility to the user when
+ * a `uint64_t` shall be entered. Potential exceptions will contain a verbose error message.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
+ *
+ * \throws std::out_of_range       The result of the conversion exceeds the range of [`min`;`max`].
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String that shall be converted into an `uint64_t`.
+ *
+ * \param min
+ * Minimum allowed value.
+ *
+ * \param max
+ * Maximum allowed value.\n
+ * If `max` < `min`, then the range-check will always fail.
+ *
+ * \return
+ * Result of the conversion.
+ */
+uint64_t AnyNumberToU64(std::string const & s, uint64_t const min, uint64_t const max)
+{
+  if (StartsWith(s, "0x"))
+  {
+    return ToU64(s, 16U, min, max);
+  }
+  else if (StartsWith(s, "0b"))
+  {
+    return ToU64(s.substr(2), 2U, min, max);
+  }
+  else
+  {
+    return ToU64(s, 10U, min, max);
+  }
+}
+
+/**
+ * \ingroup GPCC_STRING
  * \brief Converts a string containing any valid character representation into a value of type `char`.
  *
  * This function accepts the following textual representations of data of type `char`:
@@ -2484,7 +2964,7 @@ int32_t AnyNumberToI32(std::string const & s, int32_t const min, int32_t const m
   {
     int32_t value = static_cast<int32_t>(ToU32(s,
                                                16U,
-                                               std::numeric_limits<uint32_t>::min(),
+                                               0U,
                                                std::numeric_limits<uint32_t>::max()));
 
     if ((value < min) || (value > max))
@@ -2496,7 +2976,7 @@ int32_t AnyNumberToI32(std::string const & s, int32_t const min, int32_t const m
   {
     int32_t value = static_cast<int32_t>(ToU32(s.substr(2),
                                                2U,
-                                               std::numeric_limits<uint32_t>::min(),
+                                               0U,
                                                std::numeric_limits<uint32_t>::max()));
 
     if ((value < min) || (value > max))
@@ -2507,6 +2987,216 @@ int32_t AnyNumberToI32(std::string const & s, int32_t const min, int32_t const m
   else
   {
     return ToI32(s, 10U, min, max);
+  }
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing a number in decimal representation into a value of type `int64_t`.
+ *
+ * This function accepts the following textual representations of data of type `int64_t`:
+ * - Decimal numbers, digits 0..9 only; Range: -2^63 .. 2^63-1
+ * - Leading and trailing space characters are not allowed.
+ * - A leading +/- character is optional.
+ *
+ * This function is intended to be used for interpreting user input. Potential exceptions will contain a verbose error
+ * message.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
+ *
+ * \throws std::out_of_range       The result of the conversion exceeds the range of `int64_t`.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String containing the number that shall be converted into an `int64_t`.
+ *
+ * \return
+ * Result of the conversion.
+ */
+int64_t DecimalToI64(std::string const & s)
+{
+  return ToI64(s,
+               10U,
+               std::numeric_limits<int64_t>::min(),
+               std::numeric_limits<int64_t>::max());
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing a number in decimal representation into a value of type `int64_t` and checks
+ *        the result against a given `min` and `max`.
+ *
+ * This function accepts the following textual representations of data of type `int64_t`:
+ * - Decimal numbers, digits 0..9 only; Range: [`min`;`max`]
+ * - Leading and trailing space characters are not allowed.
+ * - A leading +/- character is optional.
+ *
+ * This function is intended to be used for interpreting user input. Potential exceptions will contain a verbose error
+ * message.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
+ *
+ * \throws std::out_of_range       The result of the conversion exceeds the range of [`min`;`max`].
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String containing the number that shall be converted into an `int64_t`.
+ *
+ * \param min
+ * Minimum allowed value.
+ *
+ * \param max
+ * Maximum allowed value.\n
+ * If `max` < `min`, then the range-check will always fail.
+ *
+ * \return
+ * Result of the conversion.
+ */
+int64_t DecimalToI64(std::string const & s, int64_t const min, int64_t const max)
+{
+  return ToI64(s, 10U, min, max);
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing any valid number representation into a value of type `int64_t`.
+ *
+ * This function accepts the following textual representations of data of type `int64_t`:
+ * - Hex values: 0x12000000000000CD, 0xAB00000000000000, 0xab00
+ * - Binary values: 0b01, 0b001000
+ * - Decimal numbers, digits 0..9 only. A leading +/- character is optional.
+ * - Leading and trailing space characters are not allowed.
+ *
+ * This function is intended to be used for interpreting user input. It provides maximum flexibility to the user when
+ * a `int64_t` shall be entered. Potential exceptions will contain a verbose error message.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
+ *
+ * \throws std::out_of_range       The result of the conversion exceeds the range of `int64_t`.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String that shall be converted into an `int64_t`.
+ *
+ * \return
+ * Result of the conversion.
+ */
+int64_t AnyNumberToI64(std::string const & s)
+{
+  return AnyNumberToI64(s,
+                        std::numeric_limits<int64_t>::min(),
+                        std::numeric_limits<int64_t>::max());
+}
+
+/**
+ * \ingroup GPCC_STRING
+ * \brief Converts a string containing any valid number representation into a value of type `int64_t` and checks
+ *        the result against a given `min` and `max`.
+ *
+ * This function accepts the following textual representations of data of type `int64_t`:
+ * - Hex values: 0x12000000000000CD, 0xAB00000000000000, 0xab00
+ * - Binary values: 0b01, 0b001000
+ * - Decimal numbers, digits 0..9 only. A leading +/- character is optional.
+ * - Leading and trailing space characters are not allowed.
+ *
+ * This function is intended to be used for interpreting user input. It provides maximum flexibility to the user when
+ * a `int64_t` shall be entered. Potential exceptions will contain a verbose error message.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * \throws std::invalid_argument   @p s contains no valid representation of a number.
+ *
+ * \throws std::out_of_range       The result of the conversion exceeds the range of [`min`;`max`].
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param s
+ * String that shall be converted into an `int64_t`.
+ *
+ * \param min
+ * Minimum allowed value.
+ *
+ * \param max
+ * Maximum allowed value.\n
+ * If `max` < `min`, then the range-check will always fail.
+ *
+ * \return
+ * Result of the conversion.
+ */
+int64_t AnyNumberToI64(std::string const & s, int64_t const min, int64_t const max)
+{
+  if (StartsWith(s, "0x"))
+  {
+    int64_t value = static_cast<int64_t>(ToU64(s,
+                                               16U,
+                                               0U,
+                                               std::numeric_limits<int64_t>::max()));
+
+    if ((value < min) || (value > max))
+      ThrowOutOfRange(s, min, max);
+
+    return value;
+  }
+  else if (StartsWith(s, "0b"))
+  {
+    int64_t value = static_cast<int64_t>(ToU64(s.substr(2),
+                                               2U,
+                                               0U,
+                                               std::numeric_limits<int64_t>::max()));
+
+    if ((value < min) || (value > max))
+      ThrowOutOfRange(s, min, max);
+
+    return value;
+  }
+  else
+  {
+    return ToI64(s, 10U, min, max);
   }
 }
 
