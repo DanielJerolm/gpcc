@@ -55,11 +55,17 @@ bool IsDecimalDigitsOnly(std::string const & s) noexcept;
 // Conversion X to string -----------------------------------------------------
 std::string ExceptionDescriptionToString(std::exception const & e);
 std::string ExceptionDescriptionToString(std::exception_ptr const & ePtr);
+
 std::string HexDump(uint32_t const address, void const * const pData, size_t const n, uint8_t const wordSize, uint8_t valuesPerLine);
-std::string ToHex(uint32_t const value, uint8_t const width);
-std::string ToBin(uint32_t value, uint8_t width);
-std::string ToHexNoPrefix(uint32_t const value, uint8_t const width);
-std::string ToDecAndHex(uint32_t const value, uint8_t const width);
+
+template<typename T>
+std::string ToHex(T const value, uint8_t const width);
+template<typename T>
+std::string ToBin(T value, uint8_t width);
+template<typename T>
+std::string ToHexNoPrefix(T const value, uint8_t const width);
+template<typename T>
+std::string ToDecAndHex(T const value, uint8_t const width);
 
 // Conversion string to X -----------------------------------------------------
 uint8_t DecimalToU8(std::string const & s);
@@ -110,5 +116,6 @@ std::unique_ptr<char[]> ASPrintf(char const * const pFmt, ...);
 } // namesapce string
 } // namesapce gpcc
 
+#include "tools.tcc"
 
 #endif // TOOLS_HPP_201701151802
