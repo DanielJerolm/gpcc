@@ -197,6 +197,9 @@ Next to do:
 
 History:
 ===============================================================================
+2024-11-29
+- Fix StringComposer: Output for value 0 if show base is enabled
+
 2024-11-04
 - Rename constants and #defines for end-of-line
 - Enhance doxygen: Behaviour and policies in TFC

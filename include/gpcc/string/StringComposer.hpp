@@ -106,6 +106,17 @@ namespace string {
  * - Field width: 0
  * - Precision for floating-point output: 6
  *
+ * ## Special note on prefixes showing the base
+ * Integer numbers can be printed using decimal, hexadecimal, or octal base. Printing the prefix can be enabled and
+ * disabled via @ref ShowBase() and @ref NoShowBase().
+ *
+ * When printing an integer number using alignment @ref AlignLeft() or @ref AlignRight() , then the prefix ("0x" or "0")
+ * will be omitted, if the value that shall be printed is zero. This is the typical behavior of `snprintf()` and
+ * `std::ostringstream`.
+ *
+ * When printing an integer number using alignment @ref AlignRightPadZero(), then the prefix will always be printed if
+ * enabled, regardless if the value is zero or not.
+ *
  * - - -
  *
  * __Thread safety:__\n
@@ -262,6 +273,7 @@ class StringComposer final
     template<typename T>
     void PrintToBuffer(char* const buffer, size_t const bufferSize, Type const type, T const value) const;
     bool SetupFormatString(char* pFMT, Type const type) const noexcept;
+    int CalcWidthForsnprintf(Type const type) const noexcept;
 
     static bool IsFloat(Type const type) noexcept;
 };
@@ -737,6 +749,9 @@ inline StringComposer& StringComposer::AutoFloat(StringComposer& sc)
  * If the length of the output is less than the configured field-width, then the output will be padded on the right side
  * with white-spaces.
  *
+ * When printing integer numbers with this type of alignment, then a potential prefix ('0x' or '0') is always omitted,
+ * if the value to be printed is zero.
+ *
  * Usage:
  * ~~~{.cpp}
  * std::string str = "1234";
@@ -780,6 +795,9 @@ inline StringComposer& StringComposer::AlignLeft(StringComposer& sc)
  *
  * If the length of the output is less than the configured field-width, then the output will be padded on the left side
  * with white-spaces.
+ *
+ * When printing integer numbers with this type of alignment, then a potential prefix ('0x' or '0') is always omitted,
+ * if the value to be printed is zero.
  *
  * Usage:
  * ~~~{.cpp}
@@ -826,7 +844,8 @@ inline StringComposer& StringComposer::AlignRight(StringComposer& sc)
  * If the length of the output is less than the configured field-width, then the output will be padded on the left side
  * with zeros (for figures) or white-spaces (for text).
  *
- * If there is a prefix (e.g. 0x), then the padding zeros are inserted behind the prefix.
+ * If there is a prefix (e.g. 0x), then the padding zeros are inserted behind the prefix. In contrast to
+ * @ref AlignLeft() and @ref AlignRight(), the prefix is not omitted if the value to be printed is zero.
  *
  * Usage:
  * ~~~{.cpp}
@@ -872,7 +891,7 @@ inline StringComposer& StringComposer::AlignRightPadZero(StringComposer& sc)
 }
 
 /**
- * \brief Configures a @ref StringComposer to prefix positive integer and floating-point numbers with a '+'-sign.
+ * \brief Configures a @ref StringComposer to prefix positive signed integer and floating-point numbers with a '+'-sign.
  *
  * Usage:
  * ~~~{.cpp}

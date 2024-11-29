@@ -227,6 +227,46 @@ TEST(gpcc_string_StringComposer, Append_longdouble_AlignRightPadWhitespaces)
   EXPECT_STREQ(s.c_str(), pExpectedStr);
 }
 
+TEST(gpcc_string_StringComposer, Append_longdouble_HexFloat_AlignRightPadWhitespaces_Zero)
+{
+  long double z = 0;
+
+  char const * const pExpectedStr = "      0x0p+0;0x0p+0;";
+
+  // test reference
+  std::ostringstream reference;
+  reference << std::hexfloat << std::setw(12) << z << ';' << z << ';';
+  std::string s(reference.str());
+  EXPECT_STREQ(s.c_str(), pExpectedStr);
+
+  // test UUT
+  StringComposer uut;
+  uut << StringComposer::HexFloat << StringComposer::Width(12) << z << ';' << z << ';';
+
+  s = uut.Get();
+  EXPECT_STREQ(s.c_str(), pExpectedStr);
+}
+
+TEST(gpcc_string_StringComposer, Append_longdouble_HexFloat_AlignLeftPadWhitespaces_Zero)
+{
+  long double z = 0;
+
+  char const * const pExpectedStr = "0x0p+0      ;0x0p+0;";
+
+  // test reference
+  std::ostringstream reference;
+  reference << std::hexfloat << std::left << std::setw(12) << z << ';' << z << ';';
+  std::string s(reference.str());
+  EXPECT_STREQ(s.c_str(), pExpectedStr);
+
+  // test UUT
+  StringComposer uut;
+  uut << StringComposer::HexFloat << StringComposer::AlignLeft << StringComposer::Width(12) << z << ';' << z << ';';
+
+  s = uut.Get();
+  EXPECT_STREQ(s.c_str(), pExpectedStr);
+}
+
 TEST(gpcc_string_StringComposer, Append_longdouble_HexFloat_AlignRightPadZero)
 {
   long double v1 = 37.5;
@@ -239,6 +279,22 @@ TEST(gpcc_string_StringComposer, Append_longdouble_HexFloat_AlignRightPadZero)
   StringComposer uut;
   uut << StringComposer::AlignRightPadZero << StringComposer::HexFloat
       << StringComposer::Width(24) << v1 << ';' << StringComposer::Width(24) << v2 << ';';
+
+  std::string s(uut.Get());
+  EXPECT_STREQ(s.c_str(), pExpectedStr);
+}
+
+TEST(gpcc_string_StringComposer, Append_longdouble_HexFloat_AlignRightPadZero_Zero)
+{
+  long double z = 0;
+
+  char const * const pExpectedStr = "0x00000000000p+0;0x0p+0;";
+
+  // The reference (std::ostringstream) is not tested. It pads in front of the base.
+
+  StringComposer uut;
+  uut << StringComposer::AlignRightPadZero << StringComposer::HexFloat
+      << StringComposer::Width(16) << z << ';'  << z << ';';
 
   std::string s(uut.Get());
   EXPECT_STREQ(s.c_str(), pExpectedStr);
@@ -286,6 +342,79 @@ TEST(gpcc_string_StringComposer, Append_longdouble_Scientific_UppercaseLowercase
   EXPECT_STREQ(s.c_str(), pExpectedStr);
 }
 
+TEST(gpcc_string_StringComposer, Append_longdouble_Scientific_AlignRightPadWhitespaces_Zero)
+{
+  long double z = 0;
+
+  char const * const pExpectedStr = "    0.000000e+00;0.000000e+00;";
+
+  // test reference
+  std::ostringstream reference;
+  reference << std::scientific << std::setw(16) << z << ';' << z << ';';
+  std::string s(reference.str());
+  EXPECT_STREQ(s.c_str(), pExpectedStr);
+
+  // test UUT
+  StringComposer uut;
+  uut << StringComposer::ScientificFloat << StringComposer::Width(16) << z << ';' << z << ';';
+
+  s = uut.Get();
+  EXPECT_STREQ(s.c_str(), pExpectedStr);
+}
+
+TEST(gpcc_string_StringComposer, Append_longdouble_Scientific_AlignLeftPadWhitespaces_Zero)
+{
+  long double z = 0;
+
+  char const * const pExpectedStr = "0.000000e+00    ;0.000000e+00;";
+
+  // test reference
+  std::ostringstream reference;
+  reference << std::scientific << std::left << std::setw(16) << z << ';' << z << ';';
+  std::string s(reference.str());
+  EXPECT_STREQ(s.c_str(), pExpectedStr);
+
+  // test UUT
+  StringComposer uut;
+  uut << StringComposer::ScientificFloat << StringComposer::AlignLeft << StringComposer::Width(16) << z << ';' << z << ';';
+
+  s = uut.Get();
+  EXPECT_STREQ(s.c_str(), pExpectedStr);
+}
+
+TEST(gpcc_string_StringComposer, Append_longdouble_Scientific_AlignRightPadZero)
+{
+  long double v1 = 37.5;
+  long double v2 = -133.23;
+
+  char const * const pExpectedStr = "00003.750000e+01;-0001.332300e+02;";
+
+  // The reference (std::ostringstream) is not tested. It pads in front of the base.
+
+  StringComposer uut;
+  uut << StringComposer::AlignRightPadZero << StringComposer::ScientificFloat
+      << StringComposer::Width(16) << v1 << ';' << StringComposer::Width(16) << v2 << ';';
+
+  std::string s(uut.Get());
+  EXPECT_STREQ(s.c_str(), pExpectedStr);
+}
+
+TEST(gpcc_string_StringComposer, Append_longdouble_Scientific_AlignRightPadZero_Zero)
+{
+  long double z = 0;
+
+  char const * const pExpectedStr = "00000.000000e+00;0.000000e+00;";
+
+  // The reference (std::ostringstream) is not tested. It pads in front of the base.
+
+  StringComposer uut;
+  uut << StringComposer::AlignRightPadZero << StringComposer::ScientificFloat
+      << StringComposer::Width(16) << z << ';'  << z << ';';
+
+  std::string s(uut.Get());
+  EXPECT_STREQ(s.c_str(), pExpectedStr);
+}
+
 TEST(gpcc_string_StringComposer, Append_longdouble_Fixed_DefaultPrec)
 {
   long double v1 = 37.5;
@@ -328,7 +457,7 @@ TEST(gpcc_string_StringComposer, Append_longdouble_Fixed_DefaultPrec_ShowPos)
   EXPECT_STREQ(s.c_str(), pExpectedStr);
 }
 
-TEST(gpcc_string_StringComposer, Append_longdouble_Fixed_Prec2Sticky)
+TEST(gpcc_string_StringComposer, Append_longdouble_Fixed_PrecisionIsSticky)
 {
   long double v1 = 37.558;
   long double v2 = -133.2;
@@ -347,6 +476,79 @@ TEST(gpcc_string_StringComposer, Append_longdouble_Fixed_Prec2Sticky)
   uut << StringComposer::FixedFloat << StringComposer::Precision(2) << v1 << ';' << v2 << ';' << v3 << ';';
 
   s = uut.Get();
+  EXPECT_STREQ(s.c_str(), pExpectedStr);
+}
+
+TEST(gpcc_string_StringComposer, Append_longdouble_Fixed_AlignRightPadWhitespaces_Zero)
+{
+  long double z = 0;
+
+  char const * const pExpectedStr = "    0.000000;0.000000;";
+
+  // test reference
+  std::ostringstream reference;
+  reference << std::fixed << std::setw(12) << z << ';' << z << ';';
+  std::string s(reference.str());
+  EXPECT_STREQ(s.c_str(), pExpectedStr);
+
+  // test UUT
+  StringComposer uut;
+  uut << StringComposer::FixedFloat << StringComposer::Width(12) << z << ';' << z << ';';
+
+  s = uut.Get();
+  EXPECT_STREQ(s.c_str(), pExpectedStr);
+}
+
+TEST(gpcc_string_StringComposer, Append_longdouble_Fixed_AlignLeftPadWhitespaces_Zero)
+{
+  long double z = 0;
+
+  char const * const pExpectedStr = "0.000000    ;0.000000;";
+
+  // test reference
+  std::ostringstream reference;
+  reference << std::fixed << std::left << std::setw(12) << z << ';' << z << ';';
+  std::string s(reference.str());
+  EXPECT_STREQ(s.c_str(), pExpectedStr);
+
+  // test UUT
+  StringComposer uut;
+  uut << StringComposer::FixedFloat << StringComposer::AlignLeft << StringComposer::Width(12) << z << ';' << z << ';';
+
+  s = uut.Get();
+  EXPECT_STREQ(s.c_str(), pExpectedStr);
+}
+
+TEST(gpcc_string_StringComposer, Append_longdouble_Fixed_AlignRightPadZero)
+{
+  long double v1 = 37.5;
+  long double v2 = -133.23;
+
+  char const * const pExpectedStr = "00037.500000;-0133.230000;";
+
+  // The reference (std::ostringstream) is not tested. It pads in front of the base.
+
+  StringComposer uut;
+  uut << StringComposer::AlignRightPadZero << StringComposer::FixedFloat
+      << StringComposer::Width(12) << v1 << ';' << StringComposer::Width(12) << v2 << ';';
+
+  std::string s(uut.Get());
+  EXPECT_STREQ(s.c_str(), pExpectedStr);
+}
+
+TEST(gpcc_string_StringComposer, Append_longdouble_Fixed_AlignRightPadZero_Zero)
+{
+  long double z = 0;
+
+  char const * const pExpectedStr = "00000.000000;0.000000;";
+
+  // The reference (std::ostringstream) is not tested. It pads in front of the base.
+
+  StringComposer uut;
+  uut << StringComposer::AlignRightPadZero << StringComposer::FixedFloat
+      << StringComposer::Width(12) << z << ';' << z << ';';
+
+  std::string s(uut.Get());
   EXPECT_STREQ(s.c_str(), pExpectedStr);
 }
 

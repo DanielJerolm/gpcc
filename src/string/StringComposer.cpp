@@ -955,12 +955,13 @@ std::string StringComposer::Get(void) const
 template<typename T>
 void StringComposer::PrintiToBuffer(char* const buffer, size_t const bufferSize, Type const type, T const value) const
 {
+  int const width = CalcWidthForsnprintf(type);
   char fmt[maxFmtStrBufSize];
   int status;
   if (!SetupFormatString(fmt, type))
-    status = sniprintf(buffer, bufferSize, fmt, width_, value);
+    status = sniprintf(buffer, bufferSize, fmt, width, value);
   else
-    status = sniprintf(buffer, bufferSize, fmt, width_, prec_, value);
+    status = sniprintf(buffer, bufferSize, fmt, width, prec_, value);
 
   if (status < 0)
     throw std::logic_error("sniprintf failed");
@@ -1009,12 +1010,14 @@ void StringComposer::PrintiToBuffer(char* const buffer, size_t const bufferSize,
 template<typename T>
 void StringComposer::PrintToBuffer(char* const buffer, size_t const bufferSize, Type const type, T const value) const
 {
+  int const width = CalcWidthForsnprintf(type);
+
   char fmt[maxFmtStrBufSize];
   int status;
   if (!SetupFormatString(fmt, type))
-    status = snprintf(buffer, bufferSize, fmt, width_, value);
+    status = snprintf(buffer, bufferSize, fmt, width, value);
   else
-    status = snprintf(buffer, bufferSize, fmt, width_, prec_, value);
+    status = snprintf(buffer, bufferSize, fmt, width, prec_, value);
 
   if (status < 0)
     throw std::logic_error("snprintf failed");
@@ -1027,12 +1030,13 @@ void StringComposer::PrintToBuffer(char* const buffer, size_t const bufferSize, 
  *
  * Depending on the return value, `snprintf()` must be invoked as follows:
  * ~~~{cpp}
+ * int const width = CalcWidthForsnprintf(type);
  * char fmt[maxFmtStrBufSize];
  * int status;
  * if (!SetupFormatString(fmt, type))
- *   status = snprintf(buffer, bufferSize, fmt, width_, value);
+ *   status = snprintf(buffer, bufferSize, fmt, width, value);
  * else
- *   status = snprintf(buffer, bufferSize, fmt, width_, prec_, value);
+ *   status = snprintf(buffer, bufferSize, fmt, width, prec_, value);
  * ~~~
  *
  * - - -
@@ -1060,10 +1064,31 @@ void StringComposer::PrintToBuffer(char* const buffer, size_t const bufferSize, 
  */
 bool StringComposer::SetupFormatString(char* pFMT, Type const type) const noexcept
 {
-  static_assert(maxFmtStrBufSize >= 12U);
+  static_assert(maxFmtStrBufSize >= 12U); // TODO: Check this
 
   bool providePrec = false;
   bool const fpType = IsFloat(type);
+
+  // If Alignment::rightPadZero is used and if the value is an integral type, then we print the base ourselves via the
+  // format string regardless if the value to be printed is zero or not. For the other alignment modes, snprintf() will
+  // print the base (#-modifier in flags), but only if the value to be printed is not zero.
+  if ((showBase_) && (align_ == Alignment::rightPadZero) && (!fpType))
+  {
+    switch (base_)
+    {
+      case Base::decimal:
+        break;
+
+      case Base::hexadecimal:
+        *pFMT++ = '0';
+        *pFMT++ = uppercase_ ? 'X' : 'x';
+        break;
+
+      case Base::octal:
+        *pFMT++ = '0';
+        break;
+    }
+  }
 
   // Format string expected by snprintf() and friends:
   // %[pos][flags][width][.prec][size]type
@@ -1091,7 +1116,7 @@ bool StringComposer::SetupFormatString(char* pFMT, Type const type) const noexce
   }
   else
   {
-    if (showBase_)
+    if ((showBase_) && (align_ != Alignment::rightPadZero))
       *pFMT++ = '#';
   }
 
@@ -1256,6 +1281,49 @@ bool StringComposer::SetupFormatString(char* pFMT, Type const type) const noexce
   // add trailing null-char
   *pFMT = 0;
   return providePrec;
+}
+
+/**
+ * \brief Calculates the field-width that must be passed to `snprintf()` when using it with a format string created
+ *        by @ref SetupFormatString().
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * The state of the object is not modified. Concurrent accesses are safe.
+ *
+ * __Exception safety:__\n
+ * No-throw guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param type
+ * Type that shall be converted by `snprintf()`.
+ *
+ * \return
+ * Field width that must be passed to `snprintf()`. See @ref SetupFormatString() for details.
+ */
+int StringComposer::CalcWidthForsnprintf(Type const type) const noexcept
+{
+  int width = width_;
+
+  if ((showBase_) && (align_ == Alignment::rightPadZero) && (!IsFloat(type)))
+  {
+    switch (base_)
+    {
+      case Base::decimal:                 break;
+      case Base::hexadecimal: width -= 2; break;
+      case Base::octal:       width -= 1; break;
+    }
+
+    if (width < 0)
+      width = 0;
+  }
+
+  return width;
 }
 
 /**

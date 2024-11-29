@@ -228,6 +228,8 @@ TEST(gpcc_string_StringComposer, Append_longlong_baseHexNegativeValue)
 
   std::string s_uut = uut.Get();
   EXPECT_STREQ(s_ref.c_str(), s_uut.c_str());
+
+  EXPECT_TRUE(s_uut.find('-') == std::string::npos) << "Output contains a minus";
 }
 
 TEST(gpcc_string_StringComposer, Append_longlong_showBaseIsSticky)
@@ -251,6 +253,62 @@ TEST(gpcc_string_StringComposer, Append_longlong_showBaseIsSticky)
 
   s = uut.Get();
   EXPECT_STREQ(s.c_str(), pExpectedStr);
+}
+
+TEST(gpcc_string_StringComposer, Append_longlong_baseHex_showBase_Width4_Zero)
+{
+  long long z = 0;
+
+  char const * const pExpectedStrRef = "0   ;   0;0000;";
+  char const * const pExpectedStrUUT = "0   ;   0;0x00;";
+
+  // test reference
+  std::ostringstream reference;
+  reference << std::hex << std::showbase
+            << std::left << std::setw(4) << z << ';'
+            << std::right << std::setw(4) << z << ';'
+            << std::right << std::setfill('0') << std::setw(4) << z << ';';
+
+  std::string s(reference.str());
+  EXPECT_STREQ(s.c_str(), pExpectedStrRef);
+
+  // test UUT
+  StringComposer uut;
+  uut << StringComposer::BaseHex << StringComposer::ShowBase
+      << StringComposer::AlignLeft << StringComposer::Width(4) << z << ';'
+      << StringComposer::AlignRight << StringComposer::Width(4) << z << ';'
+      << StringComposer::AlignRightPadZero << StringComposer::Width(4) << z << ';';
+
+  s = uut.Get();
+  EXPECT_STREQ(s.c_str(), pExpectedStrUUT);
+}
+
+TEST(gpcc_string_StringComposer, Append_longlong_baseHex_showBase_Width0_Zero)
+{
+  long long z = 0;
+
+  char const * const pExpectedStrRef = "0;0;0;";
+  char const * const pExpectedStrUUT = "0;0;0x0;";
+
+  // test reference
+  std::ostringstream reference;
+  reference << std::hex << std::showbase
+            << std::left <<  z << ';'
+            << std::right << z << ';'
+            << std::right << std::setfill('0') << z << ';';
+
+  std::string s(reference.str());
+  EXPECT_STREQ(s.c_str(), pExpectedStrRef);
+
+  // test UUT
+  StringComposer uut;
+  uut << StringComposer::BaseHex << StringComposer::ShowBase
+      << StringComposer::AlignLeft << z << ';'
+      << StringComposer::AlignRight << z << ';'
+      << StringComposer::AlignRightPadZero << z << ';';
+
+  s = uut.Get();
+  EXPECT_STREQ(s.c_str(), pExpectedStrUUT);
 }
 
 TEST(gpcc_string_StringComposer, Append_longlong_baseHex_alignRightPadZero)
@@ -352,6 +410,64 @@ TEST(gpcc_string_StringComposer, Append_longlong_baseOctalNegativeValue)
 
   std::string s_uut = uut.Get();
   EXPECT_STREQ(s_ref.c_str(), s_uut.c_str());
+
+  EXPECT_TRUE(s_uut.find('-') == std::string::npos) << "Output contains a minus";
+}
+
+TEST(gpcc_string_StringComposer, Append_longlong_baseOctal_showBase_Width4_Zero)
+{
+  long long z = 0;
+
+  char const * const pExpectedStrRef = "0   ;   0;0000;";
+  char const * const pExpectedStrUUT = "0   ;   0;0000;";
+
+  // test reference
+  std::ostringstream reference;
+  reference << std::oct << std::showbase
+            << std::left << std::setw(4) << z << ';'
+            << std::right << std::setw(4) << z << ';'
+            << std::right << std::setfill('0') << std::setw(4) << z << ';';
+
+  std::string s(reference.str());
+  EXPECT_STREQ(s.c_str(), pExpectedStrRef);
+
+  // test UUT
+  StringComposer uut;
+  uut << StringComposer::BaseOct << StringComposer::ShowBase
+      << StringComposer::AlignLeft << StringComposer::Width(4) << z << ';'
+      << StringComposer::AlignRight << StringComposer::Width(4) << z << ';'
+      << StringComposer::AlignRightPadZero << StringComposer::Width(4) << z << ';';
+
+  s = uut.Get();
+  EXPECT_STREQ(s.c_str(), pExpectedStrUUT);
+}
+
+TEST(gpcc_string_StringComposer, Append_longlong_baseOctal_showBase_Width0_Zero)
+{
+  long long z = 0;
+
+  char const * const pExpectedStrRef = "0;0;0;";
+  char const * const pExpectedStrUUT = "0;0;00;";
+
+  // test reference
+  std::ostringstream reference;
+  reference << std::oct << std::showbase
+            << std::left <<  z << ';'
+            << std::right << z << ';'
+            << std::right << std::setfill('0') << z << ';';
+
+  std::string s(reference.str());
+  EXPECT_STREQ(s.c_str(), pExpectedStrRef);
+
+  // test UUT
+  StringComposer uut;
+  uut << StringComposer::BaseOct << StringComposer::ShowBase
+      << StringComposer::AlignLeft << z << ';'
+      << StringComposer::AlignRight << z << ';'
+      << StringComposer::AlignRightPadZero << z << ';';
+
+  s = uut.Get();
+  EXPECT_STREQ(s.c_str(), pExpectedStrUUT);
 }
 
 TEST(gpcc_string_StringComposer, Append_longlong_MinMax)
