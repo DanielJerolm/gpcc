@@ -1316,13 +1316,13 @@ TEST(gpcc_string_tools_Tests, HexDump_8bit)
     0x12
   };
 
-  std::string result = HexDump(0x1234ABCDU, data, 8, 1, 8);
+  std::string result = HexDump(0x1234ABCDUL, 8U, data, 8, 1, 8);
   ASSERT_STREQ(result.c_str(), "0x1234ABCD: 41 42 61 FF AB 21 7E 12 ABa..!~.");
 
-  result = HexDump(0x1234ABCDU, data, 4, 1, 8);
+  result = HexDump(0x1234ABCDUL, 8U, data, 4, 1, 8);
   ASSERT_STREQ(result.c_str(), "0x1234ABCD: 41 42 61 FF             ABa.");
 
-  result = HexDump(0x1234ABCDU, data, 0, 1, 8);
+  result = HexDump(0x1234ABCDUL, 8U, data, 0, 1, 8);
   ASSERT_STREQ(result.c_str(), "0x1234ABCD:                         ");
 }
 TEST(gpcc_string_tools_Tests, HexDump_16bit)
@@ -1335,13 +1335,13 @@ TEST(gpcc_string_tools_Tests, HexDump_16bit)
     0x0708
   };
 
-  std::string result = HexDump(0x1234ABCDU, data, 8, 2, 4);
+  std::string result = HexDump(0x1234ABCDUL, 8U, data, 8, 2, 4);
   ASSERT_STREQ(result.c_str(), "0x1234ABCD: 0102 0304 0506 0708 ........");
 
-  result = HexDump(0x1234ABCDU, data, 4, 2, 4);
+  result = HexDump(0x1234ABCDUL, 8U, data, 4, 2, 4);
   ASSERT_STREQ(result.c_str(), "0x1234ABCD: 0102 0304           ....");
 
-  result = HexDump(0x1234ABCDU, data, 0, 2, 4);
+  result = HexDump(0x1234ABCDUL, 8U, data, 0, 2, 4);
   ASSERT_STREQ(result.c_str(), "0x1234ABCD:                     ");
 }
 TEST(gpcc_string_tools_Tests, HexDump_32bit)
@@ -1352,13 +1352,13 @@ TEST(gpcc_string_tools_Tests, HexDump_32bit)
     0x05060708
   };
 
-  std::string result = HexDump(0x1234ABCDU, data, 8, 4, 2);
+  std::string result = HexDump(0x1234ABCDUL, 8U, data, 8, 4, 2);
   ASSERT_STREQ(result.c_str(), "0x1234ABCD: 01020304 05060708 ........");
 
-  result = HexDump(0x1234ABCDU, data, 4, 4, 2);
+  result = HexDump(0x1234ABCDUL, 8U, data, 4, 4, 2);
   ASSERT_STREQ(result.c_str(), "0x1234ABCD: 01020304          ....");
 
-  result = HexDump(0x1234ABCDU, data, 0, 4, 2);
+  result = HexDump(0x1234ABCDUL, 8U, data, 0, 4, 2);
   ASSERT_STREQ(result.c_str(), "0x1234ABCD:                   ");
 }
 TEST(gpcc_string_tools_Tests, HexDump_Errors)
@@ -1378,19 +1378,19 @@ TEST(gpcc_string_tools_Tests, HexDump_Errors)
   std::string s;
 
   // pData nullptr
-  ASSERT_THROW(s = HexDump(0x12345678U, nullptr, 8, 1, 8), std::invalid_argument);
+  ASSERT_THROW(s = HexDump(0x12345678UL, 8U, nullptr, 8, 1, 8), std::invalid_argument);
 
   // wordSize zero
-  ASSERT_THROW(s = HexDump(0x12345678U, data, 8, 0, 8), std::invalid_argument);
+  ASSERT_THROW(s = HexDump(0x12345678UL, 8U, data, 8, 0, 8), std::invalid_argument);
 
   // n % wordSize != 0
-  ASSERT_THROW(s = HexDump(0x12345678U, data, 7, 2, 4), std::invalid_argument);
+  ASSERT_THROW(s = HexDump(0x12345678UL, 8U, data, 7, 2, 4), std::invalid_argument);
 
   // valuesPerLine too small
-  ASSERT_THROW(s = HexDump(0x12345678U, data, 8, 1, 4), std::invalid_argument);
+  ASSERT_THROW(s = HexDump(0x12345678UL, 8U, data, 8, 1, 4), std::invalid_argument);
 
   // invalid word size
-  ASSERT_THROW(s = HexDump(0x12345678U, data, 8, 8, 1), std::invalid_argument);
+  ASSERT_THROW(s = HexDump(0x12345678UL, 8U, data, 8, 8, 1), std::invalid_argument);
 
   (void)s;
 }
@@ -1502,34 +1502,34 @@ TEST(gpcc_string_tools_Tests, ToDecAndHex)
 
   // minimum with
   s = ToDecAndHex(0, 0);
-  EXPECT_TRUE(s == "0 (0x0)");
+  EXPECT_STREQ(s.c_str(), "0 (0x0)");
   s = ToDecAndHex(0, 1);
-  EXPECT_TRUE(s == "0 (0x0)");
+  EXPECT_STREQ(s.c_str(), "0 (0x0)");
   s = ToDecAndHex(0, 2);
-  EXPECT_TRUE(s == "0 (0x00)");
+  EXPECT_STREQ(s.c_str(), "0 (0x00)");
   s = ToDecAndHex(0, 3);
-  EXPECT_TRUE(s == "0 (0x000)");
+  EXPECT_STREQ(s.c_str(), "0 (0x000)");
   s = ToDecAndHex(0, 4);
-  EXPECT_TRUE(s == "0 (0x0000)");
+  EXPECT_STREQ(s.c_str(), "0 (0x0000)");
   s = ToDecAndHex(0, 5);
-  EXPECT_TRUE(s == "0 (0x00000)");
+  EXPECT_STREQ(s.c_str(), "0 (0x00000)");
   s = ToDecAndHex(0, 6);
-  EXPECT_TRUE(s == "0 (0x000000)");
+  EXPECT_STREQ(s.c_str(), "0 (0x000000)");
   s = ToDecAndHex(0, 7);
-  EXPECT_TRUE(s == "0 (0x0000000)");
+  EXPECT_STREQ(s.c_str(), "0 (0x0000000)");
   s = ToDecAndHex(0, 8);
-  EXPECT_TRUE(s == "0 (0x00000000)");
+  EXPECT_STREQ(s.c_str(), "0 (0x00000000)");
 
   // number larger than minimum width
   s = ToDecAndHex(1024, 2);
-  EXPECT_TRUE(s == "1024 (0x400)");
+  EXPECT_STREQ(s.c_str(), "1024 (0x400)");
 
   // upper case charaters
   s = ToDecAndHex(10, 2);
-  EXPECT_TRUE(s == "10 (0x0A)");
+  EXPECT_STREQ(s.c_str(), "10 (0x0A)");
 
   // bad width
-  ASSERT_THROW(s = ToDecAndHex(0, 9), std::invalid_argument);
+  ASSERT_THROW((void)ToDecAndHex(0, 9), std::invalid_argument);
 }
 
 // Conversion string to X -----------------------------------------------------

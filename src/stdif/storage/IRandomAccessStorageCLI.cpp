@@ -122,7 +122,7 @@ void CliCmdReadIRandomAccessStorage(std::string const & restOfLine,
     size_t bytes = n;
     if (bytes > 16U)
       bytes = 16U;
-    cli.WriteLine(gpcc::string::HexDump(address, buffer.data() + offset, bytes, 1U, 16U));
+    cli.WriteLine(gpcc::string::HexDump(static_cast<uintptr_t>(address), 8U, buffer.data() + offset, bytes, 1U, 16U));
     n -= bytes;
     address += bytes;
     offset += bytes;

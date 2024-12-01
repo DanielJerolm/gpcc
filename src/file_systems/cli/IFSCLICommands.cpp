@@ -294,7 +294,7 @@ void CLICMDDump(std::string const & restOfLine, gpcc::cli::CLI & cli, IFileStora
     if (bufLevel == 0)
       break;
 
-    cli.WriteLine(gpcc::string::HexDump(offset, buffer, bufLevel, 1U, 16U));
+    cli.WriteLine(gpcc::string::HexDump(static_cast<uintptr_t>(offset), 8U, buffer, bufLevel, 1U, 16U));
     offset += bufLevel;
     bufLevel = 0;
 

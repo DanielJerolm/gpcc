@@ -1632,6 +1632,20 @@ std::string ExceptionDescriptionToString(std::exception_ptr const & ePtr)
  * \ingroup GPCC_STRING
  * \brief Creates a string containing an detailed hex-dump of a chunk of binary data.
  *
+ * The hex dump contains the address, the data in hexadecimal format and the data in ASCII format. Bytes that are not
+ * a printable ASCII character are replaced by dots ('.').
+ *
+ * Example output (@p nbOfAddressDigits = 8, @p n = 25, @p wordSize = 1, @p valuePerLine = 4):\n
+ * ~~~{.txt}
+ * 0x10005320: 21 41 5C 87 .A..
+ * ~~~
+ *
+ * Example output (@p nbOfAddressDigits = 8, @p n = 4, @p wordSize = 1, @p valuePerLine = 8):\n
+ * Note: '_' explicitly shows white space characters used to pad the line until 8 values are contained\n
+ * ~~~{.txt}
+ * 0x10005320: 21 41 5C 87 __ __ __ __ .A..
+ * ~~~
+ *
  * - - -
  *
  * __Thread safety:__\n
@@ -1647,33 +1661,34 @@ std::string ExceptionDescriptionToString(std::exception_ptr const & ePtr)
  *
  * \param address
  * Address where the first byte of data is located at.\n
- * This is used for printing only. No read-access to the given address will be performed.
+ * This is used for printing only. No read-access will be performed from the given address.
+ *
+ * \param nbOfAddressDigits
+ * Number of hexadecimal digits that shall be reserved for the address in the output string.
  *
  * \param pData
  * Pointer to the data located at @p address.
  *
  * \param n
- * Number of bytes inside the buffer referenced by @p pData. \n
- * @p wordSize must divide this without any remainder.
+ * Number of __bytes__ inside the buffer referenced by @p pData. \n
+ * @p wordSize must divide this without any remainder. Zero is allowed.
  *
  * \param wordSize
- * Word size for displaying data in hex-format. This must be 1, 2, or 4.
+ * Word size for displaying data in hex-format. This must be 1, 2, 4, or 8.
  *
  * \param valuesPerLine
- * Number of hex values per line. If `n` / `wordSize` is less than this, then white spaces will be inserted.
+ * Number of hex values per line. If @p n divided by @p wordSize is less than this, then white spaces will be inserted
+ * into the output until @p valuesPerLine words are contained in the output.
  *
  * \return
- * String containing a detailed hex-dump of the binary data referenced by @p pData and @p n. \n
- * Example output (n = 4, wordSize = 1, valuePerLine = 4):\n
- * 0x10005321: 21 41 5C 87 .A..\n
- * Example output (n = 4, wordSize = 1, valuePerLine = 8):\n
- * 0x10005321: 21 41 5C 87 __ __ __ __ .A.. ('_' are not printed)
+ * String containing a detailed hex-dump of the binary data referenced by @p pData.
  */
-std::string HexDump(uint32_t const address,
+std::string HexDump(uintptr_t const address,
+                    uint8_t const nbOfAddressDigits,
                     void const * const pData,
                     size_t const n,
                     uint8_t const wordSize,
-                    uint8_t valuesPerLine)
+                    uint_fast8_t valuesPerLine)
 {
   if (pData == nullptr)
     throw std::invalid_argument("HexDump: pData");
@@ -1681,50 +1696,63 @@ std::string HexDump(uint32_t const address,
   if ((wordSize == 0U) || ((n % wordSize) != 0U))
     throw std::invalid_argument("HexDump: n <-> wordSize");
 
-  if ((valuesPerLine < n) / wordSize)
-    throw std::invalid_argument("HexDump: valuesPerLine invalid");
+  if (valuesPerLine == 0U)
+    throw std::invalid_argument("HexDump: valuesPerLine");
 
   using gpcc::string::StringComposer;
   StringComposer sc;
 
   sc << StringComposer::AlignRightPadZero << StringComposer::BaseHex << StringComposer::Uppercase
-      << "0x" << StringComposer::Width(8) << address << ": ";
+      << "0x" << StringComposer::Width(nbOfAddressDigits) << address << ": ";
 
   switch (wordSize)
   {
     case 1U:
     {
       uint8_t const * p = reinterpret_cast<uint8_t const *>(pData);
+
       for (size_t i = 0U; i < n; i++, valuesPerLine--)
         sc << StringComposer::Width(2) << static_cast<unsigned int>(p[i]) << ' ';
-      while (valuesPerLine-- != 0U)
-        sc << "   ";
+
       break;
     }
 
     case 2U:
     {
       uint16_t const * p = reinterpret_cast<uint16_t const *>(pData);
+
       for (size_t i = 0U; i < (n / 2U); i++, valuesPerLine--)
         sc << StringComposer::Width(4) << p[i] << ' ';
-      while (valuesPerLine-- != 0U)
-        sc << "     ";
+
       break;
     }
 
     case 4U:
     {
       uint32_t const * p = reinterpret_cast<uint32_t const *>(pData);
+
       for (size_t i = 0U; i < (n / 4U); i++, valuesPerLine--)
         sc << StringComposer::Width(8) << p[i] << ' ';
-      while (valuesPerLine-- != 0U)
-        sc << "         ";
+
+      break;
+    }
+
+    case 8U:
+    {
+      uint64_t const * p = reinterpret_cast<uint64_t const *>(pData);
+
+      for (size_t i = 0U; i < (n / 8U); i++, valuesPerLine--)
+        sc << StringComposer::Width(16) << p[i] << ' ';
+
       break;
     }
 
     default:
       throw std::invalid_argument("HexDump: wordSize invalid");
   }
+
+  while (valuesPerLine-- != 0)
+    sc << StringComposer::Width((wordSize * 2U) + 1U) << ' ';
 
   char const * p = reinterpret_cast<char const *>(pData);
   for (size_t i = 0U; i < n; i++)
