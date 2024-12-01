@@ -5,10 +5,19 @@ GPCC Implementation History and Current Activities
 Next to do:
 ===============================================================================
 - Enhance gpcc::string by 64bit int <-> string conversion
-  - Update doc for glibc-workaround
-  - Template functions are not shown in doxygen
+  - [  ] Update doc for glibc-workaround
+  - Add unittests for...
+    [  ] ToHex()
+    [  ] ToBin()
+    [  ] ToHexNoPrefix()
+    [  ] ToDecAndHex()
+    ...with various data types and value zero
+  - [  ] Revise unittest for HexDump()
 
 - Use github's issue tracking instead of this file
+
+- Template functions are not shown in doxygen
+
 - Remove machine's architecture from OS. The OS should hide any machine specific stuff.
 
 - Doxygen: No documentation generated for members of template classes (e.g. MultiCallback, IntegralFilter)
