@@ -1398,138 +1398,585 @@ TEST(gpcc_string_tools_Tests, ToHex)
 {
   std::string s;
 
-  // minimum with
-  s = ToHex(0, 0);
-  EXPECT_TRUE(s == "0x0");
-  s = ToHex(0, 1);
-  EXPECT_TRUE(s == "0x0");
-  s = ToHex(0, 2);
-  EXPECT_TRUE(s == "0x00");
-  s = ToHex(0, 3);
-  EXPECT_TRUE(s == "0x000");
-  s = ToHex(0, 4);
-  EXPECT_TRUE(s == "0x0000");
-  s = ToHex(0, 5);
-  EXPECT_TRUE(s == "0x00000");
-  s = ToHex(0, 6);
-  EXPECT_TRUE(s == "0x000000");
-  s = ToHex(0, 7);
-  EXPECT_TRUE(s == "0x0000000");
-  s = ToHex(0, 8);
-  EXPECT_TRUE(s == "0x00000000");
+  // Test different data types with different values and width less than, equal to, and larger than bit width
+  // of the data type.
+  s = ToHex(static_cast<unsigned char>(0x01), 0U);
+  EXPECT_STREQ(s.c_str(), "0x1");
 
-  // number larger than minimum width
-  s = ToHex(1024, 2);
-  EXPECT_TRUE(s == "0x400");
+  s = ToHex(static_cast<unsigned char>(0x54), 2U);
+  EXPECT_STREQ(s.c_str(), "0x54");
 
-  // upper case charaters
-  s = ToHex(10, 2);
-  EXPECT_TRUE(s == "0x0A");
+  s = ToHex(static_cast<unsigned char>(0x01), 3U);
+  EXPECT_STREQ(s.c_str(), "0x001");
 
-  // bad width
-  ASSERT_THROW(s = ToHex(0, 9), std::invalid_argument);
+  s = ToHex(static_cast<unsigned char>(0x54), 3U);
+  EXPECT_STREQ(s.c_str(), "0x054");
+
+
+  s = ToHex(static_cast<uint8_t>(0x6BU), 0U);
+  EXPECT_STREQ(s.c_str(), "0x6B");
+
+  s = ToHex(static_cast<uint8_t>(0x6BU), 2U);
+  EXPECT_STREQ(s.c_str(), "0x6B");
+
+  s = ToHex(static_cast<uint8_t>(0x6BU), 4U);
+  EXPECT_STREQ(s.c_str(), "0x006B");
+
+  s = ToHex(static_cast<uint8_t>(0x6BU), 6U);
+  EXPECT_STREQ(s.c_str(), "0x00006B");
+
+
+  s = ToHex(static_cast<uint16_t>(0x556BU), 0U);
+  EXPECT_STREQ(s.c_str(), "0x556B");
+
+  s = ToHex(static_cast<uint16_t>(0x556BU), 2U);
+  EXPECT_STREQ(s.c_str(), "0x556B");
+
+  s = ToHex(static_cast<uint16_t>(0x556BU), 4U);
+  EXPECT_STREQ(s.c_str(), "0x556B");
+
+  s = ToHex(static_cast<uint16_t>(0x556BU), 6U);
+  EXPECT_STREQ(s.c_str(), "0x00556B");
+
+
+  s = ToHex(static_cast<uint32_t>(0x1234556BUL), 0U);
+  EXPECT_STREQ(s.c_str(), "0x1234556B");
+
+  s = ToHex(static_cast<uint32_t>(0x1234556BUL), 4U);
+  EXPECT_STREQ(s.c_str(), "0x1234556B");
+
+  s = ToHex(static_cast<uint32_t>(0x1234556BUL), 8U);
+  EXPECT_STREQ(s.c_str(), "0x1234556B");
+
+  s = ToHex(static_cast<uint32_t>(0x1234556BUL), 12U);
+  EXPECT_STREQ(s.c_str(), "0x00001234556B");
+
+
+  s = ToHex(static_cast<uint64_t>(0xABCD87651234556BULL), 0U);
+  EXPECT_STREQ(s.c_str(), "0xABCD87651234556B");
+
+  s = ToHex(static_cast<uint64_t>(0xABCD87651234556BULL), 15U);
+  EXPECT_STREQ(s.c_str(), "0xABCD87651234556B");
+
+  s = ToHex(static_cast<uint64_t>(0xABCD87651234556BULL), 16U);
+  EXPECT_STREQ(s.c_str(), "0xABCD87651234556B");
+
+
+  // Test value zero with different data types and bit width
+  s = ToHex(static_cast<unsigned char>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0x0");
+
+  s = ToHex(static_cast<unsigned char>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0x0");
+
+  s = ToHex(static_cast<unsigned char>(0), 2U);
+  EXPECT_STREQ(s.c_str(), "0x00");
+
+  s = ToHex(static_cast<unsigned char>(0), 3U);
+  EXPECT_STREQ(s.c_str(), "0x000");
+
+
+  s = ToHex(static_cast<uint8_t>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0x0");
+
+  s = ToHex(static_cast<uint8_t>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0x0");
+
+  s = ToHex(static_cast<uint8_t>(0), 2U);
+  EXPECT_STREQ(s.c_str(), "0x00");
+
+  s = ToHex(static_cast<uint8_t>(0), 3U);
+  EXPECT_STREQ(s.c_str(), "0x000");
+
+
+  s = ToHex(static_cast<uint16_t>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0x0");
+
+  s = ToHex(static_cast<uint16_t>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0x0");
+
+  s = ToHex(static_cast<uint16_t>(0), 4U);
+  EXPECT_STREQ(s.c_str(), "0x0000");
+
+  s = ToHex(static_cast<uint16_t>(0), 8U);
+  EXPECT_STREQ(s.c_str(), "0x00000000");
+
+  s = ToHex(static_cast<uint16_t>(0), 16U);
+  EXPECT_STREQ(s.c_str(), "0x0000000000000000");
+
+
+  s = ToHex(static_cast<uint32_t>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0x0");
+
+  s = ToHex(static_cast<uint32_t>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0x0");
+
+  s = ToHex(static_cast<uint32_t>(0), 2U);
+  EXPECT_STREQ(s.c_str(), "0x00");
+
+  s = ToHex(static_cast<uint32_t>(0), 8U);
+  EXPECT_STREQ(s.c_str(), "0x00000000");
+
+  s = ToHex(static_cast<uint32_t>(0), 16U);
+  EXPECT_STREQ(s.c_str(), "0x0000000000000000");
+
+
+  s = ToHex(static_cast<uint64_t>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0x0");
+
+  s = ToHex(static_cast<uint64_t>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0x0");
+
+  s = ToHex(static_cast<uint64_t>(0), 2U);
+  EXPECT_STREQ(s.c_str(), "0x00");
+
+  s = ToHex(static_cast<uint64_t>(0), 16U);
+  EXPECT_STREQ(s.c_str(), "0x0000000000000000");
+
+
+  // Test invalid arguments
+  EXPECT_THROW((void)ToHex(0U, 17U), std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, ToBin)
 {
   std::string s;
 
-  // minimum width
-  s = ToBin(0, 0);
-  EXPECT_STREQ(s.c_str(), "0b0");
-  s = ToBin(0, 1);
-  EXPECT_STREQ(s.c_str(), "0b0");
-  s = ToBin(0, 2);
-  EXPECT_STREQ(s.c_str(), "0b00");
+  // Test different data types with different values and width less than, equal to, and larger than bit width
+  // of the data type.
+  s = ToBin(static_cast<unsigned char>(0x01), 0U);
+  EXPECT_STREQ(s.c_str(), "0b1");
 
-  s = ToBin(0, 32);
-  EXPECT_STREQ(s.c_str(), "0b00000000000000000000000000000000");
-
-  // some numbers
-  s = ToBin(1U, 8);
-  EXPECT_STREQ(s.c_str(), "0b00000001");
-
-  s = ToBin(17U, 8);
-  EXPECT_STREQ(s.c_str(), "0b00010001");
-
-  s = ToBin(254U, 8);
-  EXPECT_STREQ(s.c_str(), "0b11111110");
-
-  // number larger than minimum width
-  s = ToBin(17U, 2);
+  s = ToBin(static_cast<unsigned char>(0x11), 0U);
   EXPECT_STREQ(s.c_str(), "0b10001");
 
-  // bad width
-  ASSERT_THROW(s = ToBin(0, 33), std::invalid_argument);
+  s = ToBin(static_cast<unsigned char>(0x11), 3U);
+  EXPECT_STREQ(s.c_str(), "0b10001");
+
+  s = ToBin(static_cast<unsigned char>(0x11), 8U);
+  EXPECT_STREQ(s.c_str(), "0b00010001");
+
+  s = ToBin(static_cast<unsigned char>(0x11), 12U);
+  EXPECT_STREQ(s.c_str(), "0b000000010001");
+
+
+  s = ToBin(static_cast<uint8_t>(0x01), 0U);
+  EXPECT_STREQ(s.c_str(), "0b1");
+
+  s = ToBin(static_cast<uint8_t>(0x11), 0U);
+  EXPECT_STREQ(s.c_str(), "0b10001");
+
+  s = ToBin(static_cast<uint8_t>(0x11), 3U);
+  EXPECT_STREQ(s.c_str(), "0b10001");
+
+  s = ToBin(static_cast<uint8_t>(0x11), 8U);
+  EXPECT_STREQ(s.c_str(), "0b00010001");
+
+  s = ToBin(static_cast<uint8_t>(0x11), 12U);
+  EXPECT_STREQ(s.c_str(), "0b000000010001");
+
+
+  s = ToBin(static_cast<uint16_t>(0x1111U), 0U);
+  EXPECT_STREQ(s.c_str(), "0b1000100010001");
+
+  s = ToBin(static_cast<uint16_t>(0x1111U), 2U);
+  EXPECT_STREQ(s.c_str(), "0b1000100010001");
+
+  s = ToBin(static_cast<uint16_t>(0x1111U), 16U);
+  EXPECT_STREQ(s.c_str(), "0b0001000100010001");
+
+  s = ToBin(static_cast<uint16_t>(0x1111U), 20);
+  EXPECT_STREQ(s.c_str(), "0b00000001000100010001");
+
+
+  s = ToBin(static_cast<uint32_t>(0x11111111UL), 0U);
+  EXPECT_STREQ(s.c_str(), "0b10001000100010001000100010001");
+
+  s = ToBin(static_cast<uint32_t>(0x11111111UL), 4U);
+  EXPECT_STREQ(s.c_str(), "0b10001000100010001000100010001");
+
+  s = ToBin(static_cast<uint32_t>(0x11111111UL), 32U);
+  EXPECT_STREQ(s.c_str(), "0b00010001000100010001000100010001");
+
+  s = ToBin(static_cast<uint32_t>(0x11111111UL), 40U);
+  EXPECT_STREQ(s.c_str(), "0b0000000000010001000100010001000100010001");
+
+
+  s = ToBin(static_cast<uint64_t>(0x1111111111111111), 0U);
+  EXPECT_STREQ(s.c_str(), "0b1000100010001000100010001000100010001000100010001000100010001");
+
+  s = ToBin(static_cast<uint64_t>(0x1111111111111111), 64U);
+  EXPECT_STREQ(s.c_str(), "0b0001000100010001000100010001000100010001000100010001000100010001");
+
+
+  // Test value zero with different data types and bit width
+  s = ToBin(static_cast<unsigned char>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0b0");
+
+  s = ToBin(static_cast<unsigned char>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0b0");
+
+  s = ToBin(static_cast<unsigned char>(0), 2U);
+  EXPECT_STREQ(s.c_str(), "0b00");
+
+  s = ToBin(static_cast<unsigned char>(0), 8U);
+  EXPECT_STREQ(s.c_str(), "0b00000000");
+
+  s = ToBin(static_cast<unsigned char>(0), 12U);
+  EXPECT_STREQ(s.c_str(), "0b000000000000");
+
+
+  s = ToBin(static_cast<uint8_t>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0b0");
+
+  s = ToBin(static_cast<uint8_t>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0b0");
+
+  s = ToBin(static_cast<uint8_t>(0), 2U);
+  EXPECT_STREQ(s.c_str(), "0b00");
+
+  s = ToBin(static_cast<uint8_t>(0), 8U);
+  EXPECT_STREQ(s.c_str(), "0b00000000");
+
+  s = ToBin(static_cast<uint8_t>(0), 12U);
+  EXPECT_STREQ(s.c_str(), "0b000000000000");
+
+
+  s = ToBin(static_cast<uint16_t>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0b0");
+
+  s = ToBin(static_cast<uint16_t>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0b0");
+
+  s = ToBin(static_cast<uint16_t>(0), 8U);
+  EXPECT_STREQ(s.c_str(), "0b00000000");
+
+  s = ToBin(static_cast<uint16_t>(0), 16U);
+  EXPECT_STREQ(s.c_str(), "0b0000000000000000");
+
+  s = ToBin(static_cast<uint16_t>(0), 20U);
+  EXPECT_STREQ(s.c_str(), "0b00000000000000000000");
+
+
+  s = ToBin(static_cast<uint32_t>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0b0");
+
+  s = ToBin(static_cast<uint32_t>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0b0");
+
+  s = ToBin(static_cast<uint32_t>(0), 2U);
+  EXPECT_STREQ(s.c_str(), "0b00");
+
+  s = ToBin(static_cast<uint32_t>(0), 32U);
+  EXPECT_STREQ(s.c_str(), "0b00000000000000000000000000000000");
+
+  s = ToBin(static_cast<uint32_t>(0), 40U);
+  EXPECT_STREQ(s.c_str(), "0b0000000000000000000000000000000000000000");
+
+
+  s = ToBin(static_cast<uint64_t>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0b0");
+
+  s = ToBin(static_cast<uint64_t>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0b0");
+
+  s = ToBin(static_cast<uint64_t>(0), 2U);
+  EXPECT_STREQ(s.c_str(), "0b00");
+
+  s = ToBin(static_cast<uint64_t>(0), 64U);
+  EXPECT_STREQ(s.c_str(), "0b0000000000000000000000000000000000000000000000000000000000000000");
+
+
+  // Test invalid arguments
+  EXPECT_THROW((void)ToBin(0U, 65U), std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, ToHexNoPrefix)
 {
   std::string s;
 
-  // minimum with
-  s = ToHexNoPrefix(0, 0);
-  EXPECT_TRUE(s == "0");
-  s = ToHexNoPrefix(0, 1);
-  EXPECT_TRUE(s == "0");
-  s = ToHexNoPrefix(0, 2);
-  EXPECT_TRUE(s == "00");
-  s = ToHexNoPrefix(0, 3);
-  EXPECT_TRUE(s == "000");
-  s = ToHexNoPrefix(0, 4);
-  EXPECT_TRUE(s == "0000");
-  s = ToHexNoPrefix(0, 5);
-  EXPECT_TRUE(s == "00000");
-  s = ToHexNoPrefix(0, 6);
-  EXPECT_TRUE(s == "000000");
-  s = ToHexNoPrefix(0, 7);
-  EXPECT_TRUE(s == "0000000");
-  s = ToHexNoPrefix(0, 8);
-  EXPECT_TRUE(s == "00000000");
+  // Test different data types with different values and width less than, equal to, and larger than bit width
+  // of the data type.
+  s = ToHexNoPrefix(static_cast<unsigned char>(0x01), 0U);
+  EXPECT_STREQ(s.c_str(), "1");
 
-  // number larger than minimum width
-  s = ToHexNoPrefix(1024, 2);
-  EXPECT_TRUE(s == "400");
+  s = ToHexNoPrefix(static_cast<unsigned char>(0x54), 2U);
+  EXPECT_STREQ(s.c_str(), "54");
 
-  // upper case charaters
-  s = ToHexNoPrefix(10, 2);
-  EXPECT_TRUE(s == "0A");
+  s = ToHexNoPrefix(static_cast<unsigned char>(0x01), 3U);
+  EXPECT_STREQ(s.c_str(), "001");
 
-  // bad width
-  ASSERT_THROW(s = ToHexNoPrefix(0, 9), std::invalid_argument);
+  s = ToHexNoPrefix(static_cast<unsigned char>(0x54), 3U);
+  EXPECT_STREQ(s.c_str(), "054");
+
+
+  s = ToHexNoPrefix(static_cast<uint8_t>(0x6BU), 0U);
+  EXPECT_STREQ(s.c_str(), "6B");
+
+  s = ToHexNoPrefix(static_cast<uint8_t>(0x6BU), 2U);
+  EXPECT_STREQ(s.c_str(), "6B");
+
+  s = ToHexNoPrefix(static_cast<uint8_t>(0x6BU), 4U);
+  EXPECT_STREQ(s.c_str(), "006B");
+
+  s = ToHexNoPrefix(static_cast<uint8_t>(0x6BU), 6U);
+  EXPECT_STREQ(s.c_str(), "00006B");
+
+
+  s = ToHexNoPrefix(static_cast<uint16_t>(0x556BU), 0U);
+  EXPECT_STREQ(s.c_str(), "556B");
+
+  s = ToHexNoPrefix(static_cast<uint16_t>(0x556BU), 2U);
+  EXPECT_STREQ(s.c_str(), "556B");
+
+  s = ToHexNoPrefix(static_cast<uint16_t>(0x556BU), 4U);
+  EXPECT_STREQ(s.c_str(), "556B");
+
+  s = ToHexNoPrefix(static_cast<uint16_t>(0x556BU), 6U);
+  EXPECT_STREQ(s.c_str(), "00556B");
+
+
+  s = ToHexNoPrefix(static_cast<uint32_t>(0x1234556BUL), 0U);
+  EXPECT_STREQ(s.c_str(), "1234556B");
+
+  s = ToHexNoPrefix(static_cast<uint32_t>(0x1234556BUL), 4U);
+  EXPECT_STREQ(s.c_str(), "1234556B");
+
+  s = ToHexNoPrefix(static_cast<uint32_t>(0x1234556BUL), 8U);
+  EXPECT_STREQ(s.c_str(), "1234556B");
+
+  s = ToHexNoPrefix(static_cast<uint32_t>(0x1234556BUL), 12U);
+  EXPECT_STREQ(s.c_str(), "00001234556B");
+
+
+  s = ToHexNoPrefix(static_cast<uint64_t>(0xABCD87651234556BULL), 0U);
+  EXPECT_STREQ(s.c_str(), "ABCD87651234556B");
+
+  s = ToHexNoPrefix(static_cast<uint64_t>(0xABCD87651234556BULL), 15U);
+  EXPECT_STREQ(s.c_str(), "ABCD87651234556B");
+
+  s = ToHexNoPrefix(static_cast<uint64_t>(0xABCD87651234556BULL), 16U);
+  EXPECT_STREQ(s.c_str(), "ABCD87651234556B");
+
+
+  // Test value zero with different data types and bit width
+  s = ToHexNoPrefix(static_cast<unsigned char>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0");
+
+  s = ToHexNoPrefix(static_cast<unsigned char>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0");
+
+  s = ToHexNoPrefix(static_cast<unsigned char>(0), 2U);
+  EXPECT_STREQ(s.c_str(), "00");
+
+  s = ToHexNoPrefix(static_cast<unsigned char>(0), 3U);
+  EXPECT_STREQ(s.c_str(), "000");
+
+
+  s = ToHexNoPrefix(static_cast<uint8_t>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0");
+
+  s = ToHexNoPrefix(static_cast<uint8_t>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0");
+
+  s = ToHexNoPrefix(static_cast<uint8_t>(0), 2U);
+  EXPECT_STREQ(s.c_str(), "00");
+
+  s = ToHexNoPrefix(static_cast<uint8_t>(0), 3U);
+  EXPECT_STREQ(s.c_str(), "000");
+
+
+  s = ToHexNoPrefix(static_cast<uint16_t>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0");
+
+  s = ToHexNoPrefix(static_cast<uint16_t>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0");
+
+  s = ToHexNoPrefix(static_cast<uint16_t>(0), 4U);
+  EXPECT_STREQ(s.c_str(), "0000");
+
+  s = ToHexNoPrefix(static_cast<uint16_t>(0), 8U);
+  EXPECT_STREQ(s.c_str(), "00000000");
+
+  s = ToHexNoPrefix(static_cast<uint16_t>(0), 16U);
+  EXPECT_STREQ(s.c_str(), "0000000000000000");
+
+
+  s = ToHexNoPrefix(static_cast<uint32_t>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0");
+
+  s = ToHexNoPrefix(static_cast<uint32_t>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0");
+
+  s = ToHexNoPrefix(static_cast<uint32_t>(0), 2U);
+  EXPECT_STREQ(s.c_str(), "00");
+
+  s = ToHexNoPrefix(static_cast<uint32_t>(0), 8U);
+  EXPECT_STREQ(s.c_str(), "00000000");
+
+  s = ToHexNoPrefix(static_cast<uint32_t>(0), 16U);
+  EXPECT_STREQ(s.c_str(), "0000000000000000");
+
+
+  s = ToHexNoPrefix(static_cast<uint64_t>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0");
+
+  s = ToHexNoPrefix(static_cast<uint64_t>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0");
+
+  s = ToHexNoPrefix(static_cast<uint64_t>(0), 2U);
+  EXPECT_STREQ(s.c_str(), "00");
+
+  s = ToHexNoPrefix(static_cast<uint64_t>(0), 16U);
+  EXPECT_STREQ(s.c_str(), "0000000000000000");
+
+
+  // Test invalid arguments
+  EXPECT_THROW((void)ToHexNoPrefix(0U, 17U), std::invalid_argument);
 }
+
 TEST(gpcc_string_tools_Tests, ToDecAndHex)
 {
   std::string s;
 
-  // minimum with
-  s = ToDecAndHex(0, 0);
+  // Test different data types with different values and width less than, equal to, and larger than bit width
+  // of the data type.
+  s = ToDecAndHex(static_cast<unsigned char>(0x1), 0U);
+  EXPECT_STREQ(s.c_str(), "1 (0x1)");
+
+  s = ToDecAndHex(static_cast<unsigned char>(0x54), 2U);
+  EXPECT_STREQ(s.c_str(), "84 (0x54)");
+
+  s = ToDecAndHex(static_cast<unsigned char>(0x01), 3U);
+  EXPECT_STREQ(s.c_str(), "1 (0x001)");
+
+  s = ToDecAndHex(static_cast<unsigned char>(0x54), 3U);
+  EXPECT_STREQ(s.c_str(), "84 (0x054)");
+
+
+  s = ToDecAndHex(static_cast<uint8_t>(0x6BU), 0U);
+  EXPECT_STREQ(s.c_str(), "107 (0x6B)");
+
+  s = ToDecAndHex(static_cast<uint8_t>(0x6BU), 2U);
+  EXPECT_STREQ(s.c_str(), "107 (0x6B)");
+
+  s = ToDecAndHex(static_cast<uint8_t>(0x6BU), 4U);
+  EXPECT_STREQ(s.c_str(), "107 (0x006B)");
+
+  s = ToDecAndHex(static_cast<uint8_t>(0x6BU), 6U);
+  EXPECT_STREQ(s.c_str(), "107 (0x00006B)");
+
+
+  s = ToDecAndHex(static_cast<uint16_t>(0x556BU), 0U);
+  EXPECT_STREQ(s.c_str(), "21867 (0x556B)");
+
+  s = ToDecAndHex(static_cast<uint16_t>(0x556BU), 2U);
+  EXPECT_STREQ(s.c_str(), "21867 (0x556B)");
+
+  s = ToDecAndHex(static_cast<uint16_t>(0x556BU), 4U);
+  EXPECT_STREQ(s.c_str(), "21867 (0x556B)");
+
+  s = ToDecAndHex(static_cast<uint16_t>(0x556BU), 6U);
+  EXPECT_STREQ(s.c_str(), "21867 (0x00556B)");
+
+
+  s = ToDecAndHex(static_cast<uint32_t>(0x1234556BUL), 0U);
+  EXPECT_STREQ(s.c_str(), "305419627 (0x1234556B)");
+
+  s = ToDecAndHex(static_cast<uint32_t>(0x1234556BUL), 4U);
+  EXPECT_STREQ(s.c_str(), "305419627 (0x1234556B)");
+
+  s = ToDecAndHex(static_cast<uint32_t>(0x1234556BUL), 8U);
+  EXPECT_STREQ(s.c_str(), "305419627 (0x1234556B)");
+
+  s = ToDecAndHex(static_cast<uint32_t>(0x1234556BUL), 12U);
+  EXPECT_STREQ(s.c_str(), "305419627 (0x00001234556B)");
+
+
+  s = ToDecAndHex(static_cast<uint64_t>(0x4000000000000000ULL), 0U);
+  EXPECT_STREQ(s.c_str(), "4611686018427387904 (0x4000000000000000)");
+
+  s = ToDecAndHex(static_cast<uint64_t>(0x4000000000000000ULL), 15U);
+  EXPECT_STREQ(s.c_str(), "4611686018427387904 (0x4000000000000000)");
+
+  s = ToDecAndHex(static_cast<uint64_t>(0x4000000000000000ULL), 16U);
+  EXPECT_STREQ(s.c_str(), "4611686018427387904 (0x4000000000000000)");
+
+
+  // Test value zero with different data types and bit width
+  s = ToDecAndHex(static_cast<unsigned char>(0), 0U);
   EXPECT_STREQ(s.c_str(), "0 (0x0)");
-  s = ToDecAndHex(0, 1);
+
+  s = ToDecAndHex(static_cast<unsigned char>(0), 1U);
   EXPECT_STREQ(s.c_str(), "0 (0x0)");
-  s = ToDecAndHex(0, 2);
+
+  s = ToDecAndHex(static_cast<unsigned char>(0), 2U);
   EXPECT_STREQ(s.c_str(), "0 (0x00)");
-  s = ToDecAndHex(0, 3);
+
+  s = ToDecAndHex(static_cast<unsigned char>(0), 3U);
   EXPECT_STREQ(s.c_str(), "0 (0x000)");
-  s = ToDecAndHex(0, 4);
+
+
+  s = ToDecAndHex(static_cast<uint8_t>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0 (0x0)");
+
+  s = ToDecAndHex(static_cast<uint8_t>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0 (0x0)");
+
+  s = ToDecAndHex(static_cast<uint8_t>(0), 2U);
+  EXPECT_STREQ(s.c_str(), "0 (0x00)");
+
+  s = ToDecAndHex(static_cast<uint8_t>(0), 3U);
+  EXPECT_STREQ(s.c_str(), "0 (0x000)");
+
+
+  s = ToDecAndHex(static_cast<uint16_t>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0 (0x0)");
+
+  s = ToDecAndHex(static_cast<uint16_t>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0 (0x0)");
+
+  s = ToDecAndHex(static_cast<uint16_t>(0), 4U);
   EXPECT_STREQ(s.c_str(), "0 (0x0000)");
-  s = ToDecAndHex(0, 5);
-  EXPECT_STREQ(s.c_str(), "0 (0x00000)");
-  s = ToDecAndHex(0, 6);
-  EXPECT_STREQ(s.c_str(), "0 (0x000000)");
-  s = ToDecAndHex(0, 7);
-  EXPECT_STREQ(s.c_str(), "0 (0x0000000)");
-  s = ToDecAndHex(0, 8);
+
+  s = ToDecAndHex(static_cast<uint16_t>(0), 8U);
   EXPECT_STREQ(s.c_str(), "0 (0x00000000)");
 
-  // number larger than minimum width
-  s = ToDecAndHex(1024, 2);
-  EXPECT_STREQ(s.c_str(), "1024 (0x400)");
+  s = ToDecAndHex(static_cast<uint16_t>(0), 16U);
+  EXPECT_STREQ(s.c_str(), "0 (0x0000000000000000)");
 
-  // upper case charaters
-  s = ToDecAndHex(10, 2);
-  EXPECT_STREQ(s.c_str(), "10 (0x0A)");
 
-  // bad width
-  ASSERT_THROW((void)ToDecAndHex(0, 9), std::invalid_argument);
+  s = ToDecAndHex(static_cast<uint32_t>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0 (0x0)");
+
+  s = ToDecAndHex(static_cast<uint32_t>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0 (0x0)");
+
+  s = ToDecAndHex(static_cast<uint32_t>(0), 2U);
+  EXPECT_STREQ(s.c_str(), "0 (0x00)");
+
+  s = ToDecAndHex(static_cast<uint32_t>(0), 8U);
+  EXPECT_STREQ(s.c_str(), "0 (0x00000000)");
+
+  s = ToDecAndHex(static_cast<uint32_t>(0), 16U);
+  EXPECT_STREQ(s.c_str(), "0 (0x0000000000000000)");
+
+
+  s = ToDecAndHex(static_cast<uint64_t>(0), 0U);
+  EXPECT_STREQ(s.c_str(), "0 (0x0)");
+
+  s = ToDecAndHex(static_cast<uint64_t>(0), 1U);
+  EXPECT_STREQ(s.c_str(), "0 (0x0)");
+
+  s = ToDecAndHex(static_cast<uint64_t>(0), 2U);
+  EXPECT_STREQ(s.c_str(), "0 (0x00)");
+
+  s = ToDecAndHex(static_cast<uint64_t>(0), 16U);
+  EXPECT_STREQ(s.c_str(), "0 (0x0000000000000000)");
+
+
+  // Test invalid arguments
+  EXPECT_THROW((void)ToDecAndHex(0U, 17U), std::invalid_argument);
 }
 
 // Conversion string to X -----------------------------------------------------

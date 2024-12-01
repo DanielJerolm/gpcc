@@ -7,11 +7,12 @@ Next to do:
 - Enhance gpcc::string by 64bit int <-> string conversion
   - [  ] Update doc for glibc-workaround
   - Add unittests for...
-    [  ] ToHex()
-    [  ] ToBin()
-    [  ] ToHexNoPrefix()
-    [  ] ToDecAndHex()
+    [OK] ToHex()
+    [OK] ToBin()
+    [OK] ToHexNoPrefix()
+    [OK] ToDecAndHex()
     ...with various data types and value zero
+    [  ] Rename parameter width -> digits
   - [  ] Revise unittest for HexDump()
 
 - Use github's issue tracking instead of this file

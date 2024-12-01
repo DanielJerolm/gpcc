@@ -18,7 +18,7 @@ namespace string {
 
 /**
  * \ingroup GPCC_STRING
- * \brief Converts an integral value into an `std::string` using hexadecimal representation and prefix "0x".
+ * \brief Converts an unsigned integral value into an `std::string` using hexadecimal representation and prefix "0x".
  *
  * Example:\n
  * ToHex(11U, 2) -> 0x0B
@@ -38,10 +38,10 @@ namespace string {
  *
  * \tparam T
  * Type of parameter @p value that shall be converted.\n
- * The type must be an integral type of up to 8 bytes size.
+ * The type must be an unsigned integral type of up to 8 bytes size.
  *
  * \param value
- * Number that shall be converted.
+ * Value that shall be converted.
  *
  * \param width
  * Minimum number of digits. Range: 0..16.
@@ -52,8 +52,10 @@ namespace string {
 template<typename T>
 std::string ToHex(T const value, uint8_t const width)
 {
-  static_assert(std::is_integral_v<T> == true, "ToHex() is only defined for integral types.");
-  static_assert(sizeof(T) <= 8U, "ToHex() is only defined for types of up to 8 bytes size.");
+  static_assert(   (std::is_integral_v<T> == true)
+                && (std::is_signed_v<T> == false)
+                && (sizeof(T) <= 8U),
+                "ToHex() is only defined for unsigned integral types of up to 8 bytes size.");
   static_assert(sizeof(unsigned long long) >= 8U, "'unsigned long long' has unexpected size");
 
   if (width > 16U)
@@ -88,7 +90,7 @@ std::string ToHex(T const value, uint8_t const width)
 
 /**
  * \ingroup GPCC_STRING
- * \brief Converts an integral value into an `std::string` using binary representation and prefix "0b".
+ * \brief Converts an unsigned integral value into an `std::string` using binary representation and prefix "0b".
  *
  * Example:\n
  * ToBin(11U, 6) -> 0b001011
@@ -108,10 +110,10 @@ std::string ToHex(T const value, uint8_t const width)
  *
  * \tparam T
  * Type of parameter @p value that shall be converted.\n
- * The type must be an integral type of up to 8 bytes size.
+ * The type must be an unsigned integral type of up to 8 bytes size.
  *
  * \param value
- * Number that shall be converted.
+ * Value that shall be converted.
  *
  * \param width
  * Minimum number of digits. Range: 0..64.
@@ -122,8 +124,10 @@ std::string ToHex(T const value, uint8_t const width)
 template<typename T>
 std::string ToBin(T value, uint8_t width)
 {
-  static_assert(std::is_integral_v<T> == true, "ToBin() is only defined for integral types.");
-  static_assert(sizeof(T) <= 8U, "ToBin() is only defined for types of up to 8 bytes size.");
+  static_assert(   (std::is_integral_v<T> == true)
+                && (std::is_signed_v<T> == false)
+                && (sizeof(T) <= 8U),
+                "ToBin() is only defined for unsigned integral types of up to 8 bytes size.");
   static_assert(sizeof(unsigned long long) >= 8U, "'unsigned long long' has unexpected size");
 
   if (width > 64U)
@@ -159,7 +163,7 @@ std::string ToBin(T value, uint8_t width)
 
 /**
  * \ingroup GPCC_STRING
- * \brief Converts an integral value into an `std::string` using hexadecimal representation with no prefix.
+ * \brief Converts an unsigned integral value into an `std::string` using hexadecimal representation with no prefix.
  *
  * Example:\n
  * ToHexNoPrefix(11U, 2) -> 0B
@@ -179,10 +183,10 @@ std::string ToBin(T value, uint8_t width)
  *
  * \tparam T
  * Type of parameter @p value that shall be converted.\n
- * The type must be an integral type of up to 8 bytes size.
+ * The type must be an unsigned integral type of up to 8 bytes size.
  *
  * \param value
- * Number that shall be converted.
+ * Value that shall be converted.
  *
  * \param width
  * Minimum number of digits. Range: 0..16.
@@ -193,8 +197,10 @@ std::string ToBin(T value, uint8_t width)
 template<typename T>
 std::string ToHexNoPrefix(T const value, uint8_t const width)
 {
-  static_assert(std::is_integral_v<T> == true, "ToHexNoPrefix() is only defined for integral types.");
-  static_assert(sizeof(T) <= 8U, "ToHexNoPrefix() is only defined for types of up to 8 bytes size.");
+  static_assert(   (std::is_integral_v<T> == true)
+                && (std::is_signed_v<T> == false)
+                && (sizeof(T) <= 8U),
+                "ToHexNoPrefix() is only defined for unsigned integral types of up to 8 bytes size.");
   static_assert(sizeof(unsigned long long) >= 8U, "'unsigned long long' has unexpected size");
 
   if (width > 16U)
@@ -229,7 +235,7 @@ std::string ToHexNoPrefix(T const value, uint8_t const width)
 
 /**
  * \ingroup GPCC_STRING
- * \brief Converts an integral value into an `std::string` using decimal and hexadecimal representation.
+ * \brief Converts an unsigned integral value into an `std::string` using decimal and hexadecimal representation.
  *
  * Example:\n
  * ToDecAndHex(11U, 2) -> 11 (0x0B)
@@ -251,7 +257,7 @@ std::string ToHexNoPrefix(T const value, uint8_t const width)
  * Type of parameter @p value that shall be converted.
  *
  * \param value
- * Number that shall be converted.
+ * Value that shall be converted.
  *
  * \param width
  * Minimum number of digits used for the hexadecimal representation. Range: 0..16.
@@ -262,9 +268,15 @@ std::string ToHexNoPrefix(T const value, uint8_t const width)
 template<typename T>
 std::string ToDecAndHex(T const value, uint8_t const width)
 {
-  static_assert(std::is_integral_v<T> == true, "ToDecAndHex() is only defined for integral types.");
+  static_assert(   (std::is_integral_v<T> == true)
+                && (std::is_signed_v<T> == false)
+                && (sizeof(T) <= 8U),
+                "ToDecAndHex() is only defined for unsigned integral types of up to 8 bytes size.");
 
   using gpcc::string::StringComposer;
+
+  if (width > 16U)
+    throw std::invalid_argument("ToDecAndHex: width invalid");
 
   StringComposer s;
   s << value << " ("
@@ -277,12 +289,6 @@ template<>
 inline std::string ToDecAndHex<>(unsigned char const value, uint8_t const width)
 {
   return ToDecAndHex(static_cast<uint32_t>(value), width);
-}
-
-template<>
-inline std::string ToDecAndHex<>(char const value, uint8_t const width)
-{
-  return ToDecAndHex(static_cast<int32_t>(value), width);
 }
 
 } // namesapce string
