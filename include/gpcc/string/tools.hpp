@@ -56,9 +56,12 @@ bool IsDecimalDigitsOnly(std::string const & s) noexcept;
 std::string ExceptionDescriptionToString(std::exception const & e);
 std::string ExceptionDescriptionToString(std::exception_ptr const & ePtr);
 
-std::string HexDump(uintptr_t const address, uint8_t const nbOfAddressDigits,
-                    void const * const pData, size_t const n,
-                    uint8_t const wordSize, uint_fast8_t valuesPerLine);
+std::string HexDump(uintptr_t & address,
+                    uint8_t const nbOfAddressDigits,
+                    void const * & pData,
+                    size_t & n,
+                    uint8_t const wordSize,
+                    uint_fast8_t wordsPerLine);
 
 template<typename T>
 std::string ToHex(T const value, uint8_t const width);

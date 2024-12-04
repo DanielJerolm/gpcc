@@ -13,7 +13,7 @@ Next to do:
     [OK] ToDecAndHex()
     ...with various data types and value zero
     [  ] Rename parameter width -> digits
-  - [  ] Revise unittest for HexDump()
+  - [OK] Revise unittest for HexDump()
 
 - Use github's issue tracking instead of this file
 

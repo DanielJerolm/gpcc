@@ -1630,10 +1630,31 @@ std::string ExceptionDescriptionToString(std::exception_ptr const & ePtr)
 
 /**
  * \ingroup GPCC_STRING
- * \brief Creates a string containing an detailed hex-dump of a chunk of binary data.
+ * \brief Creates a string containing a detailed hex-dump of a chunk of binary data.
  *
- * The hex dump contains the address, the data in hexadecimal format and the data in ASCII format. Bytes that are not
- * a printable ASCII character are replaced by dots ('.').
+ * The generated output string contains the address, the data in hexadecimal format, and the data in ASCII format. Bytes
+ * that are not printable ASCII characters are replaced by dots ('.').
+ *
+ * Parameters @p address, @p pData, and @p n are updated to allow for convenient generation of large dumps comprised of
+ * multiple lines in a tight loop:
+ * ~~~{.cpp}
+ * void DumpNetworkPacketToCLI(std::vector<uint8_t> const & msgData, gpcc::cli::CLI & cli)
+ * {
+ *   size_t n = msgData.size();
+ *   if (n > 2048U)
+ *     throw std::invalid_argument("Message to large");
+ *
+ *   void const * pData = msgData.data();
+ *   uintptr_t address = 0U;
+ *
+ *   cli.WriteLine("Offset  +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F 0123456789ABCDEF");
+ *   //             0x0000: 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F ................
+ *   while (n != 0)
+ *   {
+ *     cli.WriteLine(HexDump(address, 4U, pData, n, 1, 16U));
+ *   }
+ * }
+ * ~~~
  *
  * Example output (@p nbOfAddressDigits = 8, @p n = 25, @p wordSize = 1, @p valuePerLine = 4):\n
  * ~~~{.txt}
@@ -1652,7 +1673,8 @@ std::string ExceptionDescriptionToString(std::exception_ptr const & ePtr)
  * This is thread-safe.
  *
  * __Exception safety:__\n
- * Strong guarantee.
+ * Basic guarantee:
+ * - Update of @p address, @p pData, and/or @p n may be incomplete.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -1660,107 +1682,109 @@ std::string ExceptionDescriptionToString(std::exception_ptr const & ePtr)
  * - - -
  *
  * \param address
- * Address where the first byte of data is located at.\n
- * This is used for printing only. No read-access will be performed from the given address.
+ * Address where the first byte of data is located.\n
+ * This is used for printing only. The actual data is read from @p pData. \n
+ * The referenced variable will be incremented by the number of bytes dumped to the output string.
  *
  * \param nbOfAddressDigits
- * Number of hexadecimal digits that shall be reserved for the address in the output string.
+ * Minimum number of hexadecimal digits that shall be reserved for @p address in the output string.\n
+ * If required, then the address will be padded with zeros on the left.
  *
  * \param pData
- * Pointer to the data located at @p address.
+ * Pointer to the data that shall be dumped. The byte/word referenced by this shall correspond to @p address. \n
+ * This must be aligned to @p wordSize. \n
+ * The referenced pointer will be incremented by the number of bytes dumped to the output string.
  *
  * \param n
  * Number of __bytes__ inside the buffer referenced by @p pData. \n
- * @p wordSize must divide this without any remainder. Zero is allowed.
+ * @p wordSize must divide this without any remainder. Zero is allowed.\n
+ * The referenced variable will be decremented by the number of bytes dumped to the output string.
  *
  * \param wordSize
- * Word size for displaying data in hex-format. This must be 1, 2, 4, or 8.
+ * Word size in byte for displaying data in hex-format. This must be 1, 2, 4, or 8.
  *
- * \param valuesPerLine
- * Number of hex values per line. If @p n divided by @p wordSize is less than this, then white spaces will be inserted
- * into the output until @p valuesPerLine words are contained in the output.
+ * \param wordsPerLine
+ * Number of words per line. If @p n divided by @p wordSize is less than this, then white spaces will be inserted
+ * into the output until @p wordsPerLine words are contained in the output.
  *
  * \return
  * String containing a detailed hex-dump of the binary data referenced by @p pData.
  */
-std::string HexDump(uintptr_t const address,
+std::string HexDump(uintptr_t & address,
                     uint8_t const nbOfAddressDigits,
-                    void const * const pData,
-                    size_t const n,
+                    void const * & pData,
+                    size_t & n,
                     uint8_t const wordSize,
-                    uint_fast8_t valuesPerLine)
+                    uint_fast8_t wordsPerLine)
 {
+  static_assert(sizeof(unsigned int) >= sizeof(uint32_t));
+
   if (pData == nullptr)
     throw std::invalid_argument("HexDump: pData");
 
-  if ((wordSize == 0U) || ((n % wordSize) != 0U))
+  if ((wordSize != 1U) && (wordSize != 2U) && (wordSize != 4U) && (wordSize != 8U))
+    throw std::invalid_argument("HexDump: wordSize");
+
+  if ((n % wordSize) != 0U)
     throw std::invalid_argument("HexDump: n <-> wordSize");
 
-  if (valuesPerLine == 0U)
-    throw std::invalid_argument("HexDump: valuesPerLine");
+  if ((reinterpret_cast<uintptr_t>(pData) % wordSize) != 0U)
+    throw std::invalid_argument("HexDump: pData <-> wordSize");
+
+  if (wordsPerLine == 0U)
+    throw std::invalid_argument("HexDump: wordsPerLine");
+
 
   using gpcc::string::StringComposer;
   StringComposer sc;
 
+  // print address
   sc << StringComposer::AlignRightPadZero << StringComposer::BaseHex << StringComposer::Uppercase
       << "0x" << StringComposer::Width(nbOfAddressDigits) << address << ": ";
 
-  switch (wordSize)
+  if (n != 0)
   {
-    case 1U:
+    // print hex values
+    uintptr_t pCurrRdAddress = reinterpret_cast<uintptr_t>(pData);
+    size_t bytesDumped = 0U;
+    while ((n != 0U) && (wordsPerLine != 0U))
     {
-      uint8_t const * p = reinterpret_cast<uint8_t const *>(pData);
+      sc << StringComposer::Width(wordSize * 2U);
 
-      for (size_t i = 0U; i < n; i++, valuesPerLine--)
-        sc << StringComposer::Width(2) << static_cast<unsigned int>(p[i]) << ' ';
+      switch (wordSize)
+      {
+        case 1U: sc << static_cast<unsigned int>(*reinterpret_cast<uint8_t  const *>(pCurrRdAddress)); break;
+        case 2U: sc << static_cast<unsigned int>(*reinterpret_cast<uint16_t const *>(pCurrRdAddress)); break;
+        case 4U: sc << static_cast<unsigned int>(*reinterpret_cast<uint32_t const *>(pCurrRdAddress)); break;
+        case 8U: sc <<                           *reinterpret_cast<uint64_t const *>(pCurrRdAddress);  break;
+      }
 
-      break;
+      sc << ' ';
+
+      n -= wordSize;
+      wordsPerLine--;
+      bytesDumped += wordSize;
+      pCurrRdAddress += wordSize;
     }
 
-    case 2U:
+    address += bytesDumped;
+
+    // print empty fields as needed
+    while (wordsPerLine-- != 0U)
+      sc << StringComposer::Width((wordSize * 2U) + 1U) << ' ';
+
+    // print values as ASCII characters
+    char const * p = reinterpret_cast<char const *>(pData);
+    while (bytesDumped != 0)
     {
-      uint16_t const * p = reinterpret_cast<uint16_t const *>(pData);
-
-      for (size_t i = 0U; i < (n / 2U); i++, valuesPerLine--)
-        sc << StringComposer::Width(4) << p[i] << ' ';
-
-      break;
+      char c = *p++;
+      if (!IsPrintableASCII(c))
+        c = '.';
+      sc << c;
+      bytesDumped--;
     }
 
-    case 4U:
-    {
-      uint32_t const * p = reinterpret_cast<uint32_t const *>(pData);
-
-      for (size_t i = 0U; i < (n / 4U); i++, valuesPerLine--)
-        sc << StringComposer::Width(8) << p[i] << ' ';
-
-      break;
-    }
-
-    case 8U:
-    {
-      uint64_t const * p = reinterpret_cast<uint64_t const *>(pData);
-
-      for (size_t i = 0U; i < (n / 8U); i++, valuesPerLine--)
-        sc << StringComposer::Width(16) << p[i] << ' ';
-
-      break;
-    }
-
-    default:
-      throw std::invalid_argument("HexDump: wordSize invalid");
-  }
-
-  while (valuesPerLine-- != 0)
-    sc << StringComposer::Width((wordSize * 2U) + 1U) << ' ';
-
-  char const * p = reinterpret_cast<char const *>(pData);
-  for (size_t i = 0U; i < n; i++)
-  {
-    char c = *p++;
-    if (!IsPrintableASCII(c))
-      c = '.';
-    sc << c;
+    pData = static_cast<void const*>(p);
   }
 
   return sc.Get();

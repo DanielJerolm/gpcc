@@ -1306,94 +1306,187 @@ TEST(gpcc_string_tools_Tests, HexDump_8bit)
 {
   uint8_t const data[8] =
   {
-    0x41,
-    0x42,
-    0x61,
-    0xFF,
-    0xAB,
-    0x21,
-    0x7E,
-    0x12
+    0x41U,
+    0x42U,
+    0x61U,
+    0xFFU,
+    0xABU,
+    0x21U,
+    0x7EU,
+    0x12U
   };
 
-  std::string result = HexDump(0x1234ABCDUL, 8U, data, 8, 1, 8);
-  ASSERT_STREQ(result.c_str(), "0x1234ABCD: 41 42 61 FF AB 21 7E 12 ABa..!~.");
+  uintptr_t address = 0x1234ABC0UL;
+  void const * pData = data;
+  size_t n = 8U;
 
-  result = HexDump(0x1234ABCDUL, 8U, data, 4, 1, 8);
-  ASSERT_STREQ(result.c_str(), "0x1234ABCD: 41 42 61 FF             ABa.");
+  std::string str = HexDump(address, 8U, pData, n, 1, 4);
+  EXPECT_STREQ(str.c_str(), "0x1234ABC0: 41 42 61 FF ABa.");
+  EXPECT_EQ(address, 0x1234ABC4UL);
+  EXPECT_TRUE(pData == static_cast<void const*>(data + 4));
+  EXPECT_EQ(n, 4U);
 
-  result = HexDump(0x1234ABCDUL, 8U, data, 0, 1, 8);
-  ASSERT_STREQ(result.c_str(), "0x1234ABCD:                         ");
+  str = HexDump(address, 8U, pData, n, 1, 4);
+  EXPECT_STREQ(str.c_str(), "0x1234ABC4: AB 21 7E 12 .!~.");
+  EXPECT_EQ(address, 0x1234ABC8UL);
+  EXPECT_TRUE(pData == static_cast<void const*>(data + 8));
+  EXPECT_EQ(n, 0U);
+
+  str = HexDump(address, 8U, pData, n, 1, 4);
+  EXPECT_STREQ(str.c_str(), "0x1234ABC8: ");
+  EXPECT_EQ(address, 0x1234ABC8UL);
+  EXPECT_TRUE(pData == static_cast<void const*>(data + 8));
+  EXPECT_EQ(n, 0U);
 }
+
 TEST(gpcc_string_tools_Tests, HexDump_16bit)
 {
   uint16_t const data[4] =
   {
-    0x0102,
-    0x0304,
-    0x0506,
-    0x0708
+    0x0102U,
+    0x0304U,
+    0x0506U,
+    0x0708U
   };
 
-  std::string result = HexDump(0x1234ABCDUL, 8U, data, 8, 2, 4);
-  ASSERT_STREQ(result.c_str(), "0x1234ABCD: 0102 0304 0506 0708 ........");
+  uintptr_t address = 0x1234ABC0UL;
+  void const * pData = data;
+  size_t n = 8U;
 
-  result = HexDump(0x1234ABCDUL, 8U, data, 4, 2, 4);
-  ASSERT_STREQ(result.c_str(), "0x1234ABCD: 0102 0304           ....");
+  std::string str = HexDump(address, 8U, pData, n, 2, 2);
+  EXPECT_STREQ(str.c_str(), "0x1234ABC0: 0102 0304 ....");
+  EXPECT_EQ(address, 0x1234ABC4UL);
+  EXPECT_TRUE(pData == static_cast<void const*>(data + 2));
+  EXPECT_EQ(n, 4U);
 
-  result = HexDump(0x1234ABCDUL, 8U, data, 0, 2, 4);
-  ASSERT_STREQ(result.c_str(), "0x1234ABCD:                     ");
+  str = HexDump(address, 8U, pData, n, 2, 2);
+  EXPECT_STREQ(str.c_str(), "0x1234ABC4: 0506 0708 ....");
+  EXPECT_EQ(address, 0x1234ABC8UL);
+  EXPECT_TRUE(pData == static_cast<void const*>(data + 4));
+  EXPECT_EQ(n, 0U);
+
+  str = HexDump(address, 8U, pData, n, 2, 2);
+  EXPECT_STREQ(str.c_str(), "0x1234ABC8: ");
+  EXPECT_EQ(address, 0x1234ABC8UL);
+  EXPECT_TRUE(pData == static_cast<void const*>(data + 4));
+  EXPECT_EQ(n, 0U);
 }
+
 TEST(gpcc_string_tools_Tests, HexDump_32bit)
 {
-  uint32_t const data[2] =
+  uint32_t const data[4] =
   {
-    0x01020304,
-    0x05060708
+    0x01020304UL,
+    0x05060708UL,
+    0x090A0B0CUL,
+    0x0D0E0F10UL
   };
 
-  std::string result = HexDump(0x1234ABCDUL, 8U, data, 8, 4, 2);
-  ASSERT_STREQ(result.c_str(), "0x1234ABCD: 01020304 05060708 ........");
+  uintptr_t address = 0x1234ABC0UL;
+  void const * pData = data;
+  size_t n = 16U;
 
-  result = HexDump(0x1234ABCDUL, 8U, data, 4, 4, 2);
-  ASSERT_STREQ(result.c_str(), "0x1234ABCD: 01020304          ....");
+  std::string str = HexDump(address, 8U, pData, n, 4, 2);
+  EXPECT_STREQ(str.c_str(), "0x1234ABC0: 01020304 05060708 ........");
+  EXPECT_EQ(address, 0x1234ABC8UL);
+  EXPECT_TRUE(pData == static_cast<void const*>(data + 2));
+  EXPECT_EQ(n, 8U);
 
-  result = HexDump(0x1234ABCDUL, 8U, data, 0, 4, 2);
-  ASSERT_STREQ(result.c_str(), "0x1234ABCD:                   ");
+  str = HexDump(address, 8U, pData, n, 4, 2);
+  EXPECT_STREQ(str.c_str(), "0x1234ABC8: 090A0B0C 0D0E0F10 ........");
+  EXPECT_EQ(address, 0x1234ABD0UL);
+  EXPECT_TRUE(pData == static_cast<void const*>(data + 4));
+  EXPECT_EQ(n, 0U);
+
+  str = HexDump(address, 8U, pData, n, 4, 2);
+  EXPECT_STREQ(str.c_str(), "0x1234ABD0: ");
+  EXPECT_EQ(address, 0x1234ABD0UL);
+  EXPECT_TRUE(pData == static_cast<void const*>(data + 4));
+  EXPECT_EQ(n, 0U);
 }
+
+TEST(gpcc_string_tools_Tests, HexDump_64bit)
+{
+  uint64_t const data[4] =
+  {
+    0x0102030405060708ULL,
+    0x090A0B0C0D0E0F10ULL,
+    0x1112131415161718ULL,
+    0x192A2B2C2D2E2F20ULL
+  };
+
+  uintptr_t address = 0x1234ABC0UL;
+  void const * pData = data;
+  size_t n = 32U;
+
+  std::string str = HexDump(address, 8U, pData, n, 8, 2);
+  EXPECT_STREQ(str.c_str(), "0x1234ABC0: 0102030405060708 090A0B0C0D0E0F10 ................");
+  EXPECT_EQ(address, 0x1234ABD0UL);
+  EXPECT_TRUE(pData == static_cast<void const*>(data + 2));
+  EXPECT_EQ(n, 16U);
+
+  str = HexDump(address, 8U, pData, n, 8, 2);
+  EXPECT_STREQ(str.c_str(), "0x1234ABD0: 1112131415161718 192A2B2C2D2E2F20 ........ /.-,+*.");
+  EXPECT_EQ(address, 0x1234ABE0UL);
+  EXPECT_TRUE(pData == static_cast<void const*>(data + 4));
+  EXPECT_EQ(n, 0U);
+
+  str = HexDump(address, 8U, pData, n, 8, 2);
+  EXPECT_STREQ(str.c_str(), "0x1234ABE0: ");
+  EXPECT_EQ(address, 0x1234ABE0UL);
+  EXPECT_TRUE(pData == static_cast<void const*>(data + 4));
+  EXPECT_EQ(n, 0U);
+}
+
 TEST(gpcc_string_tools_Tests, HexDump_Errors)
 {
   uint8_t const data[8] =
   {
-    0x41,
-    0x42,
-    0x61,
-    0xFF,
-    0xAB,
-    0x21,
-    0x7E,
-    0x12
+    0x41U,
+    0x42U,
+    0x61U,
+    0xFFU,
+    0xABU,
+    0x21U,
+    0x7EU,
+    0x12U
   };
 
-  std::string s;
-
-  // pData nullptr
-  ASSERT_THROW(s = HexDump(0x12345678UL, 8U, nullptr, 8, 1, 8), std::invalid_argument);
-
-  // wordSize zero
-  ASSERT_THROW(s = HexDump(0x12345678UL, 8U, data, 8, 0, 8), std::invalid_argument);
-
-  // n % wordSize != 0
-  ASSERT_THROW(s = HexDump(0x12345678UL, 8U, data, 7, 2, 4), std::invalid_argument);
-
-  // valuesPerLine too small
-  ASSERT_THROW(s = HexDump(0x12345678UL, 8U, data, 8, 1, 4), std::invalid_argument);
+  // pData is nullptr
+  uintptr_t address = 0x1000U;
+  void const * pData = nullptr;
+  size_t n = 8U;
+  EXPECT_THROW((void)HexDump(address, 8U, pData, n, 1, 4), std::invalid_argument);
 
   // invalid word size
-  ASSERT_THROW(s = HexDump(0x12345678UL, 8U, data, 8, 8, 1), std::invalid_argument);
+  address = 0x1000U;
+  pData = data;
+  n = 8U;
+  EXPECT_THROW((void)HexDump(address, 8U, pData, n, 3, 4), std::invalid_argument);
 
-  (void)s;
+  // n not multiple of word size
+  address = 0x1000U;
+  pData = data;
+  n = 7U;
+  EXPECT_THROW((void)HexDump(address, 8U, pData, n, 2, 4), std::invalid_argument);
+
+  // zero words per line
+  address = 0x1000U;
+  pData = data;
+  n = 8U;
+  EXPECT_THROW((void)HexDump(address, 8U, pData, n, 1, 0), std::invalid_argument);
+
+  // OK
+  address = 0x1000U;
+  pData = data;
+  n = 8U;
+  EXPECT_NO_THROW((void)HexDump(address, 8U, pData, n, 1, 4));
+  address = 0x1000U;
+  pData = data;
+  n = 8U;
+  EXPECT_NO_THROW((void)HexDump(address, 8U, pData, n, 2, 4));
 }
+
 TEST(gpcc_string_tools_Tests, ToHex)
 {
   std::string s;
