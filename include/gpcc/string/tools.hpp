@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
 #ifndef TOOLS_HPP_201701151802
@@ -55,29 +55,57 @@ bool IsDecimalDigitsOnly(std::string const & s) noexcept;
 // Conversion X to string -----------------------------------------------------
 std::string ExceptionDescriptionToString(std::exception const & e);
 std::string ExceptionDescriptionToString(std::exception_ptr const & ePtr);
-std::string HexDump(uint32_t const address, void const * const pData, size_t const n, uint8_t const wordSize, uint8_t valuesPerLine);
-std::string ToHex(uint32_t const value, uint8_t const width);
-std::string ToBin(uint32_t value, uint8_t width);
-std::string ToHexNoPrefix(uint32_t const value, uint8_t const width);
-std::string ToDecAndHex(uint32_t const value, uint8_t const width);
+
+std::string HexDump(uintptr_t & address,
+                    uint8_t const nbOfAddressDigits,
+                    void const * & pData,
+                    size_t & n,
+                    uint8_t const wordSize,
+                    uint_fast8_t wordsPerLine);
+
+template<typename T>
+std::string ToHex(T const value, uint8_t const digits);
+template<typename T>
+std::string ToBin(T value, uint8_t digits);
+template<typename T>
+std::string ToHexNoPrefix(T const value, uint8_t const digits);
+template<typename T>
+std::string ToDecAndHex(T const value, uint8_t const digits);
 
 // Conversion string to X -----------------------------------------------------
 uint8_t DecimalToU8(std::string const & s);
 uint8_t AnyNumberToU8(std::string const & s);
 uint8_t AnyStringToU8(std::string const & s);
 uint8_t TwoDigitHexToU8(std::string const & s);
+
 uint16_t FourDigitHexToU16(std::string const & s);
+
 uint32_t DecimalToU32(std::string const & s);
 uint32_t DecimalToU32(std::string const & s, uint32_t const min, uint32_t const max);
 uint32_t HexToU32(std::string const & s);
 uint32_t HexToU32(std::string const & s, uint32_t const min, uint32_t const max);
 uint32_t AnyNumberToU32(std::string const & s);
 uint32_t AnyNumberToU32(std::string const & s, uint32_t const min, uint32_t const max);
+
+uint64_t DecimalToU64(std::string const & s);
+uint64_t DecimalToU64(std::string const & s, uint64_t const min, uint64_t const max);
+uint64_t HexToU64(std::string const & s);
+uint64_t HexToU64(std::string const & s, uint64_t const min, uint64_t const max);
+uint64_t AnyNumberToU64(std::string const & s);
+uint64_t AnyNumberToU64(std::string const & s, uint64_t const min, uint64_t const max);
+
 char AnyStringToChar(std::string const & s);
+
 int32_t DecimalToI32(std::string const & s);
 int32_t DecimalToI32(std::string const & s, int32_t const min, int32_t const max);
 int32_t AnyNumberToI32(std::string const & s);
 int32_t AnyNumberToI32(std::string const & s, int32_t const min, int32_t const max);
+
+int64_t DecimalToI64(std::string const & s);
+int64_t DecimalToI64(std::string const & s, int64_t const min, int64_t const max);
+int64_t AnyNumberToI64(std::string const & s);
+int64_t AnyNumberToI64(std::string const & s, int64_t const min, int64_t const max);
+
 double ToDouble(std::string const & s);
 
 // Extraction and breakdown ---------------------------------------------------
@@ -93,5 +121,6 @@ std::unique_ptr<char[]> ASPrintf(char const * const pFmt, ...);
 } // namesapce string
 } // namesapce gpcc
 
+#include "tools.tcc"
 
 #endif // TOOLS_HPP_201701151802

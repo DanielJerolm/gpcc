@@ -4,8 +4,12 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
+- StringComposer::SetupFormatString contains a TODO
 
 - Use github's issue tracking instead of this file
+
+- Template functions are not shown in doxygen
+
 - Remove machine's architecture from OS. The OS should hide any machine specific stuff.
 
 - Doxygen: No documentation generated for members of template classes (e.g. MultiCallback, IntegralFilter)
@@ -197,6 +201,9 @@ Next to do:
 
 History:
 ===============================================================================
+2024-12-05
+- Add string conversion for 64bit types
+
 2024-11-29
 - Fix StringComposer: Output for value 0 if show base is enabled
 
