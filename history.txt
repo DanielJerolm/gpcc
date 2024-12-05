@@ -4,18 +4,6 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
-- Enhance gpcc::string by 64bit int <-> string conversion
-  - [OK] Update doc for glibc-workaround
-  - Add unittests for...
-    [OK] ToHex()
-    [OK] ToBin()
-    [OK] ToHexNoPrefix()
-    [OK] ToDecAndHex()
-    ...with various data types and value zero
-    [OK] Rename parameter width -> digits
-  - [OK] Revise unittest for HexDump()
-  - [OK] Update users of HexDump()
-
 - StringComposer::SetupFormatString contains a TODO
 
 - Use github's issue tracking instead of this file
@@ -213,6 +201,9 @@ Next to do:
 
 History:
 ===============================================================================
+2024-12-05
+- Add string conversion for 64bit types
+
 2024-11-29
 - Fix StringComposer: Output for value 0 if show base is enabled
 
