@@ -5,7 +5,7 @@ GPCC Implementation History and Current Activities
 Next to do:
 ===============================================================================
 - Enhance gpcc::string by 64bit int <-> string conversion
-  - [  ] Update doc for glibc-workaround
+  - [OK] Update doc for glibc-workaround
   - Add unittests for...
     [OK] ToHex()
     [OK] ToBin()

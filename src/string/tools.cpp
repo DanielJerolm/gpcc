@@ -212,8 +212,8 @@ uint32_t ToU32(std::string const & s, uint_fast8_t const base, uint32_t const mi
 
 #if defined(__GLIBC__)
   // std::stoul() typically uses strtoul() from the C library. In recent versions of glibc (e.g. 2.39), strtoul()
-  // shows unexpected behaviour: It recognizes prefix "0b"/"0B" for binary numbers if base is 2 or 0, though prefix
-  // "b0"/"B0" is not specified to be recognized at all. The prefix "0b"/"0B" should result in an error.
+  // recognizes prefix "0b"/"0B" for binary numbers if base is 2 or 0, though prefix "b0"/"B0" is not specified to be
+  // recognized at all. Instead the prefix "0b"/"0B" should result in an error.
   // To ensure proper function of ToU32(), we have to test for invalid input here.
   if (   ((base == 0U) || (base == 2U))
       && (   (gpcc::string::StartsWith(s, "0b"))
@@ -311,8 +311,8 @@ int32_t ToI32(std::string const & s, uint_fast8_t const base, int32_t const min,
 
 #if defined(__GLIBC__)
   // std::stoi() typically uses strtol() from the C library. In recent versions of glibc (e.g. 2.39), strtol()
-  // shows unexpected behaviour: It recognizes prefix "0b"/"0B" for binary numbers if base is 2 or 0, though prefix
-  // "b0"/"B0" is not specified to be recognized at all. The prefix "0b"/"0B" should result in an error.
+  // recognizes prefix "0b"/"0B" for binary numbers if base is 2 or 0, though prefix "b0"/"B0" is not specified to be
+  // recognized at all. Instead the prefix "0b"/"0B" should result in an error.
   // To ensure proper function of ToI32(), we have to test for invalid input here.
   if (   ((base == 0U) || (base == 2U))
       && (   (gpcc::string::StartsWith(s, "0b"))
@@ -411,8 +411,8 @@ uint64_t ToU64(std::string const & s, uint_fast8_t const base, uint64_t const mi
 
 #if defined(__GLIBC__)
   // std::stoull() typically uses strtoull() from the C library. In recent versions of glibc (e.g. 2.39), strtoull()
-  // shows unexpected behaviour: It recognizes prefix "0b"/"0B" for binary numbers if base is 2 or 0, though prefix
-  // "b0"/"B0" is not specified to be recognized at all. The prefix "0b"/"0B" should result in an error.
+  // recognizes prefix "0b"/"0B" for binary numbers if base is 2 or 0, though prefix "b0"/"B0" is not specified to be
+  // recognized at all. Instead the prefix "0b"/"0B" should result in an error.
   // To ensure proper function of ToU64(), we have to test for invalid input here.
   if (   ((base == 0U) || (base == 2U))
       && (   (gpcc::string::StartsWith(s, "0b"))
@@ -510,8 +510,8 @@ int64_t ToI64(std::string const & s, uint_fast8_t const base, int64_t const min,
 
 #if defined(__GLIBC__)
   // std::stoll() typically uses strtoll() from the C library. In recent versions of glibc (e.g. 2.39), strtoll()
-  // shows unexpected behaviour: It recognizes prefix "0b"/"0B" for binary numbers if base is 2 or 0, though prefix
-  // "b0"/"B0" is not specified to be recognized at all. The prefix "0b"/"0B" should result in an error.
+  // recognizes prefix "0b"/"0B" for binary numbers if base is 2 or 0, though prefix "b0"/"B0" is not specified to be
+  // recognized at all. Instead the prefix "0b"/"0B" should result in an error.
   // To ensure proper function of ToI64(), we have to test for invalid input here.
   if (   ((base == 0U) || (base == 2U))
       && (   (gpcc::string::StartsWith(s, "0b"))
