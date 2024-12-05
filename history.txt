@@ -14,6 +14,9 @@ Next to do:
     ...with various data types and value zero
     [  ] Rename parameter width -> digits
   - [OK] Revise unittest for HexDump()
+  - [OK] Update users of HexDump()
+
+- StringComposer::SetupFormatString contains a TODO
 
 - Use github's issue tracking instead of this file
 
