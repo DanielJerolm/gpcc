@@ -12,7 +12,7 @@ Next to do:
     [OK] ToHexNoPrefix()
     [OK] ToDecAndHex()
     ...with various data types and value zero
-    [  ] Rename parameter width -> digits
+    [OK] Rename parameter width -> digits
   - [OK] Revise unittest for HexDump()
   - [OK] Update users of HexDump()
 

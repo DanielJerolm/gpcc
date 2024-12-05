@@ -43,14 +43,14 @@ namespace string {
  * \param value
  * Value that shall be converted.
  *
- * \param width
+ * \param digits
  * Minimum number of digits. Range: 0..16.
  *
  * \return
  * Result of the conversion.
  */
 template<typename T>
-std::string ToHex(T const value, uint8_t const width)
+std::string ToHex(T const value, uint8_t const digits)
 {
   static_assert(   (std::is_integral_v<T> == true)
                 && (std::is_signed_v<T> == false)
@@ -58,25 +58,25 @@ std::string ToHex(T const value, uint8_t const width)
                 "ToHex() is only defined for unsigned integral types of up to 8 bytes size.");
   static_assert(sizeof(unsigned long long) >= 8U, "'unsigned long long' has unexpected size");
 
-  if (width > 16U)
-    throw std::invalid_argument("ToHex: width invalid");
+  if (digits > 16U)
+    throw std::invalid_argument("ToHex: digits invalid");
 
   char buffer[24];
   int status;
   if (sizeof(T) <= sizeof(unsigned long))
   {
     #if defined(_NEWLIB_VERSION)
-      status = sniprintf(buffer, sizeof(buffer), "0x%0*lX", static_cast<int>(width), static_cast<unsigned long>(value));
+      status = sniprintf(buffer, sizeof(buffer), "0x%0*lX", static_cast<int>(digits), static_cast<unsigned long>(value));
     #else
-      status = snprintf(buffer, sizeof(buffer), "0x%0*lX", static_cast<int>(width), static_cast<unsigned long>(value));
+      status = snprintf(buffer, sizeof(buffer), "0x%0*lX", static_cast<int>(digits), static_cast<unsigned long>(value));
     #endif
   }
   else
   {
     #if defined(_NEWLIB_VERSION)
-      status = sniprintf(buffer, sizeof(buffer), "0x%0*llX", static_cast<int>(width), static_cast<unsigned long long>(value));
+      status = sniprintf(buffer, sizeof(buffer), "0x%0*llX", static_cast<int>(digits), static_cast<unsigned long long>(value));
     #else
-      status = snprintf(buffer, sizeof(buffer), "0x%0*llX", static_cast<int>(width), static_cast<unsigned long long>(value));
+      status = snprintf(buffer, sizeof(buffer), "0x%0*llX", static_cast<int>(digits), static_cast<unsigned long long>(value));
     #endif
   }
 
@@ -115,14 +115,14 @@ std::string ToHex(T const value, uint8_t const width)
  * \param value
  * Value that shall be converted.
  *
- * \param width
+ * \param digits
  * Minimum number of digits. Range: 0..64.
  *
  * \return
  * Result of the conversion.
  */
 template<typename T>
-std::string ToBin(T value, uint8_t width)
+std::string ToBin(T value, uint8_t digits)
 {
   static_assert(   (std::is_integral_v<T> == true)
                 && (std::is_signed_v<T> == false)
@@ -130,19 +130,19 @@ std::string ToBin(T value, uint8_t width)
                 "ToBin() is only defined for unsigned integral types of up to 8 bytes size.");
   static_assert(sizeof(unsigned long long) >= 8U, "'unsigned long long' has unexpected size");
 
-  if (width > 64U)
-    throw std::invalid_argument("ToBin: width invalid");
+  if (digits > 64U)
+    throw std::invalid_argument("ToBin: digits invalid");
 
   // we need at least one zero behind the prefix "0b"
-  if (width == 0U)
-    width = 1U;
+  if (digits == 0U)
+    digits = 1U;
 
   char buffer[72];
   char* p = &buffer[sizeof(buffer) - 1U];
 
   *p-- = 0;
 
-  while ((value != 0) || (width != 0U))
+  while ((value != 0) || (digits != 0U))
   {
     if ((value & 1) != 0)
       *p-- = '1';
@@ -151,8 +151,8 @@ std::string ToBin(T value, uint8_t width)
 
     value >>= 1;
 
-    if (width != 0U)
-      width--;
+    if (digits != 0U)
+      digits--;
   }
 
   *p-- = 'b';
@@ -188,14 +188,14 @@ std::string ToBin(T value, uint8_t width)
  * \param value
  * Value that shall be converted.
  *
- * \param width
+ * \param digits
  * Minimum number of digits. Range: 0..16.
  *
  * \return
  * Result of the conversion.
  */
 template<typename T>
-std::string ToHexNoPrefix(T const value, uint8_t const width)
+std::string ToHexNoPrefix(T const value, uint8_t const digits)
 {
   static_assert(   (std::is_integral_v<T> == true)
                 && (std::is_signed_v<T> == false)
@@ -203,25 +203,25 @@ std::string ToHexNoPrefix(T const value, uint8_t const width)
                 "ToHexNoPrefix() is only defined for unsigned integral types of up to 8 bytes size.");
   static_assert(sizeof(unsigned long long) >= 8U, "'unsigned long long' has unexpected size");
 
-  if (width > 16U)
-    throw std::invalid_argument("ToHexNoPrefix: width invalid");
+  if (digits > 16U)
+    throw std::invalid_argument("ToHexNoPrefix: digits invalid");
 
   char buffer[24];
   int status;
   if (sizeof(T) <= sizeof(unsigned long))
   {
     #if defined(_NEWLIB_VERSION)
-      status = sniprintf(buffer, sizeof(buffer), "%0*lX", static_cast<int>(width), static_cast<unsigned long>(value));
+      status = sniprintf(buffer, sizeof(buffer), "%0*lX", static_cast<int>(digits), static_cast<unsigned long>(value));
     #else
-      status = snprintf(buffer, sizeof(buffer), "%0*lX", static_cast<int>(width), static_cast<unsigned long>(value));
+      status = snprintf(buffer, sizeof(buffer), "%0*lX", static_cast<int>(digits), static_cast<unsigned long>(value));
     #endif
   }
   else
   {
     #if defined(_NEWLIB_VERSION)
-      status = sniprintf(buffer, sizeof(buffer), "%0*llX", static_cast<int>(width), static_cast<unsigned long long>(value));
+      status = sniprintf(buffer, sizeof(buffer), "%0*llX", static_cast<int>(digits), static_cast<unsigned long long>(value));
     #else
-      status = snprintf(buffer, sizeof(buffer), "%0*llX", static_cast<int>(width), static_cast<unsigned long long>(value));
+      status = snprintf(buffer, sizeof(buffer), "%0*llX", static_cast<int>(digits), static_cast<unsigned long long>(value));
     #endif
   }
 
@@ -259,14 +259,14 @@ std::string ToHexNoPrefix(T const value, uint8_t const width)
  * \param value
  * Value that shall be converted.
  *
- * \param width
+ * \param digits
  * Minimum number of digits used for the hexadecimal representation. Range: 0..16.
  *
  * \return
  * Result of the conversion.
  */
 template<typename T>
-std::string ToDecAndHex(T const value, uint8_t const width)
+std::string ToDecAndHex(T const value, uint8_t const digits)
 {
   static_assert(   (std::is_integral_v<T> == true)
                 && (std::is_signed_v<T> == false)
@@ -275,20 +275,20 @@ std::string ToDecAndHex(T const value, uint8_t const width)
 
   using gpcc::string::StringComposer;
 
-  if (width > 16U)
-    throw std::invalid_argument("ToDecAndHex: width invalid");
+  if (digits > 16U)
+    throw std::invalid_argument("ToDecAndHex: digits invalid");
 
   StringComposer s;
   s << value << " ("
     << StringComposer::BaseHex << StringComposer::Uppercase
-    << StringComposer::AlignRightPadZero << "0x" << StringComposer::Width(width) << value << ')';
+    << StringComposer::AlignRightPadZero << "0x" << StringComposer::Width(digits) << value << ')';
   return s.Get();
 }
 
 template<>
-inline std::string ToDecAndHex<>(unsigned char const value, uint8_t const width)
+inline std::string ToDecAndHex<>(unsigned char const value, uint8_t const digits)
 {
-  return ToDecAndHex(static_cast<uint32_t>(value), width);
+  return ToDecAndHex(static_cast<uint32_t>(value), digits);
 }
 
 } // namesapce string

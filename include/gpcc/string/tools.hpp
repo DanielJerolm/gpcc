@@ -64,13 +64,13 @@ std::string HexDump(uintptr_t & address,
                     uint_fast8_t wordsPerLine);
 
 template<typename T>
-std::string ToHex(T const value, uint8_t const width);
+std::string ToHex(T const value, uint8_t const digits);
 template<typename T>
-std::string ToBin(T value, uint8_t width);
+std::string ToBin(T value, uint8_t digits);
 template<typename T>
-std::string ToHexNoPrefix(T const value, uint8_t const width);
+std::string ToHexNoPrefix(T const value, uint8_t const digits);
 template<typename T>
-std::string ToDecAndHex(T const value, uint8_t const width);
+std::string ToDecAndHex(T const value, uint8_t const digits);
 
 // Conversion string to X -----------------------------------------------------
 uint8_t DecimalToU8(std::string const & s);
