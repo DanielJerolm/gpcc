@@ -4,12 +4,13 @@
 # If a copy of the MPL was not distributed with this file,
 # You can obtain one at https://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2024 Daniel Jerolm
+# Copyright (C) 2025 Daniel Jerolm
 
 target_sources(${PROJECT_NAME}_testcases
                PRIVATE
                Test_levenshtein_distance.cpp
                Test_tools.cpp
+               TestBinaryDumper.cpp
                TestSharedString.cpp
                TestStringComposer_bool.cpp
                TestStringComposer_char.cpp

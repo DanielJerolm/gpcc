@@ -201,6 +201,9 @@ Next to do:
 
 History:
 ===============================================================================
+2025-01-10
+- Add class BinaryDumper
+
 2024-12-05
 - Add string conversion for 64bit types
 
