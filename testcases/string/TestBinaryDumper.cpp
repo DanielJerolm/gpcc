@@ -24,6 +24,7 @@ TEST(gpcc_string_BinaryDumper, CTOR_DataPtrInvalid)
   uint64_t v = 0;
   uint8_t const * pV = reinterpret_cast<uint8_t const*>(&v);
 
+  // good case
   ASSERT_NO_THROW(gpcc::string::BinaryDumper uut(0x10UL, pV, 8U, 8U));
 
   // test nullptr
@@ -41,6 +42,7 @@ TEST(gpcc_string_BinaryDumper, CTOR_WordSizeInvalid)
   uint64_t v = 0;
   uint8_t const * pV = reinterpret_cast<uint8_t const*>(&v);
 
+  // good case
   ASSERT_NO_THROW(gpcc::string::BinaryDumper uut(0x10UL, pV, 8U, 8U));
 
   // test invalid values
@@ -54,6 +56,7 @@ TEST(gpcc_string_BinaryDumper, CTOR_nBytesInvalid)
   uint64_t v[2] = {0, 0};
   uint8_t const * pV = reinterpret_cast<uint8_t const*>(v);
 
+  // good case
   ASSERT_NO_THROW(gpcc::string::BinaryDumper uut(0x10UL, pV, 8U, 8U));
 
   // test invalid alignment
@@ -145,10 +148,11 @@ TEST(gpcc_string_BinaryDumper, Dump_U8_0Bytes)
   std::string s;
 
   ASSERT_TRUE(uut.IsAllDataDumped());
+
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: ");
 
@@ -166,17 +170,17 @@ TEST(gpcc_string_BinaryDumper, Dump_U8_8Bytes_1ByteAddress)
   std::string s;
 
   ASSERT_FALSE(uut.IsAllDataDumped());
+
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x0010: 41 42 61 FF AB 21 7E 12                         | ABa..!~.");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x0020: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x0020: ");
-
   ASSERT_TRUE(uut.IsAllDataDumped());
 }
 
@@ -191,17 +195,17 @@ TEST(gpcc_string_BinaryDumper, Dump_U8_8Bytes_4ByteAddress)
   std::string s;
 
   ASSERT_FALSE(uut.IsAllDataDumped());
+
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: 41 42 61 FF AB 21 7E 12                         | ABa..!~.");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: ");
-
   ASSERT_TRUE(uut.IsAllDataDumped());
 }
 
@@ -216,17 +220,17 @@ TEST(gpcc_string_BinaryDumper, Dump_U8_16Bytes)
   std::string s;
 
   ASSERT_FALSE(uut.IsAllDataDumped());
+
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: 41 42 61 FF AB 21 7E 12 30 31 32 33 34 35 36 37 | ABa..!~.01234567");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: ");
-
   ASSERT_TRUE(uut.IsAllDataDumped());
 }
 
@@ -242,17 +246,17 @@ TEST(gpcc_string_BinaryDumper, Dump_U8_20Bytes)
   std::string s;
 
   ASSERT_FALSE(uut.IsAllDataDumped());
+
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: 41 42 61 FF AB 21 7E 12 30 31 32 33 34 35 36 37 | ABa..!~.01234567");
+  ASSERT_FALSE(uut.IsAllDataDumped());
 
-  EXPECT_FALSE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: 54 65 73 74                                     | Test");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000020: ");
-
   ASSERT_TRUE(uut.IsAllDataDumped());
 }
 
@@ -267,13 +271,13 @@ TEST(gpcc_string_BinaryDumper, Dump_U16_0Bytes)
   std::string s;
 
   ASSERT_TRUE(uut.IsAllDataDumped());
+
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: ");
-
   ASSERT_TRUE(uut.IsAllDataDumped());
 }
 
@@ -288,17 +292,17 @@ TEST(gpcc_string_BinaryDumper, Dump_U16_8Bytes)
   std::string s;
 
   ASSERT_FALSE(uut.IsAllDataDumped());
+
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: 4241 FF61 21AB 127E                     | ABa..!~.");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: ");
-
   ASSERT_TRUE(uut.IsAllDataDumped());
 }
 
@@ -313,17 +317,17 @@ TEST(gpcc_string_BinaryDumper, Dump_U16_16Bytes)
   std::string s;
 
   ASSERT_FALSE(uut.IsAllDataDumped());
+
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: 4241 FF61 21AB 127E 3130 3332 3534 3736 | ABa..!~.01234567");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: ");
-
   ASSERT_TRUE(uut.IsAllDataDumped());
 }
 
@@ -339,17 +343,17 @@ TEST(gpcc_string_BinaryDumper, Dump_U16_20Bytes)
   std::string s;
 
   ASSERT_FALSE(uut.IsAllDataDumped());
+
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: 4241 FF61 21AB 127E 3130 3332 3534 3736 | ABa..!~.01234567");
+  ASSERT_FALSE(uut.IsAllDataDumped());
 
-  EXPECT_FALSE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: 6554 7473                               | Test");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000020: ");
-
   ASSERT_TRUE(uut.IsAllDataDumped());
 }
 
@@ -364,13 +368,13 @@ TEST(gpcc_string_BinaryDumper, Dump_U32_0Bytes)
   std::string s;
 
   ASSERT_TRUE(uut.IsAllDataDumped());
+
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: ");
-
   ASSERT_TRUE(uut.IsAllDataDumped());
 }
 
@@ -385,17 +389,17 @@ TEST(gpcc_string_BinaryDumper, Dump_U32_8Bytes)
   std::string s;
 
   ASSERT_FALSE(uut.IsAllDataDumped());
+
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: FF614241 127E21AB                   | ABa..!~.");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: ");
-
   ASSERT_TRUE(uut.IsAllDataDumped());
 }
 
@@ -410,17 +414,17 @@ TEST(gpcc_string_BinaryDumper, Dump_U32_16Bytes)
   std::string s;
 
   ASSERT_FALSE(uut.IsAllDataDumped());
+
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: FF614241 127E21AB 33323130 37363534 | ABa..!~.01234567");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: ");
-
   ASSERT_TRUE(uut.IsAllDataDumped());
 }
 
@@ -436,17 +440,17 @@ TEST(gpcc_string_BinaryDumper, Dump_U32_20Bytes)
   std::string s;
 
   ASSERT_FALSE(uut.IsAllDataDumped());
+
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: FF614241 127E21AB 33323130 37363534 | ABa..!~.01234567");
+  ASSERT_FALSE(uut.IsAllDataDumped());
 
-  EXPECT_FALSE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: 74736554                            | Test");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000020: ");
-
   ASSERT_TRUE(uut.IsAllDataDumped());
 }
 
@@ -461,13 +465,13 @@ TEST(gpcc_string_BinaryDumper, Dump_U64_0Bytes)
   std::string s;
 
   ASSERT_TRUE(uut.IsAllDataDumped());
+
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: ");
-
   ASSERT_TRUE(uut.IsAllDataDumped());
 }
 
@@ -482,17 +486,17 @@ TEST(gpcc_string_BinaryDumper, Dump_U64_8Bytes)
   std::string s;
 
   ASSERT_FALSE(uut.IsAllDataDumped());
+
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: 127E21ABFF614241                  | ABa..!~.");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: ");
-
   ASSERT_TRUE(uut.IsAllDataDumped());
 }
 
@@ -507,17 +511,17 @@ TEST(gpcc_string_BinaryDumper, Dump_U64_16Bytes)
   std::string s;
 
   ASSERT_FALSE(uut.IsAllDataDumped());
+
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: 127E21ABFF614241 3736353433323130 | ABa..!~.01234567");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: ");
-
   ASSERT_TRUE(uut.IsAllDataDumped());
 }
 
@@ -533,17 +537,238 @@ TEST(gpcc_string_BinaryDumper, Dump_U64_24Bytes)
   std::string s;
 
   ASSERT_FALSE(uut.IsAllDataDumped());
+
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000000: 127E21ABFF614241 3736353433323130 | ABa..!~.01234567");
+  ASSERT_FALSE(uut.IsAllDataDumped());
 
-  EXPECT_FALSE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000010: 0000000074736554                  | Test....");
+  ASSERT_TRUE(uut.IsAllDataDumped());
 
-  EXPECT_TRUE(uut.IsAllDataDumped());
   s = uut.GetLine();
   EXPECT_STREQ(s.c_str(), "0x10000020: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+}
 
+TEST(gpcc_string_BinaryDumper, ProvideMoreData_CreatedWithZeroByte)
+{
+  uint8_t const data[20] =
+  {
+    0x41U, 0x42U, 0x61U, 0xFFU, 0xABU, 0x21U, 0x7EU, 0x12U, 0x30U, 0x31U, 0x32U, 0x33U, 0x34U, 0x35U, 0x36U, 0x37U,
+    0x54U, 0x65U, 0x73U, 0x74U
+  };
+
+  gpcc::string::BinaryDumper uut(0x10000000UL, data, 0U, 1U);
+  std::string s;
+
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_TRUE(uut.IsMoreDataAccepted());
+
+  uut.ProvideMoreData(data, sizeof(data));
+  ASSERT_FALSE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000000: 41 42 61 FF AB 21 7E 12 30 31 32 33 34 35 36 37 | ABa..!~.01234567");
+  ASSERT_FALSE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000010: 54 65 73 74                                     | Test");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000020: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+}
+
+TEST(gpcc_string_BinaryDumper, ProvideMoreData_FragmentedDump_OK)
+{
+  uint8_t const data1[16] =
+  {
+    0x41U, 0x42U, 0x61U, 0xFFU, 0xABU, 0x21U, 0x7EU, 0x12U, 0x30U, 0x31U, 0x32U, 0x33U, 0x34U, 0x35U, 0x36U, 0x37U
+  };
+
+  uint8_t data2[4] =
+  {
+    0x54U, 0x65U, 0x73U, 0x74U
+  };
+
+  gpcc::string::BinaryDumper uut(0x10000000UL, data1, sizeof(data1), 1U);
+  std::string s;
+
+  ASSERT_FALSE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000000: 41 42 61 FF AB 21 7E 12 30 31 32 33 34 35 36 37 | ABa..!~.01234567");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_TRUE(uut.IsMoreDataAccepted());
+
+  uut.ProvideMoreData(data2, sizeof(data2));
+  ASSERT_FALSE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000010: 54 65 73 74                                     | Test");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000020: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+}
+
+TEST(gpcc_string_BinaryDumper, ProvideMoreData_Zero)
+{
+  uint8_t const data1[16] =
+  {
+    0x41U, 0x42U, 0x61U, 0xFFU, 0xABU, 0x21U, 0x7EU, 0x12U, 0x30U, 0x31U, 0x32U, 0x33U, 0x34U, 0x35U, 0x36U, 0x37U
+  };
+
+  uint8_t data2[4] =
+  {
+    0x54U, 0x65U, 0x73U, 0x74U
+  };
+
+  gpcc::string::BinaryDumper uut(0x10000000UL, data1, sizeof(data1), 1U);
+  std::string s;
+
+  ASSERT_FALSE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000000: 41 42 61 FF AB 21 7E 12 30 31 32 33 34 35 36 37 | ABa..!~.01234567");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_TRUE(uut.IsMoreDataAccepted());
+
+  uut.ProvideMoreData(data2, 0U);
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_TRUE(uut.IsMoreDataAccepted());
+
+  uut.ProvideMoreData(data2, sizeof(data2));
+  ASSERT_FALSE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000010: 54 65 73 74                                     | Test");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000020: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+}
+
+TEST(gpcc_string_BinaryDumper, ProvideMoreData_NotAllDataDumped)
+{
+  uint8_t const data[20] =
+  {
+    0x41U, 0x42U, 0x61U, 0xFFU, 0xABU, 0x21U, 0x7EU, 0x12U, 0x30U, 0x31U, 0x32U, 0x33U, 0x34U, 0x35U, 0x36U, 0x37U,
+    0x54U, 0x65U, 0x73U, 0x74U
+  };
+
+  gpcc::string::BinaryDumper uut(0x10000000UL, data, sizeof(data), 1U);
+  std::string s;
+
+  ASSERT_FALSE(uut.IsAllDataDumped());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000000: 41 42 61 FF AB 21 7E 12 30 31 32 33 34 35 36 37 | ABa..!~.01234567");
+  ASSERT_FALSE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  ASSERT_THROW(uut.ProvideMoreData(data, sizeof(data)), std::logic_error);
+  ASSERT_FALSE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000010: 54 65 73 74                                     | Test");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000020: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+}
+
+TEST(gpcc_string_BinaryDumper, ProvideMoreData_GetLineWhenAcceptingMoreData)
+{
+  uint8_t const data1[16] =
+  {
+    0x41U, 0x42U, 0x61U, 0xFFU, 0xABU, 0x21U, 0x7EU, 0x12U, 0x30U, 0x31U, 0x32U, 0x33U, 0x34U, 0x35U, 0x36U, 0x37U
+  };
+
+  uint8_t data2[4] =
+  {
+    0x54U, 0x65U, 0x73U, 0x74U
+  };
+
+  gpcc::string::BinaryDumper uut(0x10000000UL, data1, sizeof(data1), 1U);
+  std::string s;
+
+  ASSERT_FALSE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000000: 41 42 61 FF AB 21 7E 12 30 31 32 33 34 35 36 37 | ABa..!~.01234567");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_TRUE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000010: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  ASSERT_THROW(uut.ProvideMoreData(data2, sizeof(data2)), std::logic_error);
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+}
+
+TEST(gpcc_string_BinaryDumper, ProvideMoreData_InvalidArgs)
+{
+  uint16_t const data[8] =
+  {
+    0x4241U, 0xFF61U, 0x21ABU, 0x127EU, 0x3130U, 0x3332U, 0x3534U, 0x3736U
+  };
+
+  gpcc::string::BinaryDumper uut(0x10000000UL, data, 0U, 2U);
+  std::string s;
+
+  // test nullptr
+  ASSERT_THROW(uut.ProvideMoreData(nullptr, sizeof(data)), std::invalid_argument);
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_TRUE(uut.IsMoreDataAccepted());
+
+  // test invalid alignment of ptr
+  ASSERT_THROW(uut.ProvideMoreData(reinterpret_cast<uint8_t const *>(data) + 1U, sizeof(data)), std::invalid_argument);
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_TRUE(uut.IsMoreDataAccepted());
+
+  // test invalid alignment of size
+  ASSERT_THROW(uut.ProvideMoreData(data, sizeof(data) + 1U), std::invalid_argument);
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_TRUE(uut.IsMoreDataAccepted());
+
+  // good case
+  uut.ProvideMoreData(data, sizeof(data));
+  ASSERT_FALSE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000000: 4241 FF61 21AB 127E 3130 3332 3534 3736 | ABa..!~.01234567");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000010: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000010: ");
   ASSERT_TRUE(uut.IsAllDataDumped());
 }
 
