@@ -168,6 +168,7 @@ class BinaryDumper final
     uintptr_t address_;
 
     /// Pointer to the next word that will be printed.
+    /** May be `nullptr` if @ref nWords_ is zero. */
     void const * pData_;
 
     /// Number of words left to be printed. If this is zero, then there is no more data to be printed.

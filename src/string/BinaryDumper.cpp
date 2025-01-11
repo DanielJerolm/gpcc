@@ -36,7 +36,8 @@ namespace string {
  *
  * \param pData
  * Pointer to the data that shall be dumped.\n
- * `nullptr` is not allowed. This must be aligend to @p wordSize.
+ * This must be aligned to @p wordSize. \n
+ * `nullptr` is allowed, if @p nBytes is zero.
  *
  * \param nBytes
  * Size of the data referenced by @p pData in bytes.\n
@@ -283,7 +284,8 @@ bool BinaryDumper::IsMoreDataAccepted(void) const noexcept
  *
  * \param pData
  * Pointer to the data that shall be dumped.\n
- * `nullptr` is not allowed. This must be aligend to the word size configured at the @ref BinaryDumper instance.
+ * This must be aligend to the word size configured at the @ref BinaryDumper instance.\n
+ * `nullptr` is not allowed, if @p nBytes is zero.
  *
  * \param nBytes
  * Size of the data referenced by @p pData in bytes.\n
@@ -294,7 +296,7 @@ void BinaryDumper::ProvideMoreData(void const * const pData, size_t const nBytes
   if (!acceptMoreData_)
     throw std::logic_error("Precondition violated");
 
-  if (pData == nullptr)
+  if ((pData == nullptr) && (nBytes != 0))
     throw std::invalid_argument("!pData");
 
   if ((reinterpret_cast<uintptr_t>(pData) % wordSize_) != 0U)
