@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011, 2024 Daniel Jerolm
+    Copyright (C) 2011, 2024, 2025 Daniel Jerolm
 */
 
 #ifndef TOOLS_HPP_201701151802
@@ -55,13 +55,6 @@ bool IsDecimalDigitsOnly(std::string const & s) noexcept;
 // Conversion X to string -----------------------------------------------------
 std::string ExceptionDescriptionToString(std::exception const & e);
 std::string ExceptionDescriptionToString(std::exception_ptr const & ePtr);
-
-std::string HexDump(uintptr_t & address,
-                    uint8_t const nbOfAddressDigits,
-                    void const * & pData,
-                    size_t & n,
-                    uint8_t const wordSize,
-                    uint_fast8_t wordsPerLine);
 
 template<typename T>
 std::string ToHex(T const value, uint8_t const digits);

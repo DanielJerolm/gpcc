@@ -201,11 +201,10 @@ Next to do:
 
 History:
 ===============================================================================
-2025-01-10
-- Add class BinaryDumper
-
-2024-12-05
+2025-01-11
 - Add string conversion for 64bit types
+- Add class BinaryDumper
+- Remove gpcc::string::HexDump()
 
 2024-11-29
 - Fix StringComposer: Output for value 0 if show base is enabled
