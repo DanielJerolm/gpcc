@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011, 2024 Daniel Jerolm
+    Copyright (C) 2011, 2024, 2025 Daniel Jerolm
 */
 
 #include <gpcc/file_systems/cli/IFSCLICommands.hpp>
@@ -13,6 +13,7 @@
 #include <gpcc/file_systems/exceptions.hpp>
 #include <gpcc/file_systems/IFileStorage.hpp>
 #include <gpcc/raii/scope_guard.hpp>
+#include <gpcc/string/BinaryDumper.hpp>
 #include <gpcc/string/tools.hpp>
 #include <cstddef>
 
@@ -285,8 +286,10 @@ void CLICMDDump(std::string const & restOfLine, gpcc::cli::CLI & cli, IFileStora
   auto fileReader = pIFS->Open(restOfLine);
   ON_SCOPE_EXIT() { try { fileReader->Close(); } catch (std::exception const &) {}; };
 
-  uintptr_t offset = 0U;
-  cli.WriteLine("Offset      +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F 0123456789ABCDEF");
+  gpcc::string::BinaryDumper bd(0x00U, 1U);
+
+  cli.WriteLine(bd.GetHeadLine());
+  size_t totalBytes = 0U;
   while (true)
   {
     uint8_t buffer[16];
@@ -297,14 +300,16 @@ void CLICMDDump(std::string const & restOfLine, gpcc::cli::CLI & cli, IFileStora
 
     if (bufLevel == 0U)
     {
-      cli.WriteLine("Dumped " + std::to_string(offset) + " byte");
+      cli.WriteLine("Dumped " + std::to_string(totalBytes) + " byte");
       break;
     }
 
-    void const * pData = buffer;
-    cli.WriteLine(gpcc::string::HexDump(offset, 8U, pData, bufLevel, 1U, 16U));
+    totalBytes += bufLevel;
 
-    if ((offset % 1024U) == 0U)
+    bd.ProvideMoreData(buffer, bufLevel);
+    cli.WriteLine(bd.GetLine());
+
+    if ((totalBytes % 1024U) == 0U)
     {
       auto const userEntry = cli.ReadLine("Continue? (no = stop, anything else = continue):");
       if (gpcc::string::Trim(userEntry) == "no")

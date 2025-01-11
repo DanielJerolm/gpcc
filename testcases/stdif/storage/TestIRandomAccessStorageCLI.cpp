@@ -18,7 +18,6 @@
 #include "testcases/file_systems/eeprom_section_system/FakeEEPROM.hpp"
 #include <gtest/gtest.h>
 #include <functional>
-#include <iostream>
 #include <cstddef>
 #include <cstdint>
 
@@ -86,12 +85,7 @@ void GPCC_stdif_IRandomAccessStorageCLI_Tests::TearDown(void)
     cli.Stop();
 
   if (HasFailure())
-  {
-    std::cout << "*****************************************************" << std::endl
-              << "Content of fake terminal's screen" << std::endl
-              << "*****************************************************" << std::endl;
-    std::cout << terminal.GetScreenContent() << std::endl;
-  }
+    terminal.PrintToStdOut();
 }
 
 void GPCC_stdif_IRandomAccessStorageCLI_Tests::Login(void)
@@ -376,8 +370,8 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_OneByte)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0x100 1",
-   "Address     +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F 0123456789ABCDEF",
-   "0x00000100: DE                                              .",
+   "Address +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F | 0123456789ABCDEF",
+   "0x0100: DE                                              | .",
    ">",
    "",
    ""
@@ -401,8 +395,8 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_12Byte)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0x100 12",
-   "Address     +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F 0123456789ABCDEF",
-   "0x00000100: DE AD BE EF 12 13 14 15 00 00 00 00             ............",
+   "Address +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F | 0123456789ABCDEF",
+   "0x0100: DE AD BE EF 12 13 14 15 00 00 00 00             | ............",
    ">",
    "",
    ""
@@ -426,9 +420,9 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_17Byte)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0x100 17",
-   "Address     +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F 0123456789ABCDEF",
-   "0x00000100: DE AD BE EF 12 13 14 15 16 17 18 19 01 02 03 04 ................",
-   "0x00000110: FF                                              .",
+   "Address +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F | 0123456789ABCDEF",
+   "0x0100: DE AD BE EF 12 13 14 15 16 17 18 19 01 02 03 04 | ................",
+   "0x0110: FF                                              | .",
    ">",
    ""
   };
@@ -451,9 +445,9 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_UnalignedAddress17Bytes)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0x101 17",
-   "Address     +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F 0123456789ABCDEF",
-   "0x00000101: AD BE EF 12 13 14 15 16 17 18 19 01 02 03 04 FF ................",
-   "0x00000111: 00                                              .",
+   "Address +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F | 0123456789ABCDEF",
+   "0x0101: AD BE EF 12 13 14 15 16 17 18 19 01 02 03 04 FF | ................",
+   "0x0111: 00                                              | .",
    ">",
    ""
   };
@@ -476,8 +470,8 @@ TEST_F(GPCC_stdif_IRandomAccessStorageCLI_Tests, Read_LastByteOfStorage)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">ReadRAS 0xFFF 1",
-   "Address     +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F 0123456789ABCDEF",
-   "0x00000FFF: EE                                              .",
+   "Address +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F | 0123456789ABCDEF",
+   "0x0FFF: EE                                              | .",
    ">",
    "",
    ""

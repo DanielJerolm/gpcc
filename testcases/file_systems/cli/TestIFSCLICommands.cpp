@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #include <gpcc/file_systems/cli/IFSCLICommands.hpp>
@@ -123,6 +123,9 @@ void GPCC_FileSystems_CLI_TestsF::TearDown(void)
       cli.Stop();
 
     EEPROMSectionSystemTestFixture::TearDown();
+
+    if (HasFailure())
+      terminal.PrintToStdOut();
   }
   catch (std::exception const & e)
   {
@@ -567,9 +570,9 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Dump_OK)
    "Type 'login' or password>login",
    "Welcome. Type 'help' for assistance.",
    ">Dump File1",
-   "Offset      +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F 0123456789ABCDEF",
-   "0x00000000: 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F ................",
-   "0x00000010: 10 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F ................",
+   "Address +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F | 0123456789ABCDEF",
+   "0x0000: 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F | ................",
+   "0x0010: 10 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F | ................",
    "Dumped 32 byte",
    ">"
   };
@@ -596,11 +599,11 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Dump_StopAfter1024)
 {
   char const * expected[8] =
   {
-   "0x000003B0: 10 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F ................",
-   "0x000003C0: 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F ................",
-   "0x000003D0: 10 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F ................",
-   "0x000003E0: 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F ................",
-   "0x000003F0: 10 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F ................",
+   "0x03B0: 10 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F | ................",
+   "0x03C0: 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F | ................",
+   "0x03D0: 10 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F | ................",
+   "0x03E0: 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F | ................",
+   "0x03F0: 10 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F | ................",
    "Continue? (no = stop, anything else = continue):no",
    "aborted",
    ">"
@@ -631,12 +634,12 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Dump_ContinueAfter1024)
 {
   char const * expected[8] =
   {
-   "0x000003C0: 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F ................",
-   "0x000003D0: 10 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F ................",
-   "0x000003E0: 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F ................",
-   "0x000003F0: 10 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F ................",
+   "0x03C0: 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F | ................",
+   "0x03D0: 10 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F | ................",
+   "0x03E0: 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F | ................",
+   "0x03F0: 10 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F | ................",
    "Continue? (no = stop, anything else = continue):y",
-   "0x00000400: FF                                              .",
+   "0x0400: FF                                              | .",
    "Dumped 1025 byte",
    ">"
   };

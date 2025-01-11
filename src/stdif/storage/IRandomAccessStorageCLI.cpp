@@ -5,13 +5,14 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011, 2024 Daniel Jerolm
+    Copyright (C) 2011, 2024, 2025 Daniel Jerolm
 */
 
 #include <gpcc/stdif/storage/IRandomAccessStorageCLI.hpp>
 #include <gpcc/cli/CLI.hpp>
 #include <gpcc/cli/exceptions.hpp>
 #include <gpcc/stdif/storage/IRandomAccessStorage.hpp>
+#include <gpcc/string/BinaryDumper.hpp>
 #include <gpcc/string/tools.hpp>
 #include <limits>
 #include <vector>
@@ -104,13 +105,14 @@ void CliCmdReadIRandomAccessStorage(std::string const & restOfLine,
   pRAS->Read(address, n, buffer.data());
 
   // print to CLI
-  cli.WriteLine("Address     +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F 0123456789ABCDEF");
-
   static_assert(sizeof(uintptr_t) >= sizeof(decltype(address)));
-  uintptr_t address_uiptr = address;
-  void const * pData = buffer.data();
-  while (n != 0U)
-    cli.WriteLine(gpcc::string::HexDump(address_uiptr, 8U, pData, n, 1U, 16U));
+  gpcc::string::BinaryDumper bd(address, buffer.data(), buffer.size(), 1U);
+  cli.WriteLine(bd.GetHeadLine());
+  do
+  {
+    cli.WriteLine(bd.GetLine());
+  }
+  while (!bd.IsAllDataDumped());
 }
 
 /**
