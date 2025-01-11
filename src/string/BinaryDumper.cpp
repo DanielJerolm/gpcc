@@ -18,6 +18,35 @@ namespace gpcc   {
 namespace string {
 
 /**
+ * \brief Constructor. Creates a @ref BinaryDumper with no data assigned.
+ *
+ * Use @ref ProvideMoreData() to assign data after construction.
+ *
+ * - - -
+ *
+ * __Exception safety:__\n
+ * Strong guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param address
+ * Address associated with the first word that will be dumped.\n
+ * This is used for printing only. No memory access to the given address will occur.
+ *
+ * \param wordSize
+ * Word size (in byte) that shall be used to interpret the binary data.\n
+ * Allowed values: 1, 2, 4, or 8.
+ */
+BinaryDumper::BinaryDumper(uintptr_t const address,
+                           uint8_t const wordSize)
+: BinaryDumper(address, nullptr, 0U, wordSize)
+{
+}
+
+/**
  * \brief Constructor.
  *
  * - - -

@@ -141,6 +141,8 @@ class BinaryDumper final
   public:
     BinaryDumper(void) = delete;
     BinaryDumper(uintptr_t const address,
+                 uint8_t const wordSize);
+    BinaryDumper(uintptr_t const address,
                  void const * const pData,
                  size_t const nBytes,
                  uint8_t const wordSize);

@@ -18,6 +18,19 @@ static_assert(GPCC_SYSTEMS_ENDIAN == GPCC_LITTLE, "Tests dumping U16, U32, U64 w
 namespace gpcc_tests {
 namespace string     {
 
+TEST(gpcc_string_BinaryDumper, CTOR_woPtr_WordSizeInvalid)
+{
+  // good case
+  ASSERT_NO_THROW(gpcc::string::BinaryDumper uut(0x10UL, 1U));
+  ASSERT_NO_THROW(gpcc::string::BinaryDumper uut(0x10UL, 2U));
+  ASSERT_NO_THROW(gpcc::string::BinaryDumper uut(0x10UL, 4U));
+  ASSERT_NO_THROW(gpcc::string::BinaryDumper uut(0x10UL, 8U));
+
+  // test invalid values
+  EXPECT_THROW(gpcc::string::BinaryDumper uut(0x10UL, 3U), std::invalid_argument);
+  EXPECT_THROW(gpcc::string::BinaryDumper uut(0x10UL, 9U), std::invalid_argument);
+}
+
 TEST(gpcc_string_BinaryDumper, CTOR_DataPtrInvalid)
 {
   // pV is aligned to 64 bit
@@ -31,20 +44,6 @@ TEST(gpcc_string_BinaryDumper, CTOR_DataPtrInvalid)
   EXPECT_THROW(gpcc::string::BinaryDumper uut(0x10UL, pV + 1U, 0U, 2U), std::invalid_argument);
   EXPECT_THROW(gpcc::string::BinaryDumper uut(0x10UL, pV + 1U, 0U, 4U), std::invalid_argument);
   EXPECT_THROW(gpcc::string::BinaryDumper uut(0x10UL, pV + 1U, 0U, 8U), std::invalid_argument);
-}
-
-TEST(gpcc_string_BinaryDumper, CTOR_WordSizeInvalid)
-{
-  // pV is aligned to 64 bit
-  uint64_t v = 0;
-  uint8_t const * pV = reinterpret_cast<uint8_t const*>(&v);
-
-  // good case
-  ASSERT_NO_THROW(gpcc::string::BinaryDumper uut(0x10UL, pV, 8U, 8U));
-
-  // test invalid values
-  EXPECT_THROW(gpcc::string::BinaryDumper uut(0x10UL, pV, 0U, 3U), std::invalid_argument);
-  EXPECT_THROW(gpcc::string::BinaryDumper uut(0x10UL, pV, 0U, 9U), std::invalid_argument);
 }
 
 TEST(gpcc_string_BinaryDumper, CTOR_nBytesInvalid)
@@ -62,8 +61,26 @@ TEST(gpcc_string_BinaryDumper, CTOR_nBytesInvalid)
   EXPECT_THROW(gpcc::string::BinaryDumper uut(0x10UL, v, 9U, 8U), std::invalid_argument);
 }
 
+TEST(gpcc_string_BinaryDumper, CTOR_WordSizeInvalid)
+{
+  // pV is aligned to 64 bit
+  uint64_t v = 0;
+  uint8_t const * pV = reinterpret_cast<uint8_t const*>(&v);
+
+  // good case
+  ASSERT_NO_THROW(gpcc::string::BinaryDumper uut(0x10UL, pV, 8U, 1U));
+  ASSERT_NO_THROW(gpcc::string::BinaryDumper uut(0x10UL, pV, 8U, 2U));
+  ASSERT_NO_THROW(gpcc::string::BinaryDumper uut(0x10UL, pV, 8U, 4U));
+  ASSERT_NO_THROW(gpcc::string::BinaryDumper uut(0x10UL, pV, 8U, 8U));
+
+  // test invalid values
+  EXPECT_THROW(gpcc::string::BinaryDumper uut(0x10UL, pV, 0U, 3U), std::invalid_argument);
+  EXPECT_THROW(gpcc::string::BinaryDumper uut(0x10UL, pV, 0U, 9U), std::invalid_argument);
+}
+
 TEST(gpcc_string_BinaryDumper, Headlines_1ByteAddress)
 {
+  // use CTOR that takes pointer and size
   {
     gpcc::string::BinaryDumper uut(0x10UL, nullptr, 0U, 1U);
     auto const s = uut.GetHeadLine();
@@ -71,22 +88,23 @@ TEST(gpcc_string_BinaryDumper, Headlines_1ByteAddress)
     //                       0x0010: xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx | xxxxxxxxxxxxxxxx
   }
 
+  // use CTOR that does not bind data
   {
-    gpcc::string::BinaryDumper uut(0x10UL, nullptr, 0U, 2U);
+    gpcc::string::BinaryDumper uut(0x10UL, 2U);
     auto const s = uut.GetHeadLine();
     EXPECT_STREQ(s.c_str(), "Address +0   +2   +4   +6   +8   +A   +C   +E   | 0123456789ABCDEF");
     //                       0x0010: xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx | xxxxxxxxxxxxxxxx
   }
 
   {
-    gpcc::string::BinaryDumper uut(0x10UL, nullptr, 0U, 4U);
+    gpcc::string::BinaryDumper uut(0x10UL, 4U);
     auto const s = uut.GetHeadLine();
     EXPECT_STREQ(s.c_str(), "Address +0       +4       +8       +C       | 0123456789ABCDEF");
     //                       0x0010: xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx | xxxxxxxxxxxxxxxx
   }
 
   {
-    gpcc::string::BinaryDumper uut(0x10UL, nullptr, 0U, 8U);
+    gpcc::string::BinaryDumper uut(0x10UL, 8U);
     auto const s = uut.GetHeadLine();
     EXPECT_STREQ(s.c_str(), "Address +0               +8               | 0123456789ABCDEF");
     //                       0x0010: xxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxx | xxxxxxxxxxxxxxxx
@@ -95,6 +113,7 @@ TEST(gpcc_string_BinaryDumper, Headlines_1ByteAddress)
 
 TEST(gpcc_string_BinaryDumper, Headlines_4ByteAddress)
 {
+  // use CTOR that takes pointer and size
   {
     gpcc::string::BinaryDumper uut(0x10000000UL, nullptr, 0U, 1U);
     auto const s = uut.GetHeadLine();
@@ -102,22 +121,23 @@ TEST(gpcc_string_BinaryDumper, Headlines_4ByteAddress)
     //                       0x10000000: xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx | xxxxxxxxxxxxxxxx
   }
 
+  // use CTOR that does not bind data
   {
-    gpcc::string::BinaryDumper uut(0x10000000UL, nullptr, 0U, 2U);
+    gpcc::string::BinaryDumper uut(0x10000000UL, 2U);
     auto const s = uut.GetHeadLine();
     EXPECT_STREQ(s.c_str(), "Address     +0   +2   +4   +6   +8   +A   +C   +E   | 0123456789ABCDEF");
     //                       0x10000000: xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx | xxxxxxxxxxxxxxxx
   }
 
   {
-    gpcc::string::BinaryDumper uut(0x10000000UL, nullptr, 0U, 4U);
+    gpcc::string::BinaryDumper uut(0x10000000UL, 4U);
     auto const s = uut.GetHeadLine();
     EXPECT_STREQ(s.c_str(), "Address     +0       +4       +8       +C       | 0123456789ABCDEF");
     //                       0x10000000: xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx | xxxxxxxxxxxxxxxx
   }
 
   {
-    gpcc::string::BinaryDumper uut(0x10000000UL, nullptr, 0U, 8U);
+    gpcc::string::BinaryDumper uut(0x10000000UL, 8U);
     auto const s = uut.GetHeadLine();
     EXPECT_STREQ(s.c_str(), "Address     +0               +8               | 0123456789ABCDEF");
     //                       0x10000000: xxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxx | xxxxxxxxxxxxxxxx
@@ -555,7 +575,41 @@ TEST(gpcc_string_BinaryDumper, Dump_U64_24Bytes)
   ASSERT_TRUE(uut.IsAllDataDumped());
 }
 
-TEST(gpcc_string_BinaryDumper, ProvideMoreData_CreatedWithNoData)
+TEST(gpcc_string_BinaryDumper, ProvideMoreData_CreatedWithNoData_A)
+{
+  uint8_t const data[20] =
+  {
+    0x41U, 0x42U, 0x61U, 0xFFU, 0xABU, 0x21U, 0x7EU, 0x12U, 0x30U, 0x31U, 0x32U, 0x33U, 0x34U, 0x35U, 0x36U, 0x37U,
+    0x54U, 0x65U, 0x73U, 0x74U
+  };
+
+  gpcc::string::BinaryDumper uut(0x10000000UL, 1U);
+  std::string s;
+
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_TRUE(uut.IsMoreDataAccepted());
+
+  uut.ProvideMoreData(data, sizeof(data));
+  ASSERT_FALSE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000000: 41 42 61 FF AB 21 7E 12 30 31 32 33 34 35 36 37 | ABa..!~.01234567");
+  ASSERT_FALSE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000010: 54 65 73 74                                     | Test");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000020: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+}
+
+TEST(gpcc_string_BinaryDumper, ProvideMoreData_CreatedWithNoData_B)
 {
   uint8_t const data[20] =
   {
@@ -564,6 +618,40 @@ TEST(gpcc_string_BinaryDumper, ProvideMoreData_CreatedWithNoData)
   };
 
   gpcc::string::BinaryDumper uut(0x10000000UL, nullptr, 0U, 1U);
+  std::string s;
+
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_TRUE(uut.IsMoreDataAccepted());
+
+  uut.ProvideMoreData(data, sizeof(data));
+  ASSERT_FALSE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000000: 41 42 61 FF AB 21 7E 12 30 31 32 33 34 35 36 37 | ABa..!~.01234567");
+  ASSERT_FALSE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000010: 54 65 73 74                                     | Test");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+
+  s = uut.GetLine();
+  EXPECT_STREQ(s.c_str(), "0x10000020: ");
+  ASSERT_TRUE(uut.IsAllDataDumped());
+  ASSERT_FALSE(uut.IsMoreDataAccepted());
+}
+
+TEST(gpcc_string_BinaryDumper, ProvideMoreData_CreatedWithNoData_C)
+{
+  uint8_t const data[20] =
+  {
+    0x41U, 0x42U, 0x61U, 0xFFU, 0xABU, 0x21U, 0x7EU, 0x12U, 0x30U, 0x31U, 0x32U, 0x33U, 0x34U, 0x35U, 0x36U, 0x37U,
+    0x54U, 0x65U, 0x73U, 0x74U
+  };
+
+  gpcc::string::BinaryDumper uut(0x10000000UL, data, 0U, 1U);
   std::string s;
 
   ASSERT_TRUE(uut.IsAllDataDumped());
@@ -740,7 +828,7 @@ TEST(gpcc_string_BinaryDumper, ProvideMoreData_InvalidArgs)
     0x4241U, 0xFF61U, 0x21ABU, 0x127EU, 0x3130U, 0x3332U, 0x3534U, 0x3736U
   };
 
-  gpcc::string::BinaryDumper uut(0x10000000UL, nullptr, 0U, 2U);
+  gpcc::string::BinaryDumper uut(0x10000000UL, 2U);
   std::string s;
 
   // test invalid alignment of ptr
