@@ -104,8 +104,8 @@ TEST(gpcc_raii_unique_c_ptr_Tests, Release)
 {
   gpcc::raii::unique_c_ptr<char> spUUT(CreateHelloString());
 
-  // memcheck should not find a leak
   char* const p = spUUT.release();
+  ASSERT_EQ(spUUT.get(), nullptr);
 
   // memcheck should not find use-after-free
   EXPECT_STREQ(p, "Hello!");
