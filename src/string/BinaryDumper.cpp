@@ -18,35 +18,6 @@ namespace gpcc   {
 namespace string {
 
 /**
- * \brief Constructor. Creates a @ref BinaryDumper with no data assigned.
- *
- * Use @ref ProvideMoreData() to assign data after construction.
- *
- * - - -
- *
- * __Exception safety:__\n
- * Strong guarantee.
- *
- * __Thread cancellation safety:__\n
- * No cancellation point included.
- *
- * - - -
- *
- * \param address
- * Address associated with the first word that will be dumped.\n
- * This is used for printing only. No memory access to the given address will occur.
- *
- * \param wordSize
- * Word size (in byte) that shall be used to interpret the binary data.\n
- * Allowed values: 1, 2, 4, or 8.
- */
-BinaryDumper::BinaryDumper(uintptr_t const address,
-                           uint8_t const wordSize)
-: BinaryDumper(address, nullptr, 0U, wordSize)
-{
-}
-
-/**
  * \brief Constructor.
  *
  * - - -
@@ -59,10 +30,6 @@ BinaryDumper::BinaryDumper(uintptr_t const address,
  *
  * - - -
  *
- * \param address
- * Address associated with the first word in the buffer referenced by @p pData. \n
- * This is used for printing only. No memory access to the given address will occur.
- *
  * \param pData
  * Pointer to the data that shall be dumped.\n
  * This must be aligned to @p wordSize. \n
@@ -72,22 +39,25 @@ BinaryDumper::BinaryDumper(uintptr_t const address,
  * Size of the data referenced by @p pData in bytes.\n
  * Zero is allowed. This must be an integer multiple of @p wordSize.
  *
+ * \param address
+ * Address associated with the first word in the buffer referenced by @p pData. \n
+ * This is used for printing only. No memory access to the given address will occur.
+ *
  * \param wordSize
  * Word size (in byte) that shall be used to interpret the data referenced by @p pData. \n
  * Allowed values: 1, 2, 4, or 8.
  */
-BinaryDumper::BinaryDumper(uintptr_t const address,
-                           void const * const pData,
+BinaryDumper::BinaryDumper(void const * const pData,
                            size_t const nBytes,
+                           uintptr_t const address,
                            uint8_t const wordSize)
 : address_(address)
-, pData_(nullptr)
+, pData_(pData)
 , nWords_(0U)
 , wordSize_(wordSize)
 , wordsPerLine_(0U)
 , addressFieldWidth_(0U)
 , maxLineLength_(0U)
-, acceptMoreData_(true)
 {
   // ---------------------------------------------------
   // Check parameters and initialize class' members
@@ -97,7 +67,16 @@ BinaryDumper::BinaryDumper(uintptr_t const address,
 
   wordsPerLine_ = bytesPerLine_ / wordSize_;
 
-  ProvideMoreData(pData, nBytes);
+  if ((pData_ == nullptr) && (nBytes != 0))
+    throw std::invalid_argument("!pData");
+
+  if ((reinterpret_cast<uintptr_t>(pData_) % wordSize_) != 0U)
+    throw std::invalid_argument("pData <-> wordSize");
+
+  if ((nBytes % wordSize_) != 0U)
+    throw std::invalid_argument("nBytes <-> wordSize");
+
+  nWords_ = nBytes / wordSize_;
 
   // ---------------------------------------------------
   // Calculate required field width for the address
@@ -182,9 +161,8 @@ std::string BinaryDumper::GetHeadLine(void) const
 /**
  * \brief Retrieves one line of dumped data.
  *
- * If all data has been dumped (or if there was no data right from the begin), then...
- * - ...the line will only contain the address of the next word that would be dumped if there had been any data.
- * - ...any subsequent call to @ref ProvideMoreData() will be rejected.
+ * If all data has been dumped (or if there was no data right from the begin), then the line will only contain the
+ * address of the next word that would be dumped if there had been any data.
  *
  * - - -
  *
@@ -226,12 +204,6 @@ std::string BinaryDumper::GetLine(void)
     pData_ = reinterpret_cast<uint8_t const*>(pData_) + bytesInThisLine;
     nWords_ -= wordsInThisLine;
     address_ += bytesPerLine_;
-
-    acceptMoreData_ = ((nWords_ == 0U) && (bytesInThisLine == bytesPerLine_));
-  }
-  else
-  {
-    acceptMoreData_ = false;
   }
 
   return sc.Get();
@@ -259,86 +231,6 @@ std::string BinaryDumper::GetLine(void)
 bool BinaryDumper::IsAllDataDumped(void) const noexcept
 {
   return (nWords_ == 0U);
-}
-
-/**
- * \brief Queries if the @ref BinaryDumper instance accepts provision of more data.
- *
- * More data is accepted if all of the following conditions are true:
- * - All data has been dumped or there was no data yet.
- * - The last line of the dump (if there was one) contained 16 bytes of data.
- *
- * - - -
- *
- * __Thread safety:__\n
- * The state of the object is not modified. Concurrent accesses are safe.
- *
- * __Exception safety:__\n
- * No-throw guarantee.
- *
- * __Thread cancellation safety:__\n
- * No cancellation point included.
- *
- * - - -
- *
- * \retval true   There is no more data and the last line of the dump was full (16 byte).\n
- *                @ref ProvideMoreData() will accept more data.
- *
- * \retval false  There is either some data left to be dumped, or the previous dumped line was not full (< 16 byte).\n
- *                Any call to @ref ProvideMoreData() will be rejected.
- */
-bool BinaryDumper::IsMoreDataAccepted(void) const noexcept
-{
-  return acceptMoreData_;
-}
-
-/**
- * \brief Provides a new buffer to the @ref BinaryDumper in order to continue a dump.
- *
- * \pre   All data has been dumped or there was no data yet and the last line of the dump contained 16 bytes of data.\n
- *        @ref IsMoreDataAccepted() can be used to test the precondition.
- *
- * - - -
- *
- * __Thread safety:__\n
- * The state of the object is modified. Any concurrent accesses are not safe.
- *
- * __Exception safety:__\n
- * Strong guarantee.
- *
- * __Thread cancellation safety:__\n
- * No cancellation point included.
- *
- * - - -
- *
- * \param pData
- * Pointer to the data that shall be dumped.\n
- * This must be aligend to the word size configured at the @ref BinaryDumper instance.\n
- * `nullptr` is not allowed, if @p nBytes is zero.
- *
- * \param nBytes
- * Size of the data referenced by @p pData in bytes.\n
- * Zero is allowed. This must be an integer multiple of the word size configured at the @ref BinaryDumper instance.
- */
-void BinaryDumper::ProvideMoreData(void const * const pData, size_t const nBytes)
-{
-  if (!acceptMoreData_)
-    throw std::logic_error("Precondition violated");
-
-  if ((pData == nullptr) && (nBytes != 0))
-    throw std::invalid_argument("!pData");
-
-  if ((reinterpret_cast<uintptr_t>(pData) % wordSize_) != 0U)
-    throw std::invalid_argument("pData <-> wordSize");
-
-  if ((nBytes % wordSize_) != 0U)
-    throw std::invalid_argument("nBytes <-> wordSize");
-
-  pData_  = pData;
-  nWords_ = nBytes / wordSize_;
-
-  if (nWords_ != 0U)
-    acceptMoreData_ = false;
 }
 
 /**

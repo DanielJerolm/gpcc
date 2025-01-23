@@ -106,7 +106,7 @@ void CliCmdReadIRandomAccessStorage(std::string const & restOfLine,
 
   // print to CLI
   static_assert(sizeof(uintptr_t) >= sizeof(decltype(address)));
-  gpcc::string::BinaryDumper bd(address, buffer.data(), buffer.size(), 1U);
+  gpcc::string::BinaryDumper bd(buffer.data(), buffer.size(), address, 1U);
   cli.WriteLine(bd.GetHeadLine());
   do
   {

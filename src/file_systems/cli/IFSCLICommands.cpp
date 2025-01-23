@@ -286,13 +286,13 @@ void CLICMDDump(std::string const & restOfLine, gpcc::cli::CLI & cli, IFileStora
   auto fileReader = pIFS->Open(restOfLine);
   ON_SCOPE_EXIT() { try { fileReader->Close(); } catch (std::exception const &) {}; };
 
-  gpcc::string::BinaryDumper bd(0x00U, 1U);
-
-  cli.WriteLine(bd.GetHeadLine());
+  // The number of dumped bytes is accumulated in this.
+  // This is also the offset in the file and the address displayed in the dump.
   size_t totalBytes = 0U;
+  bool printHeadline = true;
   while (true)
   {
-    uint8_t buffer[16];
+    uint8_t buffer[64];
     size_t bufLevel = 0U;
 
     while ((fileReader->GetState() != gpcc::stream::IStreamReader::States::empty) && (bufLevel != sizeof(buffer)))
@@ -304,10 +304,18 @@ void CLICMDDump(std::string const & restOfLine, gpcc::cli::CLI & cli, IFileStora
       break;
     }
 
-    totalBytes += bufLevel;
+    gpcc::string::BinaryDumper bd(buffer, bufLevel, static_cast<uintptr_t>(totalBytes), 1U);
 
-    bd.ProvideMoreData(buffer, bufLevel);
-    cli.WriteLine(bd.GetLine());
+    if (printHeadline)
+    {
+      cli.WriteLine(bd.GetHeadLine());
+      printHeadline = false;
+    }
+
+    while (!bd.IsAllDataDumped())
+      cli.WriteLine(bd.GetLine());
+
+    totalBytes += bufLevel;
 
     if ((totalBytes % 1024U) == 0U)
     {
