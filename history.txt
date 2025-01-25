@@ -8,11 +8,12 @@ Next to do:
 
 - Use github's issue tracking instead of this file
 
-- Template functions are not shown in doxygen
+- Template functions are not shown in doxygen.
+  Members of template classes (e.g. MultiCallback, IntegralFilter) are shown, but documentation is missing.
+
+- Consider using prefix "std::" for types and functions from the C library
 
 - Remove machine's architecture from OS. The OS should hide any machine specific stuff.
-
-- Doxygen: No documentation generated for members of template classes (e.g. MultiCallback, IntegralFilter)
 
 - Check usage of postfixes for literals ([0-9]U <<)
 - Check usage of plain types (e.g. unsigned int)
@@ -201,10 +202,13 @@ Next to do:
 
 History:
 ===============================================================================
-2025-01-11
+2025-01-25
 - Add string conversion for 64bit types
 - Add class BinaryDumper
 - Remove gpcc::string::HexDump()
+
+2025-01-14
+- Add gpcc::raii::unique_c_ptr
 
 2024-11-29
 - Fix StringComposer: Output for value 0 if show base is enabled
