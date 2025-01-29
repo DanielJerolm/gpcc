@@ -202,6 +202,9 @@ Next to do:
 
 History:
 ===============================================================================
+2029-01-29
+- Add Log-methods accepting an va_list object
+
 2025-01-25
 - Add string conversion for 64bit types
 - Add class BinaryDumper
