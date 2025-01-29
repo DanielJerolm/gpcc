@@ -3206,8 +3206,8 @@ std::vector<std::pair<std::string,std::string>> ExtractFieldAndValue(std::string
  * nullptr is not allowed.
  *
  * \param args
- * Variable number of arguments that shall be printed. The number and type of arguments must match the conversion
- * specifiers embedded in `pFmt`.
+ * `va_list` object offering access to the arguments that shall be printed. The number and type of arguments must match
+ * the conversion specifiers embedded in `pFmt`.
  *
  * \return
  * Pointer to the created null-terminated c-string.
@@ -3269,6 +3269,7 @@ std::unique_ptr<char[]> VASPrintf(char const * const pFmt, va_list args)
  * \param pFmt
  * Pointer to a null-terminated c-string containing the text that shall be printed and printf-style conversion
  * specifications that control how the `args` shall be converted and integrated into the text.\n
+ * For details about format specifiers, please refer to @ref VASPrintf().\n
  * nullptr is not allowed.
  *
  * \param ...
