@@ -195,6 +195,7 @@ class Logger final
     void Log(LogType const type, std::string const & msg, std::exception_ptr const & ePtr) noexcept;
     void Log(LogType const type, std::string && msg, std::exception_ptr const & ePtr) noexcept;
     void LogV(LogType const type, char const * const pFmt, ...) noexcept;
+    void LogV(LogType const type, char const * const pFmt, va_list args) noexcept;
     void LogTS(LogType const type, char const * const pMsg) noexcept;
     void LogTS(LogType const type, char const * const pMsg, std::exception_ptr const & ePtr) noexcept;
     void LogTS(LogType const type, std::string const & msg) noexcept;
@@ -202,6 +203,7 @@ class Logger final
     void LogTS(LogType const type, std::string const & msg, std::exception_ptr const & ePtr) noexcept;
     void LogTS(LogType const type, std::string && msg, std::exception_ptr const & ePtr) noexcept;
     void LogVTS(LogType const type, char const * const pFmt, ...) noexcept;
+    void LogVTS(LogType const type, char const * const pFmt, va_list args) noexcept;
     void LogFailed(void) noexcept;
 
   private:

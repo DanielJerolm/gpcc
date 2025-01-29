@@ -615,6 +615,47 @@ void Logger::LogV(LogType const type, char const * const pFmt, ...) noexcept
   va_start(args, pFmt);
   ON_SCOPE_EXIT(end_args) { va_end(args); };
 
+  LogV(type, pFmt, args);
+}
+
+/**
+ * \brief Logs a message. The message is created from a `va_list` object and a printf-style format string.
+ *
+ * In contrast to the other Log()-methods, this method creates the log message text in the context of the calling
+ * thread instead of off-loading log message creation to the thread of the log facility. This method therefore offers
+ * high flexibility, but uses the calling thread to create the log message string.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * No-throw guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param type
+ * Type of log message. See @ref LogType for details.\n
+ * If this is below the log level configured at this @ref Logger instance, then this method will do nothing.
+ *
+ * \param pFmt
+ * Pointer to a null-terminated c-string containing the log message text and printf-style conversion specifications that
+ * control how the variable arguments shall be converted and integrated into the log message text.\n
+ * Details about format specifiers are [here](@ref gpcc::string::VASPrintf).
+ *
+ * \param args
+ * `va_list` object offering access to the arguments that shall be printed. The number and type of arguments must match
+ * the conversion specifiers embedded in `pFmt`.
+ */
+void Logger::LogV(LogType const type, char const * const pFmt, va_list args) noexcept
+{
+  if (!IsAboveLevel(type))
+    return;
+
   osal::MutexLocker locker(mutex);
   if (pLogFacility != nullptr)
   {
@@ -1075,6 +1116,48 @@ void Logger::LogVTS(LogType const type, char const * const pFmt, ...) noexcept
   va_list args;
   va_start(args, pFmt);
   ON_SCOPE_EXIT(end_args) { va_end(args); };
+
+  LogVTS(type, pFmt, args);
+}
+
+/**
+ * \brief Logs a message. The message is created from a `va_list` object and a printf-style format string
+ *        plus timestamp.
+ *
+ * In contrast to the other Log()-methods, this method creates the log message text in the context of the calling
+ * thread instead of off-loading log message creation to the thread of the log facility. This method therefore offers
+ * high flexibility, but uses the calling thread to create the log message string.
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * No-throw guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param type
+ * Type of log message. See @ref LogType for details.\n
+ * If this is below the log level configured at this @ref Logger instance, then this method will do nothing.
+ *
+ * \param pFmt
+ * Pointer to a null-terminated c-string containing the log message text and printf-style conversion specifications that
+ * control how the variable arguments shall be converted and integrated into the log message text.\n
+ * Details about format specifiers are [here](@ref gpcc::string::VASPrintf).
+ *
+ * \param args
+ * `va_list` object offering access to the arguments that shall be printed. The number and type of arguments must match
+ * the conversion specifiers embedded in `pFmt`.
+ */
+void Logger::LogVTS(LogType const type, char const * const pFmt, va_list args) noexcept
+{
+  if (!IsAboveLevel(type))
+    return;
 
   osal::MutexLocker locker(mutex);
   if (pLogFacility != nullptr)
