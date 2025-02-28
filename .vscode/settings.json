@@ -1,0 +1,14 @@
+{
+  "editor.tabSize": 2,
+  "editor.rulers": [120],
+  "editor.wordWrapColumn": 120,
+  "editor.renderWhitespace": "all",
+  "editor.renderControlCharacters": true,
+  "files.trimTrailingWhitespace": true,
+  "C_Cpp.default.intelliSenseMode": "gcc-x64",
+  "C_Cpp.default.cppStandard": "c++17",
+  "C_Cpp.default.cStandard": "c11",
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false
+  }
+}

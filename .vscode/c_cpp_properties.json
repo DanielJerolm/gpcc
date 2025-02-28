@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "Linux-native-lib",
+            "includePath": [
+                "/usr/include",
+                "/usr/local/include"
+            ],
+            "compileCommands": "${workspaceFolder}/build_linuxnativelib/compile_commands.json",
+            "compilerPath": "/usr/bin/gcc",
+            "intelliSenseMode": "linux-gcc-x64"
+        },
+        {
+            "name": "Linux-unittests",
+            "includePath": [
+                "/usr/include",
+                "/usr/local/include"
+            ],
+            "compileCommands": "${workspaceFolder}/build_unittest/compile_commands.json",
+            "compilerPath": "/usr/bin/gcc",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}

@@ -5,7 +5,7 @@ GPCC Implementation History and Current Activities
 Next to do:
 ===============================================================================
 - Add capability to build linux native library and linux unittests "standalone"
-  - [  ] Add .vscode folder
+  - [OK] Add .vscode folder
   - [  ] Update shell-scripts
   - [  ] Detect "stand alone" condition
   - [  ] Download extern/googletest and extern/toolchain_configs if stand alone
