@@ -6,12 +6,13 @@ Next to do:
 ===============================================================================
 - Add capability to build linux native library and linux unittests "standalone"
   - [OK] Add .vscode folder
-  - [  ] Update shell-scripts
+  - [OK] Revise doxygen scripts
+  - [OK] Update shell-scripts
   - [  ] Detect "stand alone" condition
   - [  ] Download extern/googletest and extern/toolchain_configs if stand alone
   - [  ] build unittest executable
-  - [  ] Revise doxygen scripts
   - [  ] Revise cmake-files
+  - [  ] Add some markdown describing usage
 
 - StringComposer::SetupFormatString contains a TODO
 
