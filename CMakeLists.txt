@@ -4,77 +4,13 @@
 # If a copy of the MPL was not distributed with this file,
 # You can obtain one at https://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2022, 2024 Daniel Jerolm
+# Copyright (C) 2022, 2024, 2025 Daniel Jerolm
 
-
+# =================================
 # Main CMakeLists.txt-file for GPCC
 # =================================
-#
-# Intended use
-# ------------
-#
-# GPCC is intended to be used as a git sub-module in an upper level project. So the typical use case is, that this file
-# will be included from a top-level cmake project via "add_subdirectory(gpcc)". However, this file may also be used
-# stand-alone to build GPCC's artifacts.
-#
-# Configuration
-# -------------
-#
-# GPCC strictly distinguishes between two target environments. You have to select the proper environment for your build
-# and set the cache variable "GPCC_TargetEnvironment" accordingly:
-# - productive : A library "gpcc" will be build for productive use.
-# - unittest   : A library "gpcc" and an object-library "gpcc_testcases" will be build for usage in a unittest
-#                environment. The unittest environment is intended for executing GPCC's unit tests as well as
-#                unit tests from the upper level project.
-#                Note that there is an option "GPCC_BuildEmptyTestCaseLibrary" to build an empty testcase library.
-#
-# Further you have to provide the user settings for "GPCC_Compiler" and "GPCC_OS".
-#
-# There are three approaches to provide the user settings:
-# a) By the upper-level cmake project file. This is the recommended approach. Example:
-#    set(GPCC_TargetEnvironment "unittest" CACHE STRING "")
-#    set(GPCC_Compiler "gcc_arm" CACHE STRING "")
-#    set(GPCC_OS "chibios_arm" CACHE STRING "")
-#
-# b) During configuration. Example:
-#    -DGPCC_TargetEnvironment:STRING=productive
-#    -DGPCC_Compiler:STRING=gcc_arm
-#    -DGPCC_OS:STRING=chibios_arm
-#
-# c) Via the cmake gui tool.
-#
-# Valid values and the help text can be retrieved using the cmake gui tool.
-#
-# After configuration it is strongly recommended that you check your settings:
-# 1. cd to you build directory
-# 2. Type: cmake . -LA | grep GPCC_
-#    To include help text, type: cmake . -LAH | grep -B 1 GPCC_
-#
-# In addition to the three settings mentioned before, grep will show some more options depending on the selected target
-# environment. There are reasonable defaults for these settings, but you should have a look at them and confirm them.
-#
-# Compiler options and language standard
-# --------------------------------------
-#
-# GPCC requires for itself and for its users:
-# - at least C++17
-# - presence of RTTI
-# - presence of C++ exceptions
-#
-# GPCC will impose the required compiler features and compiler options for itself and for its users. See 'common.cmake',
-# function 'SetRequiredCompilerFeatures' for details.
-#
-# Dependencies
-# ------------
-#
-# In unittest environment:
-# - The top level project has to provide googletest (gmock library).
-#
-# In productive environment:
-# For GPCC_OS=chibios_arm, the top level project has to provide:
-# - target_link_libraries(gpcc PUBLIC <library containing ChibiOS/RT kernel>)
-#
-cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
+
+cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
 project(gpcc LANGUAGES CXX)
 
 include(cmake/common.cmake)
@@ -107,41 +43,138 @@ string(REPLACE ";"  ", " osValues_str "${GPCC_OSValues}")
 set_property(CACHE GPCC_OS PROPERTY STRINGS ${GPCC_OSValues})
 
 
-
-# ---------------------------------------------------------------------------------------------------------------------
-# Ensure user settings have valid values
-# ---------------------------------------------------------------------------------------------------------------------
-if(NOT GPCC_TargetEnvironment)
-  message(FATAL_ERROR "Error: 'GPCC_TargetEnvironment' is not set.\n"
-                      "Allowed values: ${GPCC_TargetEnvironmentValues_str}")
-endif()
-if(NOT (${GPCC_TargetEnvironment} IN_LIST GPCC_TargetEnvironmentValues))
-  message(FATAL_ERROR "Error: 'GPCC_TargetEnvironment' has invalid value.\n"
-                      "Allowed values: ${GPCC_TargetEnvironmentValues_str}")
-endif()
-
-if(NOT GPCC_Compiler)
-  message(FATAL_ERROR "Error: 'GPCC_Compiler' is not set.\n"
-                      "Allowed values: ${GPCC_CompilerValues}")
-endif()
-if(NOT (${GPCC_Compiler} IN_LIST GPCC_CompilerValues))
-  message(FATAL_ERROR "Error: 'GPCC_Compiler' has invalid value.\n"
-                      "Allowed values: ${GPCC_CompilerValues}")
-endif()
-
-Validate_GPCC_Compiler()
-
-if(NOT GPCC_OS)
-  message(FATAL_ERROR "Error: 'GPCC_OS' is not set.\n"
-                      "Allowed values: ${GPCC_OSValues}")
-endif()
-if(NOT (${GPCC_OS} IN_LIST GPCC_OSValues))
-  message(FATAL_ERROR "Error: 'GPCC_OS' has invalid value.\n"
-                      "Allowed values: ${GPCC_OSValues}")
-endif()
+CheckUserSettings()
 
 
 # ---------------------------------------------------------------------------------------------------------------------
-# Continue in cmake files specific to the target environment
+# Option "GPCC_CliNoFontStyles"
+# This is always on, if GPCC is configured for the unittest environment.
 # ---------------------------------------------------------------------------------------------------------------------
-include(cmake/CMakeLists.${GPCC_TargetEnvironment}.cmake)
+if(${GPCC_TargetEnvironment} STREQUAL "productive")
+  option(GPCC_CliNoFontStyles "Disables gpcc::cli::CLI font style control." OFF)
+else()
+  set(GPCC_CliNoFontStyles ON CACHE BOOL "" FORCE)
+endif()
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Option "GPCC_BuildEmptyTestCaseLibrary"
+# This is only available, if GPCC if configured for the unittest environment.
+# This is always OFF, if GPCC is configured stand-alone.
+# ---------------------------------------------------------------------------------------------------------------------
+if (PROJECT_IS_TOP_LEVEL)
+  set(GPCC_BuildEmptyTestCaseLibrary OFF CACHE BOOL "" FORCE)
+else()
+  option(GPCC_BuildEmptyTestCaseLibrary "Builds an empty test case library 'gpcc_testcases'." ON)
+endif()
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Options "GPCC_Skip*Tests"
+# These are only available, if GPCC is configured for the unittest environment.
+# ---------------------------------------------------------------------------------------------------------------------
+if(${GPCC_TargetEnvironment} STREQUAL "unittest")
+  option(GPCC_SkipTFCBasedTests
+         "Excludes unit-tests from compilation, that require presence of TFC."
+         OFF)
+
+  option(GPCC_SkipLoadDependentTests
+         "Excludes unit-tests from compilation that depend on machine performance and that cannot make use of TFC."
+         ON)
+
+  option(GPCC_SkipVeryBigMemTests
+         "Excludes unit-tests from compilation, that require a large amount of RAM."
+         ON)
+
+  option(GPCC_SkipSpecialRightsBasedTests
+         "Excludes unit-tests from compilation that require special user-rights."
+         ON)
+
+  ValidateSkipTestOptions()
+endif()
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------
+# End of user settings. Let's build...
+# ---------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------
+
+if (PROJECT_IS_TOP_LEVEL)
+  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+endif()
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Fetch externals, if GPCC is build stand-alone
+# ---------------------------------------------------------------------------------------------------------------------
+if (PROJECT_IS_TOP_LEVEL)
+  if(${GPCC_TargetEnvironment} STREQUAL "unittest")
+    include(FetchContent)
+
+    FetchContent_Declare(
+      googletest
+      GIT_REPOSITORY https://github.com/google/googletest.git
+      # release 1.12.1
+      GIT_TAG 58d77fa8070e8cec2dc1ed015d66b454c8d78850
+    )
+
+    message(STATUS "Fetching googletest from www.github.com")
+    FetchContent_MakeAvailable(googletest)
+  endif()
+endif()
+
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Library "gpcc"
+# ---------------------------------------------------------------------------------------------------------------------
+add_library(${PROJECT_NAME})
+
+if(${GPCC_TargetEnvironment} STREQUAL "productive")
+  add_subdirectory(src)
+else()
+  add_subdirectory(src)
+  add_subdirectory(test_src)
+endif()
+
+target_include_directories(${PROJECT_NAME} PRIVATE . PUBLIC include)
+
+SetupDefines(${PROJECT_NAME})
+SetCompilerAndLanguageOptions(${PROJECT_NAME})
+SetupLinkLibraries(${PROJECT_NAME})
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Library "gpcc_testcases"
+# ---------------------------------------------------------------------------------------------------------------------
+if(${GPCC_TargetEnvironment} STREQUAL "unittest")
+
+  add_library(${PROJECT_NAME}_testcases OBJECT)
+
+  add_subdirectory(testcases)
+
+  target_include_directories(${PROJECT_NAME}_testcases PRIVATE .)
+
+  SetupDefines(${PROJECT_NAME}_testcases)
+  SetupDefinesForSkippingUnitTests(${PROJECT_NAME}_testcases)
+  SetCompilerAndLanguageOptions(${PROJECT_NAME}_testcases)
+  SetupLinkLibraries(${PROJECT_NAME}_testcases)
+
+  target_link_libraries(${PROJECT_NAME}_testcases PRIVATE ${PROJECT_NAME} gmock)
+
+endif()
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Unittest executable "gpcc_unittests"
+# (only available if gpcc is configured for the unittest environment AND if GPCC is configured stand-alone)
+# ---------------------------------------------------------------------------------------------------------------------
+if((${GPCC_TargetEnvironment} STREQUAL "unittest") AND (PROJECT_IS_TOP_LEVEL))
+
+  add_executable(${PROJECT_NAME}_unittests testcases/empty.cpp)
+
+  target_link_libraries(${PROJECT_NAME}_unittests PRIVATE gpcc_testcases gmock_main)
+
+  set_target_properties(${PROJECT_NAME}_unittests PROPERTIES
+                         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/output"
+                         OUTPUT_NAME "unittests"
+                        )
+endif()

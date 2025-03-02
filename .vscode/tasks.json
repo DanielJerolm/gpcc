@@ -4,9 +4,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-        "label": "CMake configure: Linux native lib (release)",
+        "label": "CMake configure: Linux productive (release)",
         "type": "shell",
-        "command": "./cmake_config_linux-native-lib-release.sh",
+        "command": "./cmake_config_linux-productive-release.sh",
         "options": {
             "cwd": "${workspaceFolder}/scripts"
         },
@@ -31,9 +31,9 @@
         "problemMatcher": []
     },
     {
-        "label": "Clean (Linux native lib)",
+        "label": "Clean (productive)",
         "type": "shell",
-        "command": "./build_linux-native.sh",
+        "command": "./build_productive.sh",
         "args": [
             "clean"
         ],
@@ -43,9 +43,9 @@
         "problemMatcher": []
     },
     {
-        "label": "Build (Linux native lib)",
+        "label": "Build (productive)",
         "type": "shell",
-        "command": "./build_linux-native.sh",
+        "command": "./build_productive.sh",
         "args": [
             "all"
         ],
@@ -114,7 +114,7 @@
         "type": "shell",
         "command": "./execute_unittests.sh",
         "args": [
-            "--gtest_filter=<TestSuite>.<TestCase>"
+            "--gtest_filter=TestSuite.TestCase"
         ],
         "options": {
             "cwd": "${workspaceFolder}/scripts"

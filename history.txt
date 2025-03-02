@@ -8,10 +8,13 @@ Next to do:
   - [OK] Add .vscode folder
   - [OK] Revise doxygen scripts
   - [OK] Update shell-scripts
-  - [  ] Detect "stand alone" condition
-  - [  ] Download extern/googletest and extern/toolchain_configs if stand alone
-  - [  ] build unittest executable
-  - [  ] Revise cmake-files
+  - [OK] Detect "stand alone" condition
+  - [OK] Download extern/googletest and extern/toolchain_configs if stand alone
+  - [OK] build unittest executable
+  - [OK] Revise cmake-files
+  - [OK] Test all vscode tasks
+  - [OK] Configure warning settings
+  - [OK] Add comments describing usage of shell scripts
   - [  ] Add some markdown describing usage
 
 - StringComposer::SetupFormatString contains a TODO

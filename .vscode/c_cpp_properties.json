@@ -1,17 +1,17 @@
 {
     "configurations": [
         {
-            "name": "Linux-native-lib",
+            "name": "Linux-productive",
             "includePath": [
                 "/usr/include",
                 "/usr/local/include"
             ],
-            "compileCommands": "${workspaceFolder}/build_linuxnativelib/compile_commands.json",
+            "compileCommands": "${workspaceFolder}/build_productive/compile_commands.json",
             "compilerPath": "/usr/bin/gcc",
             "intelliSenseMode": "linux-gcc-x64"
         },
         {
-            "name": "Linux-unittests",
+            "name": "Linux-unittest",
             "includePath": [
                 "/usr/include",
                 "/usr/local/include"

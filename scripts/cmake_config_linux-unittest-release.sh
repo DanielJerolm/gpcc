@@ -8,9 +8,15 @@
 #
 # Copyright (C) 2025 Daniel Jerolm
 
-
-# This script will remove all generated build-artifacts (test executable, librarys, all doxygen)
-
 set -e
 
-rm -fr ../build_*
+cd ..
+
+cmake -S . \
+      -B build_unittest \
+      -DGPCC_TargetEnvironment:STRING=unittest \
+      -DGPCC_Compiler:STRING=gcc_x64 \
+      -DGPCC_OS:STRING=linux_x64_tfc \
+      -DCMAKE_BUILD_TYPE=Release
+
+echo "Done"
