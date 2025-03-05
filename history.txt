@@ -15,8 +15,8 @@ Next to do:
   - [OK] Test all vscode tasks
   - [OK] Configure warning settings
   - [OK] Add comments describing usage of shell scripts
+  - [OK] Add some markdown describing usage
   - [  ] Automatic configuration
-  - [  ] Add some markdown describing usage
 
 - StringComposer::SetupFormatString contains a TODO
 
