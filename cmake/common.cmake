@@ -150,7 +150,7 @@ function(SetupLinkLibraries target)
     # and a suitable C++ runtime.
 
   elseif(${GPCC_OS} STREQUAL "epos_arm")
-    target_link_libraries(${target} PUBLIC epos)
+    target_link_libraries(${target} PUBLIC epos_kernel)
 
   elseif((${GPCC_OS} STREQUAL "linux_arm") OR
          (${GPCC_OS} STREQUAL "linux_arm_tfc") OR
