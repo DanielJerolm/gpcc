@@ -9,7 +9,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build_unittest/output/unittests",
-      "preLaunchTask": "build (unittest)",
+      "preLaunchTask": "Build (unittest)",
       "args": [
         "--gtest_filter=TestSuite.TestCase"
       ],

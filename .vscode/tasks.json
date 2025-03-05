@@ -4,27 +4,27 @@
   "version": "2.0.0",
   "tasks": [
     {
-        "label": "CMake configure: Linux productive (release)",
+        "label": "CMake configure: Native Linux productive (release)",
         "type": "shell",
-        "command": "./cmake_config_linux-productive-release.sh",
+        "command": "./cmake_config_nativelinux-productive-release.sh",
         "options": {
             "cwd": "${workspaceFolder}/scripts"
         },
         "problemMatcher": []
     },
     {
-        "label": "CMake configure: Linux unittest (debug)",
+        "label": "CMake configure: Native Linux unittest (debug)",
         "type": "shell",
-        "command": "./cmake_config_linux-unittest-debug.sh",
+        "command": "./cmake_config_nativelinux-unittest-debug.sh",
         "options": {
             "cwd": "${workspaceFolder}/scripts"
         },
         "problemMatcher": []
     },
     {
-        "label": "CMake configure: Linux unittest (release)",
+        "label": "CMake configure: Native Linux unittest (release)",
         "type": "shell",
-        "command": "./cmake_config_linux-unittest-release.sh",
+        "command": "./cmake_config_nativelinux-unittest-release.sh",
         "options": {
             "cwd": "${workspaceFolder}/scripts"
         },
