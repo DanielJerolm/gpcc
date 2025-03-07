@@ -130,10 +130,9 @@ endif()
 # ---------------------------------------------------------------------------------------------------------------------
 add_library(${PROJECT_NAME})
 
-if(${GPCC_TargetEnvironment} STREQUAL "productive")
-  add_subdirectory(src)
-else()
-  add_subdirectory(src)
+add_subdirectory(src)
+
+if(${GPCC_TargetEnvironment} STREQUAL "unittest")
   add_subdirectory(test_src)
 endif()
 
