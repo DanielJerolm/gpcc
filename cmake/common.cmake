@@ -168,6 +168,11 @@ function(SetupLinkLibraries target)
     message(FATAL_ERROR "Error: Value of 'GPCC_OS' is not supported by function 'SetupLinkLibraries'.")
   endif()
 
+  if(${GPCC_TargetEnvironment} STREQUAL "unittest")
+    # gpcc and gpcc_testcases both need gmock in the unittest environment
+    target_link_libraries(${target} PRIVATE gmock)
+  endif()
+
 endfunction()
 
 

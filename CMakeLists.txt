@@ -158,7 +158,7 @@ if(${GPCC_TargetEnvironment} STREQUAL "unittest")
   SetCompilerAndLanguageOptions(${PROJECT_NAME}_testcases)
   SetupLinkLibraries(${PROJECT_NAME}_testcases)
 
-  target_link_libraries(${PROJECT_NAME}_testcases PRIVATE ${PROJECT_NAME} gmock)
+  target_link_libraries(${PROJECT_NAME}_testcases PRIVATE ${PROJECT_NAME})
 
 endif()
 
