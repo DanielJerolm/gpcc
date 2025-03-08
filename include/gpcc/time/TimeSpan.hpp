@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #ifndef TIMESPAN_HPP_201701192108
@@ -27,7 +27,7 @@ namespace time {
  * positive (time span ahead from _past to future_) or negative (time span back from _future to past_).
  *
  * Internally a signed 64bit integer is used allowing to describe time spans from approx. -292.471 years
- * (\f$-2^{63}\,\mbox{ns}\f$) up to approx. +292.471 years (\f$(2^{63}-1)\,\mbox{ns}\f$).
+ * up to approx. +292.471 years.
  *
  * Instances of class @ref TimeSpan can be created using one of the class' static factory methods:
  * - `ns(int64_t const ns)`
