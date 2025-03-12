@@ -20,8 +20,13 @@ For details please inspect `CMakeLists.txt`.
 __Integration in top-level CMakeLists.txt:__ (example)
 ```
 set(GPCC_TargetEnvironment "productive" CACHE STRING "" FORCE)
+
+# <-- Skip this for automatic guessing of settings
+#     Apply this for explicit configuration
 set(GPCC_Compiler "gcc_arm" CACHE STRING "" FORCE)
 set(GPCC_OS "epos_arm" CACHE STRING "" FORCE)
+# -->
+
 add_subdirectory(extern/gpcc)
 ```
 
@@ -43,8 +48,13 @@ __Integration in top-level CMakeLists.txt:__ (example)
 ```
 set(GPCC_BuildEmptyTestCaseLibrary ON CACHE BOOL "" FORCE)
 set(GPCC_TargetEnvironment "unittest" CACHE STRING "" FORCE)
+
+# <-- Skip this for automatic guessing of settings
+#     Apply this for explicit configuration
 set(GPCC_Compiler "gcc_x64" CACHE STRING "" FORCE)
 set(GPCC_OS "linux_x64_tfc" CACHE STRING "" FORCE)
+# -->
+
 add_subdirectory(extern/gpcc)
 ```
 

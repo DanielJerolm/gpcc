@@ -43,6 +43,14 @@ string(REPLACE ";"  ", " osValues_str "${GPCC_OSValues}")
 set_property(CACHE GPCC_OS PROPERTY STRINGS ${GPCC_OSValues})
 
 
+# guess if target environment is specified, but compiler and OS are not
+if((GPCC_TargetEnvironment) AND
+   (NOT GPCC_Compiler) AND
+   (NOT GPCC_OS))
+  message(NOTICE "GPCC: GPCC_Compiler and GPCC_OS are not set. Guessing...")
+  GuessUserSettings()
+endif()
+
 CheckUserSettings()
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -98,6 +106,8 @@ endif()
 # ---------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------
+
+message(STATUS "GPCC config: ${GPCC_TargetEnvironment}, ${GPCC_Compiler}, ${GPCC_OS}")
 
 if (PROJECT_IS_TOP_LEVEL)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

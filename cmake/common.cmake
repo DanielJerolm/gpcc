@@ -6,6 +6,81 @@
 #
 # Copyright (C) 2022, 2024, 2025 Daniel Jerolm
 
+function(GuessUserSettings)
+  # This function guesses GPCC_Compiler and GPCC_OS
+
+  # Guess compiler
+  if(CMAKE_COMPILER_IS_GNUCXX)
+    if((CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64") OR
+       (CMAKE_SYSTEM_PROCESSOR STREQUAL "x64"))
+      set(GPCC_Compiler "gcc_x64" CACHE STRING "" FORCE)
+    elseif((CMAKE_SYSTEM_PROCESSOR STREQUAL "arm") OR
+           (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64") OR
+           (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64"))
+      set(GPCC_Compiler "gcc_arm" CACHE STRING "" FORCE)
+    else()
+      message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported processor")
+    endif()
+  else()
+    message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported compiler")
+  endif()
+
+  # Guess OS
+  if(GPCC_TargetEnvironment STREQUAL "productive")
+
+    if(CMAKE_SYSTEM_NAME STREQUAL "chibios")
+      if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
+        set(GPCC_OS "chibios_arm" CACHE STRING "" FORCE)
+      else()
+        message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported processor")
+      endif()
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "epos")
+      if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
+        set(GPCC_OS "epos_arm" CACHE STRING "" FORCE)
+      else()
+        message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported processor")
+      endif()
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+      if((CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64") OR
+         (CMAKE_SYSTEM_PROCESSOR STREQUAL "x64"))
+        set(GPCC_OS "linux_x64" CACHE STRING "" FORCE)
+      elseif((CMAKE_SYSTEM_PROCESSOR STREQUAL "arm") OR
+             (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64") OR
+             (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64"))
+        set(GPCC_Compiler "linux_arm" CACHE STRING "" FORCE)
+      else()
+        message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported processor")
+      endif()
+    else()
+      message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported OS")
+    endif()
+
+  else()
+
+    if(CMAKE_SYSTEM_NAME STREQUAL "chibios")
+      message(FATAL_ERROR "Cannot guess settings: OS 'chibios' is not supported in unittest environment")
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "epos")
+      message(FATAL_ERROR "Cannot guess settings: OS 'epos' is not supported in unittest environment")
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+      if((CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64") OR
+         (CMAKE_SYSTEM_PROCESSOR STREQUAL "x64"))
+        set(GPCC_OS "linux_x64_tfc" CACHE STRING "" FORCE)
+      elseif((CMAKE_SYSTEM_PROCESSOR STREQUAL "arm") OR
+             (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64") OR
+             (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64"))
+        set(GPCC_Compiler "linux_arm_tfc" CACHE STRING "" FORCE)
+      else()
+        message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported processor")
+      endif()
+    else()
+      message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported OS")
+    endif()
+
+  endif()
+
+endfunction()
+
+
 function(CheckUserSettings)
   # This checks that the user settings...
   # - GPCC_TargetEnvironment

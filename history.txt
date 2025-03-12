@@ -16,7 +16,7 @@ Next to do:
   - [OK] Configure warning settings
   - [OK] Add comments describing usage of shell scripts
   - [OK] Add some markdown describing usage
-  - [  ] Automatic configuration
+  - [OK] Automatic configuration
 
 - StringComposer::SetupFormatString contains a TODO
 

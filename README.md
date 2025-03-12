@@ -66,6 +66,18 @@ endif()
 add_subdirectory(extern/gpcc)
 ```
 
+Alternatively, GPCC may guess values for `GPCC_Compiler` and `GPCC_OS` automatically.  
+For automatic guessing, integrate GPCC like this:
+```
+if(BUILD_PRODUCTIVE)
+  set(GPCC_TargetEnvironment "productive" CACHE STRING "" FORCE)
+else()
+  set(GPCC_TargetEnvironment "unittest" CACHE STRING "" FORCE)
+  # Note: For the unittest environment, guessing will always select an OSAL with TFC.
+endif()
+add_subdirectory(extern/gpcc)
+```
+
 For development of GPCC and for purposes of automated testing (e.g. github actions), GPCC can also be directly cloned and build "standalone".
 
 The way GPCC is used determines which artifacts are build:
