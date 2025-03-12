@@ -18,7 +18,7 @@ include(cmake/common.cmake)
 # ---------------------------------------------------------------------------------------------------------------------
 # User setting "GPCC_TargetEnvironment"
 # ---------------------------------------------------------------------------------------------------------------------
-set(GPCC_TargetEnvironment CACHE STRING "Selects between productive use and unit test environment.")
+set(GPCC_TargetEnvironment CACHE STRING "Selects between productive use and unittest environment.")
 set(GPCC_TargetEnvironmentValues "productive;unittest")
 
 string(REPLACE ";"  ", " GPCC_TargetEnvironmentValues_str "${GPCC_TargetEnvironmentValues}")
@@ -45,9 +45,8 @@ set_property(CACHE GPCC_OS PROPERTY STRINGS ${GPCC_OSValues})
 
 CheckUserSettings()
 
-
 # ---------------------------------------------------------------------------------------------------------------------
-# Option "GPCC_CliNoFontStyles"
+# User option "GPCC_CliNoFontStyles"
 # This is always on, if GPCC is configured for the unittest environment.
 # ---------------------------------------------------------------------------------------------------------------------
 if(${GPCC_TargetEnvironment} STREQUAL "productive")
@@ -57,7 +56,7 @@ else()
 endif()
 
 # ---------------------------------------------------------------------------------------------------------------------
-# Option "GPCC_BuildEmptyTestCaseLibrary"
+# User option "GPCC_BuildEmptyTestCaseLibrary"
 # This is only available, if GPCC if configured for the unittest environment.
 # This is always OFF, if GPCC is configured stand-alone.
 # ---------------------------------------------------------------------------------------------------------------------
@@ -68,24 +67,24 @@ else()
 endif()
 
 # ---------------------------------------------------------------------------------------------------------------------
-# Options "GPCC_Skip*Tests"
+# User options "GPCC_Skip*Tests"
 # These are only available, if GPCC is configured for the unittest environment.
 # ---------------------------------------------------------------------------------------------------------------------
 if(${GPCC_TargetEnvironment} STREQUAL "unittest")
   option(GPCC_SkipTFCBasedTests
-         "Excludes unit-tests from compilation, that require presence of TFC."
+         "Excludes unittests from compilation, that require presence of TFC."
          OFF)
 
   option(GPCC_SkipLoadDependentTests
-         "Excludes unit-tests from compilation that depend on machine performance and that cannot make use of TFC."
+         "Excludes unittests from compilation that depend on machine performance and that cannot make use of TFC."
          ON)
 
   option(GPCC_SkipVeryBigMemTests
-         "Excludes unit-tests from compilation, that require a large amount of RAM."
+         "Excludes unittests from compilation, that require a large amount of RAM."
          ON)
 
   option(GPCC_SkipSpecialRightsBasedTests
-         "Excludes unit-tests from compilation that require special user-rights."
+         "Excludes unittests from compilation that require special user-rights."
          ON)
 
   ValidateSkipTestOptions()
@@ -95,7 +94,7 @@ endif()
 # ---------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------
-# End of user settings. Let's build...
+# End of user settings and options. Let's build...
 # ---------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------
@@ -122,8 +121,6 @@ if (PROJECT_IS_TOP_LEVEL)
     FetchContent_MakeAvailable(googletest)
   endif()
 endif()
-
-
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Library "gpcc"
@@ -164,7 +161,7 @@ endif()
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Unittest executable "gpcc_unittests"
-# (only available if gpcc is configured for the unittest environment AND if GPCC is configured stand-alone)
+# (only available if GPCC is configured for the unittest environment AND if GPCC is configured stand-alone)
 # ---------------------------------------------------------------------------------------------------------------------
 if((${GPCC_TargetEnvironment} STREQUAL "unittest") AND (PROJECT_IS_TOP_LEVEL))
 

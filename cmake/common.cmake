@@ -47,7 +47,7 @@ function(CheckUserSettings)
     if(${GPCC_OS} STREQUAL "chibios_arm")
       message(FATAL_ERROR "Error: 'GPCC_OS=chibios_arm' is not supported for unittest environment.")
     elseif(${GPCC_OS} STREQUAL "epos_arm")
-      message(FATAL_ERROR "Error: 'GPCC_OS=epos_arm' is not supported for unit testenvironment.")
+      message(FATAL_ERROR "Error: 'GPCC_OS=epos_arm' is not supported for unittest environment.")
     endif()
   endif()
 
@@ -73,13 +73,13 @@ endfunction()
 
 
 function(ValidateSkipTestOptions)
-  # This checks the GPCC_Skip*Tests options
+  # This checks the GPCC_Skip*Tests user options
 
   # If TFC-based tests are not skipped, then an OSAL with TFC is mandatory
   if((NOT GPCC_SkipTFCBasedTests) AND
      (NOT (${GPCC_OS} STREQUAL "linux_arm_tfc")) AND
      (NOT (${GPCC_OS} STREQUAL "linux_x64_tfc")))
-    message(WARNING "TFC is not present and unit tests that rely on TFC are not excluded!\n"
+    message(WARNING "TFC is not present and unittests that rely on TFC are not excluded!\n"
                     "Check options 'GPCC_SkipTFCBasedTests' and 'GPCC_OS'.")
   endif()
 
@@ -87,7 +87,7 @@ endfunction()
 
 
 function(SetupDefines target)
-  # This sets up the #defines that specify the environment (compiler, operating system) and the configuration options.
+  # This sets up the #defines that specify the environment and selected configuration options.
 
   if(${GPCC_Compiler} STREQUAL "gcc_arm")
     target_compile_definitions(${target} PUBLIC COMPILER_GCC_ARM)
@@ -121,7 +121,7 @@ endfunction()
 
 
 function(SetupDefinesForSkippingUnitTests target)
-  # This sets up the #defines indicating which types of unit tests shall be excluded from the build.
+  # This sets up the #defines indicating which types of unittests shall be excluded from the build.
 
   if(GPCC_SkipTFCBasedTests)
     target_compile_definitions(${target} PRIVATE SKIP_TFC_BASED_TESTS)
@@ -193,7 +193,7 @@ function(SetCompilerAndLanguageOptions target)
     target_compile_options(${target} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:-Wextra>")
 
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 8.0)
-      # reduce length of file-names in debug messages contained in the libs
+      # reduce length of filenames in debug messages contained in the libs
       target_compile_options(${target} PRIVATE -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=gpcc/)
     endif()
   else()
