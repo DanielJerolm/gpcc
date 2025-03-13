@@ -117,13 +117,23 @@ function(CheckUserSettings)
                         "Allowed values: ${GPCC_OSValues}")
   endif()
 
-  # exclude operating systems that are not supported in the unittest environment
-  if(${GPCC_TargetEnvironment} STREQUAL "unittest")
-    if(${GPCC_OS} STREQUAL "chibios_arm")
-      message(FATAL_ERROR "Error: 'GPCC_OS=chibios_arm' is not supported for unittest environment.")
-    elseif(${GPCC_OS} STREQUAL "epos_arm")
-      message(FATAL_ERROR "Error: 'GPCC_OS=epos_arm' is not supported for unittest environment.")
+  # exclude operating systems that are not supported in the productive/unittest environment
+  if(${GPCC_TargetEnvironment} STREQUAL "productive")
+
+    if(${GPCC_OS} STREQUAL "linux_arm_tfc")
+      message(FATAL_ERROR "Error: 'GPCC_OS=linux_arm_tfc' is not supported for the productive environment.")
+    elseif(${GPCC_OS} STREQUAL "linux_x64_tfc")
+      message(FATAL_ERROR "Error: 'GPCC_OS=linux_x64_tfc' is not supported for the productive environment.")
     endif()
+
+  else()
+
+    if(${GPCC_OS} STREQUAL "chibios_arm")
+      message(FATAL_ERROR "Error: 'GPCC_OS=chibios_arm' is not supported for the unittest environment.")
+    elseif(${GPCC_OS} STREQUAL "epos_arm")
+      message(FATAL_ERROR "Error: 'GPCC_OS=epos_arm' is not supported for the unittest environment.")
+    endif()
+
   endif()
 
 endfunction()

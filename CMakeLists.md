@@ -10,9 +10,14 @@ GPCC is intended to be included as a git sub-module into an upper level project.
 will be included from a top-level CMake project via `add_subdirectory(gpcc)`.
 
 ## Configuration options
-- `GPCC_TargetEnvironment`: `productive` or `unittest`.
-- `GPCC_Compiler`: `gcc_arm` or `gcc_x64`.
-- `GPCC_OS`: `chibios_arm`, `epos_arm`, `linux_arm`, `linux_arm_tfc`, `linux_x64`, `linux_x64_tfc`
+- GPCC_TargetEnvironment:  
+  `productive` or `unittest`.
+
+- GPCC_Compiler:  
+  `gcc_arm` or `gcc_x64`.
+
+- GPCC_OS:  
+  `chibios_arm`, `epos_arm`, `linux_arm`, `linux_arm_tfc`, `linux_x64`, `linux_x64_tfc`
 
 For details please inspect `CMakeLists.txt`.
 
@@ -36,9 +41,7 @@ GPCC_OS       | Dependency/requirement
 chibios_arm   | target_link_libraries(gpcc PUBLIC <chibios_and_cpp_runtime>)
 epos_arm      | Presence of library `epos_kernel`
 linux_arm     | -
-linux_arm_tfc | -
 linux_x64     | -
-linux_x64_tfc | -
 
 __Artifacts build:__
 - Static library `gpcc`
