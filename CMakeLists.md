@@ -21,6 +21,8 @@ will be included from a top-level CMake project via `add_subdirectory(gpcc)`.
 
 For details please inspect `CMakeLists.txt`.
 
+Note: There are additional configuration options for the unittest environment. These options are dedicated to special use cases. All these options have default values, that fit normal use cases. For details, please refer to  [doc/special_unittest_configuration_options.md](doc/special_unittest_configuration_options.md).
+
 ## Build for productive use
 __Integration in top-level CMakeLists.txt:__ (example)
 ```
