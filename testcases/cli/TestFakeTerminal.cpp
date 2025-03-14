@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #include <gpcc_test/cli/FakeTerminal.hpp>
@@ -1441,6 +1441,9 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_TimeoutWithData)
 
 #ifndef SKIP_TFC_BASED_TESTS
   ASSERT_TRUE((end - start).ms() < 100);
+#else
+  (void)start;
+  (void)end;
 #endif
 }
 
@@ -1455,6 +1458,9 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_ZeroTimeoutNoData)
   ASSERT_EQ(0U, retVal);
 #ifndef SKIP_TFC_BASED_TESTS
   ASSERT_TRUE((end - start).ms() < 100);
+#else
+  (void)start;
+  (void)end;
 #endif
 }
 
@@ -1473,6 +1479,9 @@ TEST_F(gpcc_cli_FakeTerminal_TestsF, Read_ZeroTimeoutWithData)
 
 #ifndef SKIP_TFC_BASED_TESTS
   ASSERT_TRUE((end - start).ms() < 100);
+#else
+  (void)start;
+  (void)end;
 #endif
 }
 

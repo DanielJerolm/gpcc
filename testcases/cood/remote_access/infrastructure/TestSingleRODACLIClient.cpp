@@ -5,8 +5,10 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021, 2024 Daniel Jerolm
+    Copyright (C) 2021, 2024, 2025 Daniel Jerolm
 */
+
+#ifndef SKIP_TFC_BASED_TESTS
 
 #include <gpcc/cood/remote_access/infrastructure/SingleRODACLIClient.hpp>
 #include <gpcc/cli/CLI.hpp>
@@ -228,8 +230,6 @@ TEST_F(gpcc_cood_SingleRODACLIClient_TestsF, CheckSubCommandsMentionedInHelp)
 
   EXPECT_TRUE(gpcc::string::TestSimplePatternMatch(str, "*\n- enum *\n- info *\n- read*\n- write*\n- caread*\n- cawrite*", true));
 }
-
-#ifndef SKIP_TFC_BASED_TESTS
 
 TEST_F(gpcc_cood_SingleRODACLIClient_TestsF, Enumerate)
 {
@@ -1598,7 +1598,7 @@ TEST_F(gpcc_cood_SingleRODACLIClient_TestsF, Style_CANopen)
                                                         ">\n", true));
 }
 
-#endif // SKIP_TFC_BASED_TESTS
-
 } // namespace cood
 } // namespace gpcc_tests
+
+#endif // #ifndef SKIP_TFC_BASED_TESTS

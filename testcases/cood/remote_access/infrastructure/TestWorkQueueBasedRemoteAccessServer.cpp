@@ -5,12 +5,16 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #include "TestbenchWorkQueueBasedRAS.hpp"
 #include <gpcc/cood/remote_access/infrastructure/WorkQueueBasedRemoteAccessServer.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/RequestBase.hpp>
+#include <gpcc/cood/remote_access/requests_and_responses/ResponseBase.hpp>
+#include <gpcc/cood/ObjectDictionary.hpp>
 #include <gpcc/execution/async/DWQwithThread.hpp>
+#include <gpcc/log/Logger.hpp>
 #include <gpcc/osal/Thread.hpp>
 #include "testcases/cood/remote_access/roda_itf/IRemoteObjectDictionaryAccessNotifiableMock.hpp"
 #include "testcases/cood/remote_access/roda_itf/TestIRODA_LoanExecutionContext.hpp"

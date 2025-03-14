@@ -5,8 +5,10 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2019, 2024 Daniel Jerolm
+    Copyright (C) 2019, 2024, 2025 Daniel Jerolm
 */
+
+#ifndef SKIP_TFC_BASED_TESTS
 
 #include <gpcc/cood/cli/CLIAdapterForCANOpen.hpp>
 #include <gpcc/cli/CLI.hpp>
@@ -1377,3 +1379,5 @@ TEST_F(gpcc_cood_CLIAdapterForCANOpen_TestsF, CAWrite_variable)
 
 } // namespace cood
 } // namespace gpcc_tests
+
+#endif // #ifndef SKIP_TFC_BASED_TESTS

@@ -5,8 +5,10 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
+
+#ifndef SKIP_TFC_BASED_TESTS
 
 #include <gpcc/cood/remote_access/infrastructure/MultiRODACLIClient.hpp>
 #include <gpcc/cli/CLI.hpp>
@@ -333,8 +335,6 @@ TEST_F(gpcc_cood_MultiRODACLIClient_TestsF, Access_IdNeverRegistered)
   EXPECT_TRUE(gpcc::string::TestSimplePatternMatch(str, "*Given RODA interface ID is unknown.*", true));
 }
 
-#ifndef SKIP_TFC_BASED_TESTS
-
 TEST_F(gpcc_cood_MultiRODACLIClient_TestsF, Access)
 {
   // prepare different data
@@ -465,7 +465,7 @@ TEST_F(gpcc_cood_MultiRODACLIClient_TestsF, Style_CANopen)
                                                         ">\n", true));
 }
 
-#endif // SKIP_TFC_BASED_TESTS
-
 } // namespace cood
 } // namespace gpcc_tests
+
+#endif // #ifndef SKIP_TFC_BASED_TESTS
