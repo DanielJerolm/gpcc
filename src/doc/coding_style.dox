@@ -5,12 +5,12 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2019 Daniel Jerolm
+    Copyright (C) 2019, 2025 Daniel Jerolm
 */
 
 /**
  * \ingroup GPCC
- * \defgroup GRP_GPCC_CODING_STYLE GPCC coding style
+ * \defgroup GRP_GPCC_CODING_STYLE   GPCC coding style
  * \brief GPCC coding style guidelines
  *
  * The GPCC coding style is [here](@ref GPCC_CODING_STYLE).
@@ -18,7 +18,7 @@
 
 /**
  * \anchor GPCC_CODING_STYLE
- * \page PAGE_GPCC_CODING_STYLE GPCC coding style
+ * \page PAGE_GPCC_CODING_STYLE   GPCC coding style
  * \tableofcontents
  *
  * This page contains a set of rules and recommendations that shall be obeyed when modfying or extending GPCC code.
@@ -136,7 +136,7 @@
  * \subsection GCS_NAMING_DEFINES #defines
  * - All preprocessor defines and macros shall be prefixed with `GPCC_`.
  * - Additional prefixes e.g. for namespace emulation are optional.
- * - Note that constants defined with `constexpr` and inline functions shall be preferred above preprocessor #defines.
+ * - Constants defined with `constexpr` and inline functions shall be preferred above preprocessor #defines.
  *
  * \subsection GCS_NAMING_PREFIXES Prefixes
  * - Typedefs shall be prefixed with 't':
@@ -258,9 +258,9 @@
  *
  * __Group 2: Tests for UUTs with timing behavior.__\n
  * This group contains tests for UUTs that have a timing behavior. Typical examples for such UUTs are classes that
- * interact with hardware, or with human beings, or with real-world production processes, or with other software
- * processes or with other devices across a communication network. These kind of UUTs often implement sleeps, timeouts
- * and time-based retry mechanisms.
+ * interact with hardware, or with human beings, or with real-world processes, or with other software processes or with
+ * other devices across a communication network. These kind of UUTs often implement sleeps, timeouts and time-based
+ * retry mechanisms.
  *
  * If a GPCC OSAL implementation with [GPCC's TFC feature](@ref GPCC_TIME_FLOW_CONTROL) is used to build the unit tests,
  * then any test in this category will achieve reproducible results on different machines and any load condition.
@@ -459,7 +459,7 @@
  *
  * \section GCS_DOC Documentation
  * \subsection GCS_DOC_GENERAL General
- * - The doxygen templates in "gpcc/doxygen_templates.txt" shall be used.
+ * - The doxygen templates in "gpcc/doc/doxygen_templates.txt" shall be used.
  * - Doxygen command prefix:
  *   + '\\' shall be used for commands that start on a new line like \\param, \\brief, etc.
  *   + '@' shall be used for commands that are embedded in the documentation like \@ref
@@ -862,19 +862,20 @@
  * (e.g. Linux), a list of functions containing cancellation points is located here:\n
  * gpcc/src/osal/cancellation_points.txt
  *
- * Deferred thread cancellation is implemented using a special type of C++ exception which is thrown by a cancellation
- * point if a thread which has a cancellation request pending hits that cancellation point. The special exception type
- * used for thread cancellation is `abi::__forced_unwind` (at least when using gnu/gcc).
+ * Deferred thread cancellation is usually implemented using a special type of C++ exception which is thrown by a
+ * cancellation point if a thread which has a cancellation request pending hits that cancellation point. For instance
+ * when using gnu/gcc, the type of that special exception is `abi::__forced_unwind`. Other platforms may user a
+ * different type, but the function principle is the same.
  *
- * This special type of exception should not be caught directly. However, if it is caught, then it must be rethrown.
- * A `catch (...)` is sufficient to catch this and any other type of exception. Note that any `catch (...)` block must
- * always contain a rethrow statement (`throw;`). This ensures, that the special exception finally propagates into the
- * thread entry function where it is caught and the thread is properly terminated. Scope-guards, mutex lockers, and RAII
- * objects therefore will work the same way in case of deferred thread cancellation as they do in case of a "normal"
- * exception.
+ * Regardless of the type of the special exception, it should never be caught directly. However, if it is caught, then
+ * it must be rethrown. A `catch (...)` is sufficient to catch this and any other type of exception. Note that any
+ * `catch (...)` block must always contain a rethrow statement (`throw;`). This ensures, that the special exception
+ * finally propagates into the thread entry function where it is caught and the thread is properly terminated.
+ * Scope-guards, mutex lockers, and RAII objects therefore will work the same way in case of deferred thread
+ * cancellation as they do in case of a "normal" exception.
  *
  * If code is written with exception-safety in mind (as it should always be), then handling deferred thread cancellation
- * is not a big challenge. If a thread is cancelled, then the stack will be unwound as if a normal exception has
+ * is not a big challenge. If a thread is cancelled, then the stack will be unwound as if a normal exception had
  * occurred and the thread will terminate with no memory leaks or broken invariants left.
  *
  * However, deferred thread cancellation and exception safety should be treated as separate topics when specifying the
@@ -924,11 +925,12 @@
  * point. If thread cancellation occurs, then resources may be leaked or the program may be in an invalid state. The
  * function may abort the program via [Panic()](@ref GPCC_OSAL_PANIC).\n
  * This type of function/method must only be invoked with deferred thread cancellation disabled, or if program logic
- * ensures that deferred cancellation cannot be requested while executing this type of function/method.
+ * ensures that deferred cancellation cannot be requested while executing this type of function/method. This type of
+ * function may be annotated with `noexcept`.
  *
  * \subsubsection GCS_DOC_THREAD_CANCELLATION_SAFETY_FUNCPTRS Function pointer and function object type definitions
  * Any type definition of a functor, function object or function pointer shall be documented using the GPCC doxygen
- * templates (gpcc/doxygen_templates.txt). The templates offer predefined specifications documenting the thread-safety,
- * exception-safety, and thread-cancellation-saftey requirements which must be met by the function referenced by the
- * pointer or function object.
+ * templates (gpcc/doc/doxygen_templates.txt). The templates offer predefined specifications documenting the
+ * thread-safety, exception-safety, and thread-cancellation-saftey requirements which must be met by the function
+ * referenced by the pointer or function object.
  */

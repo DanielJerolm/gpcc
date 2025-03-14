@@ -13,6 +13,8 @@ GPCC offers a set of options to disable the "special" test cases selectively.
 
 The "special" tests shall be executed from time to time manually on an idle machine, e.g. before pushing a new release version to the master branch.
 
+For more details, please refer to the _GPCC coding style_ embedded in the doxygen documentation, chapter "Unittests with googletest".
+
 ## Options
 __GPCC_SkipTFCBasedTests__  
 Excludes unit-tests from compilation, that require presence of TFC.  
