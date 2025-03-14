@@ -4,20 +4,6 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
-- Add capability to build linux native library and linux unittests "standalone"
-  - [OK] Add .vscode folder
-  - [OK] Revise doxygen scripts
-  - [OK] Update shell-scripts
-  - [OK] Detect "stand alone" condition
-  - [OK] Download extern/googletest and extern/toolchain_configs if stand alone
-  - [OK] build unittest executable
-  - [OK] Revise cmake-files
-  - [OK] Test all vscode tasks
-  - [OK] Configure warning settings
-  - [OK] Add comments describing usage of shell scripts
-  - [OK] Add some markdown describing usage
-  - [OK] Automatic configuration
-
 - StringComposer::SetupFormatString contains a TODO
 
 - Use github's issue tracking instead of this file
@@ -216,7 +202,10 @@ Next to do:
 
 History:
 ===============================================================================
-2029-01-29
+2025-03-14
+- Add capability to build linux native library and linux unittests "standalone"
+
+2025-01-29
 - Add Log-methods accepting an va_list object
 
 2025-01-25
