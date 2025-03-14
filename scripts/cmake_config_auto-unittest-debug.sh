@@ -15,6 +15,8 @@ cd ..
 cmake -S . \
       -B build_unittest \
       -DGPCC_TargetEnvironment:STRING=unittest \
+      -DGPCC_Compiler:STRING= \
+      -DGPCC_OS:STRING= \
       -DCMAKE_BUILD_TYPE=Debug
 
 echo "Done"
