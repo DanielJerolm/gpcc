@@ -25,11 +25,11 @@ set -e
 if [ $# -eq 0 ]; then
 
   cd ../build_unittest/output
-  valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./unittests --gtest_filter=-*Death*
+  valgrind --tool=memcheck --leak-check=full --show-leak-kinds=definite,indirect,possible ./unittests --gtest_filter=-*Death*
 
 else
 
   cd ../build_unittest/output
-  valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./unittests $@
+  valgrind --tool=memcheck --leak-check=full --show-leak-kinds=definite,indirect,possible ./unittests $@
 
 fi
