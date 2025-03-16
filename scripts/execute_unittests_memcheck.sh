@@ -30,6 +30,6 @@ if [ $# -eq 0 ]; then
 else
 
   cd ../build_unittest/output
-  valgrind --tool=memcheck --leak-check=full --show-leak-kinds=definite,indirect,possible ./unittests $@
+  valgrind --tool=memcheck --leak-check=full --show-leak-kinds=definite,indirect,possible ./unittests "$@"
 
 fi
