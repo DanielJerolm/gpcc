@@ -22,4 +22,4 @@
 set -e
 
 cd ../build_unittest/output
-./unittests $@
+./unittests "$@"
