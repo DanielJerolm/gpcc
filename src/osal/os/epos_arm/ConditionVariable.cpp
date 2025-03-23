@@ -190,9 +190,6 @@ bool ConditionVariable::TimeLimitedWait(Mutex & mutex, time::TimePoint const & a
   if (!epos_time_TimespecToU64_ns(&absTimeout_ns, absoluteTimeout.Get_timespec_ptr()))
     throw std::overflow_error("Timeout too large");
 
-  // compensate the clock granularity to ensure that the desired timespan is not underrun
-  absTimeout_ns = epos_time_EnsureMinTimeSpanMonotonic_u64(absTimeout_ns);
-
   return epos_convar_TimeLimitedWait(&condVar, &mutex.mutex, absTimeout_ns);
 }
 
