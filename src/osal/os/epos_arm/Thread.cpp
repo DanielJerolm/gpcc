@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2024 Daniel Jerolm
+    Copyright (C) 2024, 2025 Daniel Jerolm
 */
 
 #ifdef OS_EPOS_ARM
@@ -388,7 +388,8 @@ void Thread::Start(tEntryFunction const & _entryFunction,
       throw std::system_error(errno, std::generic_category(), "epos_thread_Create() failed");
   }
 
-  // Increment the reference count. This way the thread object will not be used immediately when the thread is joined.
+  // Increment the reference count. This way the thread object will not be released immediately when the thread is
+  // joined.
   epos_thread_IncRefCnt(pThread);
 
   // Wait until the new thread leaves the starting-state. Any unexpected error here will result in panic.
