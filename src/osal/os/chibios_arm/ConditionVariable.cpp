@@ -213,8 +213,10 @@ bool ConditionVariable::TimeLimitedWait(Mutex & mutex, time::TimePoint const & a
       PANIC(); // Arithmetic error
 
     // Calculate number of system timer ticks until timeout.
-    // We round up to next tick and add 1 tick extra for uncertainty due to granularity of system tick interrupt)
-    uint64_t const ticks_till_timeout = ((static_cast<uint64_t>(remaining_time.ns()) + (NS_PER_SYSTICK - 1U)) / NS_PER_SYSTICK) + 1U;
+    // We round up to the next tick. If the user wants to consider the granularity of the system tick interrupt, then
+    // he/she has to add the clock's precision to the timespan as mentioned in doxygen of parameter "absoluteTimeout".
+    uint64_t const ticks_till_timeout =
+      (static_cast<uint64_t>(remaining_time.ns()) + (NS_PER_SYSTICK - 1U)) / NS_PER_SYSTICK;
 
     // wait in chunks of TIME_MAX_INTERVAL if ticks_till_timeout is too large to handle
     if (ticks_till_timeout > TIME_MAX_INTERVAL)
