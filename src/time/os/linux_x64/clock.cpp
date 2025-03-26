@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #ifdef OS_LINUX_X64
@@ -13,21 +13,75 @@
 #include <gpcc/time/clock.hpp>
 #include <gpcc/osal/Panic.hpp>
 
-namespace gpcc {
-namespace time {
+namespace {
 
-static clockid_t ToClockID(Clocks const clock) noexcept
+clockid_t ToPosixClockID(gpcc::time::Clocks const clock) noexcept
 {
   switch (clock)
   {
-    case Clocks::realtimeCoarse:   return CLOCK_REALTIME_COARSE;
-    case Clocks::realtimePrecise:  return CLOCK_REALTIME;
-    case Clocks::monotonicCoarse:  return CLOCK_MONOTONIC_COARSE;
-    case Clocks::monotonicPrecise: return CLOCK_MONOTONIC;
+    case gpcc::time::Clocks::realtimeCoarse:   return CLOCK_REALTIME_COARSE;
+    case gpcc::time::Clocks::realtimePrecise:  return CLOCK_REALTIME;
+    case gpcc::time::Clocks::monotonicCoarse:  return CLOCK_MONOTONIC_COARSE;
+    case gpcc::time::Clocks::monotonicPrecise: return CLOCK_MONOTONIC;
   }
 
   PANIC();
 }
+
+class ClockResolutionCache final
+{
+  public:
+    uint32_t const resolution_clock_realtimeCoarse_ns;
+    uint32_t const resolution_clock_realtimePrecise_ns;
+    uint32_t const resolution_clock_monotonicCoarse_ns;
+    uint32_t const resolution_clock_monotonicPrecise_ns;
+
+    ClockResolutionCache(void) noexcept;
+
+    uint32_t Get_ns(gpcc::time::Clocks const clock) const noexcept;
+
+  private:
+    static uint32_t Query(gpcc::time::Clocks const clock) noexcept;
+};
+
+ClockResolutionCache::ClockResolutionCache(void) noexcept
+: resolution_clock_realtimeCoarse_ns(Query(gpcc::time::Clocks::realtimeCoarse))
+, resolution_clock_realtimePrecise_ns(Query(gpcc::time::Clocks::realtimePrecise))
+, resolution_clock_monotonicCoarse_ns(Query(gpcc::time::Clocks::monotonicCoarse))
+, resolution_clock_monotonicPrecise_ns(Query(gpcc::time::Clocks::monotonicPrecise))
+{
+}
+
+uint32_t ClockResolutionCache::Query(gpcc::time::Clocks const clock) noexcept
+{
+  struct ::timespec ts;
+  int const ret = clock_getres(ToPosixClockID(clock), &ts);
+  if (ret != 0)
+    PANIC();
+
+  if ((ts.tv_sec != 0) || (ts.tv_nsec <= 0) || (ts.tv_nsec >= 1000000000L))
+    PANIC();
+
+  return static_cast<uint32_t>(ts.tv_nsec);
+}
+
+uint32_t ClockResolutionCache::Get_ns(gpcc::time::Clocks const clock) const noexcept
+{
+  switch (clock)
+  {
+    case gpcc::time::Clocks::realtimeCoarse:   return resolution_clock_realtimeCoarse_ns;
+    case gpcc::time::Clocks::realtimePrecise:  return resolution_clock_realtimePrecise_ns;
+    case gpcc::time::Clocks::monotonicCoarse:  return resolution_clock_monotonicCoarse_ns;
+    case gpcc::time::Clocks::monotonicPrecise: return resolution_clock_monotonicPrecise_ns;
+  }
+
+  PANIC();
+}
+
+} // namespace internal
+
+namespace gpcc {
+namespace time {
 
 /**
  * \ingroup GPCC_TIME
@@ -54,16 +108,8 @@ static clockid_t ToClockID(Clocks const clock) noexcept
  */
 uint32_t GetPrecision_ns(Clocks const clock) noexcept
 {
-  struct ::timespec ts;
-
-  int const ret = clock_getres(ToClockID(clock), &ts);
-  if (ret != 0)
-    PANIC();
-
-  if ((ts.tv_sec != 0) || (ts.tv_nsec <= 0) || (ts.tv_nsec >= 1000000000L))
-    PANIC();
-
-  return static_cast<uint32_t>(ts.tv_nsec);
+  static ClockResolutionCache cache;
+  return cache.Get_ns(clock);
 }
 
 /**
@@ -93,7 +139,7 @@ uint32_t GetPrecision_ns(Clocks const clock) noexcept
  */
 void GetTime(Clocks const clock, struct ::timespec& ts) noexcept
 {
-  int const ret = clock_gettime(ToClockID(clock), &ts);
+  int const ret = clock_gettime(ToPosixClockID(clock), &ts);
   if (ret != 0)
     PANIC();
 }
