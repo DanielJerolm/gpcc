@@ -6,6 +6,9 @@
 #
 # Copyright (C) 2022, 2024, 2025 Daniel Jerolm
 
+include(cmake/compiler_warning_options.cmake)
+
+
 function(GuessUserSettings)
   # This function guesses GPCC_Compiler and GPCC_OS
 
@@ -270,12 +273,7 @@ function(SetCompilerAndLanguageOptions target)
     target_compile_options(${target} PUBLIC "$<$<COMPILE_LANGUAGE:CXX>:-fexceptions>")
     target_compile_options(${target} PUBLIC "$<$<COMPILE_LANGUAGE:CXX>:-frtti>")
 
-    target_compile_options(${target} PRIVATE "$<$<COMPILE_LANGUAGE:C>:-Wall>")
-    target_compile_options(${target} PRIVATE "$<$<COMPILE_LANGUAGE:C>:-Wextra>")
-    target_compile_options(${target} PRIVATE "$<$<COMPILE_LANGUAGE:C>:-Wstrict-prototypes>")
-
-    target_compile_options(${target} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:-Wall>")
-    target_compile_options(${target} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:-Wextra>")
+    target_compile_options(${target} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${GPCC_CXX_WARN_OPTIONS}>")
 
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 8.0)
       # reduce length of filenames in debug messages contained in the libs
