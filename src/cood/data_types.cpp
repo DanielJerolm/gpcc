@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2018, 2024 Daniel Jerolm
+    Copyright (C) 2018, 2024, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/data_types.hpp>
@@ -558,7 +558,7 @@ std::string CANopenEncodedDataToString(gpcc::stream::IStreamReader& sr, size_t c
     {
       float const r32 = sr.Read_float();
       char buf[32];
-      int const status = snprintf(buf, sizeof(buf), "%G", r32);
+      int const status = snprintf(buf, sizeof(buf), "%G", static_cast<double>(r32));
       if ((status < 0) || (static_cast<size_t>(status) > sizeof(buf)))
         throw std::runtime_error("CANopenEncodedDataToString: snprintf failed or requires unexpected buffer size");
 

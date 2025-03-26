@@ -10,17 +10,14 @@
 # Warning levels and settings applied to GPCC productive and unittest code
 # ------------------------------------------------------------------------
 list(APPEND GPCC_CXX_WARN_OPTIONS "-Wall"
-                                  "-Wextra")
+                                  "-Wextra"
+                                  "-Wdouble-promotion")
 
 # Currently not applied, but planned:
 # -Wformat=2
 # -Wundef
 # -Wshadow
 #    Produces approx. 26 warnings, but appliance makes sense
-#
-# -Wdouble-promotion
-#    Produces a few warnings. Appliance makes sense.
-#    snprintf can be fixed via (std::is_same<T, float>::value == false)
 #
 # -Wpedantic
 #   4 findings, easy to fix. Complains about using '#warning'

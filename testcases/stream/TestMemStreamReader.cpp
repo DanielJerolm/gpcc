@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #include <gpcc/stream/MemStreamReader.hpp>
@@ -1021,7 +1021,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLittleStreamOp)
 
   float f;
   uut >> f;
-  ASSERT_TRUE((f > f1 - 0.1) && (f < f1 + 0.1));
+  ASSERT_TRUE((f > f1 - 0.1f) && (f < f1 + 0.1f));
 
   double d;
   uut >> d;
@@ -1101,7 +1101,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLittleFuncCalls)
   ASSERT_EQ(0, u8);
 
   float f = uut.Read_float();
-  ASSERT_TRUE((f > f1 - 0.1) && (f < f1 + 0.1));
+  ASSERT_TRUE((f > f1 - 0.1f) && (f < f1 + 0.1f));
 
   double d = uut.Read_double();
   ASSERT_TRUE((d > d1 - 0.1) && (d < d1 + 0.1));
@@ -1197,7 +1197,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadBigStreamOp)
 
   float f;
   uut >> f;
-  ASSERT_TRUE((f > f1 - 0.1) && (f < f1 + 0.1));
+  ASSERT_TRUE((f > f1 - 0.1f) && (f < f1 + 0.1f));
 
   double d;
   uut >> d;
@@ -1280,7 +1280,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadBigFuncCalls)
   ASSERT_EQ(static_cast<uint8_t>(0x00), u8);
 
   float f = uut.Read_float();
-  ASSERT_TRUE((f > f1 - 0.1) && (f < f1 + 0.1));
+  ASSERT_TRUE((f > f1 - 0.1f) && (f < f1 + 0.1f));
 
   double d = uut.Read_double();
   ASSERT_TRUE((d > d1 - 0.1) && (d < d1 + 0.1));

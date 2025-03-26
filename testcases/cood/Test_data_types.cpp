@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2018 Daniel Jerolm
+    Copyright (C) 2018, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/data_types.hpp>
@@ -823,13 +823,13 @@ TEST(gpcc_cood_data_types_Tests, StringToCANOpenEncodedData_REAL32)
   float f;
 
   f = msr.Read_float();
-  f = 0.55 - f;
+  f = 0.55f - f;
   if (f < 0)
     f = -f;
   EXPECT_LE(f, 0.01);
 
   f = msr.Read_float();
-  f = 3E15 - f;
+  f = 3E15f - f;
   if (f < 0)
     f = -f;
   EXPECT_LE(f, 3E8);
