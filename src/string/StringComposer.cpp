@@ -1016,12 +1016,16 @@ void StringComposer::PrintToBuffer(char* const buffer, size_t const bufferSize, 
   char fmt[maxFmtStrBufSize];
   int status;
 
+  // fmt is generated. Don't complain.
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+
   if (std::is_same<T, float>::value == false)
   {
-  if (!SetupFormatString(fmt, type))
-    status = snprintf(buffer, bufferSize, fmt, width, value);
-  else
-    status = snprintf(buffer, bufferSize, fmt, width, prec_, value);
+    if (!SetupFormatString(fmt, type))
+      status = snprintf(buffer, bufferSize, fmt, width, value);
+    else
+      status = snprintf(buffer, bufferSize, fmt, width, prec_, value);
   }
   else
   {
@@ -1032,6 +1036,8 @@ void StringComposer::PrintToBuffer(char* const buffer, size_t const bufferSize, 
     else
       status = snprintf(buffer, bufferSize, fmt, width, prec_, static_cast<double>(value));
   }
+
+  #pragma GCC diagnostic pop
 
   if (status < 0)
     throw std::logic_error("snprintf failed");

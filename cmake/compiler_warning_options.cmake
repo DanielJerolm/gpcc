@@ -11,10 +11,10 @@
 # ------------------------------------------------------------------------
 list(APPEND GPCC_CXX_WARN_OPTIONS "-Wall"
                                   "-Wextra"
-                                  "-Wdouble-promotion")
+                                  "-Wdouble-promotion"
+                                  "-Wformat=2")
 
 # Currently not applied, but planned:
-# -Wformat=2
 # -Wundef
 # -Wshadow
 #    Produces approx. 26 warnings, but appliance makes sense
