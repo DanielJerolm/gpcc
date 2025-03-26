@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #ifdef OS_LINUX_ARM
@@ -166,13 +166,19 @@ void ConditionVariable::Wait(Mutex & mutex)
  *   Do not assume, that the condition is always true on wake up!\n
  *   Always double check the condition (before calling @ref Wait() and after @ref Wait() returns).\n
  *   Always wait for a condition variable in a tight loop.
+ * - Beware of corner cases: The condition might have come true even though a timeout is reported.
  *
  * ~~~{.cpp}
+ * using gpcc::time::TimePoint;
+ * using gpcc::time::TimeSpan;
+ * using gpcc::time::GetPrecision_ns;
+ *
  * gpcc::osal::MutexLocker locker(myMutex);
  *
  * // calculate timeout (here: 1 second from now)
- * gpcc::time::TimePoint tp = gpcc::time::TimePoint::FromSystemClock(ConditionVariable::clockID);
- * tp += gpcc::time::TimeSpan::sec(1);
+ * TimePoint const tp = TimePoint::FromSystemClock(ConditionVariable::clockID);
+ *                    + TimeSpan::sec(1);
+ *                    + TimeSpan::ns(GetPrecision_ns(ConditionVariable::clockID));
  *
  * bool timeout = false;
  * while ((condition == false) && (timeout == false))
@@ -207,11 +213,12 @@ void ConditionVariable::Wait(Mutex & mutex)
  *
  * \param absoluteTimeout
  * Absolute point in time when the timeout for waiting for the condition being signalled or broadcasted expires.\n
- * This method will return if the specified absolute point in time passes (= the system time equals or exceeds
+ * This method will return if the specified absolute point in time passes by (= the system time equals or exceeds
  * `absoluteTimeout`) regardless whether the condition has been signaled or not. This method will also return
- * immediately, if the specified point in time has already been passed when the call to this method is made.\n
+ * immediately, if the specified point in time has already passed by when the call to this method is made.\n
  * The mutex will be locked again when the method returns due to a timeout condition.\n
- * The time must be specified using the clock @ref ConditionVariable::clockID.
+ * The time must be specified using the clock @ref ConditionVariable::clockID. \n
+ * If a minimum timespan until timeout shall be guaranteed, then the clock's precision should be added to the timespan.
  *
  * \retval true
  *   Woke up due to timeout.
