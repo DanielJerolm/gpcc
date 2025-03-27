@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #include <gpcc/stream/MemStreamWriter.hpp>
@@ -855,10 +855,10 @@ TEST_F(GPCC_Stream_MemStreamWriter_Tests, WriteLittleFuncCalls)
 
   uut.Write_uint8(0x00); // write offset afterwards: 16
 
-  uut.Write_int8(0x85);
-  uut.Write_int16(0x891A);
-  uut.Write_int32(0x9AFF5673);
-  uut.Write_int64(0xA2BCDEF77625392C);
+  uut.Write_int8(static_cast<int8_t>(0x85L));
+  uut.Write_int16(static_cast<int16_t>(0x891AL));
+  uut.Write_int32(static_cast<int32_t>(0x9AFF5673L));
+  uut.Write_int64(static_cast<int64_t>(0xA2BCDEF77625392CLL));
 
   uut.Write_uint8(0x00); // write offset afterwards: 32
 
@@ -1003,10 +1003,10 @@ TEST_F(GPCC_Stream_MemStreamWriter_Tests, WriteBigFuncCalls)
 
   uut.Write_uint8(0x00); // write offset afterwards: 16
 
-  uut.Write_int8(0x85);
-  uut.Write_int16(0x891A);
-  uut.Write_int32(0x9AFF5673);
-  uut.Write_int64(0xA2BCDEF77625392C);
+  uut.Write_int8(static_cast<int8_t>(0x85L));
+  uut.Write_int16(static_cast<int16_t>(0x891AL));
+  uut.Write_int32(static_cast<int32_t>(0x9AFF5673L));
+  uut.Write_int64(static_cast<int64_t>(0xA2BCDEF77625392CLL));
 
   uut.Write_uint8(0x00); // write offset afterwards: 32
 

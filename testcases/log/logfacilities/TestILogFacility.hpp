@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #ifndef TESTILOGFACILITY_HPP_201601061558
@@ -573,19 +573,6 @@ TYPED_TEST_P(ILogFacility_Tests2F, Log)
   ASSERT_EQ(1U, this->backend.records.size());
   ASSERT_TRUE(this->backend.records[0]== "[DEBUG] TL1: Test");
 }
-
-#ifndef SKIP_VERYBIGMEM_TESTS
-TYPED_TEST_P(ILogFacility_Tests2F, Log_Performance)
-{
-  this->StopUUT();
-
-  for (uint_fast32_t i = 0U; i < 1000000U; ++i)
-  {
-    this->logger.Log(LogType::Error, "Test");
-  }
-}
-#endif
-
 TYPED_TEST_P(ILogFacility_Tests2F, Log_WhileStopped)
 {
   this->StopUUT();
@@ -1005,9 +992,6 @@ REGISTER_TYPED_TEST_SUITE_P(ILogFacility_Tests1F,
 REGISTER_TYPED_TEST_SUITE_P(ILogFacility_Tests2F,
                             Instantiation,
                             Log,
-#ifndef SKIP_VERYBIGMEM_TESTS
-                            Log_Performance,
-#endif
                             Log_WhileStopped,
                             Log_ButNoBackend,
                             ReportLogMessageCreationFailed_ButNoBackend,

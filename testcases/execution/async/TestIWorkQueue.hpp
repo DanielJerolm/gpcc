@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #ifndef TESTIWORKQUEUE_HPP_201701061557
@@ -1827,41 +1827,79 @@ REGISTER_TYPED_TEST_SUITE_P(IWorkQueue_Tests1F,
                             Remove1_stat_TheLastOne,
                             Remove1_stat_Empty); // 41
 
-REGISTER_TYPED_TEST_SUITE_P(IWorkQueue_Tests2F,
-                            Remove1_stat_NoHit,
-                            Remove2_dyn_first,
-                            Remove2_dyn_mid,
-                            Remove2_dyn_last,
-                            Remove2_dyn_nullptr,
-                            Remove2_dyn_fromWQcontext,
-                            Remove2_dyn_TheLastOne,
-                            Remove2_dyn_Empty,
-                            Remove2_dyn_NoHit,
-                            Remove2_stat_first,
-                            Remove2_stat_mid,
-                            Remove2_stat_last,
-                            Remove2_stat_nullptr,
-                            Remove2_stat_fromWQcontext,
-                            Remove2_stat_TheLastOne,
-                            Remove2_stat_Empty,
-                            Remove2_stat_NoHit,
-                            WaitUntilCurrentWorkPackageHasBeenExecuted_nullptr,
 #ifndef SKIP_TFC_BASED_TESTS
-                            WaitUntilCurrentWorkPackageHasBeenExecuted,
-                            WaitUntilCurrentWorkPackageHasBeenExecuted_otherwork,
-                            WaitUntilCurrentWorkPackageHasBeenExecuted_nowait,
+  REGISTER_TYPED_TEST_SUITE_P(IWorkQueue_Tests2F,
+                              Remove1_stat_NoHit,
+                              Remove2_dyn_first,
+                              Remove2_dyn_mid,
+                              Remove2_dyn_last,
+                              Remove2_dyn_nullptr,
+                              Remove2_dyn_fromWQcontext,
+                              Remove2_dyn_TheLastOne,
+                              Remove2_dyn_Empty,
+                              Remove2_dyn_NoHit,
+                              Remove2_stat_first,
+                              Remove2_stat_mid,
+                              Remove2_stat_last,
+                              Remove2_stat_nullptr,
+                              Remove2_stat_fromWQcontext,
+                              Remove2_stat_TheLastOne,
+                              Remove2_stat_Empty,
+                              Remove2_stat_NoHit,
+                              WaitUntilCurrentWorkPackageHasBeenExecuted_nullptr,
+  // #ifndef SKIP_TFC_BASED_TESTS
+                              WaitUntilCurrentWorkPackageHasBeenExecuted,
+                              WaitUntilCurrentWorkPackageHasBeenExecuted_otherwork,
+                              WaitUntilCurrentWorkPackageHasBeenExecuted_nowait,
+  // #endif
+                              WaitUntilCurrentWorkPackageHasBeenExecuted_WQcontext,
+                              IsAnyInQueue_dyn,
+                              IsAnyInQueue_stat,
+  // #ifndef SKIP_TFC_BASED_TESTS
+                              FlushNonDeferredWorkPackages,
+  // #endif
+                              Work_Restart,
+                              Work_Cancel_Restart,
+                              AbortBeforeStart,
+                              AbortTwiceBeforeStart,
+                              WorkPackageThrows); // 30
+#else
+  REGISTER_TYPED_TEST_SUITE_P(IWorkQueue_Tests2F,
+                              Remove1_stat_NoHit,
+                              Remove2_dyn_first,
+                              Remove2_dyn_mid,
+                              Remove2_dyn_last,
+                              Remove2_dyn_nullptr,
+                              Remove2_dyn_fromWQcontext,
+                              Remove2_dyn_TheLastOne,
+                              Remove2_dyn_Empty,
+                              Remove2_dyn_NoHit,
+                              Remove2_stat_first,
+                              Remove2_stat_mid,
+                              Remove2_stat_last,
+                              Remove2_stat_nullptr,
+                              Remove2_stat_fromWQcontext,
+                              Remove2_stat_TheLastOne,
+                              Remove2_stat_Empty,
+                              Remove2_stat_NoHit,
+                              WaitUntilCurrentWorkPackageHasBeenExecuted_nullptr,
+  // #ifndef SKIP_TFC_BASED_TESTS
+  //                          WaitUntilCurrentWorkPackageHasBeenExecuted,
+  //                          WaitUntilCurrentWorkPackageHasBeenExecuted_otherwork,
+  //                          WaitUntilCurrentWorkPackageHasBeenExecuted_nowait,
+  // #endif
+                              WaitUntilCurrentWorkPackageHasBeenExecuted_WQcontext,
+                              IsAnyInQueue_dyn,
+                              IsAnyInQueue_stat,
+  // #ifndef SKIP_TFC_BASED_TESTS
+  //                          FlushNonDeferredWorkPackages,
+  // #endif
+                              Work_Restart,
+                              Work_Cancel_Restart,
+                              AbortBeforeStart,
+                              AbortTwiceBeforeStart,
+                              WorkPackageThrows); // 30
 #endif
-                            WaitUntilCurrentWorkPackageHasBeenExecuted_WQcontext,
-                            IsAnyInQueue_dyn,
-                            IsAnyInQueue_stat,
-#ifndef SKIP_TFC_BASED_TESTS
-                            FlushNonDeferredWorkPackages,
-#endif
-                            Work_Restart,
-                            Work_Cancel_Restart,
-                            AbortBeforeStart,
-                            AbortTwiceBeforeStart,
-                            WorkPackageThrows); // 30
 
 REGISTER_TYPED_TEST_SUITE_P(IWorkQueue_DeathTests1F,
                             EnqueuedStaticWPDestroyed);

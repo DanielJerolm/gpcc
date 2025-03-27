@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #include <gpcc/callback/MultiCallback.hpp>
@@ -240,9 +240,7 @@ TEST_F(gpcc_callback_MultiCallback_TestsF, Unregister_All)
 
   uut.Notify();
 
-  uint8_t const expected[] = { };
-
-  ASSERT_TRUE(Trace_Check(0, expected));
+  ASSERT_TRUE(Trace_Check(0, nullptr));
 }
 TEST_F(gpcc_callback_MultiCallback_TestsF, DifferentThreads)
 {
