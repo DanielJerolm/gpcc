@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #ifndef MULTIPLEXERPORT_HPP_202106212102
@@ -36,7 +36,7 @@ class MultiplexerPort final : public IRemoteObjectDictionaryAccess
 
   public:
     MultiplexerPort(void) = delete;
-    MultiplexerPort(Multiplexer & _owner, uint8_t const _index) noexcept;
+    MultiplexerPort(Multiplexer & owner, uint8_t const index) noexcept;
     MultiplexerPort(MultiplexerPort const &) = delete;
     MultiplexerPort(MultiplexerPort &&) = delete;
     ~MultiplexerPort(void) override;
@@ -57,42 +57,42 @@ class MultiplexerPort final : public IRemoteObjectDictionaryAccess
 
 
     /// @ref Multiplexer instance this @ref MultiplexerPort belongs to.
-    Multiplexer & owner;
+    Multiplexer & owner_;
 
-    /// Index of this port in `owner.ports`.
-    uint8_t const index;
+    /// Index of this port in `owner_.ports`.
+    uint8_t const index_;
 
 
     /// State of this port instance.
-    /** RD: `owner.portMutex` OR `owner.muxMutex` is required.\n
-        WR: `owner.portMutex` AND `owner.muxMutex` are both required. */
-    States state;
+    /** RD: `owner_.portMutex` OR `owner_.muxMutex` is required.\n
+        WR: `owner_.portMutex` AND `owner_.muxMutex` are both required. */
+    States state_;
 
     /// [RODAN](@ref IRemoteObjectDictionaryAccessNotifiable) interface registered at this port. nullptr = none.
-    /** RD: `owner.portMutex` OR `owner.muxMutex` is required.\n
-        WR: `owner.portMutex` AND `owner.muxMutex` are both required. */
-    IRemoteObjectDictionaryAccessNotifiable* pRODAN;
+    /** RD: `owner_.portMutex` OR `owner_.muxMutex` is required.\n
+        WR: `owner_.portMutex` AND `owner_.muxMutex` are both required. */
+    IRemoteObjectDictionaryAccessNotifiable* pRODAN_;
 
 
     /// Current Session ID.
-    /** RD: `owner.portMutex` OR `owner.muxMutex` is required.\n
-        WR: `owner.portMutex` AND `owner.muxMutex` are both required. */
-    uint8_t sessionID;
+    /** RD: `owner_.portMutex` OR `owner_.muxMutex` is required.\n
+        WR: `owner_.portMutex` AND `owner_.muxMutex` are both required. */
+    uint8_t sessionID_;
 
     /// Oldest used session ID for which messages might be existing somewhere.
-    /** RD: `owner.portMutex` OR `owner.muxMutex` is required.\n
-        WR: `owner.portMutex` AND `owner.muxMutex` are both required.\n
-        If @ref sessionID shall be incremented, then the new value of @ref sessionID must not equal this. */
-    uint8_t oldestUsedSessionID;
+    /** RD: `owner_.portMutex` OR `owner_.muxMutex` is required.\n
+        WR: `owner_.portMutex` AND `owner_.muxMutex` are both required.\n
+        If @ref sessionID_ shall be incremented, then the new value of @ref sessionID_ must not equal this. */
+    uint8_t oldestUsedSessionID_;
 
-    /// Indicates if a message has been forwarded using @ref sessionID.
-    /** `owner.portMutex` is required. */
-    bool sessionIDUsed;
+    /// Indicates if a message has been forwarded using @ref sessionID_.
+    /** `owner_.portMutex` is required. */
+    bool sessionIDUsed_;
 
 
     /// Flag indicating if the registered client has requested a call to his `LoanExecutionContext()` method.
-    /** `owner.portMutex` is required. */
-    bool execContextRequested;
+    /** `owner_.portMutex` is required. */
+    bool execContextRequested_;
 
 
     // <-- IRemoteObjectDictionaryAccess

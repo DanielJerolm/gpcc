@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/infrastructure/SingleRODACLIClientBase.hpp>
@@ -61,48 +61,48 @@ SingleRODACLIClientBase::SingleRODACLIClientBase(IRemoteObjectDictionaryAccess &
 {
   using gpcc::cli::Command;
 
-  cli.AddCommand(Command::Create(cmdName.c_str(), " subcmd [args...]\n"
-                                 "Accesses the remote object dictionary. The type of access is specified by"
-                                 "<subcmd>:\n"
-                                 "- enum [0xFROM-0xTO]\n"
-                                 "  Enumerates objects contained in the object dictionary.\n"
-                                 "  Options:\n"
-                                 "    FROM   Index where enumeration shall start. Default: 0x0000\n"
-                                 "    TO     Index where enumeration shall end. Default: 0xFFFF\n"
-                                 "    FROM <= TO must be valid.\n"
-                                 "\n"
-                                 "- info 0xINDEX [asm]\n"
-                                 "  Prints the meta data of an object and its subindices.\n"
-                                 "  Options:\n"
-                                 "    asm   Includes application-specific meta data in the output.\n"
-                                 "\n"
-                                 "- read 0xINDEX:Subindex\n"
-                                 "  Reads the data of a subindex and prints it to CLI.\n"
-                                 "  <subindex> shall be provided in decimal format.\n"
-                                 "\n"
-                                 "- write 0xINDEX:Subindex DATA\n"
-                                 "  Writes <DATA> to a subindex. <Subindex> shall be provided in decimal format.\n"
-                                 "\n"
-                                 "  The format of <DATA> must meet the data type of the subindex:\n"
-                                 "  For BOOLEAN: TRUE, FALSE, true, false\n"
-                                 "  For REAL32/64: [+|-]digits[.][digits][(e|E)[+|-]digits]\n"
-                                 "  For VISIBLE_STRING: \"Text...\"\n"
-                                 "  For OCTET_STRING: 5B A3 ... (8bit hex values, separated by spaces)\n"
-                                 "  For UNICODE_STRING: 5B33 A6CF (16bit hex values, separated by spaces)\n"
-                                 "  For BIT1..BIT8: 0, 1, 3, 0x3, 0b11 (unused upper bits must be zero)\n"
-                                 "\n"
-                                 "- caread 0xINDEX [v]\n"
-                                 "  Reads the whole object via complete access and prints the value of each\n"
-                                 "  subindex to CLI.\n"
-                                 "  Options:\n"
-                                 "  v   Verbose output. Prints the data type and name of each subindex in addition\n"
-                                 "      to the data.\n"
-                                 "- cawrite 0xINDEX\n"
-                                 "  Writes the whole object via complete access.\n"
-                                 "  The data that shall be written is entered using an interactive dialog.",
-                                 std::bind(&SingleRODACLIClientBase::CLICommandHandler, this,
-                                           std::placeholders::_1, std::placeholders::_2)));
-  ON_SCOPE_EXIT(removeCliCommand) { cli.RemoveCommand(cmdName.c_str()); };
+  cli_.AddCommand(Command::Create(cmdName.c_str(), " subcmd [args...]\n"
+                                  "Accesses the remote object dictionary. The type of access is specified by"
+                                  "<subcmd>:\n"
+                                  "- enum [0xFROM-0xTO]\n"
+                                  "  Enumerates objects contained in the object dictionary.\n"
+                                  "  Options:\n"
+                                  "    FROM   Index where enumeration shall start. Default: 0x0000\n"
+                                  "    TO     Index where enumeration shall end. Default: 0xFFFF\n"
+                                  "    FROM <= TO must be valid.\n"
+                                  "\n"
+                                  "- info 0xINDEX [asm]\n"
+                                  "  Prints the meta data of an object and its subindices.\n"
+                                  "  Options:\n"
+                                  "    asm   Includes application-specific meta data in the output.\n"
+                                  "\n"
+                                  "- read 0xINDEX:Subindex\n"
+                                  "  Reads the data of a subindex and prints it to CLI.\n"
+                                  "  <subindex> shall be provided in decimal format.\n"
+                                  "\n"
+                                  "- write 0xINDEX:Subindex DATA\n"
+                                  "  Writes <DATA> to a subindex. <Subindex> shall be provided in decimal format.\n"
+                                  "\n"
+                                  "  The format of <DATA> must meet the data type of the subindex:\n"
+                                  "  For BOOLEAN: TRUE, FALSE, true, false\n"
+                                  "  For REAL32/64: [+|-]digits[.][digits][(e|E)[+|-]digits]\n"
+                                  "  For VISIBLE_STRING: \"Text...\"\n"
+                                  "  For OCTET_STRING: 5B A3 ... (8bit hex values, separated by spaces)\n"
+                                  "  For UNICODE_STRING: 5B33 A6CF (16bit hex values, separated by spaces)\n"
+                                  "  For BIT1..BIT8: 0, 1, 3, 0x3, 0b11 (unused upper bits must be zero)\n"
+                                  "\n"
+                                  "- caread 0xINDEX [v]\n"
+                                  "  Reads the whole object via complete access and prints the value of each\n"
+                                  "  subindex to CLI.\n"
+                                  "  Options:\n"
+                                  "  v   Verbose output. Prints the data type and name of each subindex in addition\n"
+                                  "      to the data.\n"
+                                  "- cawrite 0xINDEX\n"
+                                  "  Writes the whole object via complete access.\n"
+                                  "  The data that shall be written is entered using an interactive dialog.",
+                                  std::bind(&SingleRODACLIClientBase::CLICommandHandler, this,
+                                            std::placeholders::_1, std::placeholders::_2)));
+  ON_SCOPE_EXIT(removeCliCommand) { cli_.RemoveCommand(cmdName.c_str()); };
 
   Connect(rodaItf);
 
@@ -128,7 +128,7 @@ SingleRODACLIClientBase::~SingleRODACLIClientBase(void)
 {
   try
   {
-    cli.RemoveCommand(cmdName.c_str());
+    cli_.RemoveCommand(cmdName.c_str());
     Disconnect();
   }
   catch (...)

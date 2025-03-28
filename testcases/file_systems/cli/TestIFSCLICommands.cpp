@@ -78,46 +78,46 @@ void GPCC_FileSystems_CLI_TestsF::SetUp(void)
                                             std::bind(&gpcc::file_systems::CLICMDDelete,
                                                       std::placeholders::_1,
                                                       std::placeholders::_2,
-                                                      static_cast<IFileStorage*>(&uut))));
+                                                      static_cast<IFileStorage*>(&uut_))));
   cli.AddCommand(gpcc::cli::Command::Create("Rename", "\nHelp text",
                                             std::bind(&gpcc::file_systems::CLICMDRename,
                                                       std::placeholders::_1,
                                                       std::placeholders::_2,
-                                                      static_cast<IFileStorage*>(&uut))));
+                                                      static_cast<IFileStorage*>(&uut_))));
   cli.AddCommand(gpcc::cli::Command::Create("Enumerate", "\nHelp text",
                                             std::bind(&gpcc::file_systems::CLICMDEnumerate,
                                                       std::placeholders::_1,
                                                       std::placeholders::_2,
-                                                      static_cast<IFileStorage*>(&uut))));
+                                                      static_cast<IFileStorage*>(&uut_))));
   cli.AddCommand(gpcc::cli::Command::Create("FreeSpace", "\nHelp text",
                                             std::bind(&gpcc::file_systems::CLICMDFreeSpace,
                                                       std::placeholders::_1,
                                                       std::placeholders::_2,
-                                                      static_cast<IFileStorage*>(&uut))));
+                                                      static_cast<IFileStorage*>(&uut_))));
   cli.AddCommand(gpcc::cli::Command::Create("Dump", "\nHelp text",
                                             std::bind(&gpcc::file_systems::CLICMDDump,
                                                       std::placeholders::_1,
                                                       std::placeholders::_2,
-                                                      static_cast<IFileStorage*>(&uut))));
+                                                      static_cast<IFileStorage*>(&uut_))));
   cli.AddCommand(gpcc::cli::Command::Create("Copy", "\nHelp text",
                                             std::bind(&gpcc::file_systems::CLICMDCopy,
                                                       std::placeholders::_1,
                                                       std::placeholders::_2,
-                                                      static_cast<IFileStorage*>(&uut))));
+                                                      static_cast<IFileStorage*>(&uut_))));
 
-  Format(fakeStorage.GetPageSize());
+  Format(fakeStorage_.GetPageSize());
 
-  rndData1.Write("rndData1", false, uut);
-  rndData2.Write("rndData2", false, uut);
+  rndData1.Write("rndData1", false, uut_);
+  rndData2.Write("rndData2", false, uut_);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 }
 void GPCC_FileSystems_CLI_TestsF::TearDown(void)
 {
   try
   {
-    if (uut.GetState() != gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::not_mounted)
-      uut.Unmount();
+    if (uut_.GetState() != gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::not_mounted)
+      uut_.Unmount();
 
     if (cliRunning)
       cli.Stop();
@@ -184,7 +184,7 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Delete_NoParameters)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Delete_NoSuchFile)
@@ -208,7 +208,7 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Delete_NoSuchFile)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Delete_NoSuchFiles)
@@ -232,7 +232,7 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Delete_NoSuchFiles)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Delete_OneFile)
@@ -256,10 +256,10 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Delete_OneFile)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_NE(0U, fakeStorage.writeAccessCnt);
+  ASSERT_NE(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 
-  auto sections = uut.Enumerate();
+  auto sections = uut_.Enumerate();
   ASSERT_EQ(1U, sections.size());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "rndData2") != sections.end());
 }
@@ -284,10 +284,10 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Delete_TwoFiles)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_NE(0U, fakeStorage.writeAccessCnt);
+  ASSERT_NE(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 
-  auto sections = uut.Enumerate();
+  auto sections = uut_.Enumerate();
   ASSERT_EQ(0U, sections.size());
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Delete_TwoFiles_OneNotExist)
@@ -311,10 +311,10 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Delete_TwoFiles_OneNotExist)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_NE(0U, fakeStorage.writeAccessCnt);
+  ASSERT_NE(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 
-  auto sections = uut.Enumerate();
+  auto sections = uut_.Enumerate();
   ASSERT_EQ(1U, sections.size());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "rndData1") != sections.end());
 }
@@ -339,7 +339,7 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Rename_NoParameters)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Rename_OneParameters)
@@ -363,7 +363,7 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Rename_OneParameters)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Rename_OK)
@@ -387,10 +387,10 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Rename_OK)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_NE(0U, fakeStorage.writeAccessCnt);
+  ASSERT_NE(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 
-  auto sections = uut.Enumerate();
+  auto sections = uut_.Enumerate();
   ASSERT_EQ(2U, sections.size());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "rndData2") != sections.end());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "rndData3") != sections.end());
@@ -416,7 +416,7 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Enumerate_BadParameters)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Enumerate_NoParams)
@@ -440,7 +440,7 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Enumerate_NoParams)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Enumerate_Option_s)
@@ -464,7 +464,7 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Enumerate_Option_s)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, FreeSpace_BadParameters)
@@ -488,7 +488,7 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, FreeSpace_BadParameters)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, FreeSpace_OK)
@@ -512,7 +512,7 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, FreeSpace_OK)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Dump_NoParameters)
@@ -536,7 +536,7 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Dump_NoParameters)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Dump_NoSuchFile)
@@ -560,7 +560,7 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Dump_NoSuchFile)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Dump_OK)
@@ -577,13 +577,13 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Dump_OK)
    ">"
   };
 
-  auto fw = uut.Create("File1", false);
+  auto fw = uut_.Create("File1", false);
   ON_SCOPE_EXIT() { try { fw->Close(); } catch (std::exception const &) {}; };
   for (uint_fast8_t i = 0; i < 32; i++)
     fw->Write_uint8(i);
   ON_SCOPE_EXIT_DISMISS();
   fw->Close();
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   terminal.Input("login");
   terminal.Input_ENTER();
@@ -592,7 +592,7 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Dump_OK)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Dump_StopAfter1024)
@@ -609,13 +609,13 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Dump_StopAfter1024)
    ">"
   };
 
-  auto fw = uut.Create("File1", false);
+  auto fw = uut_.Create("File1", false);
   ON_SCOPE_EXIT() { try { fw->Close(); } catch (std::exception const &) {}; };
   for (uint_fast16_t i = 0; i < 1025; i++)
     fw->Write_uint8(i % 32U);
   ON_SCOPE_EXIT_DISMISS();
   fw->Close();
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   terminal.Input("login");
   terminal.Input_ENTER();
@@ -627,7 +627,7 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Dump_StopAfter1024)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Dump_ContinueAfter1024)
@@ -644,14 +644,14 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Dump_ContinueAfter1024)
    ">"
   };
 
-  auto fw = uut.Create("File1", false);
+  auto fw = uut_.Create("File1", false);
   ON_SCOPE_EXIT() { try { fw->Close(); } catch (std::exception const &) {}; };
   for (uint_fast16_t i = 0; i < 1024; i++)
     fw->Write_uint8(i % 32U);
   fw->Write_uint8(0xFFU);
   ON_SCOPE_EXIT_DISMISS();
   fw->Close();
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   terminal.Input("login");
   terminal.Input_ENTER();
@@ -663,7 +663,7 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Dump_ContinueAfter1024)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Copy_NoParameters)
@@ -687,7 +687,7 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Copy_NoParameters)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Copy_OneParameter)
@@ -711,7 +711,7 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Copy_OneParameter)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Copy_ThreeParameter)
@@ -735,7 +735,7 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Copy_ThreeParameter)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Copy_OK)
@@ -759,18 +759,18 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Copy_OK)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_NE(0U, fakeStorage.writeAccessCnt);
+  ASSERT_NE(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 
-  auto sections = uut.Enumerate();
+  auto sections = uut_.Enumerate();
   ASSERT_EQ(3U, sections.size());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "rndData1") != sections.end());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "rndData2") != sections.end());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "Copy") != sections.end());
 
-  rndData1.Compare("Copy", uut);
-  rndData1.Compare("rndData1", uut);
-  rndData2.Compare("rndData2", uut);
+  rndData1.Compare("Copy", uut_);
+  rndData1.Compare("rndData1", uut_);
+  rndData2.Compare("rndData2", uut_);
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Copy_FileAlreadyExisting)
 {
@@ -793,16 +793,16 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Copy_FileAlreadyExisting)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 
-  auto sections = uut.Enumerate();
+  auto sections = uut_.Enumerate();
   ASSERT_EQ(2U, sections.size());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "rndData1") != sections.end());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "rndData2") != sections.end());
 
-  rndData1.Compare("rndData1", uut);
-  rndData2.Compare("rndData2", uut);
+  rndData1.Compare("rndData1", uut_);
+  rndData2.Compare("rndData2", uut_);
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Copy_SrcAndDestEqual)
 {
@@ -825,16 +825,16 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Copy_SrcAndDestEqual)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 
-  auto sections = uut.Enumerate();
+  auto sections = uut_.Enumerate();
   ASSERT_EQ(2U, sections.size());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "rndData1") != sections.end());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "rndData2") != sections.end());
 
-  rndData1.Compare("rndData1", uut);
-  rndData2.Compare("rndData2", uut);
+  rndData1.Compare("rndData1", uut_);
+  rndData2.Compare("rndData2", uut_);
 }
 TEST_F(GPCC_FileSystems_CLI_TestsF, Copy_SrcNotExisting)
 {
@@ -857,16 +857,16 @@ TEST_F(GPCC_FileSystems_CLI_TestsF, Copy_SrcNotExisting)
   terminal.Input_ENTER();
   terminal.WaitForInputProcessed();
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
   ASSERT_TRUE(terminal.Compare(expected));
 
-  auto sections = uut.Enumerate();
+  auto sections = uut_.Enumerate();
   ASSERT_EQ(2U, sections.size());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "rndData1") != sections.end());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "rndData2") != sections.end());
 
-  rndData1.Compare("rndData1", uut);
-  rndData2.Compare("rndData2", uut);
+  rndData1.Compare("rndData1", uut_);
+  rndData2.Compare("rndData2", uut_);
 }
 
 } // namespace file_systems

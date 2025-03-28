@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #include <gpcc/execution/cyclic/TriggeredThreadedCyclicExec.hpp>
@@ -384,8 +384,8 @@ void* TriggeredThreadedCyclicExec::InternalThreadEntry(void)
     {
       // wait for trigger
       stdif::IIRQ2ThreadWakeup::Result const result = trigger.WaitWithTimeout(timeout);
-      bool const overrun = (result == stdif::IIRQ2ThreadWakeup::Result::AlreadySignalled);
-      bool const timeout = (result == stdif::IIRQ2ThreadWakeup::Result::Timeout);
+      bool const result_overrun = (result == stdif::IIRQ2ThreadWakeup::Result::AlreadySignalled);
+      bool const result_timeout = (result == stdif::IIRQ2ThreadWakeup::Result::Timeout);
 
       mutexLocker.Relock();
 
@@ -441,7 +441,7 @@ void* TriggeredThreadedCyclicExec::InternalThreadEntry(void)
 
         case States::waitLock:
         {
-          if (timeout)
+          if (result_timeout)
           {
             state = States::stopped;
             mutexLocker.Unlock();
@@ -470,7 +470,7 @@ void* TriggeredThreadedCyclicExec::InternalThreadEntry(void)
 
         case States::running:
         {
-          if (timeout)
+          if (result_timeout)
           {
             state = States::stopped;
             mutexLocker.Unlock();
@@ -496,7 +496,7 @@ void* TriggeredThreadedCyclicExec::InternalThreadEntry(void)
           {
             mutexLocker.Unlock();
 
-            if (!Sample(overrun))
+            if (!Sample(result_overrun))
             {
               mutexLocker.Relock();
               state = States::stopped;

@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #include "UUT_TriggeredThreadedCyclicExec.hpp"
@@ -20,9 +20,9 @@ namespace execution {
 namespace cyclic {
 
 UUT_TriggeredThreadedCyclicExec::UUT_TriggeredThreadedCyclicExec(Trace & _trace,
-                                                                 gpcc::stdif::IIRQ2ThreadWakeup & trigger,
+                                                                 gpcc::stdif::IIRQ2ThreadWakeup & _trigger,
                                                                  gpcc::time::TimeSpan const & waitForTriggerTimeout)
-: TriggeredThreadedCyclicExec("UUT", trigger, waitForTriggerTimeout, std::bind(&UUT_TriggeredThreadedCyclicExec::IsPllRunning, this))
+: TriggeredThreadedCyclicExec("UUT", _trigger, waitForTriggerTimeout, std::bind(&UUT_TriggeredThreadedCyclicExec::IsPllRunning, this))
 , trace(_trace)
 , pTTCEStartStopCtrl(nullptr)
 , mutex()

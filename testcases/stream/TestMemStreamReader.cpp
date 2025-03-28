@@ -33,13 +33,13 @@ class GPCC_Stream_MemStreamReader_Tests: public Test
     GPCC_Stream_MemStreamReader_Tests(void);
 
   protected:
-    float const f1;
-    float const f2;
-    double const d1;
-    double const d2;
+    float const f1_;
+    float const f2_;
+    double const d1_;
+    double const d2_;
 
-    uint8_t memory[128];
-    size_t n;
+    uint8_t memory_[128];
+    size_t n_;
 
     void SetUp(void) override;
     void TearDown(void) override;
@@ -51,18 +51,18 @@ class GPCC_Stream_MemStreamReader_Tests: public Test
 };
 GPCC_Stream_MemStreamReader_Tests::GPCC_Stream_MemStreamReader_Tests(void)
 : Test()
-, f1(32.3)
-, f2(-12.3E-6)
-, d1(83.1)
-, d2(67.342E16)
-, memory()
-, n(0)
+, f1_(32.3)
+, f2_(-12.3E-6)
+, d1_(83.1)
+, d2_(67.342E16)
+, memory_()
+, n_(0)
 {
 }
 
 void GPCC_Stream_MemStreamReader_Tests::SetUp(void)
 {
-  memset(memory, 0x00, sizeof(memory));
+  memset(memory_, 0x00, sizeof(memory_));
 }
 void GPCC_Stream_MemStreamReader_Tests::TearDown(void)
 {
@@ -77,13 +77,13 @@ void GPCC_Stream_MemStreamReader_Tests::PrepareLittleEndianTestData1(void)
   /* 0x30  */    'r',  'T',  'e',  'x',  't',  0x00, 'L',  'i',  'n',  'e',  '1',  '\n', 'L',  'i',  'n',  'e',
   /* 0x40  */    '2',  '\r', 'L',  'i',  'n',  'e',  '3',  '\r', '\n', 'L',  'i',  'n',  'e',  '4',  0x00 };
 
-  n = sizeof(data);
-  assert(n <= sizeof(memory));
-  memcpy(memory, data, n);
+  n_ = sizeof(data);
+  assert(n_ <= sizeof(memory_));
+  memcpy(memory_, data, n_);
 
-  MemStreamWriter msw(memory + 32U, sizeof(float) + sizeof(double), IStreamWriter::Endian::Little);
-  msw << f1;
-  msw << d1;
+  MemStreamWriter msw(memory_ + 32U, sizeof(float) + sizeof(double), IStreamWriter::Endian::Little);
+  msw << f1_;
+  msw << d1_;
   msw.Close();
 }
 void GPCC_Stream_MemStreamReader_Tests::PrepeareLitteEndianTestData2(void)
@@ -97,13 +97,13 @@ void GPCC_Stream_MemStreamReader_Tests::PrepeareLitteEndianTestData2(void)
   /* 0x40 */     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   /* 0x50 */     0x00, 0x00, 0x00, 0x00, 0xEB, 0x67, 0x01, 'c',  'h',  'a',  'r',  'T',  'e',  'x',  't',  0x00 };
 
-  n = sizeof(data);
-  assert(n <= sizeof(memory));
-  memcpy(memory, data, n);
+  n_ = sizeof(data);
+  assert(n_ <= sizeof(memory_));
+  memcpy(memory_, data, n_);
 
-  MemStreamWriter msw(memory + 0x3C, 2*sizeof(float) + 2*sizeof(double), IStreamWriter::Endian::Little);
-  msw << f1 << f2;
-  msw << d1 << d2;
+  MemStreamWriter msw(memory_ + 0x3C, 2*sizeof(float) + 2*sizeof(double), IStreamWriter::Endian::Little);
+  msw << f1_ << f2_;
+  msw << d1_ << d2_;
   msw.Close();
 }
 void GPCC_Stream_MemStreamReader_Tests::PrepareBigEndianTestData1(void)
@@ -116,13 +116,13 @@ void GPCC_Stream_MemStreamReader_Tests::PrepareBigEndianTestData1(void)
   /* 0x30  */    'r',  'T',  'e',  'x',  't',  0x00, 'L',  'i',  'n',  'e',  '1',  '\n', 'L',  'i',  'n',  'e',
   /* 0x40  */    '2',  '\r', 'L',  'i',  'n',  'e',  '3',  '\r', '\n', 'L',  'i',  'n',  'e',  '4',  0x00 };
 
-  n = sizeof(data);
-  assert(n <= sizeof(memory));
-  memcpy(memory, data, n);
+  n_ = sizeof(data);
+  assert(n_ <= sizeof(memory_));
+  memcpy(memory_, data, n_);
 
-  MemStreamWriter msw(memory + 32, sizeof(float) + sizeof(double), IStreamWriter::Endian::Big);
-  msw << f1;
-  msw << d1;
+  MemStreamWriter msw(memory_ + 32, sizeof(float) + sizeof(double), IStreamWriter::Endian::Big);
+  msw << f1_;
+  msw << d1_;
   msw.Close();
 }
 bool GPCC_Stream_MemStreamReader_Tests::AnyNotFF(uint8_t const * p, size_t s)
@@ -141,7 +141,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, pMemIsnullptrButSizeIsNotZero)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ZeroSize1)
 {
-  MemStreamReader uut(memory, 0, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 0, IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::empty, uut.GetState());
   ASSERT_EQ(static_cast<size_t>(0), uut.RemainingBytes());
   uut.Close();
@@ -159,7 +159,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyConstruction)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
 
   // create a copy
@@ -192,7 +192,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyConstruction_Endian_Little)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
   ASSERT_EQ(IStreamReader::Endian::Little, uut1.GetEndian());
 
@@ -205,7 +205,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyConstruction_Endian_Big)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Big);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Big);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
   ASSERT_EQ(IStreamReader::Endian::Big, uut1.GetEndian());
 
@@ -218,7 +218,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyConstruction_BitPos)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
 
   uint8_t data;
@@ -251,7 +251,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyConstruction_StateClosed)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   uut1.Close();
   ASSERT_EQ(IStreamReader::States::closed, uut1.GetState());
 
@@ -263,7 +263,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyConstruction_StateEmpty)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, 0, IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, 0, IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::empty, uut1.GetState());
 
   // create a copy
@@ -279,7 +279,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyConstruction_StateEmpty)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyConstruction_StateError)
 {
-  MemStreamReader uut1(memory, 0, IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, 0, IStreamReader::Endian::Little);
   ASSERT_THROW((void)uut1.Read_uint8(), EmptyError);
   ASSERT_EQ(IStreamReader::States::error, uut1.GetState());
 
@@ -297,7 +297,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveConstruction)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
 
   uint8_t data;
@@ -322,7 +322,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveConstruction_Endian_Little)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
   ASSERT_EQ(IStreamReader::Endian::Little, uut1.GetEndian());
 
@@ -335,7 +335,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveConstruction_Endian_Big)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Big);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Big);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
   ASSERT_EQ(IStreamReader::Endian::Big, uut1.GetEndian());
 
@@ -348,7 +348,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveConstruction_BitPos)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
 
   uint8_t data;
@@ -374,7 +374,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveConstruction_StateClosed)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   uut1.Close();
   ASSERT_EQ(IStreamReader::States::closed, uut1.GetState());
 
@@ -386,7 +386,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveConstruction_StateEmpty)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, 0, IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, 0, IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::empty, uut1.GetState());
 
   // move-create a new instance
@@ -402,7 +402,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveConstruction_StateEmpty)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveConstruction_StateError)
 {
-  MemStreamReader uut1(memory, 0, IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, 0, IStreamReader::Endian::Little);
   ASSERT_THROW((void)uut1.Read_uint8(), EmptyError);
   ASSERT_EQ(IStreamReader::States::error, uut1.GetState());
 
@@ -420,7 +420,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyAssignment)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
 
   // create a copy
@@ -454,10 +454,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyAssignment_Endian_Little)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
 
-  MemStreamReader uut2(memory, sizeof(memory), IStreamReader::Endian::Big);
+  MemStreamReader uut2(memory_, sizeof(memory_), IStreamReader::Endian::Big);
   ASSERT_EQ(IStreamReader::Endian::Big, uut2.GetEndian());
 
   uint8_t data;
@@ -488,10 +488,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyAssignment_Endian_Big)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Big);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Big);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
 
-  MemStreamReader uut2(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut2(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::Endian::Little, uut2.GetEndian());
 
   uint8_t data;
@@ -522,7 +522,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyAssignment_BitPos)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
 
   // create a copy
@@ -556,7 +556,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyAssignment_StateClosed)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
 
   // create a copy
@@ -578,10 +578,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyAssignment_StateEmpty)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, 0, IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, 0, IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::empty, uut1.GetState());
 
-  MemStreamReader uut2(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut2(memory_, sizeof(memory_), IStreamReader::Endian::Little);
 
   uint8_t data;
 
@@ -598,11 +598,11 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyAssignment_StateError)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, 0, IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, 0, IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::empty, uut1.GetState());
   ASSERT_THROW((void)uut1.Read_char(), std::exception);
 
-  MemStreamReader uut2(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut2(memory_, sizeof(memory_), IStreamReader::Endian::Little);
 
   uint8_t data;
 
@@ -618,12 +618,12 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyAssignment_StateError)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyAssignment_RecoverFromErrorState)
 {
-  assert(sizeof(memory) >= 5U);
+  assert(sizeof(memory_) >= 5U);
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, 5, IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, 5, IStreamReader::Endian::Little);
 
-  MemStreamReader uut2(memory, 0, IStreamReader::Endian::Little);
+  MemStreamReader uut2(memory_, 0, IStreamReader::Endian::Little);
   ASSERT_THROW((void)uut2.Read_char(), std::exception);
   ASSERT_EQ(IStreamReader::States::error, uut2.GetState());
 
@@ -639,12 +639,12 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyAssignment_RecoverFromErrorState)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyAssignment_RecoverFromClosedState)
 {
-  assert(sizeof(memory) >= 5U);
+  assert(sizeof(memory_) >= 5U);
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, 5, IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, 5, IStreamReader::Endian::Little);
 
-  MemStreamReader uut2(memory, 0, IStreamReader::Endian::Little);
+  MemStreamReader uut2(memory_, 0, IStreamReader::Endian::Little);
   uut2.Close();
   ASSERT_EQ(IStreamReader::States::closed, uut2.GetState());
 
@@ -662,7 +662,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, CopyAssignment_Self)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
   uint8_t data;
 
@@ -684,10 +684,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveAssignment)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
 
-  MemStreamReader uut2(memory, 0, IStreamReader::Endian::Little);
+  MemStreamReader uut2(memory_, 0, IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::empty, uut2.GetState());
 
   uint8_t data;
@@ -713,10 +713,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveAssignment_Endian_Little)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
 
-  MemStreamReader uut2(memory, 0, IStreamReader::Endian::Big);
+  MemStreamReader uut2(memory_, 0, IStreamReader::Endian::Big);
   ASSERT_EQ(IStreamReader::States::empty, uut2.GetState());
 
   uint8_t data;
@@ -743,10 +743,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveAssignment_Endian_Big)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Big);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Big);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
 
-  MemStreamReader uut2(memory, 0, IStreamReader::Endian::Little);
+  MemStreamReader uut2(memory_, 0, IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::empty, uut2.GetState());
 
   uint8_t data;
@@ -773,10 +773,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveAssignment_BitPos)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
 
-  MemStreamReader uut2(memory, 0, IStreamReader::Endian::Little);
+  MemStreamReader uut2(memory_, 0, IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::empty, uut2.GetState());
 
   uint8_t data;
@@ -804,10 +804,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveAssignment_StateClosed)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
 
-  MemStreamReader uut2(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut2(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::open, uut2.GetState());
 
   uut1.Close();
@@ -826,10 +826,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveAssignment_StateEmpty)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, 0, IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, 0, IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::empty, uut1.GetState());
 
-  MemStreamReader uut2(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut2(memory_, sizeof(memory_), IStreamReader::Endian::Little);
 
   uint8_t data;
 
@@ -846,11 +846,11 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveAssignment_StateError)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, 0, IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, 0, IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::empty, uut1.GetState());
   ASSERT_THROW((void)uut1.Read_char(), std::exception);
 
-  MemStreamReader uut2(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut2(memory_, sizeof(memory_), IStreamReader::Endian::Little);
 
   uint8_t data;
 
@@ -865,12 +865,12 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveAssignment_StateError)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveAssignment_RecoverFromErrorState)
 {
-  assert(sizeof(memory) >= 5U);
+  assert(sizeof(memory_) >= 5U);
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, 5, IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, 5, IStreamReader::Endian::Little);
 
-  MemStreamReader uut2(memory, 0, IStreamReader::Endian::Little);
+  MemStreamReader uut2(memory_, 0, IStreamReader::Endian::Little);
   ASSERT_THROW((void)uut2.Read_char(), std::exception);
   ASSERT_EQ(IStreamReader::States::error, uut2.GetState());
 
@@ -886,12 +886,12 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveAssignment_RecoverFromErrorState)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveAssignment_RecoverFromClosedState)
 {
-  assert(sizeof(memory) >= 5U);
+  assert(sizeof(memory_) >= 5U);
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, 5, IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, 5, IStreamReader::Endian::Little);
 
-  MemStreamReader uut2(memory, 0, IStreamReader::Endian::Little);
+  MemStreamReader uut2(memory_, 0, IStreamReader::Endian::Little);
   uut2.Close();
   ASSERT_EQ(IStreamReader::States::closed, uut2.GetState());
 
@@ -909,7 +909,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveAssignment_Self)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut1(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut1(memory_, sizeof(memory_), IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::open, uut1.GetState());
   uint8_t data;
 
@@ -929,7 +929,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, MoveAssignment_Self)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadFromZeroSizedStream)
 {
-  MemStreamReader uut(memory, 0, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 0, IStreamReader::Endian::Little);
   ASSERT_EQ(IStreamReader::States::empty, uut.GetState());
   ASSERT_EQ(static_cast<size_t>(0), uut.RemainingBytes());
 
@@ -943,9 +943,9 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadFromZeroSizedStream)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadNothing)
 {
-  MemStreamReader uut(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, sizeof(memory_), IStreamReader::Endian::Little);
 
-  ASSERT_EQ(sizeof(memory), uut.RemainingBytes());
+  ASSERT_EQ(sizeof(memory_), uut.RemainingBytes());
   ASSERT_EQ(IStreamReader::States::open, uut.GetState());
 
   ASSERT_NO_THROW(uut.Close());
@@ -954,7 +954,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadNothing)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, DoubleClose)
 {
-  MemStreamReader uut(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, sizeof(memory_), IStreamReader::Endian::Little);
 
   ASSERT_EQ(IStreamReader::States::open, uut.GetState());
 
@@ -968,7 +968,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, DoubleClose)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, NoClose)
 {
-  std::unique_ptr<MemStreamReader> spUUT(new MemStreamReader(memory, sizeof(memory), IStreamReader::Endian::Little));
+  std::unique_ptr<MemStreamReader> spUUT(new MemStreamReader(memory_, sizeof(memory_), IStreamReader::Endian::Little));
 
   // close is performed by destructor
   spUUT.reset();
@@ -977,7 +977,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLittleStreamOp)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, sizeof(memory_), IStreamReader::Endian::Little);
 
   ASSERT_EQ(IStreamReader::Endian::Little, uut.GetEndian());
 
@@ -1021,11 +1021,11 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLittleStreamOp)
 
   float f;
   uut >> f;
-  ASSERT_TRUE((f > f1 - 0.1f) && (f < f1 + 0.1f));
+  ASSERT_TRUE((f > f1_ - 0.1f) && (f < f1_ + 0.1f));
 
   double d;
   uut >> d;
-  ASSERT_TRUE((d > d1 - 0.1) && (d < d1 + 0.1));
+  ASSERT_TRUE((d > d1_ - 0.1) && (d < d1_ + 0.1));
 
   bool b;
   uut >> b;
@@ -1055,7 +1055,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLittleStreamOp)
   uut >> s;
   ASSERT_TRUE(s == "Line1\nLine2\rLine3\r\nLine4");
 
-  ASSERT_EQ(sizeof(memory) - n, uut.RemainingBytes());
+  ASSERT_EQ(sizeof(memory_) - n_, uut.RemainingBytes());
   ASSERT_EQ(IStreamReader::States::open, uut.GetState());
 
   uut.Close();
@@ -1066,7 +1066,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLittleFuncCalls)
 {
   PrepareLittleEndianTestData1();
 
-  MemStreamReader uut(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, sizeof(memory_), IStreamReader::Endian::Little);
 
   ASSERT_EQ(IStreamReader::Endian::Little, uut.GetEndian());
 
@@ -1101,10 +1101,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLittleFuncCalls)
   ASSERT_EQ(0, u8);
 
   float f = uut.Read_float();
-  ASSERT_TRUE((f > f1 - 0.1f) && (f < f1 + 0.1f));
+  ASSERT_TRUE((f > f1_ - 0.1f) && (f < f1_ + 0.1f));
 
   double d = uut.Read_double();
-  ASSERT_TRUE((d > d1 - 0.1) && (d < d1 + 0.1));
+  ASSERT_TRUE((d > d1_ - 0.1) && (d < d1_ + 0.1));
 
   bool b;
   b = uut.Read_bool();
@@ -1139,7 +1139,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLittleFuncCalls)
   ASSERT_TRUE(s == "Line4");
   // see test cases "ReadLine_NoEnd1" and "ReadLine_NoEnd2" to test Read_line() with no line ending at end of stream
 
-  ASSERT_EQ(sizeof(memory) - n, uut.RemainingBytes());
+  ASSERT_EQ(sizeof(memory_) - n_, uut.RemainingBytes());
   ASSERT_EQ(IStreamReader::States::open, uut.GetState());
 
   uut.Close();
@@ -1153,7 +1153,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadBigStreamOp)
   float f1 = 32.3;
   double d1 = 83.1;
 
-  MemStreamReader uut(memory, sizeof(memory), IStreamReader::Endian::Big);
+  MemStreamReader uut(memory_, sizeof(memory_), IStreamReader::Endian::Big);
 
   ASSERT_EQ(IStreamReader::Endian::Big, uut.GetEndian());
 
@@ -1231,7 +1231,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadBigStreamOp)
   uut >> s;
   ASSERT_TRUE(s == "Line1\nLine2\rLine3\r\nLine4");
 
-  ASSERT_EQ(sizeof(memory) - n, uut.RemainingBytes());
+  ASSERT_EQ(sizeof(memory_) - n_, uut.RemainingBytes());
   ASSERT_EQ(IStreamReader::States::open, uut.GetState());
 
   uut.Close();
@@ -1245,7 +1245,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadBigFuncCalls)
   float f1 = 32.3;
   double d1 = 83.1;
 
-  MemStreamReader uut(memory, sizeof(memory), IStreamReader::Endian::Big);
+  MemStreamReader uut(memory_, sizeof(memory_), IStreamReader::Endian::Big);
 
   ASSERT_EQ(IStreamReader::Endian::Big, uut.GetEndian());
 
@@ -1318,7 +1318,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadBigFuncCalls)
   ASSERT_TRUE(s == "Line4");
   // see test cases "ReadLine_NoEnd1" and "ReadLine_NoEnd2" to test Read_line() with no line ending at end of stream
 
-  ASSERT_EQ(sizeof(memory) - n, uut.RemainingBytes());
+  ASSERT_EQ(sizeof(memory_) - n_, uut.RemainingBytes());
   ASSERT_EQ(IStreamReader::States::open, uut.GetState());
 
   uut.Close();
@@ -1329,7 +1329,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadMultipleElements)
 {
   PrepeareLitteEndianTestData2();
 
-  MemStreamReader uut(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, sizeof(memory_), IStreamReader::Endian::Little);
 
   ASSERT_EQ(IStreamReader::Endian::Little, uut.GetEndian());
 
@@ -1377,12 +1377,12 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadMultipleElements)
 
   // 60
 
-  float const data_float[] = { f1, f2 };
+  float const data_float[] = { f1_, f2_ };
   float read_data_float[2];
   uut.Read_float(read_data_float, 2);
   ASSERT_TRUE(memcmp(data_float, read_data_float, sizeof(data_float)) == 0);
 
-  double const data_double[] = { d1, d2 };
+  double const data_double[] = { d1_, d2_ };
   double read_data_double[2];
   uut.Read_double(read_data_double, 2);
   ASSERT_TRUE(memcmp(data_double, read_data_double, sizeof(data_double)) == 0);
@@ -1413,7 +1413,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadMultipleElements)
 
   // 96
 
-  ASSERT_EQ(sizeof(memory) - n, uut.RemainingBytes());
+  ASSERT_EQ(sizeof(memory_) - n_, uut.RemainingBytes());
   ASSERT_EQ(IStreamReader::States::open, uut.GetState());
 
   uut.Close();
@@ -1422,10 +1422,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadMultipleElements)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadBits_UpperZero)
 {
-  memory[0] = 0x1F;
-  memory[1] = 0xFF;
+  memory_[0] = 0x1F;
+  memory_[1] = 0xFF;
 
-  MemStreamReader uut(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, sizeof(memory_), IStreamReader::Endian::Little);
 
   uint8_t u8;
 
@@ -1446,10 +1446,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadBits_UpperZero)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadBits_NextByteAlignsProperly)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, sizeof(memory_), IStreamReader::Endian::Little);
 
   uint8_t u8;
 
@@ -1467,10 +1467,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadBits_NextByteAlignsProperly)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, EmptyByByteRead)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   uint8_t u8;
 
@@ -1490,10 +1490,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, EmptyByByteRead)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, EmptyByBitRead)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   ASSERT_EQ(IStreamReader::States::open, uut.GetState());
   ASSERT_EQ(static_cast<size_t>(2), uut.RemainingBytes());
@@ -1552,10 +1552,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, EmptyByBitRead)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadByteFromEmptyStream)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   uint8_t u8;
 
@@ -1579,10 +1579,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadByteFromEmptyStream)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadBitFromEmptyStream)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   uint8_t u8;
   bool b;
@@ -1608,10 +1608,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadBitFromEmptyStream)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadTooManyBitsFromAlmostEmptyStream)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   uint8_t u8;
   bool b;
@@ -1643,10 +1643,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadTooManyBitsFromAlmostEmptyStream)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadStringFromEmptyStream)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   uint8_t u8;
 
@@ -1670,10 +1670,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadStringFromEmptyStream)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLineFromEmptyStream)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   uint8_t u8;
 
@@ -1697,10 +1697,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLineFromEmptyStream)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadByteInErrorState)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   uint8_t au8[3];
 
@@ -1718,10 +1718,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadByteInErrorState)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadBitInErrorState)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   uint8_t au8[3];
 
@@ -1741,10 +1741,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadBitInErrorState)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadStringInErrorState)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   uint8_t au8[3];
 
@@ -1762,10 +1762,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadStringInErrorState)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLineInErrorState)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   uint8_t au8[3];
 
@@ -1783,10 +1783,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLineInErrorState)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadByteFromClosedStream)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
   uut.Close();
 
   uint8_t u8;
@@ -1796,10 +1796,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadByteFromClosedStream)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadBitFromClosedStream)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
   uut.Close();
 
   bool b;
@@ -1809,10 +1809,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadBitFromClosedStream)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadStringFromClosedStream)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
   uut.Close();
 
   ASSERT_THROW(std::string str = uut.Read_string(), ClosedError);
@@ -1820,10 +1820,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadStringFromClosedStream)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLineFromClosedStream)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
   uut.Close();
 
   ASSERT_THROW(std::string str = uut.Read_line(), ClosedError);
@@ -1831,10 +1831,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLineFromClosedStream)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, CloseStreamInErrorState)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   uint8_t au8[3];
 
@@ -1848,24 +1848,24 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, CloseStreamInErrorState)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, RemainingBytesSupported)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   ASSERT_TRUE(uut.IsRemainingBytesSupported());
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, RemainingBytesInDifferentStates)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
-  memory[2] = 0x45;
-  memory[3] = 0xB6;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
+  memory_[2] = 0x45;
+  memory_[3] = 0xB6;
 
   uint8_t u8;
   uint16_t u16;
 
-  MemStreamReader uut(memory, 4, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 4, IStreamReader::Endian::Little);
 
   ASSERT_EQ(IStreamReader::States::open, uut.GetState());
   ASSERT_EQ(static_cast<size_t>(4), uut.RemainingBytes());
@@ -1903,7 +1903,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadZeroElements)
   uint8_t readMem[16];
   memset(readMem, 0xFF, sizeof(readMem));
 
-  MemStreamReader uut(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, sizeof(memory_), IStreamReader::Endian::Little);
 
   ASSERT_EQ(IStreamReader::Endian::Little, uut.GetEndian());
 
@@ -1938,7 +1938,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadZeroElements)
   ASSERT_FALSE(AnyNotFF(readMem, sizeof(readMem)));
 
 
-  ASSERT_EQ(sizeof(memory), uut.RemainingBytes());
+  ASSERT_EQ(sizeof(memory_), uut.RemainingBytes());
   ASSERT_EQ(IStreamReader::States::open, uut.GetState());
 
   uut.Close();
@@ -1947,13 +1947,13 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadZeroElements)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadEmptyString1)
 {
-  MemStreamReader uut(memory, sizeof(memory), IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, sizeof(memory_), IStreamReader::Endian::Little);
 
   std::string s = uut.Read_string();
 
   ASSERT_EQ(static_cast<size_t>(0), s.length());
 
-  ASSERT_EQ(sizeof(memory) - 1, uut.RemainingBytes());
+  ASSERT_EQ(sizeof(memory_) - 1, uut.RemainingBytes());
   ASSERT_EQ(IStreamReader::States::open, uut.GetState());
 
   uut.Close();
@@ -1962,9 +1962,9 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadEmptyString1)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadEmptyString2)
 {
-  assert(sizeof(memory) >= 1);
+  assert(sizeof(memory_) >= 1);
 
-  MemStreamReader uut(memory, 1, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 1, IStreamReader::Endian::Little);
 
   std::string s = uut.Read_string();
 
@@ -1979,15 +1979,15 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadEmptyString2)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadStringButNoNullTerminator1)
 {
-  assert(sizeof(memory) >= 5);
+  assert(sizeof(memory_) >= 5);
 
-  memory[0] = 'H';
-  memory[1] = 'e';
-  memory[2] = 'l';
-  memory[3] = 'l';
-  memory[4] = 'o';
+  memory_[0] = 'H';
+  memory_[1] = 'e';
+  memory_[2] = 'l';
+  memory_[3] = 'l';
+  memory_[4] = 'o';
 
-  MemStreamReader uut(memory, sizeof(5), IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, sizeof(5), IStreamReader::Endian::Little);
 
   ASSERT_THROW(std::string s = uut.Read_string(), std::runtime_error);
 
@@ -1997,11 +1997,11 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadStringButNoNullTerminator1)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadStringButNoNullTerminator2)
 {
-  assert(sizeof(memory) >= 1);
+  assert(sizeof(memory_) >= 1);
 
-  memory[0] = 'A';
+  memory_[0] = 'A';
 
-  MemStreamReader uut(memory, 1, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 1, IStreamReader::Endian::Little);
 
   ASSERT_THROW(std::string s = uut.Read_string(), std::runtime_error);
 
@@ -2013,8 +2013,8 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_NUL)
 {
   // two empty lines, terminated by NUL
 
-  assert(sizeof(memory) > 2U);
-  MemStreamReader uut(memory, sizeof(memory), IStreamReader::Endian::Little);
+  assert(sizeof(memory_) > 2U);
+  MemStreamReader uut(memory_, sizeof(memory_), IStreamReader::Endian::Little);
 
   std::string s = uut.Read_line();
   ASSERT_TRUE(s.empty());
@@ -2022,7 +2022,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_NUL)
   s = uut.Read_line();
   ASSERT_TRUE(s.empty());
 
-  ASSERT_EQ(sizeof(memory) - 2U, uut.RemainingBytes());
+  ASSERT_EQ(sizeof(memory_) - 2U, uut.RemainingBytes());
   ASSERT_EQ(IStreamReader::States::open, uut.GetState());
 
   uut.Close();
@@ -2030,12 +2030,12 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_NUL)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_LF)
 {
-  // two empty lines, terminated by \n
+  // two empty lines, terminated by \n_
 
-  assert(sizeof(memory) > 2U);
-  memory[0] = '\n';
-  memory[1] = '\n';
-  MemStreamReader uut(memory, sizeof(memory), IStreamReader::Endian::Little);
+  assert(sizeof(memory_) > 2U);
+  memory_[0] = '\n';
+  memory_[1] = '\n';
+  MemStreamReader uut(memory_, sizeof(memory_), IStreamReader::Endian::Little);
 
   std::string s = uut.Read_line();
   ASSERT_TRUE(s.empty());
@@ -2043,7 +2043,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_LF)
   s = uut.Read_line();
   ASSERT_TRUE(s.empty());
 
-  ASSERT_EQ(sizeof(memory) - 2U, uut.RemainingBytes());
+  ASSERT_EQ(sizeof(memory_) - 2U, uut.RemainingBytes());
   ASSERT_EQ(IStreamReader::States::open, uut.GetState());
 
   uut.Close();
@@ -2053,10 +2053,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_CR)
 {
   // two empty lines, terminated by \r
 
-  assert(sizeof(memory) > 2U);
-  memory[0] = '\r';
-  memory[1] = '\r';
-  MemStreamReader uut(memory, sizeof(memory), IStreamReader::Endian::Little);
+  assert(sizeof(memory_) > 2U);
+  memory_[0] = '\r';
+  memory_[1] = '\r';
+  MemStreamReader uut(memory_, sizeof(memory_), IStreamReader::Endian::Little);
 
   std::string s = uut.Read_line();
   ASSERT_TRUE(s.empty());
@@ -2064,7 +2064,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_CR)
   s = uut.Read_line();
   ASSERT_TRUE(s.empty());
 
-  ASSERT_EQ(sizeof(memory) - 2U, uut.RemainingBytes());
+  ASSERT_EQ(sizeof(memory_) - 2U, uut.RemainingBytes());
   ASSERT_EQ(IStreamReader::States::open, uut.GetState());
 
   uut.Close();
@@ -2072,13 +2072,13 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_CR)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_CRLF)
 {
-  // two empty lines, terminated by \r\n
-  assert(sizeof(memory) > 4U);
-  memory[0] = '\r';
-  memory[1] = '\n';
-  memory[2] = '\r';
-  memory[3] = '\n';
-  MemStreamReader uut(memory, sizeof(memory), IStreamReader::Endian::Little);
+  // two empty lines, terminated by \r\n_
+  assert(sizeof(memory_) > 4U);
+  memory_[0] = '\r';
+  memory_[1] = '\n';
+  memory_[2] = '\r';
+  memory_[3] = '\n';
+  MemStreamReader uut(memory_, sizeof(memory_), IStreamReader::Endian::Little);
 
   std::string s = uut.Read_line();
   ASSERT_TRUE(s.empty());
@@ -2086,7 +2086,7 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_CRLF)
   s = uut.Read_line();
   ASSERT_TRUE(s.empty());
 
-  ASSERT_EQ(sizeof(memory) - 4U, uut.RemainingBytes());
+  ASSERT_EQ(sizeof(memory_) - 4U, uut.RemainingBytes());
   ASSERT_EQ(IStreamReader::States::open, uut.GetState());
 
   uut.Close();
@@ -2095,9 +2095,9 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_CRLF)
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_NUL_plus_END)
 {
   // one empty line, terminated by NUL; No more data in stream
-  assert(sizeof(memory) >= 1U);
+  assert(sizeof(memory_) >= 1U);
 
-  MemStreamReader uut(memory, 1U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 1U, IStreamReader::Endian::Little);
 
   std::string s = uut.Read_line();
   ASSERT_TRUE(s.empty());
@@ -2110,10 +2110,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_NUL_plus_END)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_LF_plus_END)
 {
-  // one empty line, terminated by \n; No more data in stream
-  assert(sizeof(memory) >= 1U);
-  memory[0] = '\n';
-  MemStreamReader uut(memory, 1U, IStreamReader::Endian::Little);
+  // one empty line, terminated by \n_; No more data in stream
+  assert(sizeof(memory_) >= 1U);
+  memory_[0] = '\n';
+  MemStreamReader uut(memory_, 1U, IStreamReader::Endian::Little);
 
   std::string s = uut.Read_line();
   ASSERT_TRUE(s.empty());
@@ -2127,9 +2127,9 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_LF_plus_END)
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_CR_plus_END)
 {
   // one empty line, terminated by \r; No more data in stream
-  assert(sizeof(memory) >= 1U);
-  memory[0] = '\r';
-  MemStreamReader uut(memory, 1U, IStreamReader::Endian::Little);
+  assert(sizeof(memory_) >= 1U);
+  memory_[0] = '\r';
+  MemStreamReader uut(memory_, 1U, IStreamReader::Endian::Little);
 
   std::string s = uut.Read_line();
   ASSERT_TRUE(s.empty());
@@ -2142,11 +2142,11 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_CR_plus_END)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_CRLF_plus_END)
 {
-  // one empty line, terminated by \r\n; No more data in stream
-  assert(sizeof(memory) >= 2U);
-  memory[0] = '\r';
-  memory[1] = '\n';
-  MemStreamReader uut(memory, 2U, IStreamReader::Endian::Little);
+  // one empty line, terminated by \r\n_; No more data in stream
+  assert(sizeof(memory_) >= 2U);
+  memory_[0] = '\r';
+  memory_[1] = '\n';
+  MemStreamReader uut(memory_, 2U, IStreamReader::Endian::Little);
 
   std::string s = uut.Read_line();
   ASSERT_TRUE(s.empty());
@@ -2159,14 +2159,14 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_Empty_CRLF_plus_END)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_NoEnd1)
 {
-  assert(sizeof(memory) >= 5U);
-  memory[0] = 'H';
-  memory[1] = 'e';
-  memory[2] = 'l';
-  memory[3] = 'l';
-  memory[4] = 'o';
+  assert(sizeof(memory_) >= 5U);
+  memory_[0] = 'H';
+  memory_[1] = 'e';
+  memory_[2] = 'l';
+  memory_[3] = 'l';
+  memory_[4] = 'o';
 
-  MemStreamReader uut(memory, 5U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 5U, IStreamReader::Endian::Little);
 
   std::string s = uut.Read_line();
   ASSERT_TRUE(s == "Hello");
@@ -2179,10 +2179,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_NoEnd1)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_NoEnd2)
 {
-  assert(sizeof(memory) >= 1U);
-  memory[0] = 'A';
+  assert(sizeof(memory_) >= 1U);
+  memory_[0] = 'A';
 
-  MemStreamReader uut(memory, 1U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 1U, IStreamReader::Endian::Little);
 
   std::string s = uut.Read_line();
   ASSERT_TRUE(s == "A");
@@ -2195,10 +2195,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, ReadLine_NoEnd2)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_ZeroBits)
 {
-  memory[0] = 0x57U;
-  memory[1] = 0xE9U;
+  memory_[0] = 0x57U;
+  memory_[1] = 0xE9U;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   uint8_t u8;
 
@@ -2223,9 +2223,9 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_ZeroBits)
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_BitsLeft_SkipSomeBits)
 {
   // There are 4 bits left that have not been read yet. We skip 3 of them.
-  memory[0] = 0x8AU;
+  memory_[0] = 0x8AU;
 
-  MemStreamReader uut(memory, 1U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 1U, IStreamReader::Endian::Little);
 
   ASSERT_EQ(uut.Read_bits(4U), 0x0AU);
   ASSERT_EQ(uut.RemainingBytes(), 0U);
@@ -2247,10 +2247,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_BitsLeft_SkipSomeBits)
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_BitsAndOneByteLeft_SkipAllBits)
 {
   // There are 4 bits + 1 Byte left that have not been read yet. We skip 4 bits.
-  memory[0] = 0x8AU;
-  memory[1] = 0xDBU;
+  memory_[0] = 0x8AU;
+  memory_[1] = 0xDBU;
 
-  MemStreamReader uut(memory, 2U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2U, IStreamReader::Endian::Little);
 
   ASSERT_EQ(uut.Read_bits(4U), 0x0AU);
   ASSERT_EQ(uut.RemainingBytes(), 1U);
@@ -2272,9 +2272,9 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_BitsAndOneByteLeft_SkipAllBits)
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_BitsLeft_SkipAll)
 {
   // There are 4 bits left that have not been read yet. We skip them all.
-  memory[0] = 0x8AU;
+  memory_[0] = 0x8AU;
 
-  MemStreamReader uut(memory, 1U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 1U, IStreamReader::Endian::Little);
 
   ASSERT_EQ(uut.Read_bits(4U), 0x0AU);
   ASSERT_EQ(uut.RemainingBytes(), 0U);
@@ -2292,9 +2292,9 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_BitsLeft_SkipAll)
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_BitsLeft_SkipAllPlusOne)
 {
   // There are 4 bits left that have not been read yet. We skip them all + 1.
-  memory[0] = 0x8AU;
+  memory_[0] = 0x8AU;
 
-  MemStreamReader uut(memory, 1U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 1U, IStreamReader::Endian::Little);
 
   ASSERT_EQ(uut.Read_bits(4U), 0x0AU);
   ASSERT_EQ(uut.RemainingBytes(), 0U);
@@ -2311,10 +2311,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_BitsLeft_SkipAllPlusOne)
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_BitsAndOneByteLeft_SkipAllBitsAndOneByte)
 {
   // There are 4 bits + 1 byte left that have not been read yet. We skip 12 bits.
-  memory[0] = 0x8AU;
-  memory[1] = 0xDBU;
+  memory_[0] = 0x8AU;
+  memory_[1] = 0xDBU;
 
-  MemStreamReader uut(memory, 2U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2U, IStreamReader::Endian::Little);
 
   ASSERT_EQ(uut.Read_bits(4U), 0x0AU);
   ASSERT_EQ(uut.RemainingBytes(), 1U);
@@ -2332,10 +2332,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_BitsAndOneByteLeft_SkipAllBitsAnd
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_BitsAndOneByteLeft_SkipAllBitsAndTwoByte)
 {
   // There are 4 bits + 1 byte left that have not been read yet. We skip 4+8+8=20 bits.
-  memory[0] = 0x8AU;
-  memory[1] = 0xDBU;
+  memory_[0] = 0x8AU;
+  memory_[1] = 0xDBU;
 
-  MemStreamReader uut(memory, 2U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2U, IStreamReader::Endian::Little);
 
   ASSERT_EQ(uut.Read_bits(4U), 0x0AU);
   ASSERT_EQ(uut.RemainingBytes(), 1U);
@@ -2352,10 +2352,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_BitsAndOneByteLeft_SkipAllBitsAnd
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_BitsAndOneByteLeft_SkipAllBitsAndOneByteAndOneBit)
 {
   // There are 4 bits + 1 byte left that have not been read yet. We skip 4+8+1 = 13 bits.
-  memory[0] = 0x8AU;
-  memory[1] = 0xDBU;
+  memory_[0] = 0x8AU;
+  memory_[1] = 0xDBU;
 
-  MemStreamReader uut(memory, 2U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2U, IStreamReader::Endian::Little);
 
   ASSERT_EQ(uut.Read_bits(4U), 0x0AU);
   ASSERT_EQ(uut.RemainingBytes(), 1U);
@@ -2372,11 +2372,11 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_BitsAndOneByteLeft_SkipAllBitsAnd
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_BitsAndTwoByteLeft_SkipAllBitsAndOneByte)
 {
   // There are 4 bits + 2 byte left that have not been read yet. We skip 4+8=12 bits.
-  memory[0] = 0x8AU;
-  memory[1] = 0xDBU;
-  memory[2] = 0x36U;
+  memory_[0] = 0x8AU;
+  memory_[1] = 0xDBU;
+  memory_[2] = 0x36U;
 
-  MemStreamReader uut(memory, 3U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 3U, IStreamReader::Endian::Little);
 
   ASSERT_EQ(uut.Read_bits(4U), 0x0AU);
   ASSERT_EQ(uut.RemainingBytes(), 2U);
@@ -2398,11 +2398,11 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_BitsAndTwoByteLeft_SkipAllBitsAnd
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_BitsAndTwoByteLeft_SkipAllBitsAndOneByteAndOneBit)
 {
   // There are 4 bits + 2 byte left that have not been read yet. We skip 4+8+1=13 bits.
-  memory[0] = 0x8AU;
-  memory[1] = 0xDBU;
-  memory[2] = 0x36U;
+  memory_[0] = 0x8AU;
+  memory_[1] = 0xDBU;
+  memory_[2] = 0x36U;
 
-  MemStreamReader uut(memory, 3U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 3U, IStreamReader::Endian::Little);
 
   ASSERT_EQ(uut.Read_bits(4U), 0x0AU);
   ASSERT_EQ(uut.RemainingBytes(), 2U);
@@ -2424,10 +2424,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_BitsAndTwoByteLeft_SkipAllBitsAnd
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_OneByteLeft_Skip8Bits)
 {
   // There is 1 byte left that has not been read yet. We skip 8 bits.
-  memory[0] = 0x8AU;
-  memory[1] = 0xDBU;
+  memory_[0] = 0x8AU;
+  memory_[1] = 0xDBU;
 
-  MemStreamReader uut(memory, 2U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2U, IStreamReader::Endian::Little);
 
   ASSERT_EQ(uut.Read_bits(8U), 0x8AU);
   ASSERT_EQ(uut.RemainingBytes(), 1U);
@@ -2445,10 +2445,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_OneByteLeft_Skip8Bits)
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_OneByteLeft_Skip7Bits)
 {
   // There is 1 byte left that has not been read yet. We skip 7 bits.
-  memory[0] = 0x8AU;
-  memory[1] = 0x80U;
+  memory_[0] = 0x8AU;
+  memory_[1] = 0x80U;
 
-  MemStreamReader uut(memory, 2U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2U, IStreamReader::Endian::Little);
 
   ASSERT_EQ(uut.Read_bits(8U), 0x8AU);
   ASSERT_EQ(uut.RemainingBytes(), 1U);
@@ -2470,10 +2470,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_OneByteLeft_Skip7Bits)
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_OneByteLeft_Skip9Bits)
 {
   // There is 1 byte left that has not been read yet. We skip 9 bits.
-  memory[0] = 0x8AU;
-  memory[1] = 0x80U;
+  memory_[0] = 0x8AU;
+  memory_[1] = 0x80U;
 
-  MemStreamReader uut(memory, 2U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2U, IStreamReader::Endian::Little);
 
   ASSERT_EQ(uut.Read_bits(8U), 0x8AU);
   ASSERT_EQ(uut.RemainingBytes(), 1U);
@@ -2490,10 +2490,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_OneByteLeft_Skip9Bits)
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_TwoByteLeft_Skip8Bits)
 {
   // There are 2 bytes left that have not been read yet. We skip 8 bits.
-  memory[0] = 0x8AU;
-  memory[1] = 0x80U;
+  memory_[0] = 0x8AU;
+  memory_[1] = 0x80U;
 
-  MemStreamReader uut(memory, 2U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2U, IStreamReader::Endian::Little);
 
   // - precondition established -
 
@@ -2511,10 +2511,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_TwoByteLeft_Skip8Bits)
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_TwoByteLeft_Skip16Bits)
 {
   // There are 2 bytes left that have not been read yet. We skip 16 bits.
-  memory[0] = 0x8AU;
-  memory[1] = 0x80U;
+  memory_[0] = 0x8AU;
+  memory_[1] = 0x80U;
 
-  MemStreamReader uut(memory, 2U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2U, IStreamReader::Endian::Little);
 
   // - precondition established -
 
@@ -2528,10 +2528,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_TwoByteLeft_Skip16Bits)
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_TwoByteLeft_Skip9Bits)
 {
   // There are 2 bytes left that have not been read yet. We skip 9 bits.
-  memory[0] = 0x8AU;
-  memory[1] = 0x80U;
+  memory_[0] = 0x8AU;
+  memory_[1] = 0x80U;
 
-  MemStreamReader uut(memory, 2U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2U, IStreamReader::Endian::Little);
 
   // - precondition established -
 
@@ -2548,10 +2548,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_TwoByteLeft_Skip9Bits)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_EmptyStream)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   uint8_t u8;
 
@@ -2575,10 +2575,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_EmptyStream)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_ClosedStream)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
   uut.Close();
 
   ASSERT_THROW(uut.Skip(1U), ClosedError);
@@ -2586,10 +2586,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_ClosedStream)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_StreamInErrorState)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   uint8_t au8[3];
 
@@ -2607,16 +2607,16 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Skip_StreamInErrorState)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, SubStream_FrontMidBack)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
-  memory[2] = 0x34;
-  memory[3] = 0x56;
-  memory[4] = 0x78;
-  memory[5] = 0x9A;
-  memory[6] = 0xBC;
-  memory[7] = 0xDE;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
+  memory_[2] = 0x34;
+  memory_[3] = 0x56;
+  memory_[4] = 0x78;
+  memory_[5] = 0x9A;
+  memory_[6] = 0xBC;
+  memory_[7] = 0xDE;
 
-  MemStreamReader uut(memory, 8, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 8, IStreamReader::Endian::Little);
 
   // create a sub-stream at front
   auto uut2 = uut.SubStream(2);
@@ -2661,12 +2661,12 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, SubStream_FrontMidBack)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, SubStream_DropBits)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
-  memory[2] = 0x34;
-  memory[3] = 0x56;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
+  memory_[2] = 0x34;
+  memory_[3] = 0x56;
 
-  MemStreamReader uut(memory, 4, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 4, IStreamReader::Endian::Little);
 
   EXPECT_EQ(uut.Read_bits(4), 0x0AU);
 
@@ -2691,12 +2691,12 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, SubStream_DropBits)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, SubStream_ZeroSize)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
-  memory[2] = 0x34;
-  memory[3] = 0x56;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
+  memory_[2] = 0x34;
+  memory_[3] = 0x56;
 
-  MemStreamReader uut(memory, 4, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 4, IStreamReader::Endian::Little);
 
   EXPECT_EQ(uut.Read_bits(4), 0x0AU);
 
@@ -2727,12 +2727,12 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, SubStream_ZeroSize)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, SubStream_TooLarge)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
-  memory[2] = 0x34;
-  memory[3] = 0x56;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
+  memory_[2] = 0x34;
+  memory_[3] = 0x56;
 
-  MemStreamReader uut(memory, 4, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 4, IStreamReader::Endian::Little);
 
   EXPECT_THROW(MemStreamReader uut2 = uut.SubStream(5); (void)uut2;, EmptyError);
 
@@ -2760,10 +2760,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, SubStream_TooLarge)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, SubStream_Empty)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   uut.Skip(16);
   ASSERT_TRUE(uut.GetState() == IStreamReader::States::empty);
@@ -2786,10 +2786,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, SubStream_Empty)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, SubStream_Closed)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
   uut.Close();
 
   // -- precondition established --
@@ -2803,10 +2803,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, SubStream_Closed)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, SubStream_ErrorState)
 {
-  memory[0] = 0xFA;
-  memory[1] = 0x12;
+  memory_[0] = 0xFA;
+  memory_[1] = 0x12;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
   EXPECT_THROW(uut.Skip(24), EmptyError);
   ASSERT_TRUE(uut.GetState() == IStreamReader::States::error);
 
@@ -2821,10 +2821,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, SubStream_ErrorState)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_AttemptToEnlarge)
 {
-  memory[0] = 0xFAU;
-  memory[1] = 0x12U;
+  memory_[0] = 0xFAU;
+  memory_[1] = 0x12U;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
   ASSERT_EQ(uut.RemainingBytes(), 2U);
 
   // attempt to enlarge in state "open"
@@ -2838,10 +2838,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_AttemptToEnlarge)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_NoEffect)
 {
-  memory[0] = 0xFAU;
-  memory[1] = 0x12U;
+  memory_[0] = 0xFAU;
+  memory_[1] = 0x12U;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
   ASSERT_EQ(uut.RemainingBytes(), 2U);
 
   // There are 2 bytes left. This shrink should have no effect.
@@ -2887,10 +2887,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_NoEffect)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_OneByte_NoBitsLeftToBeRead)
 {
-  memory[0] = 0xFAU;
-  memory[1] = 0x12U;
+  memory_[0] = 0xFAU;
+  memory_[1] = 0x12U;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
   ASSERT_EQ(uut.RemainingBytes(), 2U);
 
   // There are 2 bytes left to be read. Let's shrink to 1 byte.
@@ -2906,11 +2906,11 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_OneByte_NoBitsLeftToBeRead)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_OneByte_BitsLeftToBeRead)
 {
-  memory[0] = 0xFAU;
-  memory[1] = 0x12U;
-  memory[2] = 0xD7U;
+  memory_[0] = 0xFAU;
+  memory_[1] = 0x12U;
+  memory_[2] = 0xD7U;
 
-  MemStreamReader uut(memory, 3, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 3, IStreamReader::Endian::Little);
   ASSERT_EQ(uut.RemainingBytes(), 3U);
 
   uint8_t data;
@@ -2933,11 +2933,11 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_OneByte_BitsLeftToBeRead)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_AllBytes_WithBitsLeft)
 {
-  memory[0] = 0xFAU;
-  memory[1] = 0x12U;
-  memory[2] = 0xD7U;
+  memory_[0] = 0xFAU;
+  memory_[1] = 0x12U;
+  memory_[2] = 0xD7U;
 
-  MemStreamReader uut(memory, 3, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 3, IStreamReader::Endian::Little);
   ASSERT_EQ(uut.RemainingBytes(), 3U);
 
   uint8_t data;
@@ -2957,11 +2957,11 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_AllBytes_WithBitsLeft)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_AllBytes_WithoutBitsLeft)
 {
-  memory[0] = 0xFAU;
-  memory[1] = 0x12U;
-  memory[2] = 0xD7U;
+  memory_[0] = 0xFAU;
+  memory_[1] = 0x12U;
+  memory_[2] = 0xD7U;
 
-  MemStreamReader uut(memory, 3, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 3, IStreamReader::Endian::Little);
   ASSERT_EQ(uut.RemainingBytes(), 3U);
 
   // There are 3 bytes left. Let's shrink to zero bytes.
@@ -2971,20 +2971,20 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_AllBytes_WithoutBitsLeft)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_StreamClosed)
 {
-  memory[0] = 0xFAU;
-  memory[1] = 0x12U;
+  memory_[0] = 0xFAU;
+  memory_[1] = 0x12U;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
   uut.Close();
 
   EXPECT_THROW(uut.Shrink(0), ClosedError);
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_StreamInErrorState)
 {
-  memory[0] = 0xFAU;
-  memory[1] = 0x12U;
+  memory_[0] = 0xFAU;
+  memory_[1] = 0x12U;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   ASSERT_THROW(uut.Skip(24), EmptyError);
   ASSERT_TRUE(uut.GetState() == IStreamReader::States::error);
@@ -2993,141 +2993,141 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, Shrink_StreamInErrorState)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, GetReadPtr_OK)
 {
-  memory[0] = 0x12U;
-  memory[1] = 0x34U;
-  memory[2] = 0x56U;
-  memory[3] = 0x78U;
+  memory_[0] = 0x12U;
+  memory_[1] = 0x34U;
+  memory_[2] = 0x56U;
+  memory_[3] = 0x78U;
 
-  MemStreamReader uut(memory, 4, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 4, IStreamReader::Endian::Little);
 
-  EXPECT_EQ(uut.GetReadPtr(memory, 4U), &memory[0]);
+  EXPECT_EQ(uut.GetReadPtr(memory_, 4U), &memory_[0]);
 
-  // skip memory[0]
+  // skip memory_[0]
   uut.Skip(8U);
-  EXPECT_EQ(uut.GetReadPtr(memory, 4U), &memory[1]);
+  EXPECT_EQ(uut.GetReadPtr(memory_, 4U), &memory_[1]);
 
-  // skip 1st bit of memory[1]
+  // skip 1st bit of memory_[1]
   uut.Skip(1U);
-  EXPECT_EQ(uut.GetReadPtr(memory, 4U), &memory[2]);
+  EXPECT_EQ(uut.GetReadPtr(memory_, 4U), &memory_[2]);
 
-  // skip remaining bits of memory[1]
+  // skip remaining bits of memory_[1]
   uut.Skip(7U);
-  EXPECT_EQ(uut.GetReadPtr(memory, 4U), &memory[2]);
+  EXPECT_EQ(uut.GetReadPtr(memory_, 4U), &memory_[2]);
 
-  // skip memory[2]
+  // skip memory_[2]
   uut.Skip(8U);
-  EXPECT_EQ(uut.GetReadPtr(memory, 4U), &memory[3]);
+  EXPECT_EQ(uut.GetReadPtr(memory_, 4U), &memory_[3]);
 
-  // skip memory[3]
+  // skip memory_[3]
   uut.Skip(8U);
 
   EXPECT_TRUE(uut.GetState() == IStreamReader::States::empty);
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, GetReadPtr_OK_LastByteBitByBit)
 {
-  memory[0] = 0x12U;
-  memory[1] = 0x34U;
-  memory[2] = 0x56U;
-  memory[3] = 0x78U;
+  memory_[0] = 0x12U;
+  memory_[1] = 0x34U;
+  memory_[2] = 0x56U;
+  memory_[3] = 0x78U;
 
-  MemStreamReader uut(memory, 4, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 4, IStreamReader::Endian::Little);
 
-  EXPECT_EQ(uut.GetReadPtr(memory, 4U), &memory[0]);
+  EXPECT_EQ(uut.GetReadPtr(memory_, 4U), &memory_[0]);
 
-  // skip memory[0..2]
+  // skip memory_[0..2]
   uut.Skip(3U * 8U);
-  EXPECT_EQ(uut.GetReadPtr(memory, 4U), &memory[3]);
+  EXPECT_EQ(uut.GetReadPtr(memory_, 4U), &memory_[3]);
 
-  // skip 1st bit of memory[3]
+  // skip 1st bit of memory_[3]
   uut.Skip(1U);
-  EXPECT_THROW((void)uut.GetReadPtr(memory, 4U), std::logic_error);
+  EXPECT_THROW((void)uut.GetReadPtr(memory_, 4U), std::logic_error);
 
   EXPECT_TRUE(uut.GetState() == IStreamReader::States::open);
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, GetReadPtr_ZeroLength)
 {
-  memory[0] = 0xFAU;
-  memory[1] = 0x12U;
+  memory_[0] = 0xFAU;
+  memory_[1] = 0x12U;
 
-  MemStreamReader uut(memory, 0U, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 0U, IStreamReader::Endian::Little);
   ASSERT_TRUE(uut.GetState() == IStreamReader::States::empty);
 
-  EXPECT_THROW((void)uut.GetReadPtr(memory, 0U), std::logic_error);
+  EXPECT_THROW((void)uut.GetReadPtr(memory_, 0U), std::logic_error);
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, GetReadPtr_CopyOfMSR_OK)
 {
-  memory[0] = 0x12U;
-  memory[1] = 0x34U;
-  memory[2] = 0x56U;
-  memory[3] = 0x78U;
+  memory_[0] = 0x12U;
+  memory_[1] = 0x34U;
+  memory_[2] = 0x56U;
+  memory_[3] = 0x78U;
 
-  MemStreamReader uut(memory, 4, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 4, IStreamReader::Endian::Little);
 
-  // skip memory[0]
+  // skip memory_[0]
   uut.Skip(8U);
 
   MemStreamReader uut2(uut);
 
-  EXPECT_EQ(uut2.GetReadPtr(memory, 4U), &memory[1]);
+  EXPECT_EQ(uut2.GetReadPtr(memory_, 4U), &memory_[1]);
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, GetReadPtr_StateEmpty)
 {
-  memory[0] = 0xFAU;
-  memory[1] = 0x12U;
+  memory_[0] = 0xFAU;
+  memory_[1] = 0x12U;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
   uut.Skip(16U);
   ASSERT_TRUE(uut.GetState() == IStreamReader::States::empty);
 
-  EXPECT_THROW((void)uut.GetReadPtr(memory, 2U), std::logic_error);
+  EXPECT_THROW((void)uut.GetReadPtr(memory_, 2U), std::logic_error);
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, GetReadPtr_StateClose)
 {
-  memory[0] = 0xFAU;
-  memory[1] = 0x12U;
+  memory_[0] = 0xFAU;
+  memory_[1] = 0x12U;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
   uut.Skip(16U);
   uut.Close();
   ASSERT_TRUE(uut.GetState() == IStreamReader::States::closed);
 
-  EXPECT_THROW((void)uut.GetReadPtr(memory, 2U), std::logic_error);
+  EXPECT_THROW((void)uut.GetReadPtr(memory_, 2U), std::logic_error);
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, GetReadPtr_StateError)
 {
-  memory[0] = 0xFAU;
-  memory[1] = 0x12U;
+  memory_[0] = 0xFAU;
+  memory_[1] = 0x12U;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
   ASSERT_THROW(uut.Skip(24U), std::exception);
   ASSERT_TRUE(uut.GetState() == IStreamReader::States::error);
 
-  EXPECT_THROW((void)uut.GetReadPtr(memory, 2U), std::logic_error);
+  EXPECT_THROW((void)uut.GetReadPtr(memory_, 2U), std::logic_error);
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, GetReadPtr_ParamsNotPlausible)
 {
-  memory[0] = 0x12U;
-  memory[1] = 0x34U;
-  memory[2] = 0x56U;
-  memory[3] = 0x78U;
+  memory_[0] = 0x12U;
+  memory_[1] = 0x34U;
+  memory_[2] = 0x56U;
+  memory_[3] = 0x78U;
 
-  MemStreamReader uut(memory, 4, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 4, IStreamReader::Endian::Little);
 
-  EXPECT_THROW((void)uut.GetReadPtr((&memory[0]) - 1U, 4U), std::logic_error);
-  EXPECT_THROW((void)uut.GetReadPtr((&memory[0]) + 1U, 4U), std::logic_error);
-  EXPECT_THROW((void)uut.GetReadPtr((&memory[0]) + 0U, 3U), std::logic_error);
-  EXPECT_THROW((void)uut.GetReadPtr((&memory[0]) + 0U, 5U), std::logic_error);
+  EXPECT_THROW((void)uut.GetReadPtr((&memory_[0]) - 1U, 4U), std::logic_error);
+  EXPECT_THROW((void)uut.GetReadPtr((&memory_[0]) + 1U, 4U), std::logic_error);
+  EXPECT_THROW((void)uut.GetReadPtr((&memory_[0]) + 0U, 3U), std::logic_error);
+  EXPECT_THROW((void)uut.GetReadPtr((&memory_[0]) + 0U, 5U), std::logic_error);
 
   EXPECT_TRUE(uut.GetState() == IStreamReader::States::open);
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, GetReadPtr_OtherMSRnotAccepted)
 {
-  memory[0] = 0x12U;
-  memory[1] = 0x34U;
-  memory[2] = 0x56U;
-  memory[3] = 0x78U;
+  memory_[0] = 0x12U;
+  memory_[1] = 0x34U;
+  memory_[2] = 0x56U;
+  memory_[3] = 0x78U;
 
-  MemStreamReader uut(memory, 4, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 4, IStreamReader::Endian::Little);
 
   uint8_t memory2[4];
   memory2[0] = 0xDEU;
@@ -3139,11 +3139,11 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, GetReadPtr_OtherMSRnotAccepted)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, EnsureAllDataConsumed_OK_1)
 {
-  memory[0] = 0x00;
-  memory[1] = 0x00;
-  memory[2] = 0x00;
+  memory_[0] = 0x00;
+  memory_[1] = 0x00;
+  memory_[2] = 0x00;
 
-  MemStreamReader uut(memory, 3, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 3, IStreamReader::Endian::Little);
 
   // (3 bytes left) -------------------------------------------------------------------------------------------
   EXPECT_THROW(uut.EnsureAllDataConsumed(IStreamReader::RemainingNbOfBits::zero), RemainingBitsError);
@@ -3289,10 +3289,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, EnsureAllDataConsumed_OK_1)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, EnsureAllDataConsumed_OK_2)
 {
-  memory[0] = 0x00;
-  memory[1] = 0x00;
+  memory_[0] = 0x00;
+  memory_[1] = 0x00;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   // (2 bytes left) -------------------------------------------------------------------------------------------
   EXPECT_THROW(uut.EnsureAllDataConsumed(IStreamReader::RemainingNbOfBits::zero), RemainingBitsError);
@@ -3441,10 +3441,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, EnsureAllDataConsumed_OK_2)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, EnsureAllDataConsumed_ErrorState)
 {
-  memory[0] = 0x00;
-  memory[1] = 0x00;
+  memory_[0] = 0x00;
+  memory_[1] = 0x00;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   // create error condition
   ASSERT_THROW((void)uut.Read_uint32(), EmptyError);
@@ -3463,10 +3463,10 @@ TEST_F(GPCC_Stream_MemStreamReader_Tests, EnsureAllDataConsumed_ErrorState)
 }
 TEST_F(GPCC_Stream_MemStreamReader_Tests, EnsureAllDataConsumed_ClosedState)
 {
-  memory[0] = 0x00;
-  memory[1] = 0x00;
+  memory_[0] = 0x00;
+  memory_[1] = 0x00;
 
-  MemStreamReader uut(memory, 2, IStreamReader::Endian::Little);
+  MemStreamReader uut(memory_, 2, IStreamReader::Endian::Little);
 
   // create pre-condition
   uut.Close();

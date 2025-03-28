@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #ifndef OBJECT_VAR_WICB_HPP_202103121720
@@ -34,15 +34,15 @@ class ObjectVAR_wicb : private IObjectNotifiable, public ObjectVAR
 {
   public:
     ObjectVAR_wicb(void) = delete;
-    ObjectVAR_wicb(std::string            const & _name,
-                   DataType               const   _type,
-                   uint16_t               const   _nElements,
-                   attr_t                 const   _attributes,
-                   void*                  const   _pData,
-                   gpcc::osal::Mutex *    const   _pMutex,
-                   tOnBeforeReadCallback  const & _onBeforeReadCallback,
-                   tOnBeforeWriteCallback const & _onBeforeWriteCallback,
-                   tOnAfterWriteCallback  const & _onAfterWriteCallback);
+    ObjectVAR_wicb(std::string            const & name,
+                   DataType               const   type,
+                   uint16_t               const   nElements,
+                   attr_t                 const   attributes,
+                   void*                  const   pData,
+                   gpcc::osal::Mutex *    const   pMutex,
+                   tOnBeforeReadCallback  const & onBeforeReadCallback,
+                   tOnBeforeWriteCallback const & onBeforeWriteCallback,
+                   tOnAfterWriteCallback  const & onAfterWriteCallback);
     ObjectVAR_wicb(ObjectVAR_wicb const &) = delete;
     ObjectVAR_wicb(ObjectVAR_wicb &&) = delete;
 
@@ -53,13 +53,13 @@ class ObjectVAR_wicb : private IObjectNotifiable, public ObjectVAR
 
   private:
     /// Functor to the before-read-callback.
-    tOnBeforeReadCallback const onBeforeReadCallback;
+    tOnBeforeReadCallback const onBeforeReadCallback_;
 
     /// Functor to the before-write-callback.
-    tOnBeforeWriteCallback const onBeforeWriteCallback;
+    tOnBeforeWriteCallback const onBeforeWriteCallback_;
 
     /// Functor to the after-write-callback.
-    tOnAfterWriteCallback const onAfterWriteCallback;
+    tOnAfterWriteCallback const onAfterWriteCallback_;
 
 
     // <-- IObjectNotifiable

@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021, 2024 Daniel Jerolm
+    Copyright (C) 2021, 2024, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoResponse.hpp>
@@ -94,7 +94,7 @@ ObjectInfoResponse::ObjectInfoResponse(SDOAbortCode const _result)
  * Controls if application specific meta data of the subindices shall be included in the response (true) or not (false).\n
  * If application specific meta data is included, then the size of the response may increase significantly.
  *
- * \param maxResponseSize
+ * \param _maxResponseSize
  * Maximum permitted response size in byte.\n
  * The value refers to a serialized response object incl. potential @ref ReturnStackItem objects and response payload
  * data.
@@ -108,7 +108,7 @@ ObjectInfoResponse::ObjectInfoResponse(Object const & obj,
                                        uint8_t lastSubindex,
                                        bool const _inclusiveNames,
                                        bool const _inclusiveAppSpecificMetaData,
-                                       size_t const maxResponseSize,
+                                       size_t const _maxResponseSize,
                                        size_t const returnStackSize)
 : ResponseBase(ResponseTypes::objectInfoResponse)
 , result(SDOAbortCode::OK)
@@ -158,7 +158,7 @@ ObjectInfoResponse::ObjectInfoResponse(Object const & obj,
   // We have to fill at least the information about "firstSubIndex" into "subindexDescr".
   // The remaining number of queried subindices depends on the maximum payload capacity of the remote access response.
 
-  size_t remainingCapacity = CalcRemainingPayload(maxResponseSize, returnStackSize);
+  size_t remainingCapacity = CalcRemainingPayload(_maxResponseSize, returnStackSize);
 
   subindexDescr.reserve(((lastSubindex - firstSubindex) + 1U));
 
@@ -1138,7 +1138,7 @@ void ObjectInfoResponse::ValidateObjNotEmpty(void) const
  *
  * - - -
  *
- * \param maxResponseSize
+ * \param _maxResponseSize
  * Maximum permitted response size in byte.\n
  * The value refers to a serialized response object incl. potential @ref ReturnStackItem objects and response payload
  * data.
@@ -1150,10 +1150,10 @@ void ObjectInfoResponse::ValidateObjNotEmpty(void) const
  * \return
  * Maximum size (in byte) of the data payload that could be added to this object.
  */
-size_t ObjectInfoResponse::CalcRemainingPayload(size_t const maxResponseSize, size_t const returnStackSize) const
+size_t ObjectInfoResponse::CalcRemainingPayload(size_t const _maxResponseSize, size_t const returnStackSize) const
 {
   // start
-  size_t remainingDataPayloadCapacity = maxResponseSize;
+  size_t remainingDataPayloadCapacity = _maxResponseSize;
 
   // subtract current size of the object
   auto const binarySize = GetBinarySize();

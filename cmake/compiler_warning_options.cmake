@@ -6,23 +6,26 @@
 #
 # Copyright (C) 2025 Daniel Jerolm
 
-# ------------------------------------------------------------------------
+# ========================================================================
 # Warning levels and settings applied to GPCC productive and unittest code
-# ------------------------------------------------------------------------
+# ========================================================================
 list(APPEND GPCC_CXX_WARN_OPTIONS "-Wall"
                                   "-Wextra"
                                   "-Wpedantic"
+                                  "-Wshadow"
                                   "-Wdouble-promotion"
                                   "-Wformat=2"
                                   "-Wundef")
 
 # Currently not applied, but planned:
-# -Wshadow
-#    Produces approx. 26 warnings, but appliance makes sense
+# -----------------------------------
+# -
 
 # Not applied by intention:
+# -------------------------
 # -Wconversion
-#    Produces ~376 findings. All reviewed findings are intentional. Appliance is not planned.
+#    Produces approx. 376 findings. All reviewed findings are intentional. Appliance is not planned.
 
 # Warnings in output that shall be ignored:
+# -----------------------------------------
 # "#warning before C++23 is a GCC extension" due to -Wpedantic

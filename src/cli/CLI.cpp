@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011, 2024 Daniel Jerolm
+    Copyright (C) 2011, 2024, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cli/CLI.hpp>
@@ -2303,9 +2303,9 @@ void CLI::PrintException(std::exception const & e, size_t const level)
   {
     std::rethrow_if_nested(e);
   }
-  catch (std::exception const & e)
+  catch (std::exception const & e_nested)
   {
-    PrintException(e, level + 1U);
+    PrintException(e_nested, level + 1U);
   }
   catch (...)
   {

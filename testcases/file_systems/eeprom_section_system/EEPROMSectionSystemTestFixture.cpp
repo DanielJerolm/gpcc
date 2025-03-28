@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
     Copyright (C) 2017 Falk Werner
 */
 
@@ -31,19 +31,19 @@ using namespace gpcc::file_systems::eeprom_section_system::internal;
 
 EEPROMSectionSystemTestFixture::EEPROMSectionSystemTestFixture(void)
 : Test()
-, blockSize(0)
-, bytesPerBlock(0)
-, fakeStorage(storageSize, storagePageSize)
-, uut(fakeStorage, 0, storageSize)
-, pBuffer(nullptr)
+, blockSize_(0)
+, bytesPerBlock_(0)
+, fakeStorage_(storageSize_, storagePageSize_)
+, uut_(fakeStorage_, 0, storageSize_)
+, pBuffer_(nullptr)
 {
 }
 EEPROMSectionSystemTestFixture::~EEPROMSectionSystemTestFixture(void)
 {
-  if (pBuffer != nullptr)
+  if (pBuffer_ != nullptr)
   {
-    delete [] pBuffer;
-    pBuffer = nullptr;
+    delete [] pBuffer_;
+    pBuffer_ = nullptr;
   }
 }
 
@@ -53,81 +53,81 @@ void EEPROMSectionSystemTestFixture::SetUp(void)
 void EEPROMSectionSystemTestFixture::TearDown(void)
 {
   // unmount, if uut's state is not not_mounted
-  eeprom_section_system::EEPROMSectionSystem::States const state = uut.GetState();
+  eeprom_section_system::EEPROMSectionSystem::States const state = uut_.GetState();
   EXPECT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, state);
   if (state != eeprom_section_system::EEPROMSectionSystem::States::not_mounted)
-    uut.Unmount();
+    uut_.Unmount();
 }
 
-void EEPROMSectionSystemTestFixture::Format(uint16_t const _blockSize)
+void EEPROMSectionSystemTestFixture::Format(uint16_t const blockSize)
 {
-  // Formats the UUT and allocated/reallocates pBuffer.
+  // Formats the UUT and allocates/reallocates pBuffer_.
 
-  std::unique_ptr<uint8_t[]> spNewBuffer(new uint8_t[_blockSize]);
+  std::unique_ptr<uint8_t[]> spNewBuffer(new uint8_t[blockSize]);
 
-  uut.Format(_blockSize);
-  blockSize = _blockSize;
-  bytesPerBlock = blockSize - (sizeof(DataBlock_t) + sizeof(uint16_t));
+  uut_.Format(blockSize);
+  blockSize_ = blockSize;
+  bytesPerBlock_ = blockSize_ - (sizeof(DataBlock_t) + sizeof(uint16_t));
 
-  if (pBuffer != nullptr)
+  if (pBuffer_ != nullptr)
   {
-    delete [] pBuffer;
-    pBuffer = nullptr;
+    delete [] pBuffer_;
+    pBuffer_ = nullptr;
   }
-  pBuffer = spNewBuffer.release();
+  pBuffer_ = spNewBuffer.release();
 }
 void EEPROMSectionSystemTestFixture::InvalidateCRC(uint16_t const blockIdx)
 {
-  // Invalidates the CRC of an storage block inside "fakeStorage".
+  // Invalidates the CRC of an storage block inside "fakeStorage_".
 
   // calculate block start address
-  size_t const bsa = blockIdx * blockSize;
+  size_t const bsa = blockIdx * blockSize_;
 
   // retrieve field "nBytes"
-  fakeStorage.Read(bsa + offsetof(CommonBlockHead_t, nBytes), 2U, pBuffer);
-  uint16_t const nBytes = pBuffer[0] + (static_cast<uint16_t>(pBuffer[1]) << 8U);
-  if ((nBytes < 2U) || (nBytes > blockSize - 2U))
+  fakeStorage_.Read(bsa + offsetof(CommonBlockHead_t, nBytes), 2U, pBuffer_);
+  uint16_t const nBytes = pBuffer_[0] + (static_cast<uint16_t>(pBuffer_[1]) << 8U);
+  if ((nBytes < 2U) || (nBytes > blockSize_ - 2U))
     throw std::runtime_error("EEPROMSectionSystemTestFixture::InvalidateCRC: Bad \"nBytes\"");
 
   // load CRC, negate it, and write it back
-  fakeStorage.Read(bsa + (nBytes - 2U), 2U, pBuffer);
-  pBuffer[0] = ~pBuffer[0];
-  pBuffer[1] = ~pBuffer[1];
-  fakeStorage.Write(bsa + (nBytes - 2U), 2U, pBuffer);
+  fakeStorage_.Read(bsa + (nBytes - 2U), 2U, pBuffer_);
+  pBuffer_[0] = ~pBuffer_[0];
+  pBuffer_[1] = ~pBuffer_[1];
+  fakeStorage_.Write(bsa + (nBytes - 2U), 2U, pBuffer_);
 }
 void EEPROMSectionSystemTestFixture::UpdateCRC(uint16_t const blockIdx)
 {
-  // Updates the CRC of an storage block inside "fakeStorage".
+  // Updates the CRC of an storage block inside "fakeStorage_".
 
   // calculate block start address
-  size_t const bsa = blockIdx * blockSize;
+  size_t const bsa = blockIdx * blockSize_;
 
   // retrieve field "nBytes"
-  fakeStorage.Read(bsa + offsetof(CommonBlockHead_t, nBytes), 2U, pBuffer);
-  uint16_t const nBytes = pBuffer[0] + (static_cast<uint16_t>(pBuffer[1]) << 8U);
-  if ((nBytes < 2U) || (nBytes > blockSize - 2U))
+  fakeStorage_.Read(bsa + offsetof(CommonBlockHead_t, nBytes), 2U, pBuffer_);
+  uint16_t const nBytes = pBuffer_[0] + (static_cast<uint16_t>(pBuffer_[1]) << 8U);
+  if ((nBytes < 2U) || (nBytes > blockSize_ - 2U))
     throw std::runtime_error("EEPROMSectionSystemTestFixture::UpdateCRC: Bad \"nBytes\"");
 
   // load block
-  fakeStorage.Read(bsa, nBytes - 2U, pBuffer);
+  fakeStorage_.Read(bsa, nBytes - 2U, pBuffer_);
 
   // calculate new CRC
   uint16_t crc = 0xFFFFU;
-  gpcc::crc::CalcCRC16_normal_noInputReverse(crc, pBuffer, nBytes - 2U, gpcc::crc::crc16_ccitt_table_normal);
+  gpcc::crc::CalcCRC16_normal_noInputReverse(crc, pBuffer_, nBytes - 2U, gpcc::crc::crc16_ccitt_table_normal);
 
   // update CRC
-  pBuffer[0] = crc & 0xFFU;
-  pBuffer[1] = crc >> 8U;
-  fakeStorage.Write(bsa + (nBytes - 2U), 2U, pBuffer);
+  pBuffer_[0] = crc & 0xFFU;
+  pBuffer_[1] = crc >> 8U;
+  fakeStorage_.Write(bsa + (nBytes - 2U), 2U, pBuffer_);
 }
 void EEPROMSectionSystemTestFixture::UpdateNextBlock(uint16_t const blockIdx, uint16_t const newNextBlock)
 {
   // Updates the nextBlock-attribute of an storage block and updates the block's CRC
 
-  fakeStorage.Read(blockSize * blockIdx + offsetof(CommonBlockHead_t, nextBlock), 2, pBuffer);
-  pBuffer[0] = newNextBlock & 0xFFU;
-  pBuffer[1] = newNextBlock >> 8U;
-  fakeStorage.Write(blockSize * blockIdx + offsetof(CommonBlockHead_t, nextBlock), 2, pBuffer);
+  fakeStorage_.Read(blockSize_ * blockIdx + offsetof(CommonBlockHead_t, nextBlock), 2, pBuffer_);
+  pBuffer_[0] = newNextBlock & 0xFFU;
+  pBuffer_[1] = newNextBlock >> 8U;
+  fakeStorage_.Write(blockSize_ * blockIdx + offsetof(CommonBlockHead_t, nextBlock), 2, pBuffer_);
   UpdateCRC(blockIdx);
 }
 

@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2018 Daniel Jerolm
+    Copyright (C) 2018, 2025 Daniel Jerolm
 */
 
 #ifndef OBJECTARRAY_HPP_201810092146
@@ -116,16 +116,16 @@ class ObjectARRAY : public Object
 {
   public:
     ObjectARRAY(void) = delete;
-    ObjectARRAY(std::string            const & _name,
-                attr_t                 const   _attributesSI0,
-                uint8_t                const   _SI0,
-                uint8_t                const   _min_SI0,
-                uint8_t                const   _max_SI0,
-                DataType               const   _type,
-                attr_t                 const   _attributes,
-                void*                  const   _pData,
-                gpcc::osal::Mutex *    const   _pMutex,
-                IObjectNotifiable *    const   _pNotifiable);
+    ObjectARRAY(std::string            const & name,
+                attr_t                 const   attributesSI0,
+                uint8_t                const   SI0,
+                uint8_t                const   min_SI0,
+                uint8_t                const   max_SI0,
+                DataType               const   type,
+                attr_t                 const   attributes,
+                void*                  const   pData,
+                gpcc::osal::Mutex *    const   pMutex,
+                IObjectNotifiable *    const   pNotifiable);
     ObjectARRAY(ObjectARRAY const &) = delete;
     ObjectARRAY(ObjectARRAY &&) = delete;
     virtual ~ObjectARRAY(void) = default;
@@ -173,44 +173,44 @@ class ObjectARRAY : public Object
 
   private:
     /// Name of the object.
-    std::string const name;
+    std::string const name_;
 
 
     /// Attributes of subindex 0.
-    attr_t const attributesSI0;
+    attr_t const attributesSI0_;
 
     /// Value of subindex 0.
-    /** @ref pMutex is required.\n
+    /** @ref pMutex_ is required.\n
         This value indicates the number of subindices excl. SI0.\n
         This value indicates the number of array elements. */
-    uint8_t SI0;
+    uint8_t SI0_;
 
-    /// Minimum value for @ref SI0.
-    uint8_t const min_SI0;
+    /// Minimum value for @ref SI0_.
+    uint8_t const min_SI0_;
 
-    /// Maximum value for @ref SI0.
-    uint8_t const max_SI0;
+    /// Maximum value for @ref SI0_.
+    uint8_t const max_SI0_;
 
 
     /// Data type of the array elements.
-    DataType const type;
+    DataType const type_;
 
     /// Attributes of the subindices representing array elements.
-    attr_t const attributes;
+    attr_t const attributes_;
 
     /// Pointer to the memory location containing the data represented by the ARRAY object.
-    /** @ref pMutex is required.\n
+    /** @ref pMutex_ is required.\n
         The memory is provided and owned by the owner of the ARRAY object. */
-    void* pData;
+    void* pData_;
 
     /// Pointer to the mutex protecting access to the data represented by the object.
-    /** This is `nullptr` if no mutex is required to access SI0 and to the data referenced by @ref pData. */
-    gpcc::osal::Mutex* const pMutex;
+    /** This is `nullptr` if no mutex is required to access SI0 and to the data referenced by @ref pData_. */
+    gpcc::osal::Mutex* const pMutex_;
 
 
     /// Notifiable interface used to inform the owner of the object about read/write accesses.
     /** This may be `nullptr`. */
-    IObjectNotifiable * const pNotifiable;
+    IObjectNotifiable * const pNotifiable_;
 
 
     uint8_t ReadBitsFromMem(uint8_t const subIdx) const;

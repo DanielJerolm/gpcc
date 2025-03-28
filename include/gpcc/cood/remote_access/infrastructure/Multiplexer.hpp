@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #ifndef MULTIPLEXER_HPP_202106212050
@@ -84,35 +84,36 @@ class IRemoteObjectDictionaryAccess;
  * For each RODA/RODAN interface pair provided by the multiplexer, class @ref Multiplexer comprises one instance of
  * class @ref MultiplexerPort. Each @ref MultiplexerPort instance manages one provided pair of RODA/RODAN interfaces.
  *
- * Class @ref Multiplexer has a `state` which tracks both if the multiplexer is connected to a RODA interface and
+ * Class @ref Multiplexer has a `state_` which tracks both if the multiplexer is connected to a RODA interface and
  * the state of that interface ('ready' and 'not ready').
  *
- * Each @ref MultiplexerPort instance has a `state` which tracks if a client is connected to the provided RODA/RODAN
+ * Each @ref MultiplexerPort instance has a `state_` which tracks if a client is connected to the provided RODA/RODAN
  * interface pair and the state of the provided RODA interface.
  *
  * __Mutexes__\n
  * Class @ref Multiplexer comprises three mutexes which are shared among class @ref Multiplexer and the
  * @ref MultiplexerPort instances.
  *
- * Most attributes of class @ref Multiplexer and class @ref MultiplexerPort require both the `muxMutex` and the
- * `portMutex` for write access, while one of the two mutexes is sufficient for read access.
+ * Most attributes of class @ref Multiplexer and class @ref MultiplexerPort require both the `muxMutex_` and the
+ * `portMutex_` for write access, while one of the two mutexes is sufficient for read access.
  *
  * During calls to the RODAN interface provided by class @ref Multiplexer (bottom right of multiplexer shown in figure
- * above) `muxMutex` will always be locked. If class @ref Multiplexer needs to fiddle in the guts of a
- * @ref MultiplexerPort instance, then it may additionally lock `portMutex`. Most calls to the multiplexer's RODAN
+ * above) `muxMutex_` will always be locked. If class @ref Multiplexer needs to fiddle in the guts of a
+ * @ref MultiplexerPort instance, then it may additionally lock `portMutex_`. Most calls to the multiplexer's RODAN
  * interface will be forwarded to the RODAN interface required by a @ref MultiplexerPort. During calls to a client, the
- * `muxMutex` is always locked.
+ * `muxMutex_` is always locked.
  *
  * During calls of a client to the Register() and Unregister() methods of the RODA interface provided by a
- * @ref MultiplexerPort (top left of multiplexer shown in figure above), both `muxMutex` and `portMutex` will be locked.
- * This allows the @ref MultiplexerPort to change its state and maybe send a [PingRequest](@ref gpcc::cood::PingRequest)
- * via the RODA interface required by the multiplexer (top right in figure above).
+ * @ref MultiplexerPort (top left of multiplexer shown in figure above), both `muxMutex_` and `portMutex_` will be
+ * locked. This allows the @ref MultiplexerPort to change its state and maybe send a
+ * [PingRequest](@ref gpcc::cood::PingRequest) via the RODA interface required by the multiplexer (top right in figure
+ * above).
  *
  * During calls of a client to the Send() and RequestExecutionContext() methods of the RODA interface provided by a
- * @ref MultiplexerPort (top left in figure above) only `portMutex` will be locked. This allows the @ref MultiplexerPort
- * to read all its guts plus the guts of the @ref Multiplexer and to delegate the calls to the RODA interface required
- * by the @ref Multiplexer (top right in fiugre above). At the same time, calls made in the context of the RODAN
- * interface (bottom left) to the RODA interface (top left) are dead-lock free.
+ * @ref MultiplexerPort (top left in figure above) only `portMutex_` will be locked. This allows the
+ * @ref MultiplexerPort to read all its guts plus the guts of the @ref Multiplexer and to delegate the calls to the RODA
+ * interface required by the @ref Multiplexer (top right in figure above). At the same time, calls made in the context
+ * of the RODAN interface (bottom left) to the RODA interface (top left) are dead-lock free.
  *
  * __Session ID__\n
  * Each @ref MultiplexerPort uses a session ID to distinguish "old" responses in case a client is unregistered and
@@ -134,7 +135,7 @@ class Multiplexer final : private IRemoteObjectDictionaryAccessNotifiable
 
   public:
     /// Maximum number of exposed ports.
-    static size_t constexpr maxNbOfPorts = 256U;
+    static size_t constexpr maxNbOfPorts_ = 256U;
 
 
     Multiplexer(void);
@@ -163,51 +164,51 @@ class Multiplexer final : private IRemoteObjectDictionaryAccessNotifiable
 
 
     /// Owner ID used to tag requests and to check responses.
-    uint32_t ownerID;
+    uint32_t ownerID_;
 
     /// Mutex used to protect @ref Connect() and @ref Disconnect() against each other.
-    /** Locking order: @ref connectMutex -> @ref muxMutex -> @ref portMutex */
-    gpcc::osal::Mutex connectMutex;
+    /** Locking order: @ref connectMutex_ -> @ref muxMutex_ -> @ref portMutex_ */
+    gpcc::osal::Mutex connectMutex_;
 
     /// Mutex used to make the multiplexer and its ports thread-safe. This is intended to be locked by the multiplexer.
-    /** Locking order: @ref connectMutex -> @ref muxMutex -> @ref portMutex */
-    gpcc::osal::Mutex muxMutex;
+    /** Locking order: @ref connectMutex_ -> @ref muxMutex_ -> @ref portMutex_ */
+    gpcc::osal::Mutex muxMutex_;
 
     /// Mutex used to make the multiplexer and its ports thread-safe. This is intended to be locked by ports.
-    /** Locking order: @ref connectMutex -> @ref muxMutex -> @ref portMutex */
-    gpcc::osal::Mutex portMutex;
+    /** Locking order: @ref connectMutex_ -> @ref muxMutex_ -> @ref portMutex_ */
+    gpcc::osal::Mutex portMutex_;
 
 
     /// Current state of the multiplexer.
-    /** RD: @ref muxMutex OR @ref portMutex is required.\n
-        WR: @ref muxMutex AND @ref portMutex are both required. */
-    States state;
+    /** RD: @ref muxMutex_ OR @ref portMutex_ is required.\n
+        WR: @ref muxMutex_ AND @ref portMutex_ are both required. */
+    States state_;
 
     /// [RODA](@ref IRemoteObjectDictionaryAccess) interface the multiplexer is connected to. nullptr = none.
-    /** RD: @ref muxMutex OR @ref portMutex is required.\n
-        WR: @ref muxMutex AND @ref portMutex are both required. */
-    IRemoteObjectDictionaryAccess* pRODA;
+    /** RD: @ref muxMutex_ OR @ref portMutex_ is required.\n
+        WR: @ref muxMutex_ AND @ref portMutex_ are both required. */
+    IRemoteObjectDictionaryAccess* pRODA_;
 
     /// Maximum request size a client connected to a port of the multiplexer is allowed to transmit.
-    /** RD: @ref muxMutex OR @ref portMutex is required.\n
-        WR: @ref muxMutex AND @ref portMutex are both required.\n
-        This is only valid if @ref state is @ref States::ready. \n
+    /** RD: @ref muxMutex_ OR @ref portMutex_ is required.\n
+        WR: @ref muxMutex_ AND @ref portMutex_ are both required.\n
+        This is only valid if @ref state_ is @ref States::ready. \n
         This is set by @ref OnReady(). The size for a @ref ReturnStackItem is already subtracted.\n
         This may be zero in case of request size starvation. */
-    size_t maxRequestSize;
+    size_t maxRequestSize_;
 
     /// Maximum response size a client connected to a port of the @ref Multiplexer can receive.
-    /** RD: @ref muxMutex OR @ref portMutex is required.\n
-        WR: @ref muxMutex AND @ref portMutex are both required.\n
-        This is only valid if @ref state is @ref States::ready. \n
+    /** RD: @ref muxMutex_ OR @ref portMutex_ is required.\n
+        WR: @ref muxMutex_ AND @ref portMutex_ are both required.\n
+        This is only valid if @ref state_ is @ref States::ready. \n
         This is set by @ref OnReady(). The size for a @ref ReturnStackItem is already subtracted.\n
         This may be zero in case of response size starvation. */
-    size_t maxResponseSize;
+    size_t maxResponseSize_;
 
     /// Multiplexer's ports.
-    /** RD: @ref muxMutex OR @ref portMutex is required.\n
-        WR: @ref muxMutex AND @ref portMutex are both required. */
-    std::vector<std::shared_ptr<MultiplexerPort>> ports;
+    /** RD: @ref muxMutex_ OR @ref portMutex_ is required.\n
+        WR: @ref muxMutex_ AND @ref portMutex_ are both required. */
+    std::vector<std::shared_ptr<MultiplexerPort>> ports_;
 
 
     // <-- IRemoteObjectDictionaryAccessNotifiable

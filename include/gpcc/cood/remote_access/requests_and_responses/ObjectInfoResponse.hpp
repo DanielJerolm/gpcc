@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #ifndef OBJECTINFORESPONSE_HPP_202102132033
@@ -97,7 +97,7 @@ class ObjectInfoResponse final : public ResponseBase
                                 uint8_t lastSubindex,
                                 bool const _inclusiveNames,
                                 bool const _inclusiveAppSpecificMetaData,
-                                size_t const maxResponseSize,
+                                size_t const _maxResponseSize,
                                 size_t const returnStackSize);
 
     ObjectInfoResponse(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectInfoResponsePassKey);
@@ -217,7 +217,7 @@ class ObjectInfoResponse final : public ResponseBase
 
 
     void ValidateObjNotEmpty(void) const;
-    size_t CalcRemainingPayload(size_t const maxResponseSize, size_t const returnStackSize) const;
+    size_t CalcRemainingPayload(size_t const _maxResponseSize, size_t const returnStackSize) const;
     uint8_t MapSubindexToSubIndexDescr(uint8_t const subindex) const;
 };
 

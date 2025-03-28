@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #ifndef RODACLICLIENTBASE_HPP_202105221835
@@ -80,10 +80,10 @@ class RODACLIClientBase : private IRemoteObjectDictionaryAccessNotifiable
 
   protected:
     /// CLI where the CLI command is registered.
-    gpcc::cli::CLI & cli;
+    gpcc::cli::CLI & cli_;
 
 
-    RODACLIClientBase(gpcc::cli::CLI & _cli, uint8_t const _attributeStringMaxLength);
+    RODACLIClientBase(gpcc::cli::CLI & cli, uint8_t const attributeStringMaxLength);
     virtual ~RODACLIClientBase(void);
 
 
@@ -112,65 +112,65 @@ class RODACLIClientBase : private IRemoteObjectDictionaryAccessNotifiable
     };
 
     /// Timeout while waiting for reception of a response in ms.
-    static uint16_t constexpr rxTimeout_ms = 1000U;
+    static uint16_t constexpr rxTimeout_ms_ = 1000U;
 
 
     /// Maximum length of any string that could be returned by @ref AttributesToStringHook().
-    uint8_t const attributeStringMaxLength;
+    uint8_t const attributeStringMaxLength_;
 
     /// Owner ID used to tag requests and to check responses.
-    uint32_t ownerID;
+    uint32_t ownerID_;
 
     /// Mutex used to make @ref Connect() and @ref Disconnect() thread safe.
-    /** Locking order: @ref connectMutex -> @ref internalMutex */
-    gpcc::osal::Mutex connectMutex;
+    /** Locking order: @ref connectMutex_ -> @ref internalMutex_ */
+    gpcc::osal::Mutex connectMutex_;
 
     /// Mutex used to make this class thread-safe.
-    /** Locking order: @ref connectMutex -> @ref internalMutex */
-    gpcc::osal::Mutex internalMutex;
+    /** Locking order: @ref connectMutex_ -> @ref internalMutex_ */
+    gpcc::osal::Mutex internalMutex_;
 
 
     /// Current state of the client.
-    /** @ref internalMutex is required. */
-    States state;
+    /** @ref internalMutex_ is required. */
+    States state_;
 
     /// Pointer to the RODA interface the client is connected to. nullptr = none.
-    /** RD: @ref connectMutex OR @ref internalMutex is required.\n
-        WR: @ref connectMutex AND @ref internalMutex are both required. */
-    IRemoteObjectDictionaryAccess* pRODA;
+    /** RD: @ref connectMutex_ OR @ref internalMutex_ is required.\n
+        WR: @ref connectMutex_ AND @ref internalMutex_ are both required. */
+    IRemoteObjectDictionaryAccess* pRODA_;
 
     /// Maximum request size the client is allowed to transmit.
-    /** @ref internalMutex is required.\n
-        This is only valid if @ref state is @ref States::ready. \n
+    /** @ref internalMutex_ is required.\n
+        This is only valid if @ref state_ is @ref States::ready. \n
         This is set by @ref OnReady(). The size for a @ref ReturnStackItem is already subtracted. */
-    size_t maxRequestSize;
+    size_t maxRequestSize_;
 
     /// Maximum response size the client can receive.
-    /** @ref internalMutex is required.\n
-        This is only valid if @ref state is @ref States::ready. \n
+    /** @ref internalMutex_ is required.\n
+        This is only valid if @ref state_ is @ref States::ready. \n
         This is set by @ref OnReady(). The size for a @ref ReturnStackItem is already subtracted. */
-    size_t maxResponseSize;
+    size_t maxResponseSize_;
 
     /// Session counter.
-    /** @ref internalMutex is required. */
-    uint32_t sessionCnt;
+    /** @ref internalMutex_ is required. */
+    uint32_t sessionCnt_;
 
     /// Response received via the RODAN interface. nullptr = none available.
-    /** @ref internalMutex is required. */
-    std::unique_ptr<ResponseBase> spReceivedResponse;
+    /** @ref internalMutex_ is required. */
+    std::unique_ptr<ResponseBase> spReceivedResponse_;
 
     /// Flag indicating that a new response has been received via the RODAN interface before the previous response in
-    /// @ref spReceivedResponse has been consumed.
-    /** @ref internalMutex is required. */
-    bool receiveOverflow;
+    /// @ref spReceivedResponse_ has been consumed.
+    /** @ref internalMutex_ is required. */
+    bool receiveOverflow_;
 
-    /// Condition variable indicating that @ref spReceivedResponse has been filled with a received response.
-    /** This shall be used in conjunction with @ref internalMutex. */
-    gpcc::osal::ConditionVariable respReceivedConVar;
+    /// Condition variable indicating that @ref spReceivedResponse_ has been filled with a received response.
+    /** This shall be used in conjunction with @ref internalMutex_. */
+    gpcc::osal::ConditionVariable respReceivedConVar_;
 
-    /// Condition variable indicating that @ref state has changed.
-    /** This shall be used in conjunction with @ref internalMutex. */
-    gpcc::osal::ConditionVariable stateChangeConVar;
+    /// Condition variable indicating that @ref state_ has changed.
+    /** This shall be used in conjunction with @ref internalMutex_. */
+    gpcc::osal::ConditionVariable stateChangeConVar_;
 
 
     static uint_fast8_t DigitsInSubindex(uint8_t const si) noexcept;

@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #include <gpcc/compiler/definitions.hpp>
@@ -58,14 +58,14 @@ TEST(GPCC_Compiler_CompilerDefs_Tests, Endian)
 
 TEST(GPCC_Compiler_CompilerDefs_Tests, PacketTypedefStruct1)
 {
-  typedef PACKED1 struct packetStruct
+  PACKED1 struct PacketStruct
   {
     int8_t i8;
     int16_t i16;
     int32_t i32;
-  } PACKED2 packetStruct;
+  } PACKED2;
 
-  packetStruct uut;
+  PacketStruct uut;
 
   uint8_t const * const pBase = reinterpret_cast<uint8_t const *>(&uut);
 
@@ -81,9 +81,9 @@ TEST(GPCC_Compiler_CompilerDefs_Tests, PacketTypedefStruct2)
     int8_t i8;
     int16_t i16;
     int32_t i32;
-  } PACKED2 packetStruct;
+  } PACKED2 tPacketStruct;
 
-  packetStruct uut;
+  tPacketStruct uut;
 
   uint8_t const * const pBase = reinterpret_cast<uint8_t const *>(&uut);
 

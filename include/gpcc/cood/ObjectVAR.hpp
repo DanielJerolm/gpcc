@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2018 Daniel Jerolm
+    Copyright (C) 2018, 2025 Daniel Jerolm
 */
 
 #ifndef OBJECTVAR_HPP_201809291301
@@ -73,13 +73,13 @@ class ObjectVAR : public Object
 {
   public:
     ObjectVAR(void) = delete;
-    ObjectVAR(std::string            const & _name,
-              DataType               const   _type,
-              uint16_t               const   _nElements,
-              attr_t                 const   _attributes,
-              void*                  const   _pData,
-              gpcc::osal::Mutex *    const   _pMutex,
-              IObjectNotifiable *    const   _pNotifiable);
+    ObjectVAR(std::string            const & name,
+              DataType               const   type,
+              uint16_t               const   nElements,
+              attr_t                 const   attributes,
+              void*                  const   pData,
+              gpcc::osal::Mutex *    const   pMutex,
+              IObjectNotifiable *    const   pNotifiable);
     ObjectVAR(ObjectVAR const &) = delete;
     ObjectVAR(ObjectVAR &&) = delete;
     virtual ~ObjectVAR(void) = default;
@@ -127,31 +127,31 @@ class ObjectVAR : public Object
 
   private:
     /// Name of the object.
-    std::string const name;
+    std::string const name_;
 
     /// Data type of the data represented by the object.
-    DataType const type;
+    DataType const type_;
 
-    /// Number of elements of @ref type the data represented by the object is comprised of.
+    /// Number of elements of @ref type_ the data represented by the object is comprised of.
     /** For most data types this is one.\n
         For types @ref DataType::visible_string, @ref DataType::octet_string, and @ref DataType::unicode_string
         this may be any number equal to or larger than one. */
-    uint16_t const nElements;
+    uint16_t const nElements_;
 
     /// Attributes of the object.
-    attr_t const attributes;
+    attr_t const attributes_;
 
     /// Pointer to the data represented by the object.
-    /** @ref pMutex is required. */
-    void* pData;
+    /** @ref pMutex_ is required. */
+    void* pData_;
 
     /// Pointer to the mutex protecting access to the data represented by the object.
-    /** `nullptr` if no mutex is required to access the data referenced by @ref pData. */
-    gpcc::osal::Mutex* const pMutex;
+    /** `nullptr` if no mutex is required to access the data referenced by @ref pData_. */
+    gpcc::osal::Mutex* const pMutex_;
 
     /// Notifiable interface used to inform the owner of the object about read/write accesses.
     /** This may be `nullptr`. */
-    IObjectNotifiable * const pNotifiable;
+    IObjectNotifiable * const pNotifiable_;
 };
 
 } // namespace cood

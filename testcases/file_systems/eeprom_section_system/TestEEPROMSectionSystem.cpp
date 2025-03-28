@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #include "EEPROMSectionSystemTestFixture.hpp"
@@ -202,16 +202,16 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_DeathTestsF, Destruction_BadState)
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_BadState)
 {
-  Format(storagePageSize);
+  Format(storagePageSize_);
 
-  ASSERT_THROW(uut.MountStep1(), InsufficientStateError);
+  ASSERT_THROW(uut_.MountStep1(), InsufficientStateError);
 
-  uut.Unmount();
+  uut_.Unmount();
 
-  ASSERT_NO_THROW(uut.MountStep1());
-  ASSERT_THROW(uut.MountStep1(), InsufficientStateError);
+  ASSERT_NO_THROW(uut_.MountStep1());
+  ASSERT_THROW(uut_.MountStep1(), InsufficientStateError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, MountStep1_StoragePageSizeTooSmall)
 {
@@ -222,178 +222,178 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, MountStep1_StoragePageSizeTooSm
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_BlankStorage)
 {
-  // note: fakeStorage is initialized with zeros by FakeEEPROM::FakeEEPROM()
-  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::BadSectionSystemInfoBlockError);
+  // note: fakeStorage_ is initialized with zeros by FakeEEPROM::FakeEEPROM()
+  ASSERT_THROW(uut_.MountStep1(), eeprom_section_system::BadSectionSystemInfoBlockError);
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_BadCRC)
 {
   Format(128);
-  uut.Unmount();
+  uut_.Unmount();
 
   InvalidateCRC(0);
 
-  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::BadSectionSystemInfoBlockError);
+  ASSERT_THROW(uut_.MountStep1(), eeprom_section_system::BadSectionSystemInfoBlockError);
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_WrongType_freeBlock)
 {
   Format(128);
-  uut.Unmount();
+  uut_.Unmount();
 
-  pBuffer[0] = static_cast<uint8_t>(BlockTypes::freeBlock); // type
-  pBuffer[1] = 0; // sectionNameHash
-  pBuffer[2] = 12; // nBytes (LB)
-  pBuffer[3] = 0; // nBytes (HB)
-  pBuffer[4] = 0; // totalNbOfWrites LB
-  pBuffer[5] = 0; // ...
-  pBuffer[6] = 0; // ...
-  pBuffer[7] = 0; // totalNbOfWrites
-  pBuffer[8] = NOBLOCK & 0xFFU; // nextBlock LB
-  pBuffer[9] = NOBLOCK >> 8U; // nextBlock HB
+  pBuffer_[0] = static_cast<uint8_t>(BlockTypes::freeBlock); // type
+  pBuffer_[1] = 0; // sectionNameHash
+  pBuffer_[2] = 12; // nBytes (LB)
+  pBuffer_[3] = 0; // nBytes (HB)
+  pBuffer_[4] = 0; // totalNbOfWrites LB
+  pBuffer_[5] = 0; // ...
+  pBuffer_[6] = 0; // ...
+  pBuffer_[7] = 0; // totalNbOfWrites
+  pBuffer_[8] = NOBLOCK & 0xFFU; // nextBlock LB
+  pBuffer_[9] = NOBLOCK >> 8U; // nextBlock HB
 
-  fakeStorage.Write(0, 10, pBuffer);
+  fakeStorage_.Write(0, 10, pBuffer_);
   UpdateCRC(0);
 
-  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::BadSectionSystemInfoBlockError);
+  ASSERT_THROW(uut_.MountStep1(), eeprom_section_system::BadSectionSystemInfoBlockError);
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_WrongType_sectionHead)
 {
   Format(128);
-  uut.Unmount();
+  uut_.Unmount();
 
-  pBuffer[0] = static_cast<uint8_t>(BlockTypes::sectionHead); // type
-  pBuffer[1] = 'A'; // sectionNameHash
-  pBuffer[2] = 16; // nBytes (LB)
-  pBuffer[3] = 0; // nBytes (HB)
-  pBuffer[4] = 0; // totalNbOfWrites LB
-  pBuffer[5] = 0; // ...
-  pBuffer[6] = 0; // ...
-  pBuffer[7] = 0; // totalNbOfWrites
-  pBuffer[8] = 2; // nextBlock LB
-  pBuffer[9] = 0; // nextBlock HB
-  pBuffer[10] = 1; // version LB
-  pBuffer[11] = 0; // version HB
-  pBuffer[12] = 'A';
-  pBuffer[13] = 0;
+  pBuffer_[0] = static_cast<uint8_t>(BlockTypes::sectionHead); // type
+  pBuffer_[1] = 'A'; // sectionNameHash
+  pBuffer_[2] = 16; // nBytes (LB)
+  pBuffer_[3] = 0; // nBytes (HB)
+  pBuffer_[4] = 0; // totalNbOfWrites LB
+  pBuffer_[5] = 0; // ...
+  pBuffer_[6] = 0; // ...
+  pBuffer_[7] = 0; // totalNbOfWrites
+  pBuffer_[8] = 2; // nextBlock LB
+  pBuffer_[9] = 0; // nextBlock HB
+  pBuffer_[10] = 1; // version LB
+  pBuffer_[11] = 0; // version HB
+  pBuffer_[12] = 'A';
+  pBuffer_[13] = 0;
 
-  fakeStorage.Write(0, 14, pBuffer);
+  fakeStorage_.Write(0, 14, pBuffer_);
   UpdateCRC(0);
 
-  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::BadSectionSystemInfoBlockError);
+  ASSERT_THROW(uut_.MountStep1(), eeprom_section_system::BadSectionSystemInfoBlockError);
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_WrongType_sectionData)
 {
   Format(128);
-  uut.Unmount();
+  uut_.Unmount();
 
-  pBuffer[0] = static_cast<uint8_t>(BlockTypes::sectionData); // type
-  pBuffer[1] = 0; // sectionNameHash
-  pBuffer[2] = 16; // nBytes (LB)
-  pBuffer[3] = 0; // nBytes (HB)
-  pBuffer[4] = 0; // totalNbOfWrites LB
-  pBuffer[5] = 0; // ...
-  pBuffer[6] = 0; // ...
-  pBuffer[7] = 0; // totalNbOfWrites
-  pBuffer[8] = 2; // nextBlock LB
-  pBuffer[9] = 0; // nextBlock HB
-  pBuffer[10] = 1; // seqNb LB
-  pBuffer[11] = 0; // seqNb HB
-  pBuffer[12] = 0x01;
-  pBuffer[13] = 0x02;
+  pBuffer_[0] = static_cast<uint8_t>(BlockTypes::sectionData); // type
+  pBuffer_[1] = 0; // sectionNameHash
+  pBuffer_[2] = 16; // nBytes (LB)
+  pBuffer_[3] = 0; // nBytes (HB)
+  pBuffer_[4] = 0; // totalNbOfWrites LB
+  pBuffer_[5] = 0; // ...
+  pBuffer_[6] = 0; // ...
+  pBuffer_[7] = 0; // totalNbOfWrites
+  pBuffer_[8] = 2; // nextBlock LB
+  pBuffer_[9] = 0; // nextBlock HB
+  pBuffer_[10] = 1; // seqNb LB
+  pBuffer_[11] = 0; // seqNb HB
+  pBuffer_[12] = 0x01;
+  pBuffer_[13] = 0x02;
 
-  fakeStorage.Write(0, 14, pBuffer);
+  fakeStorage_.Write(0, 14, pBuffer_);
   UpdateCRC(0);
 
-  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::BadSectionSystemInfoBlockError);
+  ASSERT_THROW(uut_.MountStep1(), eeprom_section_system::BadSectionSystemInfoBlockError);
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_BadVersion)
 {
   Format(128);
-  uut.Unmount();
+  uut_.Unmount();
 
-  fakeStorage.Read(offsetof(SectionSystemInfoBlock_t, sectionSystemVersion), 2, pBuffer);
-  uint16_t version = pBuffer[0] | (static_cast<uint16_t>(pBuffer[1]) << 8U);
+  fakeStorage_.Read(offsetof(SectionSystemInfoBlock_t, sectionSystemVersion), 2, pBuffer_);
+  uint16_t version = pBuffer_[0] | (static_cast<uint16_t>(pBuffer_[1]) << 8U);
   version++;
-  pBuffer[0] = version & 0xFF;
-  pBuffer[1] = version >> 8U;
-  fakeStorage.Write(offsetof(SectionSystemInfoBlock_t, sectionSystemVersion), 2, pBuffer);
+  pBuffer_[0] = version & 0xFF;
+  pBuffer_[1] = version >> 8U;
+  fakeStorage_.Write(offsetof(SectionSystemInfoBlock_t, sectionSystemVersion), 2, pBuffer_);
 
   UpdateCRC(0);
 
-  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::InvalidVersionError);
+  ASSERT_THROW(uut_.MountStep1(), eeprom_section_system::InvalidVersionError);
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_BadBlockSize)
 {
   Format(128);
-  uut.Unmount();
+  uut_.Unmount();
 
-  pBuffer[0] = 16;
-  pBuffer[1] = 0;
-  fakeStorage.Write(offsetof(SectionSystemInfoBlock_t, blockSize), 2, pBuffer);
+  pBuffer_[0] = 16;
+  pBuffer_[1] = 0;
+  fakeStorage_.Write(offsetof(SectionSystemInfoBlock_t, blockSize), 2, pBuffer_);
   UpdateCRC(0);
-  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::InvalidHeaderError);
+  ASSERT_THROW(uut_.MountStep1(), eeprom_section_system::InvalidHeaderError);
 
-  pBuffer[0] = (blockSize + 1U) & 0xFFU;
-  pBuffer[1] = (blockSize + 1U) >> 8U;
-  fakeStorage.Write(offsetof(SectionSystemInfoBlock_t, blockSize), 2, pBuffer);
+  pBuffer_[0] = (blockSize_ + 1U) & 0xFFU;
+  pBuffer_[1] = (blockSize_ + 1U) >> 8U;
+  fakeStorage_.Write(offsetof(SectionSystemInfoBlock_t, blockSize), 2, pBuffer_);
   UpdateCRC(0);
-  ASSERT_THROW(uut.MountStep1(), std::invalid_argument);
+  ASSERT_THROW(uut_.MountStep1(), std::invalid_argument);
 
-  pBuffer[0] = (blockSize - 1U) & 0xFFU;
-  pBuffer[1] = (blockSize - 1U) >> 8U;
-  fakeStorage.Write(offsetof(SectionSystemInfoBlock_t, blockSize), 2, pBuffer);
+  pBuffer_[0] = (blockSize_ - 1U) & 0xFFU;
+  pBuffer_[1] = (blockSize_ - 1U) >> 8U;
+  fakeStorage_.Write(offsetof(SectionSystemInfoBlock_t, blockSize), 2, pBuffer_);
   UpdateCRC(0);
-  ASSERT_THROW(uut.MountStep1(), std::invalid_argument);
+  ASSERT_THROW(uut_.MountStep1(), std::invalid_argument);
 
-  pBuffer[0] = gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize;
-  pBuffer[1] = 0;
-  fakeStorage.Write(offsetof(SectionSystemInfoBlock_t, blockSize), 2, pBuffer);
+  pBuffer_[0] = gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MinimumBlockSize;
+  pBuffer_[1] = 0;
+  fakeStorage_.Write(offsetof(SectionSystemInfoBlock_t, blockSize), 2, pBuffer_);
   UpdateCRC(0);
-  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::StorageSizeMismatchError);
+  ASSERT_THROW(uut_.MountStep1(), eeprom_section_system::StorageSizeMismatchError);
 
-  pBuffer[0] = (2 * gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MaximumBlockSize) & 0xFFU;
-  pBuffer[1] = (2 * gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MaximumBlockSize) >> 8U;
-  fakeStorage.Write(offsetof(SectionSystemInfoBlock_t, blockSize), 2, pBuffer);
+  pBuffer_[0] = (2 * gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MaximumBlockSize) & 0xFFU;
+  pBuffer_[1] = (2 * gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::MaximumBlockSize) >> 8U;
+  fakeStorage_.Write(offsetof(SectionSystemInfoBlock_t, blockSize), 2, pBuffer_);
   UpdateCRC(0);
-  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::InvalidHeaderError);
+  ASSERT_THROW(uut_.MountStep1(), eeprom_section_system::InvalidHeaderError);
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep1_SSIB_BadNumberOfBlocks)
 {
   Format(128);
-  uut.Unmount();
+  uut_.Unmount();
 
-  pBuffer[0] = ((storageSize / blockSize) + 1U) & 0xFFU;
-  pBuffer[1] = ((storageSize / blockSize) + 1U) >> 8U;
-  fakeStorage.Write(offsetof(SectionSystemInfoBlock_t, nBlocks), 2, pBuffer);
+  pBuffer_[0] = ((storageSize_ / blockSize_) + 1U) & 0xFFU;
+  pBuffer_[1] = ((storageSize_ / blockSize_) + 1U) >> 8U;
+  fakeStorage_.Write(offsetof(SectionSystemInfoBlock_t, nBlocks), 2, pBuffer_);
   UpdateCRC(0);
-  ASSERT_THROW(uut.MountStep1(), eeprom_section_system::StorageSizeMismatchError);
+  ASSERT_THROW(uut_.MountStep1(), eeprom_section_system::StorageSizeMismatchError);
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Format_WrongState)
 {
   // state is not_mounted
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut_.GetState());
   Format(128);
 
   // state is mounted
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
-  ASSERT_THROW(uut.Format(128), eeprom_section_system::InsufficientStateError);
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut_.GetState());
+  ASSERT_THROW(uut_.Format(128), eeprom_section_system::InsufficientStateError);
 
-  uut.Unmount();
+  uut_.Unmount();
 
   // bring uut into state "ro_mount"
-  uut.MountStep1();
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut.GetState());
-  ASSERT_THROW(uut.Format(128), eeprom_section_system::InsufficientStateError);
+  uut_.MountStep1();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut_.GetState());
+  ASSERT_THROW(uut_.Format(128), eeprom_section_system::InsufficientStateError);
 
   // bring uut into state "defect"
-  uut.MountStep2();
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
-  fakeStorage.Invalidate(blockSize, blockSize);
+  uut_.MountStep2();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut_.GetState());
+  fakeStorage_.Invalidate(blockSize_, blockSize_);
   RandomData data1(8,8);
-  ASSERT_THROW(data1.Write("Section1", false, uut), DataIntegrityError);
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
-  ASSERT_THROW(uut.Format(128), eeprom_section_system::InsufficientStateError);
+  ASSERT_THROW(data1.Write("Section1", false, uut_), DataIntegrityError);
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut_.GetState());
+  ASSERT_THROW(uut_.Format(128), eeprom_section_system::InsufficientStateError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, Format_BlockSizeTooSmall)
 {
@@ -665,41 +665,41 @@ TEST(GPCC_FileSystems_EEPROMSectionSystem_Tests, FormatUnmountMount_WithoutPageS
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, GetState)
 {
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut_.GetState());
   Format(128);
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
-  uut.Unmount();
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
-  uut.MountStep1();
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut.GetState());
-  uut.Unmount();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut_.GetState());
+  uut_.Unmount();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut_.GetState());
+  uut_.MountStep1();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut_.GetState());
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_CircleOfFreeBlocks)
 {
   Format(128);
-  uut.Unmount();
+  uut_.Unmount();
 
-  uint16_t const lastBlockIdx = ((storageSize / blockSize) - 1);
+  uint16_t const lastBlockIdx = ((storageSize_ / blockSize_) - 1);
 
   // make nextBlock of last free block refer to first free block
   UpdateNextBlock(lastBlockIdx, 1);
 
   // mount
-  ASSERT_NO_THROW(uut.MountStep1());
-  ASSERT_NO_THROW(uut.MountStep2());
+  ASSERT_NO_THROW(uut_.MountStep1());
+  ASSERT_NO_THROW(uut_.MountStep2());
 
   // check that nextBlock of last free block has been fixed
-  fakeStorage.Read(blockSize * lastBlockIdx + offsetof(CommonBlockHead_t, nextBlock), 2, pBuffer);
-  ASSERT_EQ(NOBLOCK & 0xFFU, pBuffer[0]);
-  ASSERT_EQ(NOBLOCK >> 8U, pBuffer[1]);
+  fakeStorage_.Read(blockSize_ * lastBlockIdx + offsetof(CommonBlockHead_t, nextBlock), 2, pBuffer_);
+  ASSERT_EQ(NOBLOCK & 0xFFU, pBuffer_[0]);
+  ASSERT_EQ(NOBLOCK >> 8U, pBuffer_[1]);
 
   // check that expected free storage is available
-  ASSERT_EQ(((storageSize / blockSize) - 2U) * (blockSize - (sizeof(DataBlock_t) + sizeof(uint16_t))), uut.GetFreeSpace());
+  ASSERT_EQ(((storageSize_ / blockSize_) - 2U) * (blockSize_ - (sizeof(DataBlock_t) + sizeof(uint16_t))), uut_.GetFreeSpace());
 
   // use it
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_FreeBlocks1)
 {
@@ -708,9 +708,9 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_FreeBlocks1)
   // then one block + a few next blocks added to head of initial list
 
   Format(128);
-  uut.Unmount();
+  uut_.Unmount();
 
-  uint16_t const nBlocks = storageSize / blockSize;
+  uint16_t const nBlocks = storageSize_ / blockSize_;
   ASSERT_TRUE(nBlocks > 10);
 
   for (uint16_t idx = 1; idx < 10; idx++)
@@ -729,16 +729,16 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_FreeBlocks1)
   }
 
   // mount it
-  ASSERT_NO_THROW(uut.MountStep1());
-  ASSERT_NO_THROW(uut.MountStep2());
+  ASSERT_NO_THROW(uut_.MountStep1());
+  ASSERT_NO_THROW(uut_.MountStep2());
 
   // check that expected free storage is available
-  ASSERT_EQ(((storageSize / blockSize) - 2U) * (blockSize - (sizeof(DataBlock_t) + sizeof(uint16_t))), uut.GetFreeSpace());
+  ASSERT_EQ(((storageSize_ / blockSize_) - 2U) * (blockSize_ - (sizeof(DataBlock_t) + sizeof(uint16_t))), uut_.GetFreeSpace());
 
   // use it
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_FreeBlocks2)
 {
@@ -747,9 +747,9 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_FreeBlocks2)
   // then one block added to head of initial list
 
   Format(128);
-  uut.Unmount();
+  uut_.Unmount();
 
-  uint16_t const nBlocks = storageSize / blockSize;
+  uint16_t const nBlocks = storageSize_ / blockSize_;
   ASSERT_TRUE(nBlocks > 3);
 
   for (uint16_t idx = 1; idx < nBlocks-1; idx++)
@@ -762,16 +762,16 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_FreeBlocks2)
   UpdateNextBlock(nBlocks-1, 1);
 
   // mount it
-  ASSERT_NO_THROW(uut.MountStep1());
-  ASSERT_NO_THROW(uut.MountStep2());
+  ASSERT_NO_THROW(uut_.MountStep1());
+  ASSERT_NO_THROW(uut_.MountStep2());
 
   // check that expected free storage is available
-  ASSERT_EQ(((storageSize / blockSize) - 2U) * (blockSize - (sizeof(DataBlock_t) + sizeof(uint16_t))), uut.GetFreeSpace());
+  ASSERT_EQ(((storageSize_ / blockSize_) - 2U) * (blockSize_ - (sizeof(DataBlock_t) + sizeof(uint16_t))), uut_.GetFreeSpace());
 
   // use it
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_FreeBlocks3)
 {
@@ -780,9 +780,9 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_FreeBlocks3)
   // then one block + a few next blocks that are stand alone and marked as garbage
 
   Format(128);
-  uut.Unmount();
+  uut_.Unmount();
 
-  uint16_t const nBlocks = storageSize / blockSize;
+  uint16_t const nBlocks = storageSize_ / blockSize_;
   ASSERT_TRUE(nBlocks > 10);
 
   // blocks 5..7 shall be stand-alone free blocks
@@ -798,16 +798,16 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_FreeBlocks3)
   }
 
   // mount it
-  ASSERT_NO_THROW(uut.MountStep1());
-  ASSERT_NO_THROW(uut.MountStep2());
+  ASSERT_NO_THROW(uut_.MountStep1());
+  ASSERT_NO_THROW(uut_.MountStep2());
 
   // check that expected free storage is available
-  ASSERT_EQ(((storageSize / blockSize) - 2U) * (blockSize - (sizeof(DataBlock_t) + sizeof(uint16_t))), uut.GetFreeSpace());
+  ASSERT_EQ(((storageSize_ / blockSize_) - 2U) * (blockSize_ - (sizeof(DataBlock_t) + sizeof(uint16_t))), uut_.GetFreeSpace());
 
   // use it
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_FreeBlocks4)
 {
@@ -816,9 +816,9 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_FreeBlocks4)
   // then one block stand alone and marked ad garbage
 
   Format(128);
-  uut.Unmount();
+  uut_.Unmount();
 
-  uint16_t const nBlocks = storageSize / blockSize;
+  uint16_t const nBlocks = storageSize_ / blockSize_;
   ASSERT_TRUE(nBlocks > 10);
 
   // block 5 shall be stand-alone free block
@@ -834,16 +834,16 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_FreeBlocks4)
   }
 
   // mount it
-  ASSERT_NO_THROW(uut.MountStep1());
-  ASSERT_NO_THROW(uut.MountStep2());
+  ASSERT_NO_THROW(uut_.MountStep1());
+  ASSERT_NO_THROW(uut_.MountStep2());
 
   // check that expected free storage is available
-  ASSERT_EQ(((storageSize / blockSize) - 2U) * (blockSize - (sizeof(DataBlock_t) + sizeof(uint16_t))), uut.GetFreeSpace());
+  ASSERT_EQ(((storageSize_ / blockSize_) - 2U) * (blockSize_ - (sizeof(DataBlock_t) + sizeof(uint16_t))), uut_.GetFreeSpace());
 
   // use it
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_LastFreeBlockRefersToSection)
 {
@@ -851,27 +851,27 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_LastFreeBlockRefe
   // Last free block refers to a section. Mount_CheckLastFreeBlock must fix the block.
 
   Format(128);
-  uint16_t const nBlocks = storageSize / blockSize;
+  uint16_t const nBlocks = storageSize_ / blockSize_;
   RandomData dataBlock(8,8);
-  dataBlock.Write("Section", false, uut);
-  uut.Unmount();
+  dataBlock.Write("Section", false, uut_);
+  uut_.Unmount();
 
   // ensure that the section's data is located in block 2
-  fakeStorage.Read(blockSize * 2 + offsetof(CommonBlockHead_t, type), 1, pBuffer);
-  ASSERT_EQ(static_cast<uint8_t>(BlockTypes::sectionData), pBuffer[0]);
+  fakeStorage_.Read(blockSize_ * 2 + offsetof(CommonBlockHead_t, type), 1, pBuffer_);
+  ASSERT_EQ(static_cast<uint8_t>(BlockTypes::sectionData), pBuffer_[0]);
 
   UpdateNextBlock(nBlocks - 1, 2);
 
   // mount
-  ASSERT_NO_THROW(uut.MountStep1());
-  ASSERT_NO_THROW(uut.MountStep2());
+  ASSERT_NO_THROW(uut_.MountStep1());
+  ASSERT_NO_THROW(uut_.MountStep2());
 
-  dataBlock.Compare("Section", uut);
+  dataBlock.Compare("Section", uut_);
 
   // use it
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads_diffName_sameVersion)
 {
@@ -881,30 +881,30 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads
   // Version of the section heads is the same.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data(8,8);
-  data.Write("Section1", false, uut);
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
-  uut.Unmount();
+  data.Write("Section1", false, uut_);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
+  uut_.Unmount();
 
   // create 2nd section head, uses head of 1st section as template
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 1;   // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 1;   // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
-  ASSERT_THROW(uut.MountStep2(), BlockLinkageError);
+  uut_.MountStep1();
+  ASSERT_THROW(uut_.MountStep2(), BlockLinkageError);
 
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
-  uut.Unmount();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut_.GetState());
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads_diffName_2ndOlder)
 {
@@ -914,35 +914,35 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads
   // The second section head has an lower version. No version wrap-around.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data(8,8);
-  data.Write("Section1", false, uut);
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
-  size_t const freeSpace = uut.GetFreeSpace();
-  uut.Unmount();
+  data.Write("Section1", false, uut_);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
+  size_t const freeSpace = uut_.GetFreeSpace();
+  uut_.Unmount();
 
   // create 2nd section head, uses head of 1st section as template
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0;   // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0;   // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
-  uut.MountStep2();
+  uut_.MountStep1();
+  uut_.MountStep2();
 
-  data.Compare("Section1", uut);
-  ASSERT_THROW(data.Compare("Section2", uut), gpcc::file_systems::NoSuchFileError);
-  ASSERT_EQ(freeSpace, uut.GetFreeSpace());
+  data.Compare("Section1", uut_);
+  ASSERT_THROW(data.Compare("Section2", uut_), gpcc::file_systems::NoSuchFileError);
+  ASSERT_EQ(freeSpace, uut_.GetFreeSpace());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
-  uut.Unmount();
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads_diffName_2ndNewer)
 {
@@ -952,35 +952,35 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads
   // The second section head has an higher version. No version wrap-around.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data(8,8);
-  data.Write("Section1", false, uut);
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
-  size_t const freeSpace = uut.GetFreeSpace();
-  uut.Unmount();
+  data.Write("Section1", false, uut_);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
+  size_t const freeSpace = uut_.GetFreeSpace();
+  uut_.Unmount();
 
   // create 2nd section head, uses head of 1st section as template
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 2;   // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 2;   // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
-  uut.MountStep2();
+  uut_.MountStep1();
+  uut_.MountStep2();
 
-  ASSERT_THROW(data.Compare("Section1", uut), gpcc::file_systems::NoSuchFileError);
-  data.Compare("Section2", uut);
-  ASSERT_EQ(freeSpace, uut.GetFreeSpace());
+  ASSERT_THROW(data.Compare("Section1", uut_), gpcc::file_systems::NoSuchFileError);
+  data.Compare("Section2", uut_);
+  ASSERT_EQ(freeSpace, uut_.GetFreeSpace());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
-  uut.Unmount();
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads_diffName_2ndOlder_WithWrapAround)
 {
@@ -990,42 +990,42 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads
   // The second section head has an lower version. There is a version wrap-around.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data(8,8);
-  data.Write("Section1", false, uut);
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
-  size_t const freeSpace = uut.GetFreeSpace();
-  uut.Unmount();
+  data.Write("Section1", false, uut_);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
+  size_t const freeSpace = uut_.GetFreeSpace();
+  uut_.Unmount();
 
   // set version of first section head
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0;
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0;
-  fakeStorage.Write(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0;
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0;
+  fakeStorage_.Write(1U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(1);
 
   // create 2nd section head, uses head of 1st section as template
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF; // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF; // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF; // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF; // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
-  uut.MountStep2();
+  uut_.MountStep1();
+  uut_.MountStep2();
 
-  data.Compare("Section1", uut);
-  ASSERT_THROW(data.Compare("Section2", uut), gpcc::file_systems::NoSuchFileError);
-  ASSERT_EQ(freeSpace, uut.GetFreeSpace());
+  data.Compare("Section1", uut_);
+  ASSERT_THROW(data.Compare("Section2", uut_), gpcc::file_systems::NoSuchFileError);
+  ASSERT_EQ(freeSpace, uut_.GetFreeSpace());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
-  uut.Unmount();
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads_diffName_2ndNewer_WithWrapAround)
 {
@@ -1035,42 +1035,42 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads
   // The second section head has an higher version. There is a version wrap-around.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data(8,8);
-  data.Write("Section1", false, uut);
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
-  size_t const freeSpace = uut.GetFreeSpace();
-  uut.Unmount();
+  data.Write("Section1", false, uut_);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
+  size_t const freeSpace = uut_.GetFreeSpace();
+  uut_.Unmount();
 
   // set version of first section head
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF;
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF;
-  fakeStorage.Write(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF;
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF;
+  fakeStorage_.Write(1U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(1);
 
   // create 2nd section head, uses head of 1st section as template
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0;   // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0;   // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
-  uut.MountStep2();
+  uut_.MountStep1();
+  uut_.MountStep2();
 
-  ASSERT_THROW(data.Compare("Section1", uut), gpcc::file_systems::NoSuchFileError);
-  data.Compare("Section2", uut);
-  ASSERT_EQ(freeSpace, uut.GetFreeSpace());
+  ASSERT_THROW(data.Compare("Section1", uut_), gpcc::file_systems::NoSuchFileError);
+  data.Compare("Section2", uut_);
+  ASSERT_EQ(freeSpace, uut_.GetFreeSpace());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
-  uut.Unmount();
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads_sameName_sameVersion)
 {
@@ -1080,32 +1080,32 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads
   // Name and version of the section heads are the same.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data1(8,8);
-  data1.Write("Section1", false, uut);
+  data1.Write("Section1", false, uut_);
   RandomData data2(8,8);
-  data2.Write("Section2", false, uut);
-  ASSERT_EQ(4U, fakeStorage.writeAccessCnt);
-  uut.Unmount();
+  data2.Write("Section2", false, uut_);
+  ASSERT_EQ(4U, fakeStorage_.writeAccessCnt);
+  uut_.Unmount();
 
   // update head of 2nd section
-  fakeStorage.Read(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(3U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7] = '1';            // Section2 -> Section1
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7] = '1';            // Section2 -> Section1
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 1;   // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 1;   // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
-  ASSERT_THROW(uut.MountStep2(), BlockLinkageError);
+  uut_.MountStep1();
+  ASSERT_THROW(uut_.MountStep2(), BlockLinkageError);
 
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
-  uut.Unmount();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut_.GetState());
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads_sameName_2ndOlder)
 {
@@ -1115,36 +1115,36 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads
   // Names are the same, version of the second section is lower. No version wrap-around.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data1(8,8);
-  data1.Write("Section1", false, uut);
-  size_t const freeSpace = uut.GetFreeSpace();
+  data1.Write("Section1", false, uut_);
+  size_t const freeSpace = uut_.GetFreeSpace();
   RandomData data2(8,8);
-  data2.Write("Section2", false, uut);
-  ASSERT_EQ(4U, fakeStorage.writeAccessCnt);
-  uut.Unmount();
+  data2.Write("Section2", false, uut_);
+  ASSERT_EQ(4U, fakeStorage_.writeAccessCnt);
+  uut_.Unmount();
 
   // update head of 2nd section
-  fakeStorage.Read(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(3U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7] = '1';            // Section2 -> Section1
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7] = '1';            // Section2 -> Section1
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0;   // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0;   // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
-  uut.MountStep2();
+  uut_.MountStep1();
+  uut_.MountStep2();
 
-  data1.Compare("Section1", uut);
-  ASSERT_EQ(freeSpace, uut.GetFreeSpace());
+  data1.Compare("Section1", uut_);
+  ASSERT_EQ(freeSpace, uut_.GetFreeSpace());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
-  uut.Unmount();
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads_sameName_2ndNewer)
 {
@@ -1154,36 +1154,36 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads
   // Names are the same, version of the second section is higher. No version wrap-around.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data1(8,8);
-  data1.Write("Section1", false, uut);
-  size_t const freeSpace = uut.GetFreeSpace();
+  data1.Write("Section1", false, uut_);
+  size_t const freeSpace = uut_.GetFreeSpace();
   RandomData data2(8,8);
-  data2.Write("Section2", false, uut);
-  ASSERT_EQ(4U, fakeStorage.writeAccessCnt);
-  uut.Unmount();
+  data2.Write("Section2", false, uut_);
+  ASSERT_EQ(4U, fakeStorage_.writeAccessCnt);
+  uut_.Unmount();
 
   // update head of 2nd section
-  fakeStorage.Read(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(3U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7] = '1';            // Section2 -> Section1
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7] = '1';            // Section2 -> Section1
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 2;   // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 2;   // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
-  uut.MountStep2();
+  uut_.MountStep1();
+  uut_.MountStep2();
 
-  data2.Compare("Section1", uut);
-  ASSERT_EQ(freeSpace, uut.GetFreeSpace());
+  data2.Compare("Section1", uut_);
+  ASSERT_EQ(freeSpace, uut_.GetFreeSpace());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
-  uut.Unmount();
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads_sameName_2ndOlder_WithWrapAround)
 {
@@ -1193,43 +1193,43 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads
   // Names are the same, version of the second section is lower. With version wrap-around.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data1(8,8);
-  data1.Write("Section1", false, uut);
-  size_t const freeSpace = uut.GetFreeSpace();
+  data1.Write("Section1", false, uut_);
+  size_t const freeSpace = uut_.GetFreeSpace();
   RandomData data2(8,8);
-  data2.Write("Section2", false, uut);
-  ASSERT_EQ(4U, fakeStorage.writeAccessCnt);
-  uut.Unmount();
+  data2.Write("Section2", false, uut_);
+  ASSERT_EQ(4U, fakeStorage_.writeAccessCnt);
+  uut_.Unmount();
 
   // set version of first section
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0x00;
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0x00;
-  fakeStorage.Write(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0x00;
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0x00;
+  fakeStorage_.Write(1U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(1);
 
   // update head of 2nd section
-  fakeStorage.Read(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(3U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7] = '1';            // Section2 -> Section1
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7] = '1';            // Section2 -> Section1
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF; // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF; // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF; // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF; // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
-  uut.MountStep2();
+  uut_.MountStep1();
+  uut_.MountStep2();
 
-  data1.Compare("Section1", uut);
-  ASSERT_EQ(freeSpace, uut.GetFreeSpace());
+  data1.Compare("Section1", uut_);
+  ASSERT_EQ(freeSpace, uut_.GetFreeSpace());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
-  uut.Unmount();
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads_sameName_2ndNewer_WithWrapAround)
 {
@@ -1239,43 +1239,43 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MountStep2_SectionWith2Heads
   // Names are the same, version of the second section is higher. With version wrap-around.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data1(8,8);
-  data1.Write("Section1", false, uut);
-  size_t const freeSpace = uut.GetFreeSpace();
+  data1.Write("Section1", false, uut_);
+  size_t const freeSpace = uut_.GetFreeSpace();
   RandomData data2(8,8);
-  data2.Write("Section2", false, uut);
-  ASSERT_EQ(4U, fakeStorage.writeAccessCnt);
-  uut.Unmount();
+  data2.Write("Section2", false, uut_);
+  ASSERT_EQ(4U, fakeStorage_.writeAccessCnt);
+  uut_.Unmount();
 
   // set version of first section
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF;
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF;
-  fakeStorage.Write(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF;
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF;
+  fakeStorage_.Write(1U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(1);
 
   // update head of 2nd section
-  fakeStorage.Read(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(3U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7] = '1';            // Section2 -> Section1
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7] = '1';            // Section2 -> Section1
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0x00; // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0x00; // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0x00; // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0x00; // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
-  uut.MountStep2();
+  uut_.MountStep1();
+  uut_.MountStep2();
 
-  data2.Compare("Section1", uut);
-  ASSERT_EQ(freeSpace, uut.GetFreeSpace());
+  data2.Compare("Section1", uut_);
+  ASSERT_EQ(freeSpace, uut_.GetFreeSpace());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
-  uut.Unmount();
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_BadNames)
 {
@@ -1283,46 +1283,46 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_BadNames)
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
 
-  ASSERT_THROW(spISW = uut.Create("", false), std::invalid_argument);
-  ASSERT_THROW(spISW = uut.Create(" Sec1", false), std::invalid_argument);
-  ASSERT_THROW(spISW = uut.Create("Sec2 ", false), std::invalid_argument);
-  ASSERT_THROW(spISW = uut.Create(" Sec3 ", false), std::invalid_argument);
-  ASSERT_THROW(spISW = uut.Create(" ", false), std::invalid_argument);
+  ASSERT_THROW(spISW = uut_.Create("", false), std::invalid_argument);
+  ASSERT_THROW(spISW = uut_.Create(" Sec1", false), std::invalid_argument);
+  ASSERT_THROW(spISW = uut_.Create("Sec2 ", false), std::invalid_argument);
+  ASSERT_THROW(spISW = uut_.Create(" Sec3 ", false), std::invalid_argument);
+  ASSERT_THROW(spISW = uut_.Create(" ", false), std::invalid_argument);
 
-  ASSERT_NO_THROW(spISW = uut.Create("A", false));
-  ASSERT_NO_THROW(spISW = uut.Create("A B", false));
+  ASSERT_NO_THROW(spISW = uut_.Create("A", false));
+  ASSERT_NO_THROW(spISW = uut_.Create("A B", false));
   spISW.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_WrongState)
 {
   Format(128);
-  uut.Unmount();
+  uut_.Unmount();
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
 
   // not_mounted
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
-  ASSERT_THROW(spISW = uut.Create("Sec1", false), InsufficientStateError);
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut_.GetState());
+  ASSERT_THROW(spISW = uut_.Create("Sec1", false), InsufficientStateError);
 
   // ro_mount
-  uut.MountStep1();
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut.GetState());
-  ASSERT_THROW(spISW = uut.Create("Sec1", false), InsufficientStateError);
+  uut_.MountStep1();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut_.GetState());
+  ASSERT_THROW(spISW = uut_.Create("Sec1", false), InsufficientStateError);
 
   // mounted
-  uut.MountStep2();
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
+  uut_.MountStep2();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut_.GetState());
 
   // defect
-  fakeStorage.Invalidate(blockSize * 1U, blockSize);
-  ASSERT_THROW(spISW = uut.Create("Sec1", false), InvalidHeaderError);
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
+  fakeStorage_.Invalidate(blockSize_ * 1U, blockSize_);
+  ASSERT_THROW(spISW = uut_.Create("Sec1", false), InvalidHeaderError);
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut_.GetState());
 
-  ASSERT_THROW(spISW = uut.Create("Sec1", false), InsufficientStateError);
+  ASSERT_THROW(spISW = uut_.Create("Sec1", false), InsufficientStateError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_SectionLocked)
 {
@@ -1332,16 +1332,16 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_SectionLocked)
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW2;
 
   // locked by writer
-  spISW1 = uut.Create("Sec1", false);
-  ASSERT_THROW(spISW2 = uut.Create("Sec1", false), gpcc::file_systems::FileAlreadyAccessedError);
+  spISW1 = uut_.Create("Sec1", false);
+  ASSERT_THROW(spISW2 = uut_.Create("Sec1", false), gpcc::file_systems::FileAlreadyAccessedError);
   spISW1->Close();
 
   // locked by reader
-  auto spISR1 = uut.Open("Sec1");
-  ASSERT_THROW(spISW2 = uut.Create("Sec1", false), gpcc::file_systems::FileAlreadyAccessedError);
+  auto spISR1 = uut_.Open("Sec1");
+  ASSERT_THROW(spISW2 = uut_.Create("Sec1", false), gpcc::file_systems::FileAlreadyAccessedError);
   spISR1->Close();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_SectionAlreadyExistingAndNoOverwrite)
 {
@@ -1350,77 +1350,77 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_SectionAlreadyExistin
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW1;
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW2;
 
-  spISW1 = uut.Create("Sec1", false);
+  spISW1 = uut_.Create("Sec1", false);
   spISW1->Close();
 
-  ASSERT_THROW(spISW2 = uut.Create("Sec1", false), gpcc::file_systems::FileAlreadyExistingError);
+  ASSERT_THROW(spISW2 = uut_.Create("Sec1", false), gpcc::file_systems::FileAlreadyExistingError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_NoFreeBlocks)
 {
   Format(128);
 
-  size_t const n = uut.GetFreeSpace();
+  size_t const n = uut_.GetFreeSpace();
   ASSERT_TRUE(n > 8U);
   RandomData data(n - 8U, n - 8U);
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW1;
-  ASSERT_THROW(spISW1 = uut.Create("Section2", false), gpcc::file_systems::InsufficientSpaceError);
+  ASSERT_THROW(spISW1 = uut_.Create("Section2", false), gpcc::file_systems::InsufficientSpaceError);
 
-  data.Compare("Section1", uut);
+  data.Compare("Section1", uut_);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_OneFreeBlock)
 {
   Format(128);
 
-  size_t const bytesPerBlock = blockSize - (sizeof(DataBlock_t) + sizeof(uint16_t));
-  size_t const n = uut.GetFreeSpace();
+  size_t const bytesPerBlock = blockSize_ - (sizeof(DataBlock_t) + sizeof(uint16_t));
+  size_t const n = uut_.GetFreeSpace();
   ASSERT_TRUE(n > 8U + bytesPerBlock);
   RandomData data(n - (8U + bytesPerBlock), n - (8U + bytesPerBlock));
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW1;
-  ASSERT_THROW(spISW1 = uut.Create("Section2", false), gpcc::file_systems::InsufficientSpaceError);
+  ASSERT_THROW(spISW1 = uut_.Create("Section2", false), gpcc::file_systems::InsufficientSpaceError);
 
-  data.Compare("Section1", uut);
+  data.Compare("Section1", uut_);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_TwoFreeBlocks)
 {
   Format(128);
 
-  size_t const bytesPerBlock = blockSize - (sizeof(DataBlock_t) + sizeof(uint16_t));
+  size_t const bytesPerBlock = blockSize_ - (sizeof(DataBlock_t) + sizeof(uint16_t));
   ASSERT_TRUE(bytesPerBlock > 8U);
-  size_t const n = uut.GetFreeSpace();
+  size_t const n = uut_.GetFreeSpace();
   ASSERT_TRUE(n > 8U + 2U * bytesPerBlock);
   RandomData data(n - (8U + 2U * bytesPerBlock), n - (8U + 2U * bytesPerBlock));
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
   RandomData data2(bytesPerBlock - 8, bytesPerBlock - 8);
-  data2.Write("Section2", false, uut);
+  data2.Write("Section2", false, uut_);
 
-  data.Compare("Section1", uut);
-  data2.Compare("Section2", uut);
+  data.Compare("Section1", uut_);
+  data2.Compare("Section2", uut_);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_OverwriteExistingSection)
 {
   Format(128);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
   *spISW << static_cast<uint8_t>(0xDE);
   *spISW << static_cast<uint8_t>(0xAD);
   *spISW << static_cast<uint8_t>(0xBE);
   *spISW << static_cast<uint8_t>(0xEF);
   spISW->Close();
 
-  spISW = uut.Create("Section1", true);
+  spISW = uut_.Create("Section1", true);
   *spISW << static_cast<uint8_t>(0x12);
   *spISW << static_cast<uint8_t>(0x34);
   *spISW << static_cast<uint8_t>(0x56);
@@ -1429,7 +1429,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_OverwriteExistingSect
 
   spISW.reset();
 
-  auto spISR = uut.Open("Section1");
+  auto spISR = uut_.Open("Section1");
   uint8_t data[4];
   *spISR >> data[0];
   *spISR >> data[1];
@@ -1443,11 +1443,11 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_OverwriteExistingSect
 
   spISR->Close();
 
-  ASSERT_EQ(((storageSize / blockSize) - 4) * (blockSize - (sizeof(DataBlock_t) + sizeof(uint16_t))), uut.GetFreeSpace());
+  ASSERT_EQ(((storageSize_ / blockSize_) - 4) * (blockSize_ - (sizeof(DataBlock_t) + sizeof(uint16_t))), uut_.GetFreeSpace());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_VersionWrapAroundDuringOverwrite)
 {
@@ -1457,40 +1457,40 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_VersionWrapAroundDuri
   Format(128);
 
   // create first section
-  fakeStorage.writeAccessCnt = 0;
-  auto spISW = uut.Create("Section1", false);
+  fakeStorage_.writeAccessCnt = 0;
+  auto spISW = uut_.Create("Section1", false);
   *spISW << static_cast<uint8_t>(0xDE);
   *spISW << static_cast<uint8_t>(0xAD);
   *spISW << static_cast<uint8_t>(0xBE);
   *spISW << static_cast<uint8_t>(0xEF);
   spISW->Close();
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   // set version of first section
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF;
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF;
-  fakeStorage.Write(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF;
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF;
+  fakeStorage_.Write(1U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(1);
 
   // create second section, overwrites first section
-  fakeStorage.writeAccessCnt = 0;
-  spISW = uut.Create("Section1", true);
+  fakeStorage_.writeAccessCnt = 0;
+  spISW = uut_.Create("Section1", true);
   *spISW << static_cast<uint8_t>(0x12);
   *spISW << static_cast<uint8_t>(0x34);
   *spISW << static_cast<uint8_t>(0x56);
   *spISW << static_cast<uint8_t>(0x78);
   spISW->Close();
-  ASSERT_EQ(5U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(5U, fakeStorage_.writeAccessCnt);
 
   spISW.reset();
 
   // check version of 2nd section
-  fakeStorage.Read(3U * blockSize, blockSize, pBuffer);
-  ASSERT_EQ(0x00, pBuffer[offsetof(SectionHeadBlock_t, version) + 0]);
-  ASSERT_EQ(0x00, pBuffer[offsetof(SectionHeadBlock_t, version) + 1]);
+  fakeStorage_.Read(3U * blockSize_, blockSize_, pBuffer_);
+  ASSERT_EQ(0x00, pBuffer_[offsetof(SectionHeadBlock_t, version) + 0]);
+  ASSERT_EQ(0x00, pBuffer_[offsetof(SectionHeadBlock_t, version) + 1]);
 
-  auto spISR = uut.Open("Section1");
+  auto spISR = uut_.Open("Section1");
   uint8_t data[4];
   *spISR >> data[0];
   *spISR >> data[1];
@@ -1504,32 +1504,32 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Create_VersionWrapAroundDuri
 
   spISR->Close();
 
-  ASSERT_EQ(((storageSize / blockSize) - 4) * (blockSize - (sizeof(DataBlock_t) + sizeof(uint16_t))), uut.GetFreeSpace());
+  ASSERT_EQ(((storageSize_ / blockSize_) - 4) * (blockSize_ - (sizeof(DataBlock_t) + sizeof(uint16_t))), uut_.GetFreeSpace());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_RemainingCapacitySupported)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
 
   ASSERT_FALSE(spISW->IsRemainingCapacitySupported());
 
   spISW->Close();
   spISW.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_RemainingCapacity)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
 
   EXPECT_THROW((void)spISW->RemainingCapacity(), std::logic_error);
 
@@ -1538,20 +1538,20 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_RemainingCapac
 
   spISW.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_DestroyWithoutClose)
 {
   Format(128);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
   *spISW << static_cast<uint8_t>(0xDE);
   *spISW << static_cast<uint8_t>(0xAD);
   *spISW << static_cast<uint8_t>(0xBE);
   *spISW << static_cast<uint8_t>(0xEF);
   spISW.reset(); // note: no Close()
 
-  auto spISR = uut.Open("Section1");
+  auto spISR = uut_.Open("Section1");
   uint8_t data[4];
   *spISR >> data[0];
   *spISR >> data[1];
@@ -1565,13 +1565,13 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_DestroyWithout
 
   spISR->Close();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteStrings)
 {
   Format(128);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
   spISW->Write_string("Text");
   spISW->Write_string("");
   spISW->Write_line("Line");
@@ -1580,14 +1580,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteStrings)
   spISW->Close();
   spISW.reset();
 
-  auto spISR = uut.Open("Section1");
+  auto spISR = uut_.Open("Section1");
   uint8_t readData[13];
   spISR->Read_uint8(readData, sizeof(readData));
   EXPECT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 
   uint8_t expected[] = {'T', 'e', 'x', 't', 0x00,
                         0x00,
@@ -1602,7 +1602,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBitsOneBy
 
   uint8_t const someBits[3] = { 0x24, 0xB6, 0xF2 };
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
   spISW->Write_Bit(true);
   spISW->Write_Bit(false);
   spISW->Write_Bits(0x0E, 4U);
@@ -1614,7 +1614,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBitsOneBy
   spISW->Close();
   spISW.reset();
 
-  auto spISR = uut.Open("Section1");
+  auto spISR = uut_.Open("Section1");
   uint8_t readData[4];
   spISR->Read_uint8(readData, 4);
   spISR->Close();
@@ -1625,13 +1625,13 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBitsOneBy
   ASSERT_EQ(0xD8, readData[2]);
   ASSERT_EQ(0x0A, readData[3]);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBits4Plus1Byte)
 {
   Format(128);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
   spISW->Write_Bit(true);
   spISW->Write_Bit(false);
   spISW->Write_Bit(false);
@@ -1640,7 +1640,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBits4Plus
   spISW->Close();
   spISW.reset();
 
-  auto spISR = uut.Open("Section1");
+  auto spISR = uut_.Open("Section1");
   uint8_t readData[2];
   spISR->Read_uint8(readData, 2);
   spISR->Close();
@@ -1649,14 +1649,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBits4Plus
   ASSERT_EQ(0x09, readData[0]);
   ASSERT_EQ(0xAB, readData[1]);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBits4Plus2Bytes)
 {
   Format(128);
 
   uint8_t const someData[2] = { 0xAC, 0x6F };
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
   spISW->Write_Bit(true);
   spISW->Write_Bit(false);
   spISW->Write_Bit(false);
@@ -1665,7 +1665,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBits4Plus
   spISW->Close();
   spISW.reset();
 
-  auto spISR = uut.Open("Section1");
+  auto spISR = uut_.Open("Section1");
   uint8_t readData[3];
   spISR->Read_uint8(readData, 3);
   spISR->Close();
@@ -1675,13 +1675,13 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBits4Plus
   ASSERT_EQ(0xAC, readData[1]);
   ASSERT_EQ(0x6F, readData[2]);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBits4ThenClose)
 {
   Format(128);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
   spISW->Write_Bit(true);
   spISW->Write_Bit(false);
   spISW->Write_Bit(false);
@@ -1689,7 +1689,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBits4Then
   spISW->Close();
   spISW.reset();
 
-  auto spISR = uut.Open("Section1");
+  auto spISR = uut_.Open("Section1");
   uint8_t readData;
   *spISR >> readData;
   spISR->Close();
@@ -1697,33 +1697,33 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBits4Then
 
   ASSERT_EQ(0x09, readData);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBitsAllocationRequired)
 {
   Format(128);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
 
-  fakeStorage.writeAccessCnt = 0;
-  fakeStorage.readAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
+  fakeStorage_.readAccessCnt = 0;
 
-  for (size_t i = 0; i < bytesPerBlock; i++)
+  for (size_t i = 0; i < bytesPerBlock_; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(0U, fakeStorage.readAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.readAccessCnt);
 
   spISW->Write_Bit(true);
 
-  ASSERT_EQ(1U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(2U, fakeStorage.readAccessCnt); // read-back of written block + read free block
+  ASSERT_EQ(1U, fakeStorage_.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.readAccessCnt); // read-back of written block + read free block
 
   spISW->Close();
   spISW.reset();
 
-  auto spISR = uut.Open("Section1");
-  for (size_t i = 0; i < bytesPerBlock; i++)
+  auto spISR = uut_.Open("Section1");
+  for (size_t i = 0; i < bytesPerBlock_; i++)
   {
     uint8_t readData;
     *spISR >> readData;
@@ -1735,18 +1735,18 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBitsAlloc
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBitsNextWriteWouldTriggerAllocation)
 {
   Format(128);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
 
-  fakeStorage.writeAccessCnt = 0;
-  fakeStorage.readAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
+  fakeStorage_.readAccessCnt = 0;
 
-  for (size_t i = 0; i < bytesPerBlock-1U; i++)
+  for (size_t i = 0; i < bytesPerBlock_-1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
 
   spISW->Write_Bit(true);
@@ -1758,19 +1758,19 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBitsNextW
   spISW->Write_Bit(false);
   spISW->Write_Bit(false);
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(0U, fakeStorage.readAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.readAccessCnt);
 
   spISW->Close();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(2U, fakeStorage.readAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.readAccessCnt);
 
   spISW.reset();
 
-  auto spISR = uut.Open("Section1");
+  auto spISR = uut_.Open("Section1");
   uint8_t readData;
-  for (size_t i = 0; i < bytesPerBlock-1U; i++)
+  for (size_t i = 0; i < bytesPerBlock_-1U; i++)
   {
     *spISR >> readData;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), readData);
@@ -1782,42 +1782,42 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBitsNextW
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_Write2x6StoreAndAllocAfterWriting)
 {
   Format(128);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
 
-  fakeStorage.writeAccessCnt = 0;
-  fakeStorage.readAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
+  fakeStorage_.readAccessCnt = 0;
 
-  for (size_t i = 0; i < bytesPerBlock-1U; i++)
+  for (size_t i = 0; i < bytesPerBlock_-1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
 
   spISW->Write_Bits(0x3B, 6);
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(0U, fakeStorage.readAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.readAccessCnt);
 
   spISW->Write_Bits(0x26, 6);
 
-  ASSERT_EQ(1U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(2U, fakeStorage.readAccessCnt);
-  fakeStorage.writeAccessCnt = 0;
-  fakeStorage.readAccessCnt = 0;
+  ASSERT_EQ(1U, fakeStorage_.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.readAccessCnt);
+  fakeStorage_.writeAccessCnt = 0;
+  fakeStorage_.readAccessCnt = 0;
 
   spISW->Close();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(2U, fakeStorage.readAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.readAccessCnt);
 
   spISW.reset();
 
-  auto spISR = uut.Open("Section1");
+  auto spISR = uut_.Open("Section1");
   uint8_t readData;
-  for (size_t i = 0; i < bytesPerBlock-1U; i++)
+  for (size_t i = 0; i < bytesPerBlock_-1U; i++)
   {
     *spISR >> readData;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), readData);
@@ -1831,35 +1831,35 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_Write2x6StoreA
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteMultipleBytesAllocRequired)
 {
   Format(128);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
 
-  fakeStorage.writeAccessCnt = 0;
-  fakeStorage.readAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
+  fakeStorage_.readAccessCnt = 0;
 
-  RandomData data(bytesPerBlock + 1U, bytesPerBlock + 1U);
-  spISW->Write_uint8(data.GetData(), bytesPerBlock + 1U);
+  RandomData data(bytesPerBlock_ + 1U, bytesPerBlock_ + 1U);
+  spISW->Write_uint8(data.GetData(), bytesPerBlock_ + 1U);
 
-  ASSERT_EQ(1U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(2U, fakeStorage.readAccessCnt);
-  fakeStorage.writeAccessCnt = 0;
-  fakeStorage.readAccessCnt = 0;
+  ASSERT_EQ(1U, fakeStorage_.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.readAccessCnt);
+  fakeStorage_.writeAccessCnt = 0;
+  fakeStorage_.readAccessCnt = 0;
 
   spISW->Close();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(2U, fakeStorage.readAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.readAccessCnt);
 
   spISW.reset();
 
-  auto spISR = uut.Open("Section1");
+  auto spISR = uut_.Open("Section1");
 
-  for (size_t i = 0; i < bytesPerBlock+1U; i++)
+  for (size_t i = 0; i < bytesPerBlock_+1U; i++)
   {
     uint8_t readData;
     *spISR >> readData;
@@ -1869,443 +1869,443 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteMultipleB
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteMultipleBytesFullErrorOnAllocation)
 {
   Format(128);
 
-  RandomData fillUp(uut.GetFreeSpace() - 2U * bytesPerBlock - 8U, uut.GetFreeSpace() - 2U * bytesPerBlock - 8U);
-  fillUp.Write("FillUp", false, uut);
+  RandomData fillUp(uut_.GetFreeSpace() - 2U * bytesPerBlock_ - 8U, uut_.GetFreeSpace() - 2U * bytesPerBlock_ - 8U);
+  fillUp.Write("FillUp", false, uut_);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
 
-  RandomData data(bytesPerBlock + 1U, bytesPerBlock + 1U);
-  EXPECT_THROW(spISW->Write_uint8(data.GetData(), bytesPerBlock + 1U), gpcc::stream::FullError);
+  RandomData data(bytesPerBlock_ + 1U, bytesPerBlock_ + 1U);
+  EXPECT_THROW(spISW->Write_uint8(data.GetData(), bytesPerBlock_ + 1U), gpcc::stream::FullError);
 
   ASSERT_EQ(gpcc::stream::IStreamWriter::States::error, spISW->GetState());
 
   spISW->Close();
   spISW.reset();
 
-  ASSERT_EQ(bytesPerBlock, uut.GetFreeSpace());
+  ASSERT_EQ(bytesPerBlock_, uut_.GetFreeSpace());
 
-  fillUp.Compare("FillUp", uut);
+  fillUp.Compare("FillUp", uut_);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_WriteBitsFullErrorOnAllocation)
 {
   Format(128);
 
-  RandomData fillUp(uut.GetFreeSpace() - 2U * bytesPerBlock - 8U, uut.GetFreeSpace() - 2U * bytesPerBlock - 8U);
-  fillUp.Write("FillUp", false, uut);
+  RandomData fillUp(uut_.GetFreeSpace() - 2U * bytesPerBlock_ - 8U, uut_.GetFreeSpace() - 2U * bytesPerBlock_ - 8U);
+  fillUp.Write("FillUp", false, uut_);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
 
-  fakeStorage.writeAccessCnt = 0;
-  fakeStorage.readAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
+  fakeStorage_.readAccessCnt = 0;
 
-  RandomData data(bytesPerBlock, bytesPerBlock);
-  spISW->Write_uint8(data.GetData(), bytesPerBlock);
+  RandomData data(bytesPerBlock_, bytesPerBlock_);
+  spISW->Write_uint8(data.GetData(), bytesPerBlock_);
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(0U, fakeStorage.readAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.readAccessCnt);
 
   ASSERT_THROW(spISW->Write_Bits(0x1B, 6), gpcc::stream::FullError);
 
   spISW->Close();
   spISW.reset();
 
-  ASSERT_EQ(bytesPerBlock, uut.GetFreeSpace());
+  ASSERT_EQ(bytesPerBlock_, uut_.GetFreeSpace());
 
-  fillUp.Compare("FillUp", uut);
+  fillUp.Compare("FillUp", uut_);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_Write2x6StoreAndAllocAfterWritingWithFullError)
 {
   Format(128);
 
-  RandomData fillUp(uut.GetFreeSpace() - 2U * bytesPerBlock - 8U, uut.GetFreeSpace() - 2U * bytesPerBlock - 8U);
-  fillUp.Write("FillUp", false, uut);
+  RandomData fillUp(uut_.GetFreeSpace() - 2U * bytesPerBlock_ - 8U, uut_.GetFreeSpace() - 2U * bytesPerBlock_ - 8U);
+  fillUp.Write("FillUp", false, uut_);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
 
-  fakeStorage.writeAccessCnt = 0;
-  fakeStorage.readAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
+  fakeStorage_.readAccessCnt = 0;
 
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
 
   spISW->Write_Bits(0x3B, 6);
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
-  ASSERT_EQ(0U, fakeStorage.readAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.readAccessCnt);
 
   ASSERT_THROW(spISW->Write_Bits(0x26, 6), gpcc::stream::FullError);
 
   spISW->Close();
   spISW.reset();
 
-  ASSERT_EQ(bytesPerBlock, uut.GetFreeSpace());
+  ASSERT_EQ(bytesPerBlock_, uut_.GetFreeSpace());
 
-  fillUp.Compare("FillUp", uut);
+  fillUp.Compare("FillUp", uut_);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_ProperCleanupUponCloseInErrorState)
 {
   Format(128);
 
-  RandomData fillUp(uut.GetFreeSpace() - 2U * bytesPerBlock - 8U, uut.GetFreeSpace() - 2U * bytesPerBlock - 8U);
-  fillUp.Write("FillUp", false, uut);
+  RandomData fillUp(uut_.GetFreeSpace() - 2U * bytesPerBlock_ - 8U, uut_.GetFreeSpace() - 2U * bytesPerBlock_ - 8U);
+  fillUp.Write("FillUp", false, uut_);
 
-  RandomData dataSec1(bytesPerBlock - 8U + 1U, bytesPerBlock - 8U + 1U);
-  ASSERT_THROW(dataSec1.Write("Section1", false, uut), gpcc::stream::FullError);
+  RandomData dataSec1(bytesPerBlock_ - 8U + 1U, bytesPerBlock_ - 8U + 1U);
+  ASSERT_THROW(dataSec1.Write("Section1", false, uut_), gpcc::stream::FullError);
 
   // check free space
-  ASSERT_EQ(bytesPerBlock, uut.GetFreeSpace());
+  ASSERT_EQ(bytesPerBlock_, uut_.GetFreeSpace());
 
   // check section fillUp
-  fillUp.Compare("FillUp", uut);
+  fillUp.Compare("FillUp", uut_);
 
   // check: Section1 must not be existing
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
   // unmount/remount. Check: There must be no write access to storage
-  fakeStorage.writeAccessCnt = 0;
-  fakeStorage.readAccessCnt = 0;
-  uut.Unmount();
-  uut.MountStep1();
-  uut.MountStep2();
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  fakeStorage_.writeAccessCnt = 0;
+  fakeStorage_.readAccessCnt = 0;
+  uut_.Unmount();
+  uut_.MountStep1();
+  uut_.MountStep2();
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
 
   // check free space
-  ASSERT_EQ(bytesPerBlock, uut.GetFreeSpace());
+  ASSERT_EQ(bytesPerBlock_, uut_.GetFreeSpace());
 
   // check section fillUp
-  fillUp.Compare("FillUp", uut);
+  fillUp.Compare("FillUp", uut_);
 
   // check: Section1 must not be existing
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageErrorUponWrite)
 {
   Format(128);
 
   RandomData fillUp(512, 512);
-  fillUp.Write("FillUp", false, uut);
+  fillUp.Write("FillUp", false, uut_);
 
-  RandomData data(3U * bytesPerBlock, 3U * bytesPerBlock);
+  RandomData data(3U * bytesPerBlock_, 3U * bytesPerBlock_);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
 
-  fakeStorage.writeAndCheckAccessTillFailure = 2;
+  fakeStorage_.writeAndCheckAccessTillFailure = 2;
 
-  ASSERT_THROW( for (size_t i = 0; i < 3U * bytesPerBlock; i++) { *spISW << static_cast<uint8_t>(i & 0xFFU); }, gpcc::stream::IOError);
+  ASSERT_THROW( for (size_t i = 0; i < 3U * bytesPerBlock_; i++) { *spISW << static_cast<uint8_t>(i & 0xFFU); }, gpcc::stream::IOError);
 
   ASSERT_EQ(gpcc::stream::IStreamWriter::States::error, spISW->GetState());
 
   EXPECT_ANY_THROW(spISW->Close());
   spISW.reset();
 
-  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect, uut_.GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 
-  fakeStorage.writeAccessCnt = 0;
-  fakeStorage.readAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
+  fakeStorage_.readAccessCnt = 0;
 
-  uut.MountStep1();
+  uut_.MountStep1();
 
-  fillUp.Compare("FillUp", uut);
+  fillUp.Compare("FillUp", uut_);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
 
-  uut.MountStep2();
+  uut_.MountStep2();
 
-  ASSERT_NE(0U, fakeStorage.writeAccessCnt);
+  ASSERT_NE(0U, fakeStorage_.writeAccessCnt);
 
-  fillUp.Compare("FillUp", uut);
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  fillUp.Compare("FillUp", uut_);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageErrorUponClose1)
 {
   Format(128);
 
   RandomData fillUp(512, 512);
-  fillUp.Write("FillUp", false, uut);
+  fillUp.Write("FillUp", false, uut_);
 
-  RandomData data(3U * bytesPerBlock, 3U * bytesPerBlock);
+  RandomData data(3U * bytesPerBlock_, 3U * bytesPerBlock_);
 
-  auto spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < 3U * bytesPerBlock; i++)
+  auto spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < 3U * bytesPerBlock_; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
 
-  fakeStorage.writeAndCheckAccessTillFailure = 1;
+  fakeStorage_.writeAndCheckAccessTillFailure = 1;
   EXPECT_THROW(spISW->Close(), gpcc::stream::IOError);
   spISW.reset();
 
-  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect, uut_.GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 
-  fakeStorage.writeAccessCnt = 0;
-  fakeStorage.readAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
+  fakeStorage_.readAccessCnt = 0;
 
-  uut.MountStep1();
+  uut_.MountStep1();
 
-  fillUp.Compare("FillUp", uut);
+  fillUp.Compare("FillUp", uut_);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
 
-  uut.MountStep2();
+  uut_.MountStep2();
 
-  ASSERT_NE(0U, fakeStorage.writeAccessCnt);
+  ASSERT_NE(0U, fakeStorage_.writeAccessCnt);
 
-  fillUp.Compare("FillUp", uut);
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  fillUp.Compare("FillUp", uut_);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageErrorUponClose2)
 {
   Format(128);
 
   RandomData fillUp(512, 512);
-  fillUp.Write("FillUp", false, uut);
+  fillUp.Write("FillUp", false, uut_);
 
-  RandomData data(3U * bytesPerBlock, 3U * bytesPerBlock);
+  RandomData data(3U * bytesPerBlock_, 3U * bytesPerBlock_);
 
-  auto spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < 3U * bytesPerBlock; i++)
+  auto spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < 3U * bytesPerBlock_; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
 
-  fakeStorage.writeAndCheckAccessTillFailure = 2;
+  fakeStorage_.writeAndCheckAccessTillFailure = 2;
   EXPECT_THROW(spISW->Close(), gpcc::stream::IOError);
   spISW.reset();
 
-  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect, uut_.GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 
-  fakeStorage.writeAccessCnt = 0;
-  fakeStorage.readAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
+  fakeStorage_.readAccessCnt = 0;
 
-  uut.MountStep1();
+  uut_.MountStep1();
 
-  fillUp.Compare("FillUp", uut);
+  fillUp.Compare("FillUp", uut_);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
 
-  uut.MountStep2();
+  uut_.MountStep2();
 
-  ASSERT_NE(0U, fakeStorage.writeAccessCnt);
+  ASSERT_NE(0U, fakeStorage_.writeAccessCnt);
 
-  fillUp.Compare("FillUp", uut);
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  fillUp.Compare("FillUp", uut_);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageThrowsUponWrite)
 {
   Format(128);
 
   RandomData fillUp(512, 512);
-  fillUp.Write("FillUp", false, uut);
+  fillUp.Write("FillUp", false, uut_);
 
-  RandomData data(3U * bytesPerBlock, 3U * bytesPerBlock);
+  RandomData data(3U * bytesPerBlock_, 3U * bytesPerBlock_);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
 
-  fakeStorage.writeAccessesTillThrow = 2;
+  fakeStorage_.writeAccessesTillThrow = 2;
 
-  ASSERT_THROW( for (size_t i = 0; i < 3U * bytesPerBlock; i++) { *spISW << static_cast<uint8_t>(i & 0xFFU); }, gpcc::stream::IOError);
+  ASSERT_THROW( for (size_t i = 0; i < 3U * bytesPerBlock_; i++) { *spISW << static_cast<uint8_t>(i & 0xFFU); }, gpcc::stream::IOError);
 
   ASSERT_EQ(gpcc::stream::IStreamWriter::States::error, spISW->GetState());
 
   EXPECT_ANY_THROW(spISW->Close());
   spISW.reset();
 
-  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect, uut_.GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 
-  fakeStorage.writeAccessCnt = 0;
-  fakeStorage.readAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
+  fakeStorage_.readAccessCnt = 0;
 
-  uut.MountStep1();
+  uut_.MountStep1();
 
-  fillUp.Compare("FillUp", uut);
+  fillUp.Compare("FillUp", uut_);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
 
-  uut.MountStep2();
+  uut_.MountStep2();
 
-  ASSERT_NE(0U, fakeStorage.writeAccessCnt);
+  ASSERT_NE(0U, fakeStorage_.writeAccessCnt);
 
-  fillUp.Compare("FillUp", uut);
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  fillUp.Compare("FillUp", uut_);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageThrowsUponClose1)
 {
   Format(128);
 
   RandomData fillUp(512, 512);
-  fillUp.Write("FillUp", false, uut);
+  fillUp.Write("FillUp", false, uut_);
 
-  RandomData data(3U * bytesPerBlock, 3U * bytesPerBlock);
+  RandomData data(3U * bytesPerBlock_, 3U * bytesPerBlock_);
 
-  auto spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < 3U * bytesPerBlock; i++)
+  auto spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < 3U * bytesPerBlock_; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
 
-  fakeStorage.writeAccessesTillThrow = 1;
+  fakeStorage_.writeAccessesTillThrow = 1;
   EXPECT_THROW(spISW->Close(), gpcc::stream::IOError);
   spISW.reset();
 
-  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect, uut_.GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 
-  fakeStorage.writeAccessCnt = 0;
-  fakeStorage.readAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
+  fakeStorage_.readAccessCnt = 0;
 
-  uut.MountStep1();
+  uut_.MountStep1();
 
-  fillUp.Compare("FillUp", uut);
+  fillUp.Compare("FillUp", uut_);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
 
-  uut.MountStep2();
+  uut_.MountStep2();
 
-  ASSERT_NE(0U, fakeStorage.writeAccessCnt);
+  ASSERT_NE(0U, fakeStorage_.writeAccessCnt);
 
-  fillUp.Compare("FillUp", uut);
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  fillUp.Compare("FillUp", uut_);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_StorageThrowsUponClose2)
 {
   Format(128);
 
   RandomData fillUp(512, 512);
-  fillUp.Write("FillUp", false, uut);
+  fillUp.Write("FillUp", false, uut_);
 
-  RandomData data(3U * bytesPerBlock, 3U * bytesPerBlock);
+  RandomData data(3U * bytesPerBlock_, 3U * bytesPerBlock_);
 
-  auto spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < 3U * bytesPerBlock; i++)
+  auto spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < 3U * bytesPerBlock_; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
 
-  fakeStorage.writeAccessesTillThrow = 2;
+  fakeStorage_.writeAccessesTillThrow = 2;
   EXPECT_THROW(spISW->Close(), gpcc::stream::IOError);
   spISW.reset();
 
-  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_EQ(gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem::States::defect, uut_.GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 
-  fakeStorage.writeAccessCnt = 0;
-  fakeStorage.readAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
+  fakeStorage_.readAccessCnt = 0;
 
-  uut.MountStep1();
+  uut_.MountStep1();
 
-  fillUp.Compare("FillUp", uut);
+  fillUp.Compare("FillUp", uut_);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
 
-  uut.MountStep2();
+  uut_.MountStep2();
 
-  ASSERT_NE(0U, fakeStorage.writeAccessCnt);
+  ASSERT_NE(0U, fakeStorage_.writeAccessCnt);
 
-  fillUp.Compare("FillUp", uut);
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  fillUp.Compare("FillUp", uut_);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_PowerFailUponWriteOrClose)
 {
   Format(128);
 
-  fakeStorage.SetEnableUndo(true);
-  fakeStorage.writeAccessCnt = 0;
-  fakeStorage.readAccessCnt  = 0;
+  fakeStorage_.SetEnableUndo(true);
+  fakeStorage_.writeAccessCnt = 0;
+  fakeStorage_.readAccessCnt  = 0;
 
-  RandomData data(2U * bytesPerBlock, 2U * bytesPerBlock);
-  data.Write("Section1", false, uut);
+  RandomData data(2U * bytesPerBlock_, 2U * bytesPerBlock_);
+  data.Write("Section1", false, uut_);
 
-  ASSERT_EQ(4U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(4U, fakeStorage_.writeAccessCnt);
 
-  FakeEEPROM copyOfStorage(fakeStorage);
+  FakeEEPROM copyOfStorage(fakeStorage_);
 
-  uut.Unmount();
+  uut_.Unmount();
 
   for (uint_fast8_t i = 1U; i < 4U; i++)
   {
-    fakeStorage = copyOfStorage;
-    fakeStorage.Undo(i);
+    fakeStorage_ = copyOfStorage;
+    fakeStorage_.Undo(i);
 
-    uut.MountStep1();
+    uut_.MountStep1();
 
     std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-    ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+    ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-    uut.MountStep2();
+    uut_.MountStep2();
 
-    ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+    ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-    BasicTest_WriteRead(&uut, blockSize, 1);
+    BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-    uut.Unmount();
+    uut_.Unmount();
   }
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_GetNbOfCachedBits)
@@ -2313,7 +2313,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_GetNbOfCachedB
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
 
   ASSERT_EQ(gpcc::stream::IStreamWriter::States::open, spISW->GetState());
 
@@ -2341,7 +2341,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionWriter_GetNbOfCachedB
   ASSERT_EQ(gpcc::stream::IStreamWriter::States::closed, spISW->GetState());
   EXPECT_THROW(spISW->GetNbOfCachedBits(), gpcc::stream::ClosedError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_BadNames)
 {
@@ -2349,128 +2349,128 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_BadNames)
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  ASSERT_THROW(spISR = uut.Open(""), std::invalid_argument);
-  ASSERT_THROW(spISR = uut.Open(" Sec1"), std::invalid_argument);
-  ASSERT_THROW(spISR = uut.Open("Sec2 "), std::invalid_argument);
-  ASSERT_THROW(spISR = uut.Open(" Sec3 "), std::invalid_argument);
-  ASSERT_THROW(spISR = uut.Open(" "), std::invalid_argument);
+  ASSERT_THROW(spISR = uut_.Open(""), std::invalid_argument);
+  ASSERT_THROW(spISR = uut_.Open(" Sec1"), std::invalid_argument);
+  ASSERT_THROW(spISR = uut_.Open("Sec2 "), std::invalid_argument);
+  ASSERT_THROW(spISR = uut_.Open(" Sec3 "), std::invalid_argument);
+  ASSERT_THROW(spISR = uut_.Open(" "), std::invalid_argument);
 
-  ASSERT_NO_THROW(spISW = uut.Create("A", false));
-  ASSERT_NO_THROW(spISW = uut.Create("A B", false));
+  ASSERT_NO_THROW(spISW = uut_.Create("A", false));
+  ASSERT_NO_THROW(spISW = uut_.Create("A B", false));
   spISW.reset();
 
-  ASSERT_NO_THROW(spISR = uut.Open("A"));
-  ASSERT_NO_THROW(spISR = uut.Open("A B"));
+  ASSERT_NO_THROW(spISR = uut_.Open("A"));
+  ASSERT_NO_THROW(spISR = uut_.Open("A B"));
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionNotExisting)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Sec1"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_THROW(spISR = uut_.Open("Sec1"), gpcc::file_systems::NoSuchFileError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_WrongState)
 {
   Format(128);
   RandomData data(8,8);
-  data.Write("Section1", false, uut);
-  uut.Unmount();
+  data.Write("Section1", false, uut_);
+  uut_.Unmount();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
 
   // state is not_mounted
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut_.GetState());
 
-  ASSERT_THROW(spISR = uut.Open("Section1"), InsufficientStateError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), InsufficientStateError);
 
   // bring uut into state "ro_mount"
-  uut.MountStep1();
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut.GetState());
+  uut_.MountStep1();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut_.GetState());
 
-  ASSERT_NO_THROW(spISR = uut.Open("Section1"));
+  ASSERT_NO_THROW(spISR = uut_.Open("Section1"));
   spISR.reset();
 
   // bring uut into state "mounted"
-  uut.MountStep2();
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
+  uut_.MountStep2();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut_.GetState());
 
-  ASSERT_NO_THROW(spISR = uut.Open("Section1"));
+  ASSERT_NO_THROW(spISR = uut_.Open("Section1"));
   spISR.reset();
 
   // bring uut into state "defect"
-  fakeStorage.Invalidate(blockSize * 3U, blockSize);
-  ASSERT_THROW(data.Write("Section2", false, uut), DataIntegrityError);
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
+  fakeStorage_.Invalidate(blockSize_ * 3U, blockSize_);
+  ASSERT_THROW(data.Write("Section2", false, uut_), DataIntegrityError);
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut_.GetState());
 
-  ASSERT_THROW(spISR = uut.Open("Section1"), InsufficientStateError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), InsufficientStateError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionLockedByReader)
 {
   Format(128);
 
   RandomData data(8,8);
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR1;
   std::unique_ptr<gpcc::stream::IStreamReader> spISR2;
-  ASSERT_NO_THROW(spISR1 = uut.Open("Section1"));
-  ASSERT_NO_THROW(spISR2 = uut.Open("Section1"));
+  ASSERT_NO_THROW(spISR1 = uut_.Open("Section1"));
+  ASSERT_NO_THROW(spISR2 = uut_.Open("Section1"));
   spISR1.reset();
   spISR2.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionLockedByWriter)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
+  spISW = uut_.Create("Section1", false);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::FileAlreadyAccessedError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::FileAlreadyAccessedError);
 
   spISW.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_EmptySection)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
+  spISW = uut_.Create("Section1", false);
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
   ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_DestroyReaderWithoutClose)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
+  spISW = uut_.Create("Section1", false);
   spISW->Write_uint32(0x12345678U);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
   spISR.reset();
 
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
   uint8_t data[4];
   spISR->Read_uint8(data, 4);
   ASSERT_EQ(0x78U, data[0]);
@@ -2479,8 +2479,8 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_DestroyReaderWithoutClo
   ASSERT_EQ(0x12U, data[3]);
   spISR.reset();
 
-  ASSERT_NO_THROW(uut.Delete("Section1"));
-  uut.Unmount();
+  ASSERT_NO_THROW(uut_.Delete("Section1"));
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_diffName_sameVersion)
 {
@@ -2490,31 +2490,31 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_diffN
   // Version of the section heads is the same.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data(8,8);
-  data.Write("Section1", false, uut);
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
-  uut.Unmount();
+  data.Write("Section1", false, uut_);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
+  uut_.Unmount();
 
   // create 2nd section head, uses head of 1st section as template
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 1;   // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 1;   // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
+  uut_.MountStep1();
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), BlockLinkageError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), BlockLinkageError);
 
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
-  uut.Unmount();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut_.GetState());
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_diffName_2ndOlder)
 {
@@ -2524,30 +2524,30 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_diffN
   // The second section head has an lower version. No version wrap-around.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data(8,8);
-  data.Write("Section1", false, uut);
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
-  uut.Unmount();
+  data.Write("Section1", false, uut_);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
+  uut_.Unmount();
 
   // create 2nd section head, uses head of 1st section as template
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0;   // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0;   // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
-  data.Compare("Section1", uut);
-  ASSERT_THROW(data.Compare("Section2", uut), gpcc::file_systems::NoSuchFileError);
+  uut_.MountStep1();
+  data.Compare("Section1", uut_);
+  ASSERT_THROW(data.Compare("Section2", uut_), gpcc::file_systems::NoSuchFileError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_diffName_2ndNewer)
 {
@@ -2557,30 +2557,30 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_diffN
   // The second section head has an higher version. No version wrap-around.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data(8,8);
-  data.Write("Section1", false, uut);
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
-  uut.Unmount();
+  data.Write("Section1", false, uut_);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
+  uut_.Unmount();
 
   // create 2nd section head, uses head of 1st section as template
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 2;   // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 2;   // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
-  ASSERT_THROW(data.Compare("Section1", uut), gpcc::file_systems::NoSuchFileError);
-  data.Compare("Section2", uut);
+  uut_.MountStep1();
+  ASSERT_THROW(data.Compare("Section1", uut_), gpcc::file_systems::NoSuchFileError);
+  data.Compare("Section2", uut_);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_diffName_2ndOlder_WithWrapAround)
 {
@@ -2590,37 +2590,37 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_diffN
   // The second section head has an lower version. With version wrap-around.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data(8,8);
-  data.Write("Section1", false, uut);
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
-  uut.Unmount();
+  data.Write("Section1", false, uut_);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
+  uut_.Unmount();
 
   // set version of first section
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0;
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0;
-  fakeStorage.Write(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0;
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0;
+  fakeStorage_.Write(1U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(1);
 
   // create 2nd section head, uses head of 1st section as template
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF; // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF; // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF; // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF; // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
-  data.Compare("Section1", uut);
-  ASSERT_THROW(data.Compare("Section2", uut), gpcc::file_systems::NoSuchFileError);
+  uut_.MountStep1();
+  data.Compare("Section1", uut_);
+  ASSERT_THROW(data.Compare("Section2", uut_), gpcc::file_systems::NoSuchFileError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_diffName_2ndNewer_WithWrapAround)
 {
@@ -2630,37 +2630,37 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_diffN
   // The second section head has an higher version. With version wrap-around.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data(8,8);
-  data.Write("Section1", false, uut);
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
-  uut.Unmount();
+  data.Write("Section1", false, uut_);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
+  uut_.Unmount();
 
   // set version of first section
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF;
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF;
-  fakeStorage.Write(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF;
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF;
+  fakeStorage_.Write(1U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(1);
 
   // create 2nd section head, uses head of 1st section as template
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7U] = '2';           // Section1 -> Section2
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]++;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0x00; // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0x00; // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0x00; // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0x00; // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
-  ASSERT_THROW(data.Compare("Section1", uut), gpcc::file_systems::NoSuchFileError);
-  data.Compare("Section2", uut);
+  uut_.MountStep1();
+  ASSERT_THROW(data.Compare("Section1", uut_), gpcc::file_systems::NoSuchFileError);
+  data.Compare("Section2", uut_);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_sameName_sameVersion)
 {
@@ -2670,33 +2670,33 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_sameN
   // Name and version of the section heads are the same.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data1(8,8);
-  data1.Write("Section1", false, uut);
+  data1.Write("Section1", false, uut_);
   RandomData data2(8,8);
-  data2.Write("Section2", false, uut);
-  ASSERT_EQ(4U, fakeStorage.writeAccessCnt);
-  uut.Unmount();
+  data2.Write("Section2", false, uut_);
+  ASSERT_EQ(4U, fakeStorage_.writeAccessCnt);
+  uut_.Unmount();
 
   // update head of 2nd section
-  fakeStorage.Read(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(3U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7U] = '1';           // Section2 -> Section1
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7U] = '1';           // Section2 -> Section1
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 1;   // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 1;   // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
+  uut_.MountStep1();
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), BlockLinkageError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), BlockLinkageError);
 
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
-  uut.Unmount();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut_.GetState());
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_sameName_2ndOlder)
 {
@@ -2706,31 +2706,31 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_sameN
   // Names are the same, version of the second section is lower. No version wrap-around.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data1(8,8);
-  data1.Write("Section1", false, uut);
+  data1.Write("Section1", false, uut_);
   RandomData data2(8,8);
-  data2.Write("Section2", false, uut);
-  ASSERT_EQ(4U, fakeStorage.writeAccessCnt);
-  uut.Unmount();
+  data2.Write("Section2", false, uut_);
+  ASSERT_EQ(4U, fakeStorage_.writeAccessCnt);
+  uut_.Unmount();
 
   // update head of 2nd section
-  fakeStorage.Read(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(3U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7U] = '1';           // Section2 -> Section1
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7U] = '1';           // Section2 -> Section1
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0;   // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0;   // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
-  data1.Compare("Section1", uut);
+  uut_.MountStep1();
+  data1.Compare("Section1", uut_);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_sameName_2ndNewer)
 {
@@ -2740,31 +2740,31 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_sameN
   // Names are the same, version of the second section is higher. No version wrap-around.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data1(8,8);
-  data1.Write("Section1", false, uut);
+  data1.Write("Section1", false, uut_);
   RandomData data2(8,8);
-  data2.Write("Section2", false, uut);
-  ASSERT_EQ(4U, fakeStorage.writeAccessCnt);
-  uut.Unmount();
+  data2.Write("Section2", false, uut_);
+  ASSERT_EQ(4U, fakeStorage_.writeAccessCnt);
+  uut_.Unmount();
 
   // update head of 2nd section
-  fakeStorage.Read(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(3U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7U] = '1';           // Section2 -> Section1
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7U] = '1';           // Section2 -> Section1
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 2;   // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 2;   // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0;   // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
-  data2.Compare("Section1", uut);
+  uut_.MountStep1();
+  data2.Compare("Section1", uut_);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_sameName_2ndOlder_WithWrapAround)
 {
@@ -2774,38 +2774,38 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_sameN
   // Names are the same, version of the second section is lower. With version wrap-around.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data1(8,8);
-  data1.Write("Section1", false, uut);
+  data1.Write("Section1", false, uut_);
   RandomData data2(8,8);
-  data2.Write("Section2", false, uut);
-  ASSERT_EQ(4U, fakeStorage.writeAccessCnt);
-  uut.Unmount();
+  data2.Write("Section2", false, uut_);
+  ASSERT_EQ(4U, fakeStorage_.writeAccessCnt);
+  uut_.Unmount();
 
   // set version of first section
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0x00;
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0x00;
-  fakeStorage.Write(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0x00;
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0x00;
+  fakeStorage_.Write(1U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(1);
 
   // update head of 2nd section
-  fakeStorage.Read(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(3U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7U] = '1';           // Section2 -> Section1
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7U] = '1';           // Section2 -> Section1
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF; // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF; // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF; // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF; // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
-  data1.Compare("Section1", uut);
+  uut_.MountStep1();
+  data1.Compare("Section1", uut_);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_sameName_2ndNewer_WithWrapAround)
 {
@@ -2815,52 +2815,52 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Open_SectionWith2Heads_sameN
   // Names are the same, version of the second section is higher. With version wrap-around.
 
   Format(128);
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data1(8,8);
-  data1.Write("Section1", false, uut);
+  data1.Write("Section1", false, uut_);
   RandomData data2(8,8);
-  data2.Write("Section2", false, uut);
-  ASSERT_EQ(4U, fakeStorage.writeAccessCnt);
-  uut.Unmount();
+  data2.Write("Section2", false, uut_);
+  ASSERT_EQ(4U, fakeStorage_.writeAccessCnt);
+  uut_.Unmount();
 
   // set version of first section
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF;
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF;
-  fakeStorage.Write(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF;
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF;
+  fakeStorage_.Write(1U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(1);
 
   // update head of 2nd section
-  fakeStorage.Read(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(3U * blockSize_, blockSize_, pBuffer_);
 
-  pBuffer[sizeof(SectionHeadBlock_t) + 7U] = '1';           // Section2 -> Section1
-  pBuffer[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
+  pBuffer_[sizeof(SectionHeadBlock_t) + 7U] = '1';           // Section2 -> Section1
+  pBuffer_[offsetof(CommonBlockHead_t, sectionNameHash)]--;  // Update name hash
 
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0x00; // set version LB
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0x00; // set version HB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0x00; // set version LB
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0x00; // set version HB
 
-  fakeStorage.Write(3U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Write(3U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(3);
 
   // test
-  uut.MountStep1();
-  data2.Compare("Section1", uut);
+  uut_.MountStep1();
+  data2.Compare("Section1", uut_);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_RemainingBytes)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   ASSERT_FALSE(spISR->IsRemainingBytesSupported());
 
@@ -2879,18 +2879,18 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_RemainingBytes
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
   EXPECT_THROW((void)spISR->RemainingBytes(), gpcc::stream::ClosedError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EmptySection)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
+  spISW = uut_.Create("Section1", false);
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
   ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
   uint8_t data;
   ASSERT_THROW(*spISR >> data, gpcc::stream::EmptyError);
@@ -2898,21 +2898,21 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EmptySection)
   spISR->Close();
   spISR.reset();
 
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut_.GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadAndSectionBecomesEmpty)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
+  spISW = uut_.Create("Section1", false);
   spISW->Write_uint8(55);
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
   ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
   uint8_t data;
   *spISR >> data;
@@ -2921,14 +2921,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadAndSection
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadStrings)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
+  spISW = uut_.Create("Section1", false);
   *spISW << std::string("Str1");
   *spISW << std::string("Str2");
   spISW->Write_line("Str3");
@@ -2937,7 +2937,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadStrings)
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   std::string s;
   *spISR >> s;
@@ -2956,31 +2956,31 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadStrings)
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_NullTermIsLastByteInBlock)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 5U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   *spISW << std::string("Str1");
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   *spISW << static_cast<uint8_t>(0x55);
-  EXPECT_EQ(1U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(1U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 5U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 5U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -2995,27 +2995,27 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Nul
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_NullTermIsLastByteInBlockAndNoNextBlock)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 5U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   *spISW << std::string("Str1");
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
-  for (size_t i = 0; i < bytesPerBlock - 5U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 5U; i++)
   {
     uint8_t data;
     *spISR >> data;
@@ -3029,27 +3029,27 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Nul
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_StringSpansOverStorageBlockBoundary)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 3U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 3U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   *spISW << std::string("Str1");
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
-  for (size_t i = 0; i < bytesPerBlock - 3U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 3U; i++)
   {
     uint8_t data;
     *spISR >> data;
@@ -3063,29 +3063,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Str
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_StringSpansOverStorageBlockBoundaryPlusData)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 3U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 3U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   *spISW << std::string("Str1");
   *spISW << static_cast<uint8_t>(0x55U);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 3U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 3U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3100,27 +3100,27 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Str
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_StringSpansOverStorageBlockBoundaryNullTermIsFirstByteInNextBlock)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   *spISW << std::string("Str1");
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
   {
     uint8_t data;
     *spISR >> data;
@@ -3134,30 +3134,30 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Str
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_StringSpansOverStorageBlockBoundaryNullTermIsFirstByteInNextBlockPlusData)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   *spISW << std::string("Str1");
-  EXPECT_EQ(1U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(1U, fakeStorage_.writeAccessCnt);
   *spISW << static_cast<uint8_t>(0x55U);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3172,23 +3172,23 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_Str
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_NoNullTerminator)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
+  spISW = uut_.Create("Section1", false);
   spISW->Write_char("Str1", 4);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   std::string s;
   ASSERT_THROW(*spISR >> s, gpcc::stream::EmptyError);
@@ -3196,31 +3196,31 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_NoN
   spISR->Close();
   spISR.reset();
 
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut_.GetState());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_NoNullTerminatorAtEndOfBlock)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char("Str1", 4);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
   {
     uint8_t data;
     *spISR >> data;
@@ -3233,29 +3233,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadString_NoN
   spISR->Close();
   spISR.reset();
 
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut_.GetState());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_DifferentLineEndings)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
+  spISW = uut_.Create("Section1", false);
   spISW->Write_string("Line1\nLine2\rLine3\r\nLine4");
   *spISW << static_cast<uint8_t>(0x55);
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
   std::string s = spISR->Read_line();
@@ -3272,31 +3272,31 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Diffe
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_EmptyStr_NUL_TermCharIsLastByteInBlock)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_uint8(0x00);
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   *spISW << static_cast<uint8_t>(0x55);
-  EXPECT_EQ(1U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(1U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3310,31 +3310,31 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_EmptyStr_LF_TermCharIsLastByteInBlock)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char('\n');
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   *spISW << static_cast<uint8_t>(0x55);
-  EXPECT_EQ(1U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(1U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3348,31 +3348,31 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_EmptyStr_CR_TermCharIsLastByteInBlock)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char('\r');
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   *spISW << static_cast<uint8_t>(0x55);
-  EXPECT_EQ(1U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(1U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3386,32 +3386,32 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_EmptyStr_CRLF_TermCharsAreInBothBlocks)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char('\r');
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW->Write_char('\n');
-  EXPECT_EQ(1U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(1U, fakeStorage_.writeAccessCnt);
   *spISW << static_cast<uint8_t>(0x55);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3425,32 +3425,32 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_EmptyStr_CRLF_TermCharIsLastByteInBlock)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 2U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 2U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char('\r');
   spISW->Write_char('\n');
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   *spISW << static_cast<uint8_t>(0x55);
-  EXPECT_EQ(1U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(1U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 2U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 2U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3464,29 +3464,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_EmptyStr_NUL_EOF)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 2U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 2U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_uint8(0x00);
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 2U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 2U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3498,29 +3498,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_EmptyStr_LF_EOF)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 2U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 2U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char('\n');
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 2U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 2U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3532,29 +3532,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_EmptyStr_CR_EOF)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 2U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 2U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char('\r');
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 2U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 2U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3566,30 +3566,30 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_EmptyStr_CRLF_EOF)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 3U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 3U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char('\r');
   spISW->Write_char('\n');
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 3U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 3U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3601,29 +3601,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_EmptyStr_NUL_EOFandBlockEnd)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_uint8(0x00);
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3635,29 +3635,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_EmptyStr_LF_EOFandBlockEnd)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char('\n');
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3669,29 +3669,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_EmptyStr_CR_EOFandBlockEnd)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char('\r');
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3703,30 +3703,30 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_EmptyStr_CRLF_EOFandBlockEnd)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 2U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 2U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char('\r');
   spISW->Write_char('\n');
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 2U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 2U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3738,31 +3738,31 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Empty
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NUL_TermCharIsLastByteInBlock)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_string("ABC");
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   *spISW << static_cast<uint8_t>(0x55);
-  EXPECT_EQ(1U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(1U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3776,31 +3776,31 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NUL_T
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_LF_TermCharIsLastByteInBlock)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char("ABC\n", 4U);
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   *spISW << static_cast<uint8_t>(0x55);
-  EXPECT_EQ(1U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(1U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3814,31 +3814,31 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_LF_Te
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CR_TermCharIsLastByteInBlock)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char("ABC\r", 4U);
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   *spISW << static_cast<uint8_t>(0x55);
-  EXPECT_EQ(1U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(1U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3852,31 +3852,31 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CR_Te
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_TermCharsAreInBothBlocks)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char("ABC\r\n", 5U);
-  EXPECT_EQ(1U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(1U, fakeStorage_.writeAccessCnt);
   *spISW << static_cast<uint8_t>(0x55);
-  EXPECT_EQ(1U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(1U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3890,31 +3890,31 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_TermCharIsLastByteInBlock)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 5U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char("ABC\r\n", 5U);
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   *spISW << static_cast<uint8_t>(0x55);
-  EXPECT_EQ(1U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(1U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 5U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 5U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3928,29 +3928,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NUL_EOF)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 5U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_string("ABC");
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 5U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 5U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3962,29 +3962,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NUL_E
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_LF_EOF)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 5U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char("ABC\n", 4U);
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 5U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 5U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -3996,29 +3996,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_LF_EO
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CR_EOF)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 5U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char("ABC\r", 4U);
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 5U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 5U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -4030,29 +4030,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CR_EO
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_EOF)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 6U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 6U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char("ABC\r\n", 5U);
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 6U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 6U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -4064,29 +4064,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NUL_EOFandBlockEnd)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_string("ABC");
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -4098,29 +4098,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NUL_E
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_LF_EOFandBlockEnd)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char("ABC\n", 4U);
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -4132,29 +4132,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_LF_EO
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CR_EOFandBlockEnd)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char("ABC\r", 4U);
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -4166,29 +4166,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CR_EO
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_EOFandBlockEnd)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 5U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char("ABC\r\n", 5U);
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 5U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 5U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -4200,23 +4200,23 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_CRLF_
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NoTermCharAtEOF)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
+  spISW = uut_.Create("Section1", false);
   spISW->Write_char("Str1", 4);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   std::string s;
   s = spISR->Read_line();
@@ -4225,31 +4225,31 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NoTer
   spISR->Close();
   spISR.reset();
 
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut_.GetState());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NoTermCharAtEOF_AtBlockEnd)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char("Str1", 4);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
   {
     uint8_t data;
     *spISR >> data;
@@ -4263,31 +4263,31 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_NoTer
   spISR->Close();
   spISR.reset();
 
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut_.GetState());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_StringSpansOverStorageBlockBoundary)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 3U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 3U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char("Str1\n", 5);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
-  for (size_t i = 0; i < bytesPerBlock - 3U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 3U; i++)
   {
     uint8_t data;
     *spISR >> data;
@@ -4300,34 +4300,34 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_StringSpansOverStorageBlockBoundary_ErrDuringReadNextBlock)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 3U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 3U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char("Str1\n", 5);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
-  for (size_t i = 0; i < bytesPerBlock - 3U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 3U; i++)
   {
     uint8_t data;
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
   }
 
-  fakeStorage.readAccessesTillThrow = 1U;
+  fakeStorage_.readAccessesTillThrow = 1U;
 
   std::string s;
   EXPECT_THROW(s = spISR->Read_line(), std::runtime_error);
@@ -4335,29 +4335,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_StringSpansOverStorageBlockBoundaryPlusData)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 3U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 3U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char("Str1\n", 5);
   *spISW << static_cast<uint8_t>(0x55U);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 3U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 3U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -4371,27 +4371,27 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_StringSpansOverStorageBlockBoundary_LFisFirstByteInNextBlock)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char("Str1\n", 5);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
   {
     uint8_t data;
     *spISR >> data;
@@ -4404,32 +4404,32 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_StringSpansOverStorageBlockBoundary_LFisFirstByteInNextBlockPlusData)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW->Write_char("Str1", 4);
-  EXPECT_EQ(0U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(0U, fakeStorage_.writeAccessCnt);
   spISW->Write_char('\n');
-  EXPECT_EQ(1U, fakeStorage.writeAccessCnt);
+  EXPECT_EQ(1U, fakeStorage_.writeAccessCnt);
   *spISW << static_cast<uint8_t>(0x55U);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 4U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 4U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -4443,29 +4443,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadLine_Strin
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadByte_LastByteOfLastBlock)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   *spISW << static_cast<uint8_t>(0xEEU);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
 
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -4481,29 +4481,29 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadByte_LastB
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadByte_ErrorOnlyFewBitsLeft)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   *spISW << static_cast<uint8_t>(0xEEU);
   spISW.reset();
 
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
 
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -4522,87 +4522,87 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadByte_Error
   spISR->Close();
   spISR.reset();
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadChunkOfBytes_LastBytesOfLastBlock)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < 2U * bytesPerBlock; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < 2U * bytesPerBlock_; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   std::vector<uint8_t> data;
-  data.resize(2U * bytesPerBlock);
+  data.resize(2U * bytesPerBlock_);
 
-  spISR->Read_uint8(data.data(), 2U * bytesPerBlock);
+  spISR->Read_uint8(data.data(), 2U * bytesPerBlock_);
 
   ASSERT_EQ(gpcc::stream::IStreamReader::States::empty, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 
-  for (size_t i = 0; i < 2U * bytesPerBlock; i++)
+  for (size_t i = 0; i < 2U * bytesPerBlock_; i++)
   {
     ASSERT_EQ(i & 0xFFU, data[i]);
   }
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadChunkOfBytes_ErrReadBeyondEndOfSection)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < 2U * bytesPerBlock; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < 2U * bytesPerBlock_; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   std::vector<uint8_t> data;
-  data.resize((2U * bytesPerBlock) + 2U);
+  data.resize((2U * bytesPerBlock_) + 2U);
 
-  ASSERT_THROW(spISR->Read_uint8(data.data(), (2U * bytesPerBlock) + 2U), gpcc::stream::EmptyError);
+  ASSERT_THROW(spISR->Read_uint8(data.data(), (2U * bytesPerBlock_) + 2U), gpcc::stream::EmptyError);
 
   ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
 
   spISR->Close();
   spISR.reset();
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadBits_MoreThanLeft_ButOneMoreByteAvailable)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
+  spISW = uut_.Create("Section1", false);
   spISW->Write_uint8(0x12U);
   spISW->Write_uint8(0x34U);
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
 
@@ -4617,19 +4617,19 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadBits_MoreT
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadBits_MoreThanLeft)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
+  spISW = uut_.Create("Section1", false);
   spISW->Write_uint8(0x12U);
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
 
@@ -4645,22 +4645,22 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadBits_MoreT
   spISR->Close();
   spISR.reset();
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadBits_LastBitsInSection)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
+  spISW = uut_.Create("Section1", false);
   spISW->Write_uint8(0x12U);
   spISW->Write_uint8(0x34U);
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
 
@@ -4693,19 +4693,19 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadBits_LastB
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadBits_OneByOne)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
+  spISW = uut_.Create("Section1", false);
   spISW->Write_uint8(0x12U);
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   bool bit;
 
@@ -4744,7 +4744,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ReadBits_OneBy
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, ReadWriteBits_ProperInsertionOfGaps)
 {
@@ -4753,7 +4753,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, ReadWriteBits_ProperInsertio
   uint8_t data = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
+  spISW = uut_.Create("Section1", false);
 
   spISW->Write_uint8(0x12U);
 
@@ -4781,7 +4781,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, ReadWriteBits_ProperInsertio
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   bool bit;
   *spISR >> data;
@@ -4828,14 +4828,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, ReadWriteBits_ProperInsertio
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_CRCErrorOnFirstDataBlock)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
+  spISW = uut_.Create("Section1", false);
   *spISW << std::string("Test");
   spISW.reset();
 
@@ -4843,32 +4843,32 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_CRCErrorOnFirs
   InvalidateCRC(2);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), DataIntegrityError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), DataIntegrityError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_CRCErrorOnSecondDataBlock)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock + 5U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ + 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   // invalid checksum of 2nd data block
   InvalidateCRC(3);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
@@ -4879,101 +4879,101 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_CRCErrorOnSeco
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ThrowOnFirstDataBlock1)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
+  spISW = uut_.Create("Section1", false);
   *spISW << std::string("Test");
   spISW.reset();
 
-  fakeStorage.readAccessesTillThrow = 4; // Hash + Head(2) + Data(1 of 2)
+  fakeStorage_.readAccessesTillThrow = 4; // Hash + Head(2) + Data(1 of 2)
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), std::exception);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), std::exception);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ThrowOnFirstDataBlock2)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
+  spISW = uut_.Create("Section1", false);
   *spISW << std::string("Test");
   spISW.reset();
 
-  fakeStorage.readAccessesTillThrow = 5; // Hash + Head(2) + Data(2 of 2)
+  fakeStorage_.readAccessesTillThrow = 5; // Hash + Head(2) + Data(2 of 2)
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), std::exception);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), std::exception);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ThrowOnSecondDataBlock1)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock + 5U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ + 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
   }
 
-  fakeStorage.readAccessesTillThrow = 1;
+  fakeStorage_.readAccessesTillThrow = 1;
   ASSERT_THROW(*spISR >> data, gpcc::stream::IOError);
   ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_ThrowOnSecondDataBlock2)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
-  for (size_t i = 0; i < bytesPerBlock + 5U; i++)
+  spISW = uut_.Create("Section1", false);
+  for (size_t i = 0; i < bytesPerBlock_ + 5U; i++)
     *spISW << static_cast<uint8_t>(i & 0xFFU);
   spISW.reset();
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   uint8_t data;
-  for (size_t i = 0; i < bytesPerBlock - 1U; i++)
+  for (size_t i = 0; i < bytesPerBlock_ - 1U; i++)
   {
     *spISR >> data;
     ASSERT_EQ(static_cast<uint8_t>(i & 0xFFU), data);
   }
 
-  fakeStorage.readAccessesTillThrow = 2;
+  fakeStorage_.readAccessesTillThrow = 2;
   ASSERT_THROW(*spISR >> data, gpcc::stream::IOError);
   ASSERT_EQ(gpcc::stream::IStreamReader::States::error, spISR->GetState());
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataConsumed_OK_1)
 {
@@ -4982,7 +4982,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataC
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Section1", false);
+  spISW = uut_.Create("Section1", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Write_uint8(0x13U);
@@ -4990,7 +4990,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataC
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Section1");
+  spISR = uut_.Open("Section1");
 
   // (3 bytes left) -------------------------------------------------------------------------------------------
   EXPECT_THROW(spISR->EnsureAllDataConsumed(IStreamReader::RemainingNbOfBits::zero), RemainingBitsError);
@@ -5132,7 +5132,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataC
 
   spISR->Close();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataConsumed_OK_2)
 {
@@ -5141,14 +5141,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataC
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   // (2 bytes left) -------------------------------------------------------------------------------------------
   EXPECT_THROW(spISR->EnsureAllDataConsumed(IStreamReader::RemainingNbOfBits::zero), RemainingBitsError);
@@ -5293,7 +5293,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataC
 
   spISR->Close();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataConsumed_ErrorState)
 {
@@ -5302,14 +5302,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataC
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   // create error condition
   ASSERT_THROW((void)spISR->Read_uint32(), EmptyError);
@@ -5328,7 +5328,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataC
 
   spISR->Close();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataConsumed_ClosedState)
 {
@@ -5337,14 +5337,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataC
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   // create pre-condition
   spISR->Close();
@@ -5361,14 +5361,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, SectionReader_EnsureAllDataC
   EXPECT_THROW(spISR->EnsureAllDataConsumed(IStreamReader::RemainingNbOfBits::moreThanSeven), ClosedError);
   EXPECT_THROW(spISR->EnsureAllDataConsumed(IStreamReader::RemainingNbOfBits::any), ClosedError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, AlignToByteBoundary_OK)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
 
   spISW->Write_Bit(true);
   spISW->Write_Bit(false);
@@ -5383,7 +5383,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, AlignToByteBoundary_OK)
   spISW->Close();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   EXPECT_EQ(0x01U, spISR->Read_uint8());
   EXPECT_EQ(0x00U, spISR->Read_uint8());
@@ -5395,14 +5395,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, AlignToByteBoundary_OK)
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, AlignToByteBoundary_StateClosed)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
 
   spISW->Write_uint32(0xDEADBEEFUL);
 
@@ -5415,7 +5415,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, AlignToByteBoundary_StateClo
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   EXPECT_EQ(0xDEADBEEFUL, spISR->Read_uint32());
 
@@ -5424,7 +5424,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, AlignToByteBoundary_StateClo
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, FillBitsAndBytes_OK)
 {
@@ -5433,7 +5433,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, FillBitsAndBytes_OK)
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
 
   spISW->FillBits(1, true);
   spISW->FillBits(1, false);
@@ -5449,7 +5449,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, FillBitsAndBytes_OK)
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   EXPECT_EQ(0x3DU, spISR->Read_uint8());
   EXPECT_EQ(0xFFU, spISR->Read_uint8());
@@ -5463,7 +5463,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, FillBitsAndBytes_OK)
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, FillBitsAndBytes_StateClosed)
 {
@@ -5472,7 +5472,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, FillBitsAndBytes_StateClosed
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
 
   spISW->Write_uint32(0xDEADBEEFUL);
 
@@ -5486,7 +5486,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, FillBitsAndBytes_StateClosed
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   EXPECT_EQ(0xDEADBEEFUL, spISR->Read_uint32());
 
@@ -5495,21 +5495,21 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, FillBitsAndBytes_StateClosed
   spISR->Close();
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_ZeroBits)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0x57U);
   spISW->Write_uint8(0xE9U);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   uint8_t u8;
 
@@ -5529,7 +5529,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_ZeroBits)
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsLeft_SkipSomeBits)
 {
@@ -5538,13 +5538,13 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsLeft_SkipSomeBits)
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
   ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
@@ -5560,7 +5560,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsLeft_SkipSomeBits)
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndOneByteLeft_SkipAllBits)
 {
@@ -5569,14 +5569,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndOneByteLeft_Skip
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
   ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
@@ -5592,7 +5592,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndOneByteLeft_Skip
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsLeft_SkipAll)
 {
@@ -5601,13 +5601,13 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsLeft_SkipAll)
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
   ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
@@ -5620,7 +5620,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsLeft_SkipAll)
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsLeft_SkipAllPlusOne)
 {
@@ -5629,13 +5629,13 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsLeft_SkipAllPlusOne
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
   ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
@@ -5648,7 +5648,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsLeft_SkipAllPlusOne
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndOneByteLeft_SkipAllBitsAndOneByte)
 {
@@ -5657,14 +5657,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndOneByteLeft_Skip
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
   ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
@@ -5677,7 +5677,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndOneByteLeft_Skip
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndOneByteLeft_SkipAllBitsAndTwoByte)
 {
@@ -5686,14 +5686,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndOneByteLeft_Skip
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
   ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
@@ -5706,7 +5706,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndOneByteLeft_Skip
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndOneByteLeft_SkipAllBitsAndOneByteAndOneBit)
 {
@@ -5715,14 +5715,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndOneByteLeft_Skip
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
   ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
@@ -5735,7 +5735,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndOneByteLeft_Skip
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndTwoByteLeft_SkipAllBitsAndOneByte)
 {
@@ -5744,7 +5744,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndTwoByteLeft_Skip
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Write_uint8(0x36U);
@@ -5752,7 +5752,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndTwoByteLeft_Skip
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
   ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
@@ -5768,7 +5768,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndTwoByteLeft_Skip
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndTwoByteLeft_SkipAllBitsAndOneByteAndOneBit)
 {
@@ -5777,7 +5777,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndTwoByteLeft_Skip
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Write_uint8(0x36U);
@@ -5785,7 +5785,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndTwoByteLeft_Skip
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(4U), 0x0AU);
   ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
@@ -5801,7 +5801,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_BitsAndTwoByteLeft_Skip
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_OneByteLeft_Skip8Bits)
 {
@@ -5810,14 +5810,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_OneByteLeft_Skip8Bits)
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0xDBU);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(8U), 0x8AU);
   ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
@@ -5830,7 +5830,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_OneByteLeft_Skip8Bits)
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_OneByteLeft_Skip7Bits)
 {
@@ -5839,14 +5839,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_OneByteLeft_Skip7Bits)
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0x80U);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(8U), 0x8AU);
   ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
@@ -5862,7 +5862,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_OneByteLeft_Skip7Bits)
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_OneByteLeft_Skip9Bits)
 {
@@ -5871,14 +5871,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_OneByteLeft_Skip9Bits)
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0x80U);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_bits(8U), 0x8AU);
   ASSERT_EQ(spISR->GetState(), gpcc::stream::IStreamReader::States::open);
@@ -5891,7 +5891,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_OneByteLeft_Skip9Bits)
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_TwoByteLeft_Skip8Bits)
 {
@@ -5900,14 +5900,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_TwoByteLeft_Skip8Bits)
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0x80U);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   // - precondition established -
 
@@ -5920,7 +5920,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_TwoByteLeft_Skip8Bits)
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_TwoByteLeft_Skip16Bits)
 {
@@ -5929,14 +5929,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_TwoByteLeft_Skip16Bits)
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0x80U);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   // - precondition established -
 
@@ -5946,7 +5946,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_TwoByteLeft_Skip16Bits)
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_TwoByteLeft_Skip9Bits)
 {
@@ -5955,14 +5955,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_TwoByteLeft_Skip9Bits)
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0x8AU);
   spISW->Write_uint8(0x80U);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   // - precondition established -
 
@@ -5975,7 +5975,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_TwoByteLeft_Skip9Bits)
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_LargerThanBlockSize)
 {
@@ -5984,14 +5984,14 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_LargerThanBlockSize)
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   for (uint_fast16_t i = 0; i < 256U; i++)
     spISW->Write_uint16(i);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   // - precondition established -
 
@@ -6004,7 +6004,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_LargerThanBlockSize)
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_LastBitInLastByteOfBlock_MoreBlocks)
 {
@@ -6013,17 +6013,17 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_LastBitInLastByteOfBloc
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
-  for (uint_fast16_t i = 0; i < bytesPerBlock; i++)
+  spISW = uut_.Create("Test.dat", false);
+  for (uint_fast16_t i = 0; i < bytesPerBlock_; i++)
     spISW->Write_uint8(i & 0xFFU);
   spISW->Write_uint32(0xDEADBEEFUL);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
-  for (uint_fast16_t i = 0; i < bytesPerBlock-1U; i++)
+  for (uint_fast16_t i = 0; i < bytesPerBlock_-1U; i++)
   {
     ASSERT_EQ(spISR->Read_uint8(), i & 0xFFU);
   }
@@ -6039,7 +6039,7 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_LastBitInLastByteOfBloc
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_LastBitInLastByteOfBlock_NoMoreBlocks)
 {
@@ -6048,16 +6048,16 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_LastBitInLastByteOfBloc
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
-  for (uint_fast16_t i = 0; i < bytesPerBlock; i++)
+  spISW = uut_.Create("Test.dat", false);
+  for (uint_fast16_t i = 0; i < bytesPerBlock_; i++)
     spISW->Write_uint8(i & 0xFFU);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
-  for (uint_fast16_t i = 0; i < bytesPerBlock-1U; i++)
+  for (uint_fast16_t i = 0; i < bytesPerBlock_-1U; i++)
   {
     ASSERT_EQ(spISR->Read_uint8(), i & 0xFFU);
   }
@@ -6070,21 +6070,21 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_LastBitInLastByteOfBloc
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_EmptyStream)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   ASSERT_EQ(spISR->Read_uint8(), 0xFAU);
   ASSERT_EQ(gpcc::stream::IStreamReader::States::open, spISR->GetState());
@@ -6099,41 +6099,41 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_EmptyStream)
   spISR->Close();
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_ClosedStream)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
   spISR->Close();
 
   ASSERT_THROW(spISR->Skip(1U), gpcc::stream::ClosedError);
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_StreamInErrorState)
 {
   Format(128);
 
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  spISW = uut.Create("Test.dat", false);
+  spISW = uut_.Create("Test.dat", false);
   spISW->Write_uint8(0xFAU);
   spISW->Write_uint8(0x12U);
   spISW->Close();
   spISW.reset();
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  spISR = uut.Open("Test.dat");
+  spISR = uut_.Open("Test.dat");
 
   uint8_t au8[3];
   ASSERT_THROW(spISR->Read_uint8(au8, 3), gpcc::stream::EmptyError);
@@ -6148,551 +6148,551 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Skip_StreamInErrorState)
 
   ASSERT_EQ(gpcc::stream::IStreamReader::States::closed, spISR->GetState());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Unmount_OK_DifferentStates)
 {
   Format(128);
-  uut.Unmount();
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  uut_.Unmount();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut_.GetState());
 
-  uut.MountStep1();
-  uut.Unmount();
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  uut_.MountStep1();
+  uut_.Unmount();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut_.GetState());
 
-  uut.MountStep1();
-  uut.MountStep2();
+  uut_.MountStep1();
+  uut_.MountStep2();
 
-  fakeStorage.Invalidate(blockSize, blockSize);
+  fakeStorage_.Invalidate(blockSize_, blockSize_);
   std::unique_ptr<gpcc::stream::IStreamWriter> spISW;
-  ASSERT_THROW(spISW = uut.Create("Section1", false), DataIntegrityError);
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_THROW(spISW = uut_.Create("Section1", false), DataIntegrityError);
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut_.GetState());
 
-  uut.Unmount();
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  uut_.Unmount();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut_.GetState());
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Unmount_WrongState)
 {
   Format(128);
-  uut.Unmount();
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  uut_.Unmount();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut_.GetState());
 
-  ASSERT_THROW(uut.Unmount(), InsufficientStateError);
+  ASSERT_THROW(uut_.Unmount(), InsufficientStateError);
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Unmount_LockedByReader)
 {
   Format(128);
 
   RandomData data(8,8);
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
-  auto spISR = uut.Open("Section1");
+  auto spISR = uut_.Open("Section1");
 
-  ASSERT_THROW(uut.Unmount(), NotAllSectionsClosedError);
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_THROW(uut_.Unmount(), NotAllSectionsClosedError);
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut_.GetState());
 
   spISR.reset();
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Unmount_LockedByWriter)
 {
   Format(128);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
 
-  ASSERT_THROW(uut.Unmount(), NotAllSectionsClosedError);
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_THROW(uut_.Unmount(), NotAllSectionsClosedError);
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut_.GetState());
 
   spISW.reset();
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Delete_BadNames)
 {
   Format(128);
 
-  ASSERT_THROW(uut.Delete(""), std::invalid_argument);
-  ASSERT_THROW(uut.Delete(" Sec1"), std::invalid_argument);
-  ASSERT_THROW(uut.Delete("Sec1 "), std::invalid_argument);
-  ASSERT_THROW(uut.Delete(" Sec1 "), std::invalid_argument);
-  ASSERT_THROW(uut.Delete(" "), std::invalid_argument);
+  ASSERT_THROW(uut_.Delete(""), std::invalid_argument);
+  ASSERT_THROW(uut_.Delete(" Sec1"), std::invalid_argument);
+  ASSERT_THROW(uut_.Delete("Sec1 "), std::invalid_argument);
+  ASSERT_THROW(uut_.Delete(" Sec1 "), std::invalid_argument);
+  ASSERT_THROW(uut_.Delete(" "), std::invalid_argument);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Delete_WrongState)
 {
   Format(128);
 
-  uut.Unmount();
+  uut_.Unmount();
 
   // state is not_mounted
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut_.GetState());
 
-  ASSERT_THROW(uut.Delete("Section1"), InsufficientStateError);
+  ASSERT_THROW(uut_.Delete("Section1"), InsufficientStateError);
 
   // bring uut into state "ro_mount"
-  uut.MountStep1();
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut.GetState());
+  uut_.MountStep1();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut_.GetState());
 
-  ASSERT_THROW(uut.Delete("Section1"), InsufficientStateError);
+  ASSERT_THROW(uut_.Delete("Section1"), InsufficientStateError);
 
   // bring uut into state "mounted"
-  uut.MountStep2();
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
+  uut_.MountStep2();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut_.GetState());
 
   // bring uut into state "defect"
-  fakeStorage.Invalidate(blockSize, blockSize);
+  fakeStorage_.Invalidate(blockSize_, blockSize_);
   RandomData data(8,8);
-  ASSERT_THROW(data.Write("Section2", false, uut), DataIntegrityError);
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_THROW(data.Write("Section2", false, uut_), DataIntegrityError);
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut_.GetState());
 
-  ASSERT_THROW(uut.Delete("Section1"), InsufficientStateError);
+  ASSERT_THROW(uut_.Delete("Section1"), InsufficientStateError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Delete_LockedByReader)
 {
   Format(128);
 
   RandomData data(8, 8);
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
-  auto spISR = uut.Open("Section1");
+  auto spISR = uut_.Open("Section1");
 
-  ASSERT_THROW(uut.Delete("Section1"), gpcc::file_systems::FileAlreadyAccessedError);
+  ASSERT_THROW(uut_.Delete("Section1"), gpcc::file_systems::FileAlreadyAccessedError);
 
   spISR.reset();
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Delete_LockedByWriter)
 {
   Format(128);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
 
-  ASSERT_THROW(uut.Delete("Section1"), gpcc::file_systems::FileAlreadyAccessedError);
+  ASSERT_THROW(uut_.Delete("Section1"), gpcc::file_systems::FileAlreadyAccessedError);
 
   spISW.reset();
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Delete_NoSuchSection)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
-  ASSERT_THROW(uut.Delete("Section1"), gpcc::file_systems::NoSuchFileError);
+  fakeStorage_.writeAccessCnt = 0;
+  ASSERT_THROW(uut_.Delete("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  ASSERT_EQ(0U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(0U, fakeStorage_.writeAccessCnt);
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Delete_Powerfail)
 {
   Format(128);
 
-  size_t const freeSpace = uut.GetFreeSpace();
+  size_t const freeSpace = uut_.GetFreeSpace();
 
   RandomData data(8, 8);
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
-  fakeStorage.SetEnableUndo(true);
-  fakeStorage.writeAccessCnt = 0;
-  fakeStorage.readAccessCnt  = 0;
+  fakeStorage_.SetEnableUndo(true);
+  fakeStorage_.writeAccessCnt = 0;
+  fakeStorage_.readAccessCnt  = 0;
 
-  uut.Delete("Section1");
+  uut_.Delete("Section1");
 
-  FakeEEPROM copyOfStorage(fakeStorage);
+  FakeEEPROM copyOfStorage(fakeStorage_);
 
-  size_t const nScenarios = fakeStorage.writeAccessCnt;
+  size_t const nScenarios = fakeStorage_.writeAccessCnt;
   for (size_t i = 1; i < nScenarios; i++)
   {
-    uut.Unmount();
+    uut_.Unmount();
 
-    fakeStorage = copyOfStorage;
-    fakeStorage.Undo(i);
-    fakeStorage.SetEnableUndo(false);
+    fakeStorage_ = copyOfStorage;
+    fakeStorage_.Undo(i);
+    fakeStorage_.SetEnableUndo(false);
 
-    uut.MountStep1();
-    uut.MountStep2();
+    uut_.MountStep1();
+    uut_.MountStep2();
 
     std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-    ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
-    ASSERT_EQ(freeSpace, uut.GetFreeSpace());
+    ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+    ASSERT_EQ(freeSpace, uut_.GetFreeSpace());
 
-    BasicTest_WriteRead(&uut, blockSize, 1);
+    BasicTest_WriteRead(&uut_, blockSize_, 1);
   }
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Delete_OK)
 {
   Format(128);
 
-  size_t const freeSpace = uut.GetFreeSpace();
+  size_t const freeSpace = uut_.GetFreeSpace();
 
   RandomData data(8, 8);
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
-  ASSERT_NO_THROW(uut.Delete("Section1"));
-  ASSERT_EQ(freeSpace, uut.GetFreeSpace());
+  ASSERT_NO_THROW(uut_.Delete("Section1"));
+  ASSERT_EQ(freeSpace, uut_.GetFreeSpace());
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Delete_FromFullSectionSystem)
 {
   Format(128);
 
-  size_t const freeSpace = uut.GetFreeSpace();
+  size_t const freeSpace = uut_.GetFreeSpace();
 
   RandomData data1(8, 8);
-  data1.Write("Section1", false, uut);
-  RandomData data2(freeSpace - (2U * bytesPerBlock) - 8U, freeSpace - (2U * bytesPerBlock) - 8U);
-  data2.Write("Section2", false, uut);
+  data1.Write("Section1", false, uut_);
+  RandomData data2(freeSpace - (2U * bytesPerBlock_) - 8U, freeSpace - (2U * bytesPerBlock_) - 8U);
+  data2.Write("Section2", false, uut_);
 
-  ASSERT_NO_THROW(uut.Delete("Section1"));
-  ASSERT_EQ(bytesPerBlock, uut.GetFreeSpace());
+  ASSERT_NO_THROW(uut_.Delete("Section1"));
+  ASSERT_EQ(bytesPerBlock_, uut_.GetFreeSpace());
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  ASSERT_NO_THROW(uut.Delete("Section2"));
-  ASSERT_THROW(spISR = uut.Open("Section2"), gpcc::file_systems::NoSuchFileError);
-  ASSERT_EQ(freeSpace, uut.GetFreeSpace());
+  ASSERT_NO_THROW(uut_.Delete("Section2"));
+  ASSERT_THROW(spISR = uut_.Open("Section2"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_EQ(freeSpace, uut_.GetFreeSpace());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
-  uut.Unmount();
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Delete_FromNonFullSectionSystem)
 {
   Format(128);
 
-  size_t const freeSpace = uut.GetFreeSpace();
+  size_t const freeSpace = uut_.GetFreeSpace();
 
   RandomData data1(8, 8);
-  data1.Write("Section1", false, uut);
-  RandomData data2(freeSpace - (3U * bytesPerBlock) - 8U, freeSpace - (3U * bytesPerBlock) - 8U);
-  data2.Write("Section2", false, uut);
+  data1.Write("Section1", false, uut_);
+  RandomData data2(freeSpace - (3U * bytesPerBlock_) - 8U, freeSpace - (3U * bytesPerBlock_) - 8U);
+  data2.Write("Section2", false, uut_);
 
-  ASSERT_EQ(0U, uut.GetFreeSpace());
+  ASSERT_EQ(0U, uut_.GetFreeSpace());
 
-  ASSERT_NO_THROW(uut.Delete("Section1"));
-  ASSERT_EQ(2U * bytesPerBlock, uut.GetFreeSpace());
+  ASSERT_NO_THROW(uut_.Delete("Section1"));
+  ASSERT_EQ(2U * bytesPerBlock_, uut_.GetFreeSpace());
 
   std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-  ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
 
-  ASSERT_NO_THROW(uut.Delete("Section2"));
-  ASSERT_THROW(spISR = uut.Open("Section2"), gpcc::file_systems::NoSuchFileError);
-  ASSERT_EQ(freeSpace, uut.GetFreeSpace());
+  ASSERT_NO_THROW(uut_.Delete("Section2"));
+  ASSERT_THROW(spISR = uut_.Open("Section2"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_EQ(freeSpace, uut_.GetFreeSpace());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
-  uut.Unmount();
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_BadNames)
 {
   Format(128);
 
-  ASSERT_THROW(uut.Rename("", "Section2"), std::invalid_argument);
-  ASSERT_THROW(uut.Rename(" Sec1", "Section2"), std::invalid_argument);
-  ASSERT_THROW(uut.Rename("Sec1 ", "Section2"), std::invalid_argument);
-  ASSERT_THROW(uut.Rename(" Sec1 ", "Section2"), std::invalid_argument);
-  ASSERT_THROW(uut.Rename(" ", "Section2"), std::invalid_argument);
+  ASSERT_THROW(uut_.Rename("", "Section2"), std::invalid_argument);
+  ASSERT_THROW(uut_.Rename(" Sec1", "Section2"), std::invalid_argument);
+  ASSERT_THROW(uut_.Rename("Sec1 ", "Section2"), std::invalid_argument);
+  ASSERT_THROW(uut_.Rename(" Sec1 ", "Section2"), std::invalid_argument);
+  ASSERT_THROW(uut_.Rename(" ", "Section2"), std::invalid_argument);
 
-  ASSERT_THROW(uut.Rename("Section1", ""), std::invalid_argument);
-  ASSERT_THROW(uut.Rename("Section1", " Sec2"), std::invalid_argument);
-  ASSERT_THROW(uut.Rename("Section1", "Sec2 "), std::invalid_argument);
-  ASSERT_THROW(uut.Rename("Section1", " Sec2 "), std::invalid_argument);
-  ASSERT_THROW(uut.Rename("Section1", " "), std::invalid_argument);
+  ASSERT_THROW(uut_.Rename("Section1", ""), std::invalid_argument);
+  ASSERT_THROW(uut_.Rename("Section1", " Sec2"), std::invalid_argument);
+  ASSERT_THROW(uut_.Rename("Section1", "Sec2 "), std::invalid_argument);
+  ASSERT_THROW(uut_.Rename("Section1", " Sec2 "), std::invalid_argument);
+  ASSERT_THROW(uut_.Rename("Section1", " "), std::invalid_argument);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_WrongState)
 {
   Format(128);
 
-  uut.Unmount();
+  uut_.Unmount();
 
   // state is not_mounted
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut_.GetState());
 
-  ASSERT_THROW(uut.Rename("Section1", "Section2"), InsufficientStateError);
+  ASSERT_THROW(uut_.Rename("Section1", "Section2"), InsufficientStateError);
 
   // bring uut into state "ro_mount"
-  uut.MountStep1();
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut.GetState());
+  uut_.MountStep1();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut_.GetState());
 
-  ASSERT_THROW(uut.Rename("Section1", "Section2"), InsufficientStateError);
+  ASSERT_THROW(uut_.Rename("Section1", "Section2"), InsufficientStateError);
 
   // bring uut into state "mounted"
-  uut.MountStep2();
+  uut_.MountStep2();
 
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut_.GetState());
 
   // bring uut into state "defect"
-  fakeStorage.Invalidate(blockSize, blockSize);
+  fakeStorage_.Invalidate(blockSize_, blockSize_);
   RandomData data(8,8);
-  ASSERT_THROW(data.Write("Section2", false, uut), DataIntegrityError);
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_THROW(data.Write("Section2", false, uut_), DataIntegrityError);
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut_.GetState());
 
-  ASSERT_THROW(uut.Rename("Section1", "Section2"), InsufficientStateError);
+  ASSERT_THROW(uut_.Rename("Section1", "Section2"), InsufficientStateError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_SrcLockedByReader)
 {
   Format(128);
 
   RandomData data(8, 8);
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
-  auto spISR = uut.Open("Section1");
+  auto spISR = uut_.Open("Section1");
 
-  ASSERT_THROW(uut.Rename("Section1", "Section2"), gpcc::file_systems::FileAlreadyAccessedError);
+  ASSERT_THROW(uut_.Rename("Section1", "Section2"), gpcc::file_systems::FileAlreadyAccessedError);
 
   spISR.reset();
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_DestLockedByReader)
 {
   Format(128);
 
   RandomData data(8, 8);
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
-  auto spISR = uut.Open("Section1");
+  auto spISR = uut_.Open("Section1");
 
-  ASSERT_THROW(uut.Rename("Section2", "Section1"), gpcc::file_systems::FileAlreadyAccessedError);
+  ASSERT_THROW(uut_.Rename("Section2", "Section1"), gpcc::file_systems::FileAlreadyAccessedError);
 
   spISR.reset();
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_SrcLockedByWriter)
 {
   Format(128);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
 
-  ASSERT_THROW(uut.Rename("Section1", "Section2"), gpcc::file_systems::FileAlreadyAccessedError);
+  ASSERT_THROW(uut_.Rename("Section1", "Section2"), gpcc::file_systems::FileAlreadyAccessedError);
 
   spISW.reset();
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_DestLockedByWriter)
 {
   Format(128);
 
   RandomData data(8, 8);
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
-  auto spISW = uut.Create("Section2", false);
+  auto spISW = uut_.Create("Section2", false);
 
-  ASSERT_THROW(uut.Rename("Section1", "Section2"), gpcc::file_systems::FileAlreadyAccessedError);
+  ASSERT_THROW(uut_.Rename("Section1", "Section2"), gpcc::file_systems::FileAlreadyAccessedError);
 
   spISW.reset();
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_SrcNotFound)
 {
   Format(128);
 
-  ASSERT_THROW(uut.Rename("Section1", "Section2"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_THROW(uut_.Rename("Section1", "Section2"), gpcc::file_systems::NoSuchFileError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_DestAlreadyExisting)
 {
   Format(128);
 
   RandomData data1(8, 8);
-  data1.Write("Section1", false, uut);
+  data1.Write("Section1", false, uut_);
   RandomData data2(8, 8);
-  data2.Write("Section2", false, uut);
+  data2.Write("Section2", false, uut_);
 
-  ASSERT_THROW(uut.Rename("Section1", "Section2"), gpcc::file_systems::FileAlreadyExistingError);
+  ASSERT_THROW(uut_.Rename("Section1", "Section2"), gpcc::file_systems::FileAlreadyExistingError);
 
-  data1.Compare("Section1", uut);
-  data2.Compare("Section2", uut);
-  uut.Unmount();
+  data1.Compare("Section1", uut_);
+  data2.Compare("Section2", uut_);
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_MaxNameLength)
 {
   Format(128);
 
-  size_t const maxNameLength = blockSize - (sizeof(SectionHeadBlock_t) + 1U + sizeof(uint16_t));
+  size_t const maxNameLength = blockSize_ - (sizeof(SectionHeadBlock_t) + 1U + sizeof(uint16_t));
 
   RandomData data(8, 8);
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
   std::string newName("Section2");
   while (newName.length() < maxNameLength)
     newName.append("x");
 
-  uut.Rename("Section1", newName);
+  uut_.Rename("Section1", newName);
 
-  data.Compare(newName, uut);
+  data.Compare(newName, uut_);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_MaxNameLengthPlus1)
 {
   Format(128);
 
-  size_t const maxNameLength = blockSize - (sizeof(SectionHeadBlock_t) + 1U + sizeof(uint16_t));
+  size_t const maxNameLength = blockSize_ - (sizeof(SectionHeadBlock_t) + 1U + sizeof(uint16_t));
 
   RandomData data(8, 8);
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
   std::string newName("Section2");
   while (newName.length() <= maxNameLength)
     newName.append("x");
 
-  ASSERT_THROW(uut.Rename("Section1", newName), std::invalid_argument);
+  ASSERT_THROW(uut_.Rename("Section1", newName), std::invalid_argument);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_NoFreeSpace)
 {
   Format(128);
 
-  size_t const freeSpace = uut.GetFreeSpace();
+  size_t const freeSpace = uut_.GetFreeSpace();
 
   RandomData data(freeSpace - 8U, freeSpace - 8U);
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
-  ASSERT_THROW(uut.Rename("Section1", "Section2"), gpcc::file_systems::InsufficientSpaceError);
+  ASSERT_THROW(uut_.Rename("Section1", "Section2"), gpcc::file_systems::InsufficientSpaceError);
 
-  data.Compare("Section1", uut);
+  data.Compare("Section1", uut_);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_OneFreeBlock)
 {
   Format(128);
 
-  size_t const freeSpace = uut.GetFreeSpace();
+  size_t const freeSpace = uut_.GetFreeSpace();
 
-  RandomData data(freeSpace - 8U - bytesPerBlock, freeSpace - 8U - bytesPerBlock);
-  data.Write("Section1", false, uut);
+  RandomData data(freeSpace - 8U - bytesPerBlock_, freeSpace - 8U - bytesPerBlock_);
+  data.Write("Section1", false, uut_);
 
-  ASSERT_EQ(0U, uut.GetFreeSpace());
+  ASSERT_EQ(0U, uut_.GetFreeSpace());
 
-  uut.Rename("Section1", "Section2");
+  uut_.Rename("Section1", "Section2");
 
-  ASSERT_THROW(data.Compare("Section1", uut), gpcc::file_systems::NoSuchFileError);
-  data.Compare("Section2", uut);
+  ASSERT_THROW(data.Compare("Section1", uut_), gpcc::file_systems::NoSuchFileError);
+  data.Compare("Section2", uut_);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_SameName_SectionNotExisting)
 {
   Format(128);
 
-  size_t const freeSpace = uut.GetFreeSpace();
+  size_t const freeSpace = uut_.GetFreeSpace();
 
-  ASSERT_THROW(uut.Rename("Section1", "Section1"), gpcc::file_systems::NoSuchFileError);
+  ASSERT_THROW(uut_.Rename("Section1", "Section1"), gpcc::file_systems::NoSuchFileError);
 
-  ASSERT_EQ(freeSpace, uut.GetFreeSpace());
+  ASSERT_EQ(freeSpace, uut_.GetFreeSpace());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_SameName_SectionExisting)
 {
   Format(128);
 
   RandomData data(8, 8);
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
-  size_t const freeSpace = uut.GetFreeSpace();
+  size_t const freeSpace = uut_.GetFreeSpace();
 
-  ASSERT_THROW(uut.Rename("Section1", "Section1"), gpcc::file_systems::FileAlreadyExistingError);
+  ASSERT_THROW(uut_.Rename("Section1", "Section1"), gpcc::file_systems::FileAlreadyExistingError);
 
-  ASSERT_EQ(freeSpace, uut.GetFreeSpace());
+  ASSERT_EQ(freeSpace, uut_.GetFreeSpace());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_OK)
 {
   Format(128);
 
   RandomData data(8, 8);
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
-  size_t const freeSpace = uut.GetFreeSpace();
+  size_t const freeSpace = uut_.GetFreeSpace();
 
-  uut.Rename("Section1", "Section2");
+  uut_.Rename("Section1", "Section2");
 
-  ASSERT_THROW(data.Compare("Section1", uut), gpcc::file_systems::NoSuchFileError);
-  data.Compare("Section2", uut);
+  ASSERT_THROW(data.Compare("Section1", uut_), gpcc::file_systems::NoSuchFileError);
+  data.Compare("Section2", uut_);
 
-  ASSERT_EQ(freeSpace, uut.GetFreeSpace());
+  ASSERT_EQ(freeSpace, uut_.GetFreeSpace());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_Powerfail)
 {
   Format(128);
 
   RandomData data(8, 8);
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
-  size_t const freeSpace = uut.GetFreeSpace();
+  size_t const freeSpace = uut_.GetFreeSpace();
 
-  fakeStorage.SetEnableUndo(true);
-  fakeStorage.writeAccessCnt = 0;
-  fakeStorage.readAccessCnt  = 0;
+  fakeStorage_.SetEnableUndo(true);
+  fakeStorage_.writeAccessCnt = 0;
+  fakeStorage_.readAccessCnt  = 0;
 
-  uut.Rename("Section1", "Section2");
+  uut_.Rename("Section1", "Section2");
 
-  ASSERT_EQ(3U, fakeStorage.writeAccessCnt);
+  ASSERT_EQ(3U, fakeStorage_.writeAccessCnt);
 
-  FakeEEPROM copyOfStorage(fakeStorage);
+  FakeEEPROM copyOfStorage(fakeStorage_);
 
-  size_t const nScenarios = fakeStorage.writeAccessCnt;
+  size_t const nScenarios = fakeStorage_.writeAccessCnt;
   for (size_t i = 1; i < nScenarios; i++)
   {
-    uut.Unmount();
+    uut_.Unmount();
 
-    fakeStorage = copyOfStorage;
-    fakeStorage.Undo(i);
-    fakeStorage.SetEnableUndo(false);
+    fakeStorage_ = copyOfStorage;
+    fakeStorage_.Undo(i);
+    fakeStorage_.SetEnableUndo(false);
 
-    uut.MountStep1();
-    uut.MountStep2();
+    uut_.MountStep1();
+    uut_.MountStep2();
 
     std::unique_ptr<gpcc::stream::IStreamReader> spISR;
-    ASSERT_THROW(spISR = uut.Open("Section1"), gpcc::file_systems::NoSuchFileError);
-    ASSERT_EQ(freeSpace, uut.GetFreeSpace());
+    ASSERT_THROW(spISR = uut_.Open("Section1"), gpcc::file_systems::NoSuchFileError);
+    ASSERT_EQ(freeSpace, uut_.GetFreeSpace());
 
-    data.Compare("Section2", uut);
+    data.Compare("Section2", uut_);
 
-    BasicTest_WriteRead(&uut, blockSize, 1);
+    BasicTest_WriteRead(&uut_, blockSize_, 1);
   }
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_VersionWrapAround)
 {
@@ -6704,69 +6704,69 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, Rename_VersionWrapAround)
 
   // create section
   RandomData data(8,8);
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
   // set version of section
-  fakeStorage.Read(1U * blockSize, blockSize, pBuffer);
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF;
-  pBuffer[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF;
-  fakeStorage.Write(1U * blockSize, blockSize, pBuffer);
+  fakeStorage_.Read(1U * blockSize_, blockSize_, pBuffer_);
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 0] = 0xFF;
+  pBuffer_[offsetof(SectionHeadBlock_t, version) + 1] = 0xFF;
+  fakeStorage_.Write(1U * blockSize_, blockSize_, pBuffer_);
   UpdateCRC(1);
 
-  size_t const freeSpace = uut.GetFreeSpace();
+  size_t const freeSpace = uut_.GetFreeSpace();
 
   // rename
-  uut.Rename("Section1", "Section2");
+  uut_.Rename("Section1", "Section2");
 
   // check version of new section head
-  fakeStorage.Read(3U * blockSize, blockSize, pBuffer);
-  ASSERT_EQ(0x02, pBuffer[offsetof(CommonBlockHead_t, nextBlock) + 0]);
-  ASSERT_EQ(0x00, pBuffer[offsetof(CommonBlockHead_t, nextBlock) + 1]);
-  ASSERT_EQ(0x00, pBuffer[offsetof(SectionHeadBlock_t, version) + 0]);
-  ASSERT_EQ(0x00, pBuffer[offsetof(SectionHeadBlock_t, version) + 1]);
+  fakeStorage_.Read(3U * blockSize_, blockSize_, pBuffer_);
+  ASSERT_EQ(0x02, pBuffer_[offsetof(CommonBlockHead_t, nextBlock) + 0]);
+  ASSERT_EQ(0x00, pBuffer_[offsetof(CommonBlockHead_t, nextBlock) + 1]);
+  ASSERT_EQ(0x00, pBuffer_[offsetof(SectionHeadBlock_t, version) + 0]);
+  ASSERT_EQ(0x00, pBuffer_[offsetof(SectionHeadBlock_t, version) + 1]);
 
-  ASSERT_THROW(data.Compare("Section1", uut), gpcc::file_systems::NoSuchFileError);
-  data.Compare("Section2", uut);
+  ASSERT_THROW(data.Compare("Section1", uut_), gpcc::file_systems::NoSuchFileError);
+  data.Compare("Section2", uut_);
 
-  ASSERT_EQ(freeSpace, uut.GetFreeSpace());
+  ASSERT_EQ(freeSpace, uut_.GetFreeSpace());
 
-  BasicTest_WriteRead(&uut, blockSize, 1);
+  BasicTest_WriteRead(&uut_, blockSize_, 1);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, EnumerateSections_WrongState)
 {
   Format(128);
 
-  uut.Unmount();
+  uut_.Unmount();
 
   std::list<std::string> sections;
 
   // state is not_mounted
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut_.GetState());
 
-  ASSERT_THROW(sections = uut.Enumerate(), InsufficientStateError);
+  ASSERT_THROW(sections = uut_.Enumerate(), InsufficientStateError);
 
   // bring uut into state "ro_mount"
-  uut.MountStep1();
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut.GetState());
+  uut_.MountStep1();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut_.GetState());
 
-  ASSERT_THROW(sections = uut.Enumerate(), InsufficientStateError);
+  ASSERT_THROW(sections = uut_.Enumerate(), InsufficientStateError);
 
   // bring uut into state "mounted"
-  uut.MountStep2();
+  uut_.MountStep2();
 
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut_.GetState());
 
   // bring uut into state "defect"
-  fakeStorage.Invalidate(blockSize, blockSize);
+  fakeStorage_.Invalidate(blockSize_, blockSize_);
   RandomData data(8,8);
-  ASSERT_THROW(data.Write("Section2", false, uut), DataIntegrityError);
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
+  ASSERT_THROW(data.Write("Section2", false, uut_), DataIntegrityError);
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut_.GetState());
 
-  ASSERT_THROW(sections = uut.Enumerate(), InsufficientStateError);
+  ASSERT_THROW(sections = uut_.Enumerate(), InsufficientStateError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, EnumerateSections_Zero_One_n)
 {
@@ -6775,37 +6775,37 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, EnumerateSections_Zero_One_n
   std::list<std::string> sections;
 
   // zero sections
-  sections = uut.Enumerate();
+  sections = uut_.Enumerate();
   ASSERT_TRUE(sections.empty());
 
   // one section
   RandomData data1(10, 10);
-  data1.Write("Section1", false, uut);
+  data1.Write("Section1", false, uut_);
 
-  sections = uut.Enumerate();
+  sections = uut_.Enumerate();
   ASSERT_EQ(1U, sections.size());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "Section1") != sections.end());
 
   // two sections
   RandomData data2(10, 10);
-  data1.Write("Section2", false, uut);
+  data1.Write("Section2", false, uut_);
 
-  sections = uut.Enumerate();
+  sections = uut_.Enumerate();
   ASSERT_EQ(2U, sections.size());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "Section1") != sections.end());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "Section2") != sections.end());
 
   // three sections
   RandomData data3(10, 10);
-  data1.Write("Section3", false, uut);
+  data1.Write("Section3", false, uut_);
 
-  sections = uut.Enumerate();
+  sections = uut_.Enumerate();
   ASSERT_EQ(3U, sections.size());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "Section1") != sections.end());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "Section2") != sections.end());
   ASSERT_TRUE(std::find(sections.begin(), sections.end(), "Section3") != sections.end());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, EnumerateSections_Sort)
 {
@@ -6813,21 +6813,21 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, EnumerateSections_Sort)
 
   // create some sections
   RandomData data1(10, 10);
-  data1.Write("B_Section", false, uut);
+  data1.Write("B_Section", false, uut_);
 
   RandomData data2(10, 10);
-  data2.Write("A_Section", false, uut);
+  data2.Write("A_Section", false, uut_);
 
   RandomData data3(10, 10);
-  data3.Write("Z_Section", false, uut);
+  data3.Write("Z_Section", false, uut_);
 
   RandomData data4(10, 10);
-  data4.Write("A_Section2", false, uut);
+  data4.Write("A_Section2", false, uut_);
 
   RandomData data5(10, 10);
-  data5.Write("C_Section", false, uut);
+  data5.Write("C_Section", false, uut_);
 
-  auto const sections = uut.Enumerate();
+  auto const sections = uut_.Enumerate();
 
   auto it = sections.begin();
   ASSERT_TRUE(*it == "A_Section");
@@ -6842,44 +6842,44 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, EnumerateSections_Sort)
   ++it;
   ASSERT_TRUE(it == sections.end());
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, DetermineSectionSize_WrongState)
 {
   Format(128);
 
-  fakeStorage.writeAccessCnt = 0;
+  fakeStorage_.writeAccessCnt = 0;
   RandomData data(10,10);
-  data.Write("Section1", false, uut);
-  ASSERT_EQ(2U, fakeStorage.writeAccessCnt);
+  data.Write("Section1", false, uut_);
+  ASSERT_EQ(2U, fakeStorage_.writeAccessCnt);
 
-  uut.Unmount();
+  uut_.Unmount();
 
   size_t size;
 
   // state is not_mounted
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut.GetState());
-  ASSERT_THROW(size = uut.DetermineSize("Section1", nullptr), InsufficientStateError);
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::not_mounted, uut_.GetState());
+  ASSERT_THROW(size = uut_.DetermineSize("Section1", nullptr), InsufficientStateError);
 
   // bring uut into state "ro_mount"
-  uut.MountStep1();
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut.GetState());
-  ASSERT_THROW(size = uut.DetermineSize("Section1", nullptr), InsufficientStateError);
+  uut_.MountStep1();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::ro_mount, uut_.GetState());
+  ASSERT_THROW(size = uut_.DetermineSize("Section1", nullptr), InsufficientStateError);
 
   // bring uut into state "mounted"
-  uut.MountStep2();
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut.GetState());
-  ASSERT_NO_THROW(size = uut.DetermineSize("Section1", nullptr));
+  uut_.MountStep2();
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::mounted, uut_.GetState());
+  ASSERT_NO_THROW(size = uut_.DetermineSize("Section1", nullptr));
   ASSERT_EQ(18U, size);
 
   // bring uut into state "defect"
-  fakeStorage.Invalidate(3 * blockSize, blockSize);
+  fakeStorage_.Invalidate(3 * blockSize_, blockSize_);
   RandomData data2(8,8);
-  ASSERT_THROW(data2.Write("Section2", false, uut), DataIntegrityError);
-  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut.GetState());
-  ASSERT_THROW(size = uut.DetermineSize("Section1", nullptr), InsufficientStateError);
+  ASSERT_THROW(data2.Write("Section2", false, uut_), DataIntegrityError);
+  ASSERT_EQ(eeprom_section_system::EEPROMSectionSystem::States::defect, uut_.GetState());
+  ASSERT_THROW(size = uut_.DetermineSize("Section1", nullptr), InsufficientStateError);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, DetermineSectionSize_BadNames)
 {
@@ -6887,100 +6887,100 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, DetermineSectionSize_BadName
 
   size_t size;
 
-  ASSERT_THROW(size = uut.DetermineSize("", nullptr), std::invalid_argument);
-  ASSERT_THROW(size = uut.DetermineSize(" Sec1", nullptr), std::invalid_argument);
-  ASSERT_THROW(size = uut.DetermineSize("Sec1 ", nullptr), std::invalid_argument);
-  ASSERT_THROW(size = uut.DetermineSize(" Sec1 ", nullptr), std::invalid_argument);
-  ASSERT_THROW(size = uut.DetermineSize(" ", nullptr), std::invalid_argument);
+  ASSERT_THROW(size = uut_.DetermineSize("", nullptr), std::invalid_argument);
+  ASSERT_THROW(size = uut_.DetermineSize(" Sec1", nullptr), std::invalid_argument);
+  ASSERT_THROW(size = uut_.DetermineSize("Sec1 ", nullptr), std::invalid_argument);
+  ASSERT_THROW(size = uut_.DetermineSize(" Sec1 ", nullptr), std::invalid_argument);
+  ASSERT_THROW(size = uut_.DetermineSize(" ", nullptr), std::invalid_argument);
 
   (void)size;
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, DetermineSectionSize_LockedByWriter)
 {
   Format(128);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
 
   size_t size;
-  ASSERT_THROW(size = uut.DetermineSize("Section1", nullptr), gpcc::file_systems::FileAlreadyAccessedError);
+  ASSERT_THROW(size = uut_.DetermineSize("Section1", nullptr), gpcc::file_systems::FileAlreadyAccessedError);
   (void)size;
 
   spISW.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, DetermineSectionSize_LockedByReader)
 {
   Format(128);
 
   RandomData data(8,8);
-  data.Write("Section1", false, uut);
+  data.Write("Section1", false, uut_);
 
-  auto spISR = uut.Open("Section1");
+  auto spISR = uut_.Open("Section1");
 
   size_t size;
-  ASSERT_NO_THROW(size = uut.DetermineSize("Section1", nullptr));
+  ASSERT_NO_THROW(size = uut_.DetermineSize("Section1", nullptr));
   ASSERT_EQ(16U, size);
 
   spISR.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, DetermineSectionSize_SectionNotExisting)
 {
   Format(128);
 
   size_t size;
-  ASSERT_THROW(size = uut.DetermineSize("Section1", nullptr), gpcc::file_systems::NoSuchFileError);
+  ASSERT_THROW(size = uut_.DetermineSize("Section1", nullptr), gpcc::file_systems::NoSuchFileError);
   (void)size;
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, DetermineSectionSize_ZeroLength)
 {
   Format(128);
 
-  auto spISW = uut.Create("Section1", false);
+  auto spISW = uut_.Create("Section1", false);
   spISW.reset();
 
   size_t size;
   size_t totalSize;
-  size = uut.DetermineSize("Section1", &totalSize);
+  size = uut_.DetermineSize("Section1", &totalSize);
   ASSERT_EQ(0U, size);
-  ASSERT_EQ(2U * blockSize, totalSize);
+  ASSERT_EQ(2U * blockSize_, totalSize);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, DetermineSectionSize_VariousLength)
 {
   Format(128);
 
   RandomData data1(8, 8);
-  data1.Write("Section1", false, uut);
+  data1.Write("Section1", false, uut_);
 
-  RandomData data2(3U * blockSize, 3U * blockSize);
-  data2.Write("Section2", false, uut);
+  RandomData data2(3U * blockSize_, 3U * blockSize_);
+  data2.Write("Section2", false, uut_);
 
   size_t size;
   size_t totalSize;
 
-  size = uut.DetermineSize("Section1", &totalSize);
+  size = uut_.DetermineSize("Section1", &totalSize);
   ASSERT_EQ(16U, size);
-  ASSERT_EQ(2U * blockSize, totalSize);
+  ASSERT_EQ(2U * blockSize_, totalSize);
 
-  size = uut.DetermineSize("Section2", &totalSize);
-  ASSERT_EQ(3U * blockSize + 8U, size);
-  ASSERT_EQ(5U * blockSize, totalSize);
+  size = uut_.DetermineSize("Section2", &totalSize);
+  ASSERT_EQ(3U * blockSize_ + 8U, size);
+  ASSERT_EQ(5U * blockSize_, totalSize);
 
-  size = uut.DetermineSize("Section1", nullptr);
+  size = uut_.DetermineSize("Section1", nullptr);
   ASSERT_EQ(16U, size);
 
-  size = uut.DetermineSize("Section2", nullptr);
-  ASSERT_EQ(3U * blockSize + 8U, size);
+  size = uut_.DetermineSize("Section2", nullptr);
+  ASSERT_EQ(3U * blockSize_ + 8U, size);
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MaximumNumberOfSections)
 {
@@ -6988,60 +6988,60 @@ TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MaximumNumberOfSections)
 
   std::list<RandomData> sections;
 
-  size_t const nSections = ((storageSize / blockSize) - 1U) / 2U;
+  size_t const nSections = ((storageSize_ / blockSize_) - 1U) / 2U;
   for (size_t i = 0; i < nSections; i++)
   {
-    RandomData section(0, bytesPerBlock - 8U);
+    RandomData section(0, bytesPerBlock_ - 8U);
     std::string const secName = "Section" + std::to_string(i);
-    section.Write(secName, false, uut);
+    section.Write(secName, false, uut_);
     sections.push_back(std::move(section));
   }
 
-  ASSERT_EQ(0U, uut.GetFreeSpace());
+  ASSERT_EQ(0U, uut_.GetFreeSpace());
 
   auto it = sections.begin();
   for (size_t i = 0; i < nSections; i++)
   {
     std::string const secName = "Section" + std::to_string(i);
-    (*it).Compare(secName, uut);
+    (*it).Compare(secName, uut_);
     ++it;
   }
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 TEST_F(GPCC_FileSystems_EEPROMSectionSystem_TestsF, MultipleReadersAndWritersAtTheSameTime)
 {
   Format(128);
 
   RandomData data1(30, 30);
-  data1.Write("Data1", false, uut);
+  data1.Write("Data1", false, uut_);
   RandomData data2(30, 30);
-  data2.Write("Data2", false, uut);
+  data2.Write("Data2", false, uut_);
   RandomData data3(30, 30);
-  data3.Write("Data3", false, uut);
+  data3.Write("Data3", false, uut_);
 
-  auto spISW1 = uut.Create("Section1", false);
+  auto spISW1 = uut_.Create("Section1", false);
   *spISW1 << std::string("ABC");
-  auto spISW2 = uut.Create("Section2", false);
-  auto spISW3 = uut.Create("Section3", false);
+  auto spISW2 = uut_.Create("Section2", false);
+  auto spISW3 = uut_.Create("Section3", false);
 
   *spISW2 << std::string("DEF");
-  data1.Compare("Data1", uut);
+  data1.Compare("Data1", uut_);
   *spISW3 << std::string("GHI");
   spISW1->Write_uint8(12);
   spISW2->Write_uint8(13);
-  data2.Compare("Data2", uut);
+  data2.Compare("Data2", uut_);
   spISW3->Write_uint8(14);
 
   spISW1->Close();
   spISW1.reset();
-  data3.Compare("Data3", uut);
+  data3.Compare("Data3", uut_);
   spISW3->Close();
   spISW3.reset();
   spISW2->Close();
   spISW2.reset();
 
-  uut.Unmount();
+  uut_.Unmount();
 }
 
 } // namespace file_systems

@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #ifndef OBJECT_ARRAY_WICB_HPP_202103132155
@@ -34,18 +34,18 @@ class ObjectARRAY_wicb : private IObjectNotifiable, public ObjectARRAY
 {
   public:
     ObjectARRAY_wicb(void) = delete;
-    ObjectARRAY_wicb(std::string            const & _name,
-                     attr_t                 const   _attributesSI0,
-                     uint8_t                const   _SI0,
-                     uint8_t                const   _min_SI0,
-                     uint8_t                const   _max_SI0,
-                     DataType               const   _type,
-                     attr_t                 const   _attributes,
-                     void*                  const   _pData,
-                     gpcc::osal::Mutex *    const   _pMutex,
-                     tOnBeforeReadCallback  const & _onBeforeReadCallback,
-                     tOnBeforeWriteCallback const & _onBeforeWriteCallback,
-                     tOnAfterWriteCallback  const & _onAfterWriteCallback);
+    ObjectARRAY_wicb(std::string            const & name,
+                     attr_t                 const   attributesSI0,
+                     uint8_t                const   SI0,
+                     uint8_t                const   min_SI0,
+                     uint8_t                const   max_SI0,
+                     DataType               const   type,
+                     attr_t                 const   attributes,
+                     void*                  const   pData,
+                     gpcc::osal::Mutex *    const   pMutex,
+                     tOnBeforeReadCallback  const & onBeforeReadCallback,
+                     tOnBeforeWriteCallback const & onBeforeWriteCallback,
+                     tOnAfterWriteCallback  const & onAfterWriteCallback);
     ObjectARRAY_wicb(ObjectARRAY_wicb const &) = delete;
     ObjectARRAY_wicb(ObjectARRAY_wicb &&) = delete;
 
@@ -56,13 +56,13 @@ class ObjectARRAY_wicb : private IObjectNotifiable, public ObjectARRAY
 
   private:
     /// Functor to the before-read-callback.
-    tOnBeforeReadCallback const onBeforeReadCallback;
+    tOnBeforeReadCallback const onBeforeReadCallback_;
 
     /// Functor to the before-write-callback.
-    tOnBeforeWriteCallback const onBeforeWriteCallback;
+    tOnBeforeWriteCallback const onBeforeWriteCallback_;
 
     /// Functor to the after-write-callback.
-    tOnAfterWriteCallback const onAfterWriteCallback;
+    tOnAfterWriteCallback const onAfterWriteCallback_;
 
 
     // <-- IObjectNotifiable

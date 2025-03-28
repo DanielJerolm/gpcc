@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2019 Daniel Jerolm
+    Copyright (C) 2019, 2025 Daniel Jerolm
 */
 
 #ifndef CLIADAPTERBASE_HPP_201905062115
@@ -90,10 +90,10 @@ class CLIAdapterBase
     CLIAdapterBase& operator=(CLIAdapterBase &&) = delete;
 
   protected:
-    CLIAdapterBase(IObjectAccess & _od,
-                   gpcc::cli::CLI & _cli,
-                   std::string const & _cmdName,
-                   uint8_t const _attributeStringMaxLength);
+    CLIAdapterBase(IObjectAccess & od,
+                   gpcc::cli::CLI & cli,
+                   std::string const & cmdName,
+                   uint8_t const attributeStringMaxLength);
 
     void RegisterCLICommand(void);
     void UnregisterCLICommand(void) noexcept;
@@ -105,16 +105,16 @@ class CLIAdapterBase
 
   private:
     /// Interface used to access the object dictionary.
-    IObjectAccess & od;
+    IObjectAccess & od_;
 
     /// CLI component where the CLI command is registered.
-    gpcc::cli::CLI & cli;
+    gpcc::cli::CLI & cli_;
 
     /// Name of the published CLI command.
-    std::string const cmdName;
+    std::string const cmdName_;
 
     /// Maximum length of any string that could be returned by @ref AttributesToStringHook().
-    uint8_t const attributeStringMaxLength;
+    uint8_t const attributeStringMaxLength_;
 
 
     void CLI_CommandHandler(std::string const & restOfLine, gpcc::cli::CLI & cli);

@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021, 2024 Daniel Jerolm
+    Copyright (C) 2021, 2024, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/infrastructure/RODACLIClientBase.hpp>
@@ -43,7 +43,7 @@
 namespace gpcc {
 namespace cood {
 
-uint16_t constexpr RODACLIClientBase::rxTimeout_ms;
+uint16_t constexpr RODACLIClientBase::rxTimeout_ms_;
 
 /**
  * \brief Constructor.
@@ -58,34 +58,34 @@ uint16_t constexpr RODACLIClientBase::rxTimeout_ms;
  *
  * - - -
  *
- * \param _cli
+ * \param cli
  * CLI where the CLI command will be registered by the derived class.
  *
- * \param _attributeStringMaxLength
+ * \param attributeStringMaxLength
  * Maximum length of any string that could be returned by @ref AttributesToStringHook().
  */
-RODACLIClientBase::RODACLIClientBase(gpcc::cli::CLI & _cli, uint8_t const _attributeStringMaxLength)
+RODACLIClientBase::RODACLIClientBase(gpcc::cli::CLI & cli, uint8_t const attributeStringMaxLength)
 : IRemoteObjectDictionaryAccessNotifiable()
-, cli(_cli)
-, attributeStringMaxLength(_attributeStringMaxLength)
-, ownerID(0U)
-, connectMutex()
-, internalMutex()
-, state(States::notRegistered)
-, pRODA(nullptr)
-, maxRequestSize(0U)
-, maxResponseSize(0U)
-, sessionCnt(0U)
-, spReceivedResponse()
-, receiveOverflow(false)
-, respReceivedConVar()
-, stateChangeConVar()
+, cli_(cli)
+, attributeStringMaxLength_(attributeStringMaxLength)
+, ownerID_(0U)
+, connectMutex_()
+, internalMutex_()
+, state_(States::notRegistered)
+, pRODA_(nullptr)
+, maxRequestSize_(0U)
+, maxResponseSize_(0U)
+, sessionCnt_(0U)
+, spReceivedResponse_()
+, receiveOverflow_(false)
+, respReceivedConVar_()
+, stateChangeConVar_()
 {
   auto const uipThis = reinterpret_cast<uintptr_t>(this);
   #if UINTPTR_MAX == 0xFFFFFFFFUL
-    ownerID = static_cast<uint32_t>(uipThis);
+    ownerID_ = static_cast<uint32_t>(uipThis);
   #elif UINTPTR_MAX == 0xFFFFFFFFFFFFFFFFULL
-    ownerID = (static_cast<uint32_t>(uipThis)) ^ (static_cast<uint32_t>(uipThis >> 32U));
+    ownerID_ = (static_cast<uint32_t>(uipThis)) ^ (static_cast<uint32_t>(uipThis >> 32U));
   #else
     #error "Cannot determine pointer size."
   #endif
@@ -106,9 +106,9 @@ RODACLIClientBase::RODACLIClientBase(gpcc::cli::CLI & _cli, uint8_t const _attri
  */
 RODACLIClientBase::~RODACLIClientBase(void)
 {
-  gpcc::osal::MutexLocker internalMutexLocker(internalMutex);
+  gpcc::osal::MutexLocker internalMutexLocker(internalMutex_);
 
-  if (state != States::notRegistered)
+  if (state_ != States::notRegistered)
     gpcc::osal::Panic("RODACLIClientBase::~RODACLIClientBase: Still connected to RODA interface!");
 }
 
@@ -139,27 +139,27 @@ RODACLIClientBase::~RODACLIClientBase(void)
  */
 void RODACLIClientBase::Connect(IRemoteObjectDictionaryAccess & rodaItf)
 {
-  gpcc::osal::MutexLocker connectMutexLocker(connectMutex);
+  gpcc::osal::MutexLocker connectMutexLocker(connectMutex_);
 
   {
-    gpcc::osal::MutexLocker internalMutexLocker(internalMutex);
+    gpcc::osal::MutexLocker internalMutexLocker(internalMutex_);
 
-    if (state != States::notRegistered)
+    if (state_ != States::notRegistered)
       throw std::logic_error("RODACLIClientBase::Connect: Already connected.");
 
-    stateChangeConVar.Signal();
-    state = States::notReady;
-    pRODA = &rodaItf;
+    stateChangeConVar_.Signal();
+    state_ = States::notReady;
+    pRODA_ = &rodaItf;
   }
 
   ON_SCOPE_EXIT(undo)
   {
-    gpcc::osal::MutexLocker internalMutexLocker(internalMutex);
-    pRODA = nullptr;
+    gpcc::osal::MutexLocker internalMutexLocker(internalMutex_);
+    pRODA_ = nullptr;
     Reset(States::notRegistered);
   };
 
-  pRODA->Register(this);
+  pRODA_->Register(this);
 
   ON_SCOPE_EXIT_DISMISS(undo);
 }
@@ -186,21 +186,21 @@ void RODACLIClientBase::Connect(IRemoteObjectDictionaryAccess & rodaItf)
  */
 void RODACLIClientBase::Disconnect(void)
 {
-  gpcc::osal::MutexLocker connectMutexLocker(connectMutex);
+  gpcc::osal::MutexLocker connectMutexLocker(connectMutex_);
 
   {
-    gpcc::osal::MutexLocker internalMutexLocker(internalMutex);
+    gpcc::osal::MutexLocker internalMutexLocker(internalMutex_);
 
-    if (state == States::notRegistered)
+    if (state_ == States::notRegistered)
       throw std::logic_error("RODACLIClientBase::Disconnect: Already disconnected");
   }
 
   try
   {
-    pRODA->Unregister();
+    pRODA_->Unregister();
 
-    gpcc::osal::MutexLocker internalMutexLocker(internalMutex);
-    pRODA = nullptr;
+    gpcc::osal::MutexLocker internalMutexLocker(internalMutex_);
+    pRODA_ = nullptr;
     Reset(States::notRegistered);
   }
   catch (...)
@@ -231,8 +231,8 @@ void RODACLIClientBase::Disconnect(void)
  */
 IRemoteObjectDictionaryAccess* RODACLIClientBase::GetCurrentlyConnectedRODAItf(void)
 {
-  gpcc::osal::MutexLocker connectMutexLocker(connectMutex);
-  return pRODA;
+  gpcc::osal::MutexLocker connectMutexLocker(connectMutex_);
+  return pRODA_;
 }
 
 /**
@@ -266,13 +266,13 @@ bool RODACLIClientBase::WaitForRODAItfReady(uint16_t const timeout_ms)
   if (timeout_ms == 0U)
     throw std::invalid_argument("RODACLIClientBase::WaitForRODAItfReady: 'timeout_ms' invalid");
 
-  gpcc::osal::MutexLocker internalMutexLocker(internalMutex);
+  gpcc::osal::MutexLocker internalMutexLocker(internalMutex_);
 
-  if (state == States::ready)
+  if (state_ == States::ready)
   {
     return true;
   }
-  else if (state == States::notRegistered)
+  else if (state_ == States::notRegistered)
   {
     throw std::logic_error("RODACLIClientBase::WaitForRODAItfReady: Not connected");
   }
@@ -281,12 +281,12 @@ bool RODACLIClientBase::WaitForRODAItfReady(uint16_t const timeout_ms)
     auto const timeout = gpcc::time::TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID)
                        + gpcc::time::TimeSpan::ms(timeout_ms);
 
-    while (state != States::ready)
+    while (state_ != States::ready)
     {
-      if (stateChangeConVar.TimeLimitedWait(internalMutex, timeout))
+      if (stateChangeConVar_.TimeLimitedWait(internalMutex_, timeout))
       {
         // (timeout)
-        return (state == States::ready);
+        return (state_ == States::ready);
       }
     }
 
@@ -303,7 +303,7 @@ bool RODACLIClientBase::WaitForRODAItfReady(uint16_t const timeout_ms)
  *
  * __Thread safety:__\n
  * This is thread-safe.\n
- * This is intended to be executed in the context of @ref cli only.
+ * This is intended to be executed in the context of @ref cli_ only.
  *
  * __Exception safety:__\n
  * Basic guarantee:
@@ -320,9 +320,9 @@ bool RODACLIClientBase::WaitForRODAItfReady(uint16_t const timeout_ms)
  */
 void RODACLIClientBase::CLI_Enumerate(std::string const & restOfLine)
 {
-  gpcc::osal::MutexLocker internalMutexLocker(internalMutex);
+  gpcc::osal::MutexLocker internalMutexLocker(internalMutex_);
 
-  if (state != States::ready)
+  if (state_ != States::ready)
     throw std::runtime_error("RODA interface not ready or not connected");
 
   // ============================================
@@ -338,7 +338,7 @@ void RODACLIClientBase::CLI_Enumerate(std::string const & restOfLine)
   uint16_t startIndex = args.GetFirstIndex();
   do
   {
-    cli.TestTermination();
+    cli_.TestTermination();
 
     spEnumResponse.reset();
     spEnumResponse = Enumerate(startIndex, args.GetLastIndex(), 1U, 0xFFFFU);
@@ -347,14 +347,14 @@ void RODACLIClientBase::CLI_Enumerate(std::string const & restOfLine)
     if (indices.empty())
     {
       if (firstLoopCycle)
-        cli.WriteLine("No objects");
+        cli_.WriteLine("No objects");
 
       return;
     }
 
     for (auto const index : indices)
     {
-      cli.TestTermination();
+      cli_.TestTermination();
 
       // collect some more data...
       auto const spInfoResponse = GetInfoSingleSI(index, 0U, true, false);
@@ -369,7 +369,7 @@ void RODACLIClientBase::CLI_Enumerate(std::string const & restOfLine)
           << StringComposer::AlignLeft << StringComposer::Width(Object::largestObjectCodeNameLength) << Object::ObjectCodeToString(objCode) << ' '
           << StringComposer::AlignLeft << StringComposer::Width(15) << DataTypeToString(dataType) << " \"" << objName << '"';
 
-      cli.WriteLine(sc.Get());
+      cli_.WriteLine(sc.Get());
     }
 
     firstLoopCycle = false;
@@ -384,7 +384,7 @@ void RODACLIClientBase::CLI_Enumerate(std::string const & restOfLine)
  *
  * __Thread safety:__\n
  * This is thread-safe.\n
- * This is intended to be executed in the context of @ref cli only.
+ * This is intended to be executed in the context of @ref cli_ only.
  *
  * __Exception safety:__\n
  * Basic guarantee:
@@ -403,9 +403,9 @@ void RODACLIClientBase::CLI_Enumerate(std::string const & restOfLine)
  */
 void RODACLIClientBase::CLI_Info(std::string const & restOfLine)
 {
-  gpcc::osal::MutexLocker internalMutexLocker(internalMutex);
+  gpcc::osal::MutexLocker internalMutexLocker(internalMutex_);
 
-  if (state != States::ready)
+  if (state_ != States::ready)
     throw std::runtime_error("RODA interface not ready or not connected");
 
   // ============================================
@@ -427,7 +427,7 @@ void RODACLIClientBase::CLI_Info(std::string const & restOfLine)
   // -- print info about object --
   sc << "Object " << gpcc::string::ToHex(args.GetIndex(), 4U) << ": " << Object::ObjectCodeToString(spInfo->GetObjectCode())
       << " (" << DataTypeToString(spInfo->GetObjectDataType()) << ") \"" << spInfo->GetObjectName() << '"';
-  cli.WriteLine(sc.Get());
+  cli_.WriteLine(sc.Get());
 
   // small tool: Appends info about a subindex to 'sc'
   auto appendSubIndexInfoToOSS = [&](uint_fast8_t const si)
@@ -437,7 +437,7 @@ void RODACLIClientBase::CLI_Info(std::string const & restOfLine)
     uint8_t const bits  = s % 8U;
     sc << StringComposer::AlignLeft << StringComposer::Width(15U)
         << DataTypeToString(spInfo->GetSubIdxDataType(si)) << ' '
-        << StringComposer::Width(attributeStringMaxLength)
+        << StringComposer::Width(attributeStringMaxLength_)
         << AttributesToStringHook(spInfo->GetSubIdxAttributes(si)) << ' '
         << StringComposer::AlignRight << StringComposer::Width(5U)
         << bytes << '.' << static_cast<uint32_t>(bits) << " Byte(s) \"" << spInfo->GetSubIdxName(si) << '"';
@@ -471,14 +471,14 @@ void RODACLIClientBase::CLI_Info(std::string const & restOfLine)
     sc.Clear();
     sc << "  Subindex    " << StringComposer::AlignRight << StringComposer::Width(digitsForSubindices + 2U) << "0: ";
     appendSubIndexInfoToOSS(0U);
-    cli.WriteLine(sc.Get());
+    cli_.WriteLine(sc.Get());
 
     if (maxNbOfSIs > 1U)
     {
       sc.Clear();
       sc << "  Subindex 1.." << static_cast<uint32_t>(maxNbOfSIs - 1U) << ": ";
       appendSubIndexInfoToOSS(1U);
-      cli.WriteLine(sc.Get());
+      cli_.WriteLine(sc.Get());
     }
   }
   else
@@ -504,7 +504,7 @@ void RODACLIClientBase::CLI_Info(std::string const & restOfLine)
         appendAppSpecMetaDataToOSS(i);
       }
 
-      cli.WriteLine(sc.Get());
+      cli_.WriteLine(sc.Get());
     }
   }
 }
@@ -516,7 +516,7 @@ void RODACLIClientBase::CLI_Info(std::string const & restOfLine)
  *
  * __Thread safety:__\n
  * This is thread-safe.\n
- * This is intended to be executed in the context of @ref cli only.
+ * This is intended to be executed in the context of @ref cli_ only.
  *
  * __Exception safety:__\n
  * Basic guarantee:
@@ -533,9 +533,9 @@ void RODACLIClientBase::CLI_Info(std::string const & restOfLine)
  */
 void RODACLIClientBase::CLI_Read(std::string const & restOfLine)
 {
-  gpcc::osal::MutexLocker internalMutexLocker(internalMutex);
+  gpcc::osal::MutexLocker internalMutexLocker(internalMutex_);
 
-  if (state != States::ready)
+  if (state_ != States::ready)
     throw std::runtime_error("RODA interface not ready or not connected");
 
   // ============================================
@@ -559,7 +559,7 @@ void RODACLIClientBase::CLI_Read(std::string const & restOfLine)
   auto str = CANopenEncodedDataToString(msr, spReadResponse->GetDataSize(), spSIInfo->GetSubIdxDataType(args.GetSubIndex()));
   msr.Close();
 
-  cli.WriteLine(str);
+  cli_.WriteLine(str);
 }
 
 /**
@@ -569,7 +569,7 @@ void RODACLIClientBase::CLI_Read(std::string const & restOfLine)
  *
  * __Thread safety:__\n
  * This is thread-safe.\n
- * This is intended to be executed in the context of @ref cli only.
+ * This is intended to be executed in the context of @ref cli_ only.
  *
  * __Exception safety:__\n
  * Basic guarantee:
@@ -586,9 +586,9 @@ void RODACLIClientBase::CLI_Read(std::string const & restOfLine)
  */
 void RODACLIClientBase::CLI_Write(std::string const & restOfLine)
 {
-  gpcc::osal::MutexLocker internalMutexLocker(internalMutex);
+  gpcc::osal::MutexLocker internalMutexLocker(internalMutex_);
 
-  if (state != States::ready)
+  if (state_ != States::ready)
     throw std::runtime_error("RODA interface not ready or not connected");
 
   // ============================================
@@ -612,7 +612,7 @@ void RODACLIClientBase::CLI_Write(std::string const & restOfLine)
   // write to object
   // ============================================
   Write(args.GetIndex(), args.GetSubIndex(), false, std::move(args.GetData()));
-  cli.WriteLine("OK");
+  cli_.WriteLine("OK");
 }
 
 /**
@@ -622,7 +622,7 @@ void RODACLIClientBase::CLI_Write(std::string const & restOfLine)
  *
  * __Thread safety:__\n
  * This is thread-safe.\n
- * This is intended to be executed in the context of @ref cli only.
+ * This is intended to be executed in the context of @ref cli_ only.
  *
  * __Exception safety:__\n
  * Basic guarantee:
@@ -639,9 +639,9 @@ void RODACLIClientBase::CLI_Write(std::string const & restOfLine)
  */
 void RODACLIClientBase::CLI_CARead(std::string const & restOfLine)
 {
-  gpcc::osal::MutexLocker internalMutexLocker(internalMutex);
+  gpcc::osal::MutexLocker internalMutexLocker(internalMutex_);
 
-  if (state != States::ready)
+  if (state_ != States::ready)
     throw std::runtime_error("RODA interface not ready or not connected");
 
   // ============================================
@@ -683,7 +683,7 @@ void RODACLIClientBase::CLI_CARead(std::string const & restOfLine)
       {
         if (s > 120U)
         {
-          cli.WriteLine("Encountered very large subindex name. Retry command without option 'v'.");
+          cli_.WriteLine("Encountered very large subindex name. Retry command without option 'v'.");
           return;
         }
 
@@ -707,7 +707,7 @@ void RODACLIClientBase::CLI_CARead(std::string const & restOfLine)
       else
         sc << CANopenEncodedDataToString(msr, spSIInfo->GetSubIdxMaxSize(subIdx), dataType);
 
-      cli.WriteLine(sc.Get());
+      cli_.WriteLine(sc.Get());
     }
   }
   else
@@ -723,7 +723,7 @@ void RODACLIClientBase::CLI_CARead(std::string const & restOfLine)
       else
         sc << CANopenEncodedDataToString(msr, spSIInfo->GetSubIdxMaxSize(subIdx), spSIInfo->GetSubIdxDataType(subIdx));
 
-      cli.WriteLine(sc.Get());
+      cli_.WriteLine(sc.Get());
     }
   }
 
@@ -737,7 +737,7 @@ void RODACLIClientBase::CLI_CARead(std::string const & restOfLine)
  *
  * __Thread safety:__\n
  * This is thread-safe.\n
- * This is intended to be executed in the context of @ref cli only.
+ * This is intended to be executed in the context of @ref cli_ only.
  *
  * __Exception safety:__\n
  * Basic guarantee:
@@ -754,9 +754,9 @@ void RODACLIClientBase::CLI_CARead(std::string const & restOfLine)
  */
 void RODACLIClientBase::CLI_CAWrite(std::string const & restOfLine)
 {
-  gpcc::osal::MutexLocker internalMutexLocker(internalMutex);
+  gpcc::osal::MutexLocker internalMutexLocker(internalMutex_);
 
-  if (state != States::ready)
+  if (state_ != States::ready)
     throw std::runtime_error("RODA interface not ready or not connected");
 
   // ============================================
@@ -775,7 +775,7 @@ void RODACLIClientBase::CLI_CAWrite(std::string const & restOfLine)
   if (   (spInfo->GetObjectCode() != Object::ObjectCode::Array)
       && (spInfo->GetObjectCode() != Object::ObjectCode::Record))
   {
-    cli.WriteLine("Object type not supported.");
+    cli_.WriteLine("Object type not supported.");
     return;
   }
 
@@ -795,16 +795,16 @@ void RODACLIClientBase::CLI_CAWrite(std::string const & restOfLine)
   {
     if (spInfo->GetObjectCode() != Object::ObjectCode::Array)
     {
-      cli.WriteLine("SI0 is writeable. This is only supported for ARRAY objects.");
+      cli_.WriteLine("SI0 is writeable. This is only supported for ARRAY objects.");
       return;
     }
 
-    cli.WriteLine("Current value of SI0: " + std::to_string(currSI0));
-    newSI0 = gpcc::string::DecimalToU8(cli.ReadLine("New value for SI0: "));
+    cli_.WriteLine("Current value of SI0: " + std::to_string(currSI0));
+    newSI0 = gpcc::string::DecimalToU8(cli_.ReadLine("New value for SI0: "));
 
     if (newSI0 >= spInfo->GetMaxNbOfSubindices())
     {
-      cli.WriteLine("Value for SI0 exceeds maximum number of subindices the object can have.");
+      cli_.WriteLine("Value for SI0 exceeds maximum number of subindices the object can have.");
       return;
     }
   }
@@ -846,14 +846,14 @@ void RODACLIClientBase::CLI_CAWrite(std::string const & restOfLine)
     // skip empty subindices
     if (siSize == 0U)
     {
-      cli.WriteLine("Skipping SI " + std::to_string(subIdx) + " (zero size))");
+      cli_.WriteLine("Skipping SI " + std::to_string(subIdx) + " (zero size))");
       continue;
     }
 
     // gap?
     if (dataType == DataType::null)
     {
-      cli.WriteLine("Skipping SI " + std::to_string(subIdx) + " (gap)");
+      cli_.WriteLine("Skipping SI " + std::to_string(subIdx) + " (gap)");
       msw.FillBits(siSize, false);
       continue;
     }
@@ -867,7 +867,7 @@ void RODACLIClientBase::CLI_CAWrite(std::string const & restOfLine)
     auto const attributes = spInfo->GetSubIdxAttributes(subIdx);
     if ((attributes & Object::attr_ACCESS_WR) == 0U)
     {
-      cli.WriteLine("Skipping SI " + std::to_string(subIdx) + " (pure read-only))");
+      cli_.WriteLine("Skipping SI " + std::to_string(subIdx) + " (pure read-only))");
       msw.FillBits(siSize, false);
       continue;
     }
@@ -878,9 +878,9 @@ void RODACLIClientBase::CLI_CAWrite(std::string const & restOfLine)
         << DataTypeToString(dataType) << ", "
         << AttributesToStringHook(spInfo->GetSubIdxAttributes(subIdx)) << ", "
         << bytes << '.' << static_cast<uint32_t>(bits) << " Byte(s), \"" << spInfo->GetSubIdxName(subIdx) << '"';
-    cli.WriteLine(sc.Get());
+    cli_.WriteLine(sc.Get());
 
-    auto val = cli.ReadLine("Value: ");
+    auto val = cli_.ReadLine("Value: ");
 
     switch (dataType)
     {
@@ -977,15 +977,15 @@ void RODACLIClientBase::CLI_CAWrite(std::string const & restOfLine)
   // ============================================
   // write
   // ============================================
-  cli.WriteLine("All data entered.");
-  if (cli.ReadLine("Write now? (y/n/Ctrl+C): ") == "y")
+  cli_.WriteLine("All data entered.");
+  if (cli_.ReadLine("Write now? (y/n/Ctrl+C): ") == "y")
   {
     Write(args.GetIndex(), 0U, true, std::move(data));
-    cli.WriteLine("OK");
+    cli_.WriteLine("OK");
   }
   else
   {
-    cli.WriteLine("Aborted. No data written.");
+    cli_.WriteLine("Aborted. No data written.");
   }
 }
 
@@ -1058,32 +1058,32 @@ uint_fast8_t RODACLIClientBase::DigitsInSubindex(uint8_t const si) noexcept
 /// \copydoc gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnReady
 void RODACLIClientBase::OnReady(size_t const maxRequestSize, size_t const maxResponseSize) noexcept
 {
-  gpcc::osal::MutexLocker internalMutexLocker(internalMutex);
+  gpcc::osal::MutexLocker internalMutexLocker(internalMutex_);
 
-  if (state != States::notReady)
-    gpcc::osal::Panic("RODACLIClientBase::OnReady: 'state' invalid");
+  if (state_ != States::notReady)
+    gpcc::osal::Panic("RODACLIClientBase::OnReady: 'state_' invalid");
 
   if (maxRequestSize < (RequestBase::minimumUsefulRequestSize + ReturnStackItem::binarySize))
-    this->maxRequestSize = 0U;
+    this->maxRequestSize_ = 0U;
   else
-    this->maxRequestSize = maxRequestSize - ReturnStackItem::binarySize;
+    this->maxRequestSize_ = maxRequestSize - ReturnStackItem::binarySize;
 
   if (maxResponseSize < (ResponseBase::minimumUsefulResponseSize + ReturnStackItem::binarySize))
-    this->maxResponseSize = 0U;
+    this->maxResponseSize_ = 0U;
   else
-    this->maxResponseSize = maxResponseSize - ReturnStackItem::binarySize;
+    this->maxResponseSize_ = maxResponseSize - ReturnStackItem::binarySize;
 
-  state = States::ready;
-  stateChangeConVar.Signal();
+  state_ = States::ready;
+  stateChangeConVar_.Signal();
 }
 
 /// \copydoc gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnDisconnected
 void RODACLIClientBase::OnDisconnected(void) noexcept
 {
-  gpcc::osal::MutexLocker internalMutexLocker(internalMutex);
+  gpcc::osal::MutexLocker internalMutexLocker(internalMutex_);
 
-  if (state != States::ready)
-    gpcc::osal::Panic("RODACLIClientBase::OnDisconnected: 'state' invalid");
+  if (state_ != States::ready)
+    gpcc::osal::Panic("RODACLIClientBase::OnDisconnected: 'state_' invalid");
 
   Reset(States::notReady);
 }
@@ -1091,11 +1091,11 @@ void RODACLIClientBase::OnDisconnected(void) noexcept
 /// \copydoc gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnRequestProcessed
 void RODACLIClientBase::OnRequestProcessed(std::unique_ptr<ResponseBase> spResponse) noexcept
 {
-  gpcc::osal::MutexLocker internalMutexLocker(internalMutex);
+  gpcc::osal::MutexLocker internalMutexLocker(internalMutex_);
 
   // sanity check
-  if (state != States::ready)
-    gpcc::osal::Panic("RODACLIClientBase::OnDisconnected: 'state' invalid");
+  if (state_ != States::ready)
+    gpcc::osal::Panic("RODACLIClientBase::OnDisconnected: 'state_' invalid");
 
   // Extract return stack item and check:
   // - Are we the originator?
@@ -1105,19 +1105,19 @@ void RODACLIClientBase::OnRequestProcessed(std::unique_ptr<ResponseBase> spRespo
     return;
 
   auto rsi = spResponse->PopReturnStack();
-  if (rsi.GetID() != ownerID)
+  if (rsi.GetID() != ownerID_)
     return;
 
-  if (rsi.GetInfo() != sessionCnt)
+  if (rsi.GetInfo() != sessionCnt_)
     return;
 
-  // check for overflow and fetch response or set receiveOverflow
-  if (!spReceivedResponse)
-    spReceivedResponse = std::move(spResponse);
+  // check for overflow and fetch response or set receiveOverflow_
+  if (!spReceivedResponse_)
+    spReceivedResponse_ = std::move(spResponse);
   else
-    receiveOverflow = true;
+    receiveOverflow_ = true;
 
-  respReceivedConVar.Signal();
+  respReceivedConVar_.Signal();
 }
 
 /// \copydoc gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::LoanExecutionContext
@@ -1131,12 +1131,12 @@ void RODACLIClientBase::LoanExecutionContext(void) noexcept
 /**
  * \brief Resets class members according to requirements when the RODA interface becomes not-ready or disconnected.
  *
- * @ref pRODA is not modified by this.
+ * @ref pRODA_ is not modified by this.
  *
  * - - -
  *
  * __Thread safety:__\n
- * The caller shall have @ref internalMutex acquired.
+ * The caller shall have @ref internalMutex_ acquired.
  *
  * __Exception safety:__\n
  * No-throw guarantee.
@@ -1147,38 +1147,38 @@ void RODACLIClientBase::LoanExecutionContext(void) noexcept
  * - - -
  *
  * \param newState
- * New value for @ref state.
+ * New value for @ref state_.
  */
 void RODACLIClientBase::Reset(States const newState) noexcept
 {
-  if (state != newState)
-    stateChangeConVar.Signal();
+  if (state_ != newState)
+    stateChangeConVar_.Signal();
 
-  state = newState;
-  maxRequestSize = 0U;
-  maxResponseSize = 0U;
-  sessionCnt = 0U;
-  spReceivedResponse.reset();
-  receiveOverflow = false;
+  state_ = newState;
+  maxRequestSize_ = 0U;
+  maxResponseSize_ = 0U;
+  sessionCnt_ = 0U;
+  spReceivedResponse_.reset();
+  receiveOverflow_ = false;
 }
 
 /**
  * \brief Blocks the calling thread until a response is received or a timeout occurrs.
  *
  * Messages are received via @ref RODACLIClientBase::OnRequestProcessed() of the private provided RODAN interface.
- * @ref OnRequestProcessed() will check @ref sessionCnt and @ref ownerID to the return stack item attached to the
+ * @ref OnRequestProcessed() will check @ref sessionCnt_ and @ref ownerID_ to the return stack item attached to the
  * response.
  *
- * In case of an error, the caller may want to increase @ref sessionCnt.
+ * In case of an error, the caller may want to increase @ref sessionCnt_.
  *
- * \post  @ref receiveOverflow is cleared.
+ * \post  @ref receiveOverflow_ is cleared.
  *
- * \post  @ref spReceivedResponse is cleared.
+ * \post  @ref spReceivedResponse_ is cleared.
  *
  * - - -
  *
  * __Thread safety:__\n
- * The caller shall have @ref internalMutex acquired.
+ * The caller shall have @ref internalMutex_ acquired.
  *
  * __Exception safety:__\n
  * Strong guarantee.
@@ -1195,17 +1195,17 @@ void RODACLIClientBase::Reset(States const newState) noexcept
  */
 std::unique_ptr<ResponseBase> RODACLIClientBase::WaitAndFetchResponse(uint32_t const timeout_ms)
 {
-  if (!spReceivedResponse)
+  if (!spReceivedResponse_)
   {
     auto const timeout = gpcc::time::TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID)
                        + gpcc::time::TimeSpan::ms(timeout_ms);
 
-    while (!spReceivedResponse)
+    while (!spReceivedResponse_)
     {
-      if (respReceivedConVar.TimeLimitedWait(internalMutex, timeout))
+      if (respReceivedConVar_.TimeLimitedWait(internalMutex_, timeout))
       {
         // timeout
-        if (!spReceivedResponse)
+        if (!spReceivedResponse_)
           throw std::runtime_error("RODACLIClientBase::WaitAndFetchResponse: Timeout waiting for response from remote access server");
         else
           break;
@@ -1213,14 +1213,14 @@ std::unique_ptr<ResponseBase> RODACLIClientBase::WaitAndFetchResponse(uint32_t c
     }
   }
 
-  if (receiveOverflow)
+  if (receiveOverflow_)
   {
-    spReceivedResponse.reset();
-    receiveOverflow = false;
+    spReceivedResponse_.reset();
+    receiveOverflow_ = false;
     throw std::runtime_error("RODACLIClientBase::WaitAndFetchResponse: Receive overflow");
   }
 
-  return std::move(spReceivedResponse);
+  return std::move(spReceivedResponse_);
 }
 
 /**
@@ -1229,11 +1229,11 @@ std::unique_ptr<ResponseBase> RODACLIClientBase::WaitAndFetchResponse(uint32_t c
  * - - -
  *
  * __Thread safety:__\n
- * The caller shall have @ref internalMutex acquired.
+ * The caller shall have @ref internalMutex_ acquired.
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - If the error occurred _after_ successful transmission of the request, then @ref sessionCnt will be incremented.
+ * - If the error occurred _after_ successful transmission of the request, then @ref sessionCnt_ will be incremented.
  *
  * \throws std::bad_alloc                    Out of memory.
  *
@@ -1244,7 +1244,7 @@ std::unique_ptr<ResponseBase> RODACLIClientBase::WaitAndFetchResponse(uint32_t c
  *
  * __Thread cancellation safety:__\n
  * Basic guarantee:
- * - If thread cancellation occurrs _after_ successful transmission of the request, then @ref sessionCnt will be
+ * - If thread cancellation occurrs _after_ successful transmission of the request, then @ref sessionCnt_ will be
  *   incremented.
  *
  * - - -
@@ -1262,17 +1262,17 @@ std::unique_ptr<ResponseBase> RODACLIClientBase::TxAndRx(std::unique_ptr<Request
   if (!spReq)
     throw std::invalid_argument("RODACLIClientBase::TxAndRx: !spReq");
 
-  ReturnStackItem rsi(ownerID, sessionCnt);
+  ReturnStackItem rsi(ownerID_, sessionCnt_);
   spReq->Push(rsi);
 
-  pRODA->Send(spReq);
+  pRODA_->Send(spReq);
 
   ON_SCOPE_EXIT(incSessionCount)
   {
-    ++sessionCnt;
+    ++sessionCnt_;
   };
 
-  auto resp = WaitAndFetchResponse(rxTimeout_ms);
+  auto resp = WaitAndFetchResponse(rxTimeout_ms_);
 
   ON_SCOPE_EXIT_DISMISS(incSessionCount);
 
@@ -1285,11 +1285,11 @@ std::unique_ptr<ResponseBase> RODACLIClientBase::TxAndRx(std::unique_ptr<Request
  * - - -
  *
  * __Thread safety:__\n
- * The caller shall have @ref internalMutex acquired.
+ * The caller shall have @ref internalMutex_ acquired.
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - @ref sessionCnt will be incremented if a request has been transmitted and its response is outstanding
+ * - @ref sessionCnt_ will be incremented if a request has been transmitted and its response is outstanding
  *
  * \throws std::bad_alloc                    Out of memory.
  *
@@ -1298,7 +1298,7 @@ std::unique_ptr<ResponseBase> RODACLIClientBase::TxAndRx(std::unique_ptr<Request
  *
  * __Thread cancellation safety:__\n
  * Basic guarantee:
- * - @ref sessionCnt will be incremented if a request has been transmitted and its response is outstanding
+ * - @ref sessionCnt_ will be incremented if a request has been transmitted and its response is outstanding
  *
  * - - -
  *
@@ -1311,7 +1311,7 @@ std::unique_ptr<ResponseBase> RODACLIClientBase::TxAndRx(std::unique_ptr<Request
  * Objects located at indices larger than this will not be enumerated.
  *
  * \param maxFragments
- * Each response object received from the remote access server contains @ref maxResponseSize bytes of data (both payload
+ * Each response object received from the remote access server contains @ref maxResponseSize_ bytes of data (both payload
  * and overhead). It may happen, that the indices of all objects up to `lastIndex` do not fit into the response object.
  * It that case, this method will send another request to continue enumeration. This is called a _fragmented transfer_.\n
  * \n
@@ -1343,7 +1343,7 @@ std::unique_ptr<ObjectEnumResponse> RODACLIClientBase::Enumerate(uint16_t const 
     throw std::invalid_argument("RODACLIClientBase::Enumerate: 'maxFragments' is zero");
 
   // create initial enum request
-  auto spRequest = std::make_unique<ObjectEnumRequest>(firstIndex, lastIndex, attrFilter, maxResponseSize);
+  auto spRequest = std::make_unique<ObjectEnumRequest>(firstIndex, lastIndex, attrFilter, maxResponseSize_);
 
   // this will take the first response and potential fragments will be added to it
   std::unique_ptr<ObjectEnumResponse> spFirstResponse;
@@ -1389,7 +1389,7 @@ std::unique_ptr<ObjectEnumResponse> RODACLIClientBase::Enumerate(uint16_t const 
       break;
 
     // create next request which continues the query
-    spRequest = std::make_unique<ObjectEnumRequest>(nextIndex, lastIndex, attrFilter, maxResponseSize);
+    spRequest = std::make_unique<ObjectEnumRequest>(nextIndex, lastIndex, attrFilter, maxResponseSize_);
   }
 
   return spFirstResponse;
@@ -1403,11 +1403,11 @@ std::unique_ptr<ObjectEnumResponse> RODACLIClientBase::Enumerate(uint16_t const 
  * - - -
  *
  * __Thread safety:__\n
- * The caller shall have @ref internalMutex acquired.
+ * The caller shall have @ref internalMutex_ acquired.
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - @ref sessionCnt will be incremented if a request has been transmitted and its response is outstanding
+ * - @ref sessionCnt_ will be incremented if a request has been transmitted and its response is outstanding
  *
  * \throws std::bad_alloc                    Out of memory.
  *
@@ -1416,7 +1416,7 @@ std::unique_ptr<ObjectEnumResponse> RODACLIClientBase::Enumerate(uint16_t const 
  *
  * __Thread cancellation safety:__\n
  * Basic guarantee:
- * - @ref sessionCnt will be incremented if a request has been transmitted and its response is outstanding
+ * - @ref sessionCnt_ will be incremented if a request has been transmitted and its response is outstanding
  *
  * - - -
  *
@@ -1440,14 +1440,14 @@ std::unique_ptr<ObjectInfoResponse> RODACLIClientBase::GetInfo(uint16_t const in
                                                                bool const inclASM)
 {
   // create initial info request
-  auto spRequest = std::make_unique<ObjectInfoRequest>(index, 0U, 255U, inclNames, inclASM, maxResponseSize);
+  auto spRequest = std::make_unique<ObjectInfoRequest>(index, 0U, 255U, inclNames, inclASM, maxResponseSize_);
 
   // this will take the first response and potential fragments will be added to it
   std::unique_ptr<ObjectInfoResponse> spFirstResponse;
 
   while (true)
   {
-    cli.TestTermination();
+    cli_.TestTermination();
 
     // transmit the request
     auto spResponse = TxAndRx(std::move(spRequest));
@@ -1484,7 +1484,7 @@ std::unique_ptr<ObjectInfoResponse> RODACLIClientBase::GetInfo(uint16_t const in
       break;
 
     // create next request which continues the query
-    spRequest = std::make_unique<ObjectInfoRequest>(index, nextSubIndex, 255U, inclNames, inclASM, maxResponseSize);
+    spRequest = std::make_unique<ObjectInfoRequest>(index, nextSubIndex, 255U, inclNames, inclASM, maxResponseSize_);
   }
 
   return spFirstResponse;
@@ -1496,11 +1496,11 @@ std::unique_ptr<ObjectInfoResponse> RODACLIClientBase::GetInfo(uint16_t const in
  * - - -
  *
  * __Thread safety:__\n
- * The caller shall have @ref internalMutex acquired.
+ * The caller shall have @ref internalMutex_ acquired.
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - @ref sessionCnt will be incremented if a request has been transmitted and its response is outstanding
+ * - @ref sessionCnt_ will be incremented if a request has been transmitted and its response is outstanding
  *
  * \throws std::bad_alloc                    Out of memory.
  *
@@ -1509,7 +1509,7 @@ std::unique_ptr<ObjectInfoResponse> RODACLIClientBase::GetInfo(uint16_t const in
  *
  * __Thread cancellation safety:__\n
  * Basic guarantee:
- * - @ref sessionCnt will be incremented if a request has been transmitted and its response is outstanding
+ * - @ref sessionCnt_ will be incremented if a request has been transmitted and its response is outstanding
  *
  * - - -
  *
@@ -1537,7 +1537,7 @@ std::unique_ptr<ObjectInfoResponse> RODACLIClientBase::GetInfoSingleSI(uint16_t 
                                                                        bool const inclASM)
 {
   // create info request
-  auto spRequest = std::make_unique<ObjectInfoRequest>(index, subIndex, subIndex, inclNames, inclASM, maxResponseSize);
+  auto spRequest = std::make_unique<ObjectInfoRequest>(index, subIndex, subIndex, inclNames, inclASM, maxResponseSize_);
 
   // transmit the request
   auto spResponse = TxAndRx(std::move(spRequest));
@@ -1568,11 +1568,11 @@ std::unique_ptr<ObjectInfoResponse> RODACLIClientBase::GetInfoSingleSI(uint16_t 
  * - - -
  *
  * __Thread safety:__\n
- * The caller shall have @ref internalMutex acquired.
+ * The caller shall have @ref internalMutex_ acquired.
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - @ref sessionCnt will be incremented if a request has been transmitted and its response is outstanding
+ * - @ref sessionCnt_ will be incremented if a request has been transmitted and its response is outstanding
  *
  * \throws std::bad_alloc                    Out of memory.
  *
@@ -1581,7 +1581,7 @@ std::unique_ptr<ObjectInfoResponse> RODACLIClientBase::GetInfoSingleSI(uint16_t 
  *
  * __Thread cancellation safety:__\n
  * Basic guarantee:
- * - @ref sessionCnt will be incremented if a request has been transmitted and its response is outstanding
+ * - @ref sessionCnt_ will be incremented if a request has been transmitted and its response is outstanding
  *
  * - - -
  *
@@ -1606,7 +1606,7 @@ std::unique_ptr<ReadRequestResponse> RODACLIClientBase::Read(uint16_t const inde
   auto spRequest = std::make_unique<ReadRequest>(ca ? ReadRequest::AccessType::completeAccess_SI0_8bit : ReadRequest::AccessType::singleSubindex,
                                                  index, subindex,
                                                  Object::attr_ACCESS_RD,
-                                                 maxResponseSize);
+                                                 maxResponseSize_);
 
   // transmit the request
   auto spResponse = TxAndRx(std::move(spRequest));
@@ -1637,12 +1637,12 @@ std::unique_ptr<ReadRequestResponse> RODACLIClientBase::Read(uint16_t const inde
  * - - -
  *
  * __Thread safety:__\n
- * The caller shall have @ref internalMutex acquired.
+ * The caller shall have @ref internalMutex_ acquired.
  *
  * __Exception safety:__\n
  * Basic guarantee:
  * - content of 'data' may have been moved somewhere
- * - @ref sessionCnt will be incremented if a request has been transmitted and its response is outstanding
+ * - @ref sessionCnt_ will be incremented if a request has been transmitted and its response is outstanding
  *
  * \throws std::bad_alloc                    Out of memory.
  *
@@ -1654,7 +1654,7 @@ std::unique_ptr<ReadRequestResponse> RODACLIClientBase::Read(uint16_t const inde
  * __Thread cancellation safety:__\n
  * Basic guarantee:
  * - content of 'data' may have been moved somewhere
- * - @ref sessionCnt will be incremented if a request has been transmitted and its response is outstanding
+ * - @ref sessionCnt_ will be incremented if a request has been transmitted and its response is outstanding
  *
  * - - -
  *
@@ -1682,7 +1682,7 @@ void RODACLIClientBase::Write(uint16_t const index, uint8_t const subindex, bool
                                                   index, subindex,
                                                   Object::attr_ACCESS_WR,
                                                   std::move(data),
-                                                  maxResponseSize);
+                                                  maxResponseSize_);
   // transmit the request
   auto spResponse = TxAndRx(std::move(spRequest));
 

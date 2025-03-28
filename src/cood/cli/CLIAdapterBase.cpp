@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2019, 2024 Daniel Jerolm
+    Copyright (C) 2019, 2024, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/cli/CLIAdapterBase.hpp>
@@ -54,31 +54,31 @@ namespace cood {
  *
  * - - -
  *
- * \param _od
+ * \param od
  * @ref IObjectAccess interface of the object dictionary that shall be accessed by the CLI command.
  *
- * \param _cli
+ * \param cli
  * Reference to the CLI instance where the CLI command shall be registered.
  *
- * \param _cmdName
+ * \param cmdName
  * Desired name for the CLI command.\n
  * Sub-commands will be realized via arguments passed to the command.\n
  * The string must meet the requirements of [cli::Command::Create()](@ref gpcc::cli::Command::Create) or
  * @ref RegisterCLICommand() will fail later.
  *
- * \param _attributeStringMaxLength
+ * \param attributeStringMaxLength
  * Maximum length of any string that could be returned by @ref AttributesToStringHook(). Zero is not allowed.
  */
-CLIAdapterBase::CLIAdapterBase(IObjectAccess & _od,
-                               gpcc::cli::CLI & _cli,
-                               std::string const & _cmdName,
-                               uint8_t const _attributeStringMaxLength)
-: od(_od)
-, cli(_cli)
-, cmdName(_cmdName)
-, attributeStringMaxLength(_attributeStringMaxLength)
+CLIAdapterBase::CLIAdapterBase(IObjectAccess & od,
+                               gpcc::cli::CLI & cli,
+                               std::string const & cmdName,
+                               uint8_t const attributeStringMaxLength)
+: od_(od)
+, cli_(cli)
+, cmdName_(cmdName)
+, attributeStringMaxLength_(attributeStringMaxLength)
 {
-  if (attributeStringMaxLength == 0U)
+  if (attributeStringMaxLength_ == 0U)
     throw std::invalid_argument("CLIAdapterBase::CLIAdapterBase: '_attributeStringMaxLength' invalid");
 }
 
@@ -108,46 +108,46 @@ void CLIAdapterBase::RegisterCLICommand(void)
 
   ON_SCOPE_EXIT(undoCMDRegistration) { UnregisterCLICommand(); };
 
-  cli.AddCommand(Command::Create(cmdName.c_str(), " subcmd [args...]\n"
-                                 "Accesses the local object dictionary. The type of access is specified by <subcmd>:\n"
-                                 "- enum [0xFROM-0xTO]\n"
-                                 "  Enumerates objects contained in the object dictionary.\n"
-                                 "  Options:\n"
-                                 "    FROM   Index where enumeration shall start. Default: 0x0000\n"
-                                 "    TO     Index where enumeration shall end. Default: 0xFFFF\n"
-                                 "    FROM <= TO must be valid.\n"
-                                 "\n"
-                                 "- info 0xINDEX [asm]\n"
-                                 "  Prints the meta data of an object and its subindices.\n"
-                                 "  Options:\n"
-                                 "    asm   Includes application-specific meta data in the output.\n"
-                                 "\n"
-                                 "- read 0xINDEX:Subindex\n"
-                                 "  Reads the data of a subindex and prints it to CLI.\n"
-                                 "  <subindex> shall be provided in decimal format.\n"
-                                 "\n"
-                                 "- write 0xINDEX:Subindex DATA\n"
-                                 "  Writes <DATA> to a subindex. <Subindex> shall be provided in decimal format.\n"
-                                 "\n"
-                                 "  The format of <DATA> must meet the data type of the subindex:\n"
-                                 "  For BOOLEAN: TRUE, FALSE, true, false\n"
-                                 "  For REAL32/64: [+|-]digits[.][digits][(e|E)[+|-]digits]\n"
-                                 "  For VISIBLE_STRING: \"Text...\"\n"
-                                 "  For OCTET_STRING: 5B A3 ... (8bit hex values, separated by spaces)\n"
-                                 "  For UNICODE_STRING: 5B33 A6CF (16bit hex values, separated by spaces)\n"
-                                 "  For BIT1..BIT8: 0, 1, 3, 0x3, 0b11 (unused upper bits must be zero)\n"
-                                 "\n"
-                                 "- caread 0xINDEX [v]\n"
-                                 "  Reads the whole object via complete access and prints the value of each\n"
-                                 "  subindex to CLI.\n"
-                                 "  Options:\n"
-                                 "  v   Verbose output. Prints the data type and name of each subindex in addition\n"
-                                 "      to the data.\n"
-                                 "- cawrite 0xINDEX\n"
-                                 "  Writes the whole object via complete access.\n"
-                                 "  The data that shall be written is entered using an interactive dialog.",
-                                 std::bind(&CLIAdapterBase::CLI_CommandHandler, this,
-                                           std::placeholders::_1, std::placeholders::_2)));
+  cli_.AddCommand(Command::Create(cmdName_.c_str(), " subcmd [args...]\n"
+                                  "Accesses the local object dictionary. The type of access is specified by <subcmd>:\n"
+                                  "- enum [0xFROM-0xTO]\n"
+                                  "  Enumerates objects contained in the object dictionary.\n"
+                                  "  Options:\n"
+                                  "    FROM   Index where enumeration shall start. Default: 0x0000\n"
+                                  "    TO     Index where enumeration shall end. Default: 0xFFFF\n"
+                                  "    FROM <= TO must be valid.\n"
+                                  "\n"
+                                  "- info 0xINDEX [asm]\n"
+                                  "  Prints the meta data of an object and its subindices.\n"
+                                  "  Options:\n"
+                                  "    asm   Includes application-specific meta data in the output.\n"
+                                  "\n"
+                                  "- read 0xINDEX:Subindex\n"
+                                  "  Reads the data of a subindex and prints it to CLI.\n"
+                                  "  <subindex> shall be provided in decimal format.\n"
+                                  "\n"
+                                  "- write 0xINDEX:Subindex DATA\n"
+                                  "  Writes <DATA> to a subindex. <Subindex> shall be provided in decimal format.\n"
+                                  "\n"
+                                  "  The format of <DATA> must meet the data type of the subindex:\n"
+                                  "  For BOOLEAN: TRUE, FALSE, true, false\n"
+                                  "  For REAL32/64: [+|-]digits[.][digits][(e|E)[+|-]digits]\n"
+                                  "  For VISIBLE_STRING: \"Text...\"\n"
+                                  "  For OCTET_STRING: 5B A3 ... (8bit hex values, separated by spaces)\n"
+                                  "  For UNICODE_STRING: 5B33 A6CF (16bit hex values, separated by spaces)\n"
+                                  "  For BIT1..BIT8: 0, 1, 3, 0x3, 0b11 (unused upper bits must be zero)\n"
+                                  "\n"
+                                  "- caread 0xINDEX [v]\n"
+                                  "  Reads the whole object via complete access and prints the value of each\n"
+                                  "  subindex to CLI.\n"
+                                  "  Options:\n"
+                                  "  v   Verbose output. Prints the data type and name of each subindex in addition\n"
+                                  "      to the data.\n"
+                                  "- cawrite 0xINDEX\n"
+                                  "  Writes the whole object via complete access.\n"
+                                  "  The data that shall be written is entered using an interactive dialog.",
+                                  std::bind(&CLIAdapterBase::CLI_CommandHandler, this,
+                                            std::placeholders::_1, std::placeholders::_2)));
 
   ON_SCOPE_EXIT_DISMISS(undoCMDRegistration);
 }
@@ -177,7 +177,7 @@ void CLIAdapterBase::UnregisterCLICommand(void) noexcept
 {
   try
   {
-    cli.RemoveCommand(cmdName.c_str());
+    cli_.RemoveCommand(cmdName_.c_str());
   }
   catch (...)
   {
@@ -312,16 +312,16 @@ void CLIAdapterBase::CLI_Enumerate(std::string const & restOfLine)
   // ============================================
 
   // query first object
-  auto objPtr = od.GetNextNearestObject(startIdx);
+  auto objPtr = od_.GetNextNearestObject(startIdx);
   if ((!objPtr) || (objPtr->GetIndex() > endIdx))
   {
-    cli.WriteLine("No objects");
+    cli_.WriteLine("No objects");
     return;
   }
 
   do
   {
-    cli.TestTermination();
+    cli_.TestTermination();
 
     uint16_t const index = objPtr->GetIndex();
     if (index > endIdx)
@@ -340,7 +340,7 @@ void CLIAdapterBase::CLI_Enumerate(std::string const & restOfLine)
       << Object::ObjectCodeToString(objCode) << ' '
       << StringComposer::Width(15) << DataTypeToString(dataType) << " \"" << objName << '"';
 
-    cli.WriteLine(s.Get());
+    cli_.WriteLine(s.Get());
 
     ++objPtr;
   }
@@ -384,10 +384,10 @@ void CLIAdapterBase::CLI_Info(std::string const & restOfLine)
   // ============================================
   // Query object
   // ============================================
-  auto objPtr = od.GetObject(idx);
+  auto objPtr = od_.GetObject(idx);
   if (!objPtr)
   {
-    cli.WriteLine("Error: No object with given index");
+    cli_.WriteLine("Error: No object with given index");
     return;
   }
 
@@ -400,7 +400,7 @@ void CLIAdapterBase::CLI_Info(std::string const & restOfLine)
   // -- print info about object --
   sc << "Object " << gpcc::string::ToHex(idx, 4U) << ": " << Object::ObjectCodeToString(objPtr->GetObjectCode())
       << " (" << DataTypeToString(objPtr->GetObjectDataType()) << ") \"" << objPtr->GetObjectName() << '"';
-  cli.WriteLine(sc.Get());
+  cli_.WriteLine(sc.Get());
 
 
   // small tool: Appends info about a subindex to 'sc'
@@ -410,7 +410,7 @@ void CLIAdapterBase::CLI_Info(std::string const & restOfLine)
     size_t  const bytes = s / 8U;
     uint8_t const bits  = s % 8U;
     sc << StringComposer::AlignLeft << StringComposer::Width(15U) << DataTypeToString(objPtr->GetSubIdxDataType(si)) << ' '
-        << StringComposer::Width(attributeStringMaxLength) << AttributesToStringHook(objPtr->GetSubIdxAttributes(si)) << ' '
+        << StringComposer::Width(attributeStringMaxLength_) << AttributesToStringHook(objPtr->GetSubIdxAttributes(si)) << ' '
         << StringComposer::AlignRight << StringComposer::Width(5U) << bytes << '.' << static_cast<uint32_t>(bits)
         << " Byte(s) \"" << objPtr->GetSubIdxName(si) << '"';
   };
@@ -443,14 +443,14 @@ void CLIAdapterBase::CLI_Info(std::string const & restOfLine)
     sc.Clear();
     sc << "  Subindex    " << StringComposer::AlignRight << StringComposer::Width(digitsForSubindices + 2U) << "0: ";
     appendSubIndexInfoToOSS(0U);
-    cli.WriteLine(sc.Get());
+    cli_.WriteLine(sc.Get());
 
     if (maxNbOfSIs > 1U)
     {
       sc.Clear();
       sc << "  Subindex 1.." << static_cast<uint32_t>(maxNbOfSIs - 1U) << ": ";
       appendSubIndexInfoToOSS(1U);
-      cli.WriteLine(sc.Get());
+      cli_.WriteLine(sc.Get());
     }
   }
   else
@@ -476,7 +476,7 @@ void CLIAdapterBase::CLI_Info(std::string const & restOfLine)
         appendAppSpecMetaDataToOSS(i);
       }
 
-      cli.WriteLine(sc.Get());
+      cli_.WriteLine(sc.Get());
     }
   }
 }
@@ -516,10 +516,10 @@ void CLIAdapterBase::CLI_Read(std::string const & restOfLine)
   // ============================================
   // Get object
   // ============================================
-  auto objPtr = od.GetObject(index);
+  auto objPtr = od_.GetObject(index);
   if (!objPtr)
   {
-    cli.WriteLine("Error: No object with given index");
+    cli_.WriteLine("Error: No object with given index");
     return;
   }
 
@@ -530,7 +530,7 @@ void CLIAdapterBase::CLI_Read(std::string const & restOfLine)
   size_t sizeInBit;
   size_t sizeInByte;
   uint8_t* pData = nullptr;
-  ON_SCOPE_EXIT() { delete [] pData; };
+  ON_SCOPE_EXIT(release_pData) { delete [] pData; };
 
   // this will contain the result of the read-access
   SDOAbortCode result;
@@ -539,7 +539,7 @@ void CLIAdapterBase::CLI_Read(std::string const & restOfLine)
   {
     // determine access permissions
     auto const permissions = BeginAccessHook() & Object::attr_ACCESS_RD;
-    ON_SCOPE_EXIT() { EndAccessHook(); };
+    ON_SCOPE_EXIT(invokeEndAccessHook) { EndAccessHook(); };
 
     // lock object's data
     auto locker = objPtr->LockData();
@@ -547,14 +547,14 @@ void CLIAdapterBase::CLI_Read(std::string const & restOfLine)
     // check if the subindex is existing
     if (subIdx >= objPtr->GetNbOfSubIndices())
     {
-      cli.WriteLine("Error: Subindex does not exist");
+      cli_.WriteLine("Error: Subindex does not exist");
       return;
     }
 
     // check if subindex is empty
     if (objPtr->IsSubIndexEmpty(subIdx))
     {
-      cli.WriteLine("Error: Subindex is empty");
+      cli_.WriteLine("Error: Subindex is empty");
       return;
     }
 
@@ -572,7 +572,7 @@ void CLIAdapterBase::CLI_Read(std::string const & restOfLine)
   // check for errors
   if (result != SDOAbortCode::OK)
   {
-    cli.WriteLine(std::string("Read access failed: ") + SDOAbortCodeToDescrString(result));
+    cli_.WriteLine(std::string("Read access failed: ") + SDOAbortCodeToDescrString(result));
     return;
   }
 
@@ -583,7 +583,7 @@ void CLIAdapterBase::CLI_Read(std::string const & restOfLine)
   auto str = CANopenEncodedDataToString(msr, sizeInBit, objPtr->GetSubIdxDataType(subIdx));
   msr.Close();
 
-  cli.WriteLine(str);
+  cli_.WriteLine(str);
 }
 
 /**
@@ -621,10 +621,10 @@ void CLIAdapterBase::CLI_Write(std::string const & restOfLine)
   // ============================================
   // Get object
   // ============================================
-  auto objPtr = od.GetObject(index);
+  auto objPtr = od_.GetObject(index);
   if (!objPtr)
   {
-    cli.WriteLine("Error: No object with given index");
+    cli_.WriteLine("Error: No object with given index");
     return;
   }
 
@@ -658,14 +658,14 @@ void CLIAdapterBase::CLI_Write(std::string const & restOfLine)
     // check if the subindex is existing
     if (subIdx >= objPtr->GetNbOfSubIndices())
     {
-      cli.WriteLine("Error: Subindex exceeds number of subindices");
+      cli_.WriteLine("Error: Subindex exceeds number of subindices");
       return;
     }
 
     // check if subindex is empty
     if (objPtr->IsSubIndexEmpty(subIdx))
     {
-      cli.WriteLine("Error: Subindex is empty");
+      cli_.WriteLine("Error: Subindex is empty");
       return;
     }
 
@@ -679,11 +679,11 @@ void CLIAdapterBase::CLI_Write(std::string const & restOfLine)
   // check for errors
   if (result != SDOAbortCode::OK)
   {
-    cli.WriteLine(std::string("Write access failed: ") + SDOAbortCodeToDescrString(result));
+    cli_.WriteLine(std::string("Write access failed: ") + SDOAbortCodeToDescrString(result));
   }
   else
   {
-    cli.WriteLine("OK");
+    cli_.WriteLine("OK");
   }
 }
 
@@ -719,10 +719,10 @@ void CLIAdapterBase::CLI_CARead(std::string const & restOfLine)
   // ============================================
   // Get object
   // ============================================
-  auto objPtr = od.GetObject(args.GetIndex());
+  auto objPtr = od_.GetObject(args.GetIndex());
   if (!objPtr)
   {
-    cli.WriteLine("Error: No object with given index");
+    cli_.WriteLine("Error: No object with given index");
     return;
   }
 
@@ -733,13 +733,13 @@ void CLIAdapterBase::CLI_CARead(std::string const & restOfLine)
   size_t sizeInBit;
   size_t sizeInByte;
   uint8_t* pData = nullptr;
-  ON_SCOPE_EXIT() { delete [] pData; };
+  ON_SCOPE_EXIT(release_pData) { delete [] pData; };
 
   // read the object
   {
     // determine access permissions
     auto const permissions = BeginAccessHook() & Object::attr_ACCESS_RD;
-    ON_SCOPE_EXIT() { EndAccessHook(); };
+    ON_SCOPE_EXIT(invokeEndAccessHook) { EndAccessHook(); };
 
     // lock object's data
     auto locker = objPtr->LockData();
@@ -756,7 +756,7 @@ void CLIAdapterBase::CLI_CARead(std::string const & restOfLine)
 
     if (result != SDOAbortCode::OK)
     {
-      cli.WriteLine(std::string("Read access failed: ") + SDOAbortCodeToDescrString(result));
+      cli_.WriteLine(std::string("Read access failed: ") + SDOAbortCodeToDescrString(result));
       return;
     }
   }
@@ -787,7 +787,7 @@ void CLIAdapterBase::CLI_CARead(std::string const & restOfLine)
       {
         if (s > 120U)
         {
-          cli.WriteLine("Encountered very large subindex name. Retry command without option 'v'.");
+          cli_.WriteLine("Encountered very large subindex name. Retry command without option 'v'.");
           return;
         }
 
@@ -811,7 +811,7 @@ void CLIAdapterBase::CLI_CARead(std::string const & restOfLine)
       else
         sc << CANopenEncodedDataToString(msr, objPtr->GetSubIdxMaxSize(subIdx), dataType);
 
-      cli.WriteLine(sc.Get());
+      cli_.WriteLine(sc.Get());
     }
   }
   else
@@ -827,7 +827,7 @@ void CLIAdapterBase::CLI_CARead(std::string const & restOfLine)
       else
         sc << CANopenEncodedDataToString(msr, objPtr->GetSubIdxMaxSize(subIdx), objPtr->GetSubIdxDataType(subIdx));
 
-      cli.WriteLine(sc.Get());
+      cli_.WriteLine(sc.Get());
     }
   }
 
@@ -866,10 +866,10 @@ void CLIAdapterBase::CLI_CAWrite(std::string const & restOfLine)
   // ============================================
   // Get object
   // ============================================
-  auto objPtr = od.GetObject(args.GetIndex());
+  auto objPtr = od_.GetObject(args.GetIndex());
   if (!objPtr)
   {
-    cli.WriteLine("Error: No object with given index");
+    cli_.WriteLine("Error: No object with given index");
     return;
   }
 
@@ -879,7 +879,7 @@ void CLIAdapterBase::CLI_CAWrite(std::string const & restOfLine)
   if (   (objPtr->GetObjectCode() != Object::ObjectCode::Array)
       && (objPtr->GetObjectCode() != Object::ObjectCode::Record))
   {
-    cli.WriteLine("Object type not supported.");
+    cli_.WriteLine("Object type not supported.");
     return;
   }
 
@@ -903,7 +903,7 @@ void CLIAdapterBase::CLI_CAWrite(std::string const & restOfLine)
 
     if (result != SDOAbortCode::OK)
     {
-      cli.WriteLine(std::string("Reading SI0 failed: ") + SDOAbortCodeToDescrString(result));
+      cli_.WriteLine(std::string("Reading SI0 failed: ") + SDOAbortCodeToDescrString(result));
       return;
     }
   }
@@ -918,16 +918,16 @@ void CLIAdapterBase::CLI_CAWrite(std::string const & restOfLine)
   {
     if (objPtr->GetObjectCode() != Object::ObjectCode::Array)
     {
-      cli.WriteLine("SI0 is writeable. This is only supported for ARRAY objects.");
+      cli_.WriteLine("SI0 is writeable. This is only supported for ARRAY objects.");
       return;
     }
 
-    cli.WriteLine("Current value of SI0: " + std::to_string(currSI0));
-    newSI0 = gpcc::string::DecimalToU8(cli.ReadLine("New value for SI0: "));
+    cli_.WriteLine("Current value of SI0: " + std::to_string(currSI0));
+    newSI0 = gpcc::string::DecimalToU8(cli_.ReadLine("New value for SI0: "));
 
     if (newSI0 >= objPtr->GetMaxNbOfSubindices())
     {
-      cli.WriteLine("Value for SI0 exceeds maximum number of subindices the object can have.");
+      cli_.WriteLine("Value for SI0 exceeds maximum number of subindices the object can have.");
       return;
     }
   }
@@ -969,14 +969,14 @@ void CLIAdapterBase::CLI_CAWrite(std::string const & restOfLine)
     // skip empty subindices
     if (siSize == 0U)
     {
-      cli.WriteLine("Skipping SI " + std::to_string(subIdx) + " (zero size))");
+      cli_.WriteLine("Skipping SI " + std::to_string(subIdx) + " (zero size))");
       continue;
     }
 
     // gap?
     if (dataType == DataType::null)
     {
-      cli.WriteLine("Skipping SI " + std::to_string(subIdx) + " (gap)");
+      cli_.WriteLine("Skipping SI " + std::to_string(subIdx) + " (gap)");
       msw.FillBits(siSize, false);
       continue;
     }
@@ -990,7 +990,7 @@ void CLIAdapterBase::CLI_CAWrite(std::string const & restOfLine)
     auto const attributes = objPtr->GetSubIdxAttributes(subIdx);
     if ((attributes & Object::attr_ACCESS_WR) == 0U)
     {
-      cli.WriteLine("Skipping SI " + std::to_string(subIdx) + " (pure read-only))");
+      cli_.WriteLine("Skipping SI " + std::to_string(subIdx) + " (pure read-only))");
       msw.FillBits(siSize, false);
       continue;
     }
@@ -1002,9 +1002,9 @@ void CLIAdapterBase::CLI_CAWrite(std::string const & restOfLine)
         << DataTypeToString(dataType) << ", "
         << AttributesToStringHook(objPtr->GetSubIdxAttributes(subIdx)) << ", "
         << bytes << '.' << static_cast<uint32_t>(bits) << " Byte(s), \"" << objPtr->GetSubIdxName(subIdx) << '"';
-    cli.WriteLine(sc.Get());
+    cli_.WriteLine(sc.Get());
 
-    auto val = cli.ReadLine("Value: ");
+    auto val = cli_.ReadLine("Value: ");
 
     switch (dataType)
     {
@@ -1101,8 +1101,8 @@ void CLIAdapterBase::CLI_CAWrite(std::string const & restOfLine)
   // ============================================
   // write
   // ============================================
-  cli.WriteLine("All data entered.");
-  if (cli.ReadLine("Write now? (y/n/Ctrl+C): ") == "y")
+  cli_.WriteLine("All data entered.");
+  if (cli_.ReadLine("Write now? (y/n/Ctrl+C): ") == "y")
   {
     // determine access permissions
     auto const permissions = BeginAccessHook() & Object::attr_ACCESS_WR;
@@ -1132,15 +1132,15 @@ void CLIAdapterBase::CLI_CAWrite(std::string const & restOfLine)
 
     if (result != SDOAbortCode::OK)
     {
-      cli.WriteLine(std::string("Writing object failed: ") + SDOAbortCodeToDescrString(result));
+      cli_.WriteLine(std::string("Writing object failed: ") + SDOAbortCodeToDescrString(result));
       return;
     }
 
-    cli.WriteLine("OK");
+    cli_.WriteLine("OK");
   }
   else
   {
-    cli.WriteLine("Aborted. No data written.");
+    cli_.WriteLine("Aborted. No data written.");
   }
 }
 

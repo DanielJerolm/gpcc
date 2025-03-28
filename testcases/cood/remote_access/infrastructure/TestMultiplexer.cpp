@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/infrastructure/Multiplexer.hpp>
@@ -698,9 +698,9 @@ TEST_F(gpcc_cood_Multiplexer_DeathTestsF, Mux_CallToRODANwhileServerOff)
 TEST_F(gpcc_cood_Multiplexer_TestsF, CreatePort_WhileNotConnected)
 {
   std::vector<std::shared_ptr<MultiplexerPort>> ports;
-  ports.reserve(Multiplexer::maxNbOfPorts);
+  ports.reserve(Multiplexer::maxNbOfPorts_);
 
-  for (size_t i = 0U; i < Multiplexer::maxNbOfPorts; ++i)
+  for (size_t i = 0U; i < Multiplexer::maxNbOfPorts_; ++i)
   {
     ASSERT_NO_THROW(ports.emplace_back(spUUT->CreatePort())) << "Could not create the expected number of ports!";
     ASSERT_TRUE(ports.back() != nullptr);
@@ -722,9 +722,9 @@ TEST_F(gpcc_cood_Multiplexer_TestsF, CreatePort_WhileConnected_ServerOff)
 
   // create ports
   std::vector<std::shared_ptr<MultiplexerPort>> ports;
-  ports.reserve(Multiplexer::maxNbOfPorts);
+  ports.reserve(Multiplexer::maxNbOfPorts_);
 
-  for (size_t i = 0U; i < Multiplexer::maxNbOfPorts; ++i)
+  for (size_t i = 0U; i < Multiplexer::maxNbOfPorts_; ++i)
   {
     ASSERT_NO_THROW(ports.emplace_back(spUUT->CreatePort())) << "Could not create the expected number of ports!";
     ASSERT_TRUE(ports.back() != nullptr);
@@ -750,9 +750,9 @@ TEST_F(gpcc_cood_Multiplexer_TestsF, CreatePort_WhileConnected_ServerOn)
 
   // create ports
   std::vector<std::shared_ptr<MultiplexerPort>> ports;
-  ports.reserve(Multiplexer::maxNbOfPorts);
+  ports.reserve(Multiplexer::maxNbOfPorts_);
 
-  for (size_t i = 0U; i < Multiplexer::maxNbOfPorts; ++i)
+  for (size_t i = 0U; i < Multiplexer::maxNbOfPorts_; ++i)
   {
     ASSERT_NO_THROW(ports.emplace_back(spUUT->CreatePort())) << "Could not create the expected number of ports!";
     ASSERT_TRUE(ports.back() != nullptr);

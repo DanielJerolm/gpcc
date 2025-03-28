@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #if defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC) || defined(__DOXYGEN__)
@@ -681,9 +681,9 @@ bool CheckFileName(std::string const & name, bool const acceptPath, bool const c
   else
   {
     // check all directory names and the file name for portability
-    for (auto const & name: names)
+    for (auto const & n: names)
     {
-      if (!CheckFileOrDirNameElement(name))
+      if (!CheckFileOrDirNameElement(n))
         return false;
     }
   }
@@ -782,9 +782,9 @@ bool CheckDirectoryName(std::string const & name, bool const checkDirectoryOnly)
   else
   {
     // check all directory names for portability
-    for (auto const & name: names)
+    for (auto const & n: names)
     {
-      if (!CheckFileOrDirNameElement(name))
+      if (!CheckFileOrDirNameElement(n))
         return false;
     }
   }

@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/infrastructure/MultiplexerPort.hpp>
@@ -36,22 +36,22 @@ namespace cood {
  *
  * - - -
  *
- * \param _owner
+ * \param owner
  * Reference to the @ref Multiplexer instance which is the owner of the new port instance.
  *
- * \param _index
- * Index of the new port instance in `_owner.ports`.
+ * \param index
+ * Index of the new port instance in `owner.ports`.
  */
-MultiplexerPort::MultiplexerPort(Multiplexer & _owner, uint8_t const _index) noexcept
+MultiplexerPort::MultiplexerPort(Multiplexer & owner, uint8_t const index) noexcept
 : IRemoteObjectDictionaryAccess()
-, owner(_owner)
-, index(_index)
-, state(States::noClientRegistered)
-, pRODAN(nullptr)
-, sessionID(0U)
-, oldestUsedSessionID(0U)
-, sessionIDUsed(false)
-, execContextRequested(false)
+, owner_(owner)
+, index_(index)
+, state_(States::noClientRegistered)
+, pRODAN_(nullptr)
+, sessionID_(0U)
+, oldestUsedSessionID_(0U)
+, sessionIDUsed_(false)
+, execContextRequested_(false)
 {
 }
 
@@ -71,9 +71,9 @@ MultiplexerPort::MultiplexerPort(Multiplexer & _owner, uint8_t const _index) noe
  */
 MultiplexerPort::~MultiplexerPort(void)
 {
-  gpcc::osal::MutexLocker portMutexLocker(owner.portMutex);
+  gpcc::osal::MutexLocker portMutexLocker(owner_.portMutex_);
 
-  if (state != States::noClientRegistered)
+  if (state_ != States::noClientRegistered)
     gpcc::osal::Panic("MultiplexerPort::~MultiplexerPort: Client still registered.");
 }
 
@@ -98,8 +98,8 @@ MultiplexerPort::~MultiplexerPort(void)
  */
 bool MultiplexerPort::IsClientRegistered(void) const noexcept
 {
-  gpcc::osal::MutexLocker portMutexLocker(owner.portMutex);
-  return (state != States::noClientRegistered);
+  gpcc::osal::MutexLocker portMutexLocker(owner_.portMutex_);
+  return (state_ != States::noClientRegistered);
 }
 
 // <-- IRemoteObjectDictionaryAccess
@@ -110,69 +110,69 @@ void MultiplexerPort::Register(IRemoteObjectDictionaryAccessNotifiable * const p
   if (pNotifiable == nullptr)
     throw std::invalid_argument("MultiplexerPort::Register: !pNotifiable");
 
-  gpcc::osal::MutexLocker muxMutexLocker(owner.muxMutex);
+  gpcc::osal::MutexLocker muxMutexLocker(owner_.muxMutex_);
 
-  if (state != States::noClientRegistered)
+  if (state_ != States::noClientRegistered)
     throw std::logic_error("MultiplexerPort::Register: A client is already registered.");
 
   // determine potential next session ID
-  uint8_t const nextSessionID = sessionID + 1U;
-  if (nextSessionID == oldestUsedSessionID)
+  uint8_t const nextSessionID = sessionID_ + 1U;
+  if (nextSessionID == oldestUsedSessionID_)
     throw std::runtime_error("MultiplexerPort::Register: No unused session ID available.");
 
-  gpcc::osal::MutexLocker portMutexLocker(owner.portMutex);
+  gpcc::osal::MutexLocker portMutexLocker(owner_.portMutex_);
 
-  if (owner.state == Multiplexer::States::ready)
+  if (owner_.state_ == Multiplexer::States::ready)
   {
-    if (owner.pRODA == nullptr)
+    if (owner_.pRODA_ == nullptr)
       PANIC();
 
     try
     {
       // request execution context for invocation of client's OnReady()-method
-      owner.pRODA->RequestExecutionContext();
+      owner_.pRODA_->RequestExecutionContext();
 
       // send a ping if there are used session IDs
-      if (sessionIDUsed)
+      if (sessionIDUsed_)
       {
-        std::unique_ptr<RequestBase> spPing = std::make_unique<PingRequest>(owner.maxResponseSize);
-        spPing->Push(ReturnStackItem(owner.ownerID, (static_cast<uint32_t>(index) << 24U) |
+        std::unique_ptr<RequestBase> spPing = std::make_unique<PingRequest>(owner_.maxResponseSize_);
+        spPing->Push(ReturnStackItem(owner_.ownerID_, (static_cast<uint32_t>(index_) << 24U) |
                                                      0x00800000UL |
                                                      nextSessionID));
-        owner.pRODA->Send(spPing);
+        owner_.pRODA_->Send(spPing);
       }
     }
     catch (RemoteAccessServerNotReadyError const &)
     {
-      // Ignored by intention. The owner of this port will receive an OnDisconnected()-notification soon.
+      // Ignored by intention. The owner_ of this port will receive an OnDisconnected()-notification soon.
     }
   }
 
   // start using new session ID if necessary
-  if (sessionIDUsed)
+  if (sessionIDUsed_)
   {
-    sessionID = nextSessionID;
-    sessionIDUsed = false;
+    sessionID_ = nextSessionID;
+    sessionIDUsed_ = false;
   }
 
-  state = States::notReady;
-  pRODAN = pNotifiable;
+  state_ = States::notReady;
+  pRODAN_ = pNotifiable;
 }
 
 /// \copydoc gpcc::cood::IRemoteObjectDictionaryAccess::Unregister
 void MultiplexerPort::Unregister(void) noexcept
 {
-  gpcc::osal::MutexLocker muxMutexLocker(owner.muxMutex);
+  gpcc::osal::MutexLocker muxMutexLocker(owner_.muxMutex_);
 
   // no client registered -> no effect
-  if (state == States::noClientRegistered)
+  if (state_ == States::noClientRegistered)
     return;
 
-  gpcc::osal::MutexLocker portMutexLocker(owner.portMutex);
+  gpcc::osal::MutexLocker portMutexLocker(owner_.portMutex_);
 
-  state = States::noClientRegistered;
-  pRODAN = nullptr;
-  execContextRequested = false;
+  state_ = States::noClientRegistered;
+  pRODAN_ = nullptr;
+  execContextRequested_ = false;
 }
 
 /// \copydoc gpcc::cood::IRemoteObjectDictionaryAccess::Send
@@ -181,9 +181,9 @@ void MultiplexerPort::Send(std::unique_ptr<RequestBase> & spReq)
   if (!spReq)
     throw std::invalid_argument("MultiplexerPort::Send: !spReq");
 
-  gpcc::osal::MutexLocker portMutexLocker(owner.portMutex);
+  gpcc::osal::MutexLocker portMutexLocker(owner_.portMutex_);
 
-  switch (state)
+  switch (state_)
   {
     case States::noClientRegistered:
       throw std::logic_error("MultiplexerPort::Send: No client registered");
@@ -195,10 +195,10 @@ void MultiplexerPort::Send(std::unique_ptr<RequestBase> & spReq)
       break;
   }
 
-  if (owner.pRODA == nullptr)
+  if (owner_.pRODA_ == nullptr)
     PANIC();
 
-  spReq->Push(ReturnStackItem(owner.ownerID, (static_cast<uint32_t>(index) << 24U) | sessionID));
+  spReq->Push(ReturnStackItem(owner_.ownerID_, (static_cast<uint32_t>(index_) << 24U) | sessionID_));
   ON_SCOPE_EXIT(recoverRSI)
   {
     // sanity check: Server shall not consume request in case of an error
@@ -208,18 +208,18 @@ void MultiplexerPort::Send(std::unique_ptr<RequestBase> & spReq)
     spReq->UndoPush();
   };
 
-  owner.pRODA->Send(spReq);
+  owner_.pRODA_->Send(spReq);
 
   ON_SCOPE_EXIT_DISMISS(recoverRSI);
-  sessionIDUsed = true;
+  sessionIDUsed_ = true;
 }
 
 /// \copydoc gpcc::cood::IRemoteObjectDictionaryAccess::RequestExecutionContext
 void MultiplexerPort::RequestExecutionContext(void)
 {
-  gpcc::osal::MutexLocker portMutexLocker(owner.portMutex);
+  gpcc::osal::MutexLocker portMutexLocker(owner_.portMutex_);
 
-  switch (state)
+  switch (state_)
   {
     case States::noClientRegistered:
       throw std::logic_error("MultiplexerPort::RequestExecutionContext: No client registered");
@@ -231,11 +231,11 @@ void MultiplexerPort::RequestExecutionContext(void)
       break;
   }
 
-  if (owner.pRODA == nullptr)
+  if (owner_.pRODA_ == nullptr)
     PANIC();
 
-  owner.pRODA->RequestExecutionContext();
-  execContextRequested = true;
+  owner_.pRODA_->RequestExecutionContext();
+  execContextRequested_ = true;
 }
 
 // --> IRemoteObjectDictionaryAccess

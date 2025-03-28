@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #include <gpcc/file_systems/eeprom_section_system/EEPROMSectionSystem.hpp>
@@ -26,23 +26,23 @@ namespace eeprom_section_system
 class EEPROMSectionSystemTestFixture: public testing::Test
 {
   public:
-    static const size_t storageSize     = 16*1024;
-    static const size_t storagePageSize = 128;
-    uint16_t blockSize;
-    uint16_t bytesPerBlock;
+    static const size_t storageSize_     = 16*1024;
+    static const size_t storagePageSize_ = 128;
+    uint16_t blockSize_;
+    uint16_t bytesPerBlock_;
 
     EEPROMSectionSystemTestFixture(void);
     virtual ~EEPROMSectionSystemTestFixture(void);
 
   protected:
-    FakeEEPROM fakeStorage;
-    gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem uut;
-    uint8_t* pBuffer;
+    FakeEEPROM fakeStorage_;
+    gpcc::file_systems::eeprom_section_system::EEPROMSectionSystem uut_;
+    uint8_t* pBuffer_;
 
     void SetUp(void) override;
     void TearDown(void) override;
 
-    void Format(uint16_t const _blockSize);
+    void Format(uint16_t const blockSize);
     void InvalidateCRC(uint16_t const blockIdx);
     void UpdateCRC(uint16_t const blockIdx);
     void UpdateNextBlock(uint16_t const blockIdx, uint16_t const newNextBlock);

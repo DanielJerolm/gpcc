@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2018 Daniel Jerolm
+    Copyright (C) 2018, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/ObjectVAR.hpp>
@@ -35,103 +35,103 @@ namespace cood {
  *
  * - - -
  *
- * \param _name
+ * \param name
  * Name for the object.
  *
- * \param _type
+ * \param type
  * CANopen data type of the data represented by the object.\n
  * Since the constructed object is a VARIABLE object, the object will have the same type as the data
  * represented by it.\n
  * The documentation of the enumeration [DataType](@ref gpcc::cood::DataType) contains a list of native types associated
  * with each CANopen data type.
  *
- * \param _nElements
- * Number of elements of `_type` the data represented by the object is comprised of.\n
+ * \param nElements
+ * Number of elements of `type` the data represented by the object is comprised of.\n
  * For most data types this is one.\n
  * For types [DataType::visible_string](@ref gpcc::cood::DataType::visible_string),
  * [DataType::octet_string](@ref gpcc::cood::DataType::octet_string), and
  * [DataType::unicode_string](@ref gpcc::cood::DataType::unicode_string) this may be any number equal to or larger
  * than one.
  *
- * \param _attributes
+ * \param attributes
  * Attributes for the one and only subindex 0.\n
  * At least one read- or write-permission must be specified.
  *
- * \param _pData
+ * \param pData
  * Pointer to the native data represented by the object. `nullptr` is not allowed.\n
  * The type of the referenced native data must match the CANopen data type specified by parameter `type`
- * and the number of data elements must match parameter `_nElements`.\n
+ * and the number of data elements must match parameter `nElements`.\n
  * The documentation of the enumeration [DataType](@ref gpcc::cood::DataType) contains a list of native types associated
  * with each CANopen data type.\n
  * The memory location must be valid during the life-time of the VARIABLE object or until a different
  * memory location is configured via @ref SetData().
  *
- * \param _pMutex
- * Pointer to a mutex protecting access to the native data referenced by `_pData`.\n
+ * \param pMutex
+ * Pointer to a mutex protecting access to the native data referenced by `pData`.\n
  * The mutex is optional. If the object is read-only __and__ if the application does not modify the
- * data referenced by `_pData`, then a mutex is not required and this parameter may be `nullptr`.\n
- * __BUT__ if the object is writeable, or if the application may modify the data referenced by `_pData`,
+ * data referenced by `pData`, then a mutex is not required and this parameter may be `nullptr`.\n
+ * __BUT__ if the object is writeable, or if the application may modify the data referenced by `pData`,
  * then a mutex must be specified.\n
  * \n
- * The application must obey the following rules when accessing the native data referenced by `_pData`:
+ * The application must obey the following rules when accessing the native data referenced by `pData`:
  * - If the object is READ-ONLY, then the application must lock the mutex only if it wants to
- *   modify the data referenced by `_pData`. The application does not need to lock the mutex for reading
- *   the data referenced by `_pData` in this case.
+ *   modify the data referenced by `pData`. The application does not need to lock the mutex for reading
+ *   the data referenced by `pData` in this case.
  * - If the object is READ-WRITE, then the application must lock the mutex ALWAYS when it wants to
- *   read or write the data referenced by `_pData`.
+ *   read or write the data referenced by `pData`.
  *
- * \param _pNotifiable
+ * \param pNotifiable
  * Pointer to a [IObjectNotifiable](@ref gpcc::cood::IObjectNotifiable) interface that shall be used to deliver
  * callbacks to the owner of the object.\n
  * nullptr is allowed.
  */
-ObjectVAR::ObjectVAR(std::string            const & _name,
-                     DataType               const   _type,
-                     uint16_t               const   _nElements,
-                     attr_t                 const   _attributes,
-                     void*                  const   _pData,
-                     gpcc::osal::Mutex *    const   _pMutex,
-                     IObjectNotifiable *    const   _pNotifiable)
+ObjectVAR::ObjectVAR(std::string            const & name,
+                     DataType               const   type,
+                     uint16_t               const   nElements,
+                     attr_t                 const   attributes,
+                     void*                  const   pData,
+                     gpcc::osal::Mutex *    const   pMutex,
+                     IObjectNotifiable *    const   pNotifiable)
 : Object()
-, name(_name)
-, type(_type)
-, nElements(_nElements)
-, attributes(_attributes)
-, pData(_pData)
-, pMutex(_pMutex)
-, pNotifiable(_pNotifiable)
+, name_(name)
+, type_(type)
+, nElements_(nElements)
+, attributes_(attributes)
+, pData_(pData)
+, pMutex_(pMutex)
+, pNotifiable_(pNotifiable)
 {
   // data type supported?
-  if (   (DataTypeBitLengthTable[static_cast<int>(type)] == 0U)
-      || (NativeDataTypeBitLengthTable[static_cast<int>(type)] == 0U))
+  if (   (DataTypeBitLengthTable[static_cast<int>(type_)] == 0U)
+      || (NativeDataTypeBitLengthTable[static_cast<int>(type_)] == 0U))
   {
-    throw DataTypeNotSupportedError(type);
+    throw DataTypeNotSupportedError(type_);
   }
 
   // check nElements
-  if (   (type == DataType::visible_string)
-      || (type == DataType::octet_string)
-      || (type == DataType::unicode_string))
+  if (   (type_ == DataType::visible_string)
+      || (type_ == DataType::octet_string)
+      || (type_ == DataType::unicode_string))
   {
-    if (nElements == 0U)
-      throw std::invalid_argument("ObjectVAR::ObjectVAR: '_nElements' is zero");
+    if (nElements_ == 0U)
+      throw std::invalid_argument("ObjectVAR::ObjectVAR: 'nElements' is zero");
   }
   else
   {
-    if (nElements != 1U)
-      throw std::invalid_argument("ObjectVAR::ObjectVAR: '_nElements' must be one for given '_type'");
+    if (nElements_ != 1U)
+      throw std::invalid_argument("ObjectVAR::ObjectVAR: 'nElements' must be one for given 'type'");
   }
 
   // at least one read or write permission specified?
-  if ((attributes & attr_ACCESS_RW) == 0U)
-    throw std::invalid_argument("ObjectVAR::ObjectVAR: No read- or write-permissions set in '_attributes'");
+  if ((attributes_ & attr_ACCESS_RW) == 0U)
+    throw std::invalid_argument("ObjectVAR::ObjectVAR: No read- or write-permissions set in 'attributes'");
 
   // check: a mutex must be specified if write access is possible
-  if (((attributes & attr_ACCESS_WR) != 0U) && (pMutex == nullptr))
+  if (((attributes_ & attr_ACCESS_WR) != 0U) && (pMutex_ == nullptr))
     throw std::logic_error("ObjectVAR::ObjectVAR: Object with write-permission requires a mutex");
 
-  if (pData == nullptr)
-    throw std::invalid_argument("ObjectVAR::ObjectVAR: _pData is nullptr");
+  if (pData_ == nullptr)
+    throw std::invalid_argument("ObjectVAR::ObjectVAR: pData is nullptr");
 }
 
 /**
@@ -159,7 +159,7 @@ ObjectVAR::ObjectVAR(std::string            const & _name,
  * A pointer referencing to the currently configured memory is allowed if the objects's data shall not
  * be updated.\n
  * The type of the referenced native data must match the CANopen data type specified by parameter `type`
- * that has been passed to the constructor and the number of data elements must match parameter `_nElements`
+ * that has been passed to the constructor and the number of data elements must match parameter `nElements`
  * that has been passed to the constructor.\n
  * The documentation of the enumeration @ref DataType contains a list of native types associated with each
  * CANopen data type.\n
@@ -168,14 +168,14 @@ ObjectVAR::ObjectVAR(std::string            const & _name,
  */
 void ObjectVAR::SetData(void* const pNewData)
 {
-  if (pMutex == nullptr)
+  if (pMutex_ == nullptr)
     throw std::logic_error("ObjectVAR::SetData: Operation requires that a mutex has been specified during object creation");
 
   if (pNewData == nullptr)
     throw std::invalid_argument("ObjectVAR::SetData: pNewData is nullptr");
 
-  gpcc::osal::MutexLocker mutexLocker(*pMutex);
-  pData = pNewData;
+  gpcc::osal::MutexLocker mutexLocker(*pMutex_);
+  pData_ = pNewData;
 }
 
 // <-- base class Object
@@ -189,13 +189,13 @@ Object::ObjectCode ObjectVAR::GetObjectCode(void) const noexcept
 /// \copydoc Object::GetObjectDataType
 DataType ObjectVAR::GetObjectDataType(void) const noexcept
 {
-  return MapAlternativeDataTypesToOriginalTypes(type);
+  return MapAlternativeDataTypesToOriginalTypes(type_);
 }
 
 /// \copydoc Object::GetObjectName
 std::string ObjectVAR::GetObjectName(void) const
 {
-  return name;
+  return name_;
 }
 
 /// \copydoc Object::GetMaxNbOfSubindices
@@ -219,7 +219,7 @@ DataType ObjectVAR::GetSubIdxDataType(uint8_t const subIdx) const
   if (subIdx != 0U)
     throw SubindexNotExistingError();
 
-  return MapAlternativeDataTypesToOriginalTypes(type);
+  return MapAlternativeDataTypesToOriginalTypes(type_);
 }
 
 /// \copydoc Object::GetSubIdxAttributes
@@ -228,7 +228,7 @@ Object::attr_t ObjectVAR::GetSubIdxAttributes(uint8_t const subIdx) const
   if (subIdx != 0U)
     throw SubindexNotExistingError();
 
-  return attributes;
+  return attributes_;
 }
 
 /// \copydoc Object::GetSubIdxMaxSize
@@ -237,7 +237,7 @@ size_t ObjectVAR::GetSubIdxMaxSize(uint8_t const subIdx) const
   if (subIdx != 0U)
     throw SubindexNotExistingError();
 
-  return static_cast<uint_fast32_t>(DataTypeBitLengthTable[static_cast<int>(type)]) * nElements;
+  return static_cast<uint_fast32_t>(DataTypeBitLengthTable[static_cast<int>(type_)]) * nElements_;
 }
 
 /// \copydoc Object::GetSubIdxName
@@ -246,20 +246,20 @@ std::string ObjectVAR::GetSubIdxName(uint8_t const subIdx) const
   if (subIdx != 0U)
     throw SubindexNotExistingError();
 
-  return name;
+  return name_;
 }
 
 /// \copydoc Object::LockData
 gpcc::osal::MutexLocker ObjectVAR::LockData(void) const
 {
-  return gpcc::osal::MutexLocker(pMutex);
+  return gpcc::osal::MutexLocker(pMutex_);
 }
 
 /// \copydoc Object::GetObjectStreamSize
 size_t ObjectVAR::GetObjectStreamSize(bool const SI016Bits) const noexcept
 {
   (void)SI016Bits;
-  return static_cast<uint_fast32_t>(DataTypeBitLengthTable[static_cast<int>(type)]) * nElements;
+  return static_cast<uint_fast32_t>(DataTypeBitLengthTable[static_cast<int>(type_)]) * nElements_;
 }
 
 /// \copydoc Object::GetNbOfSubIndices
@@ -275,16 +275,16 @@ size_t ObjectVAR::GetSubIdxActualSize(uint8_t const subIdx) const
     throw SubindexNotExistingError();
 
   // data types with flexible-length require invocation of before-read-callback
-  if ((type == DataType::visible_string) && (pNotifiable != nullptr))
+  if ((type_ == DataType::visible_string) && (pNotifiable_ != nullptr))
   {
-    auto const result = pNotifiable->OnBeforeRead(this, 0, false, true);
+    auto const result = pNotifiable_->OnBeforeRead(this, 0, false, true);
     if (result == SDOAbortCode::OutOfMemory)
       throw std::bad_alloc();
     else if (result != SDOAbortCode::OK)
       throw std::runtime_error("ObjectVAR::GetSubIdxActualSize: Before-read-callback failed.");
   }
 
-  return DetermineSizeOfCANopenEncodedData(pData, type, nElements);
+  return DetermineSizeOfCANopenEncodedData(pData_, type_, nElements_);
 }
 
 /// \copydoc Object::Read
@@ -295,17 +295,17 @@ SDOAbortCode ObjectVAR::Read(uint8_t const subIdx,
   if (subIdx != 0U)
     return SDOAbortCode::SubindexDoesNotExist;
 
-  if ((permissions & attr_ACCESS_RD & attributes) == 0U)
+  if ((permissions & attr_ACCESS_RD & attributes_) == 0U)
     return SDOAbortCode::AttemptToReadWrOnlyObject;
 
-  if (pNotifiable != nullptr)
+  if (pNotifiable_ != nullptr)
   {
-    auto const result = pNotifiable->OnBeforeRead(this, 0, false, false);
+    auto const result = pNotifiable_->OnBeforeRead(this, 0, false, false);
     if (result != SDOAbortCode::OK)
       return result;
   }
 
-  NativeDataToCANopenEncodedData(pData, type, nElements, false, isw);
+  NativeDataToCANopenEncodedData(pData_, type_, nElements_, false, isw);
 
   return SDOAbortCode::OK;
 }
@@ -318,12 +318,12 @@ SDOAbortCode ObjectVAR::Write(uint8_t const subIdx,
   if (subIdx != 0U)
     return SDOAbortCode::SubindexDoesNotExist;
 
-  if ((permissions & attr_ACCESS_WR & attributes) == 0U)
+  if ((permissions & attr_ACCESS_WR & attributes_) == 0U)
     return SDOAbortCode::AttemptToWriteRdOnlyObject;
 
   // determine number of bytes required to store the data that shall be written in native format
   // (cannot be zero, ensured by constructor)
-  uint_fast32_t const nBytesNative = static_cast<uint_fast32_t>(NativeDataTypeBitLengthTable[static_cast<int>(type)] / 8U) * nElements;
+  uint_fast32_t const nBytesNative = static_cast<uint_fast32_t>(NativeDataTypeBitLengthTable[static_cast<int>(type_)] / 8U) * nElements_;
 
   // allocate some temporary storage (pTempMem) either on the stack or on the heap
   uint64_t localMem;
@@ -342,7 +342,7 @@ SDOAbortCode ObjectVAR::Write(uint8_t const subIdx,
   // read data into pTempMem for preview
   try
   {
-    CANopenEncodedDataToNativeData(isr, type, nElements, false, pTempMem);
+    CANopenEncodedDataToNativeData(isr, type_, nElements_, false, pTempMem);
     isr.EnsureAllDataConsumed(gpcc::stream::IStreamReader::RemainingNbOfBits::sevenOrLess);
   }
   catch (gpcc::stream::EmptyError const &)
@@ -355,9 +355,9 @@ SDOAbortCode ObjectVAR::Write(uint8_t const subIdx,
   }
 
   // invoke before-write-callback (preview)
-  if (pNotifiable != nullptr)
+  if (pNotifiable_ != nullptr)
   {
-    auto const result = pNotifiable->OnBeforeWrite(this, 0, false, 0, pTempMem);
+    auto const result = pNotifiable_->OnBeforeWrite(this, 0, false, 0, pTempMem);
     if (result != SDOAbortCode::OK)
       return result;
   }
@@ -366,29 +366,29 @@ SDOAbortCode ObjectVAR::Write(uint8_t const subIdx,
   switch (nBytesNative)
   {
     case 1U:
-      *static_cast<uint8_t*>(pData) = *pTempMem;
+      *static_cast<uint8_t*>(pData_) = *pTempMem;
       break;
 
     case 2U:
-      *static_cast<uint16_t*>(pData) = *reinterpret_cast<uint16_t*>(pTempMem);
+      *static_cast<uint16_t*>(pData_) = *reinterpret_cast<uint16_t*>(pTempMem);
       break;
 
     case 4U:
-      *static_cast<uint32_t*>(pData) = *reinterpret_cast<uint32_t*>(pTempMem);
+      *static_cast<uint32_t*>(pData_) = *reinterpret_cast<uint32_t*>(pTempMem);
       break;
 
     case 8U:
-      *static_cast<uint64_t*>(pData) = localMem;
+      *static_cast<uint64_t*>(pData_) = localMem;
       break;
 
     default:
-      memcpy(pData, pTempMem, nBytesNative);
+      memcpy(pData_, pTempMem, nBytesNative);
   }
 
   try
   {
-    if (pNotifiable != nullptr)
-      pNotifiable->OnAfterWrite(this, 0, false);
+    if (pNotifiable_ != nullptr)
+      pNotifiable_->OnAfterWrite(this, 0, false);
   }
   catch (std::exception const & e)
   {

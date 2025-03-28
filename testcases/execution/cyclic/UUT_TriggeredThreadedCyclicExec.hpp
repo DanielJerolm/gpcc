@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #ifndef UUT_TRIGGEREDTHREADEDCYCLICEXEC_HPP_201612302049
@@ -51,7 +51,7 @@ class UUT_TriggeredThreadedCyclicExec final : public TriggeredThreadedCyclicExec
 {
   public:
     UUT_TriggeredThreadedCyclicExec(Trace & _trace,
-                                    gpcc::stdif::IIRQ2ThreadWakeup & trigger,
+                                    gpcc::stdif::IIRQ2ThreadWakeup & _trigger,
                                     gpcc::time::TimeSpan const & waitForTriggerTimeout);
     UUT_TriggeredThreadedCyclicExec(UUT_TriggeredThreadedCyclicExec const &) = delete;
     UUT_TriggeredThreadedCyclicExec(UUT_TriggeredThreadedCyclicExec &&) = delete;

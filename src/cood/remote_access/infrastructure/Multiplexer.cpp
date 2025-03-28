@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/infrastructure/Multiplexer.hpp>
@@ -23,13 +23,13 @@
 namespace gpcc {
 namespace cood {
 
-size_t constexpr Multiplexer::maxNbOfPorts;
+size_t constexpr Multiplexer::maxNbOfPorts_;
 
 /**
  * \brief Constructor.
  *
  * The created @ref Multiplexer instance has no exposed ports (RODA interfaces) yet. Use @ref CreatePort() to
- * create ports providing a RODA interfaces.
+ * create ports providing RODA interfaces.
  *
  * The created @ref Multiplexer instance is not connected to a RODA interface yet. Use @ref Connect() to connect
  * the multiplexer to an existing RODA interface.
@@ -44,21 +44,21 @@ size_t constexpr Multiplexer::maxNbOfPorts;
  */
 Multiplexer::Multiplexer(void)
 : IRemoteObjectDictionaryAccessNotifiable()
-, ownerID(0U)
-, connectMutex()
-, muxMutex()
-, portMutex()
-, state(States::notConnected)
-, pRODA(nullptr)
-, maxRequestSize(0U)
-, maxResponseSize(0U)
-, ports()
+, ownerID_(0U)
+, connectMutex_()
+, muxMutex_()
+, portMutex_()
+, state_(States::notConnected)
+, pRODA_(nullptr)
+, maxRequestSize_(0U)
+, maxResponseSize_(0U)
+, ports_()
 {
   auto const uipThis = reinterpret_cast<uintptr_t>(this);
   #if UINTPTR_WIDTH == UINT32_WIDTH
-    ownerID = static_cast<uint32_t>(uipThis);
+    ownerID_ = static_cast<uint32_t>(uipThis);
   #else
-    ownerID = (static_cast<uint32_t>(uipThis)) ^ (static_cast<uint32_t>(uipThis >> 32U));
+    ownerID_ = (static_cast<uint32_t>(uipThis)) ^ (static_cast<uint32_t>(uipThis >> 32U));
   #endif
 }
 
@@ -80,12 +80,12 @@ Multiplexer::Multiplexer(void)
  */
 Multiplexer::~Multiplexer(void)
 {
-  gpcc::osal::MutexLocker muxMutexLocker(muxMutex);
+  gpcc::osal::MutexLocker muxMutexLocker(muxMutex_);
 
-  if (state != States::notConnected)
+  if (state_ != States::notConnected)
     gpcc::osal::Panic("Multiplexer::~Multiplexer: Still connected to a RODA interface.");
 
-  for (auto const & spPort : ports)
+  for (auto const & spPort : ports_)
   {
     if (spPort.use_count() != 1U)
       gpcc::osal::Panic("Multiplexer::~Multiplexer: Port still referenced by someone.");
@@ -119,28 +119,28 @@ Multiplexer::~Multiplexer(void)
  */
 void Multiplexer::Connect(IRemoteObjectDictionaryAccess & roda)
 {
-  gpcc::osal::MutexLocker connectMutexLocker(connectMutex);
+  gpcc::osal::MutexLocker connectMutexLocker(connectMutex_);
 
   {
-    gpcc::osal::MutexLocker muxMutexLocker(muxMutex);
+    gpcc::osal::MutexLocker muxMutexLocker(muxMutex_);
 
-    if (state != States::notConnected)
+    if (state_ != States::notConnected)
       throw std::logic_error("Multiplexer::Connect: Already connected.");
 
-    gpcc::osal::MutexLocker portMutexLocker(portMutex);
-    state = States::notReady;
-    pRODA = &roda;
+    gpcc::osal::MutexLocker portMutexLocker(portMutex_);
+    state_ = States::notReady;
+    pRODA_ = &roda;
   }
 
   ON_SCOPE_EXIT(undo)
   {
-    gpcc::osal::MutexLocker muxMutexLocker(muxMutex);
-    gpcc::osal::MutexLocker portMutexLocker(portMutex);
-    pRODA = nullptr;
-    state = States::notConnected;
+    gpcc::osal::MutexLocker muxMutexLocker(muxMutex_);
+    gpcc::osal::MutexLocker portMutexLocker(portMutex_);
+    pRODA_ = nullptr;
+    state_ = States::notConnected;
   };
 
-  pRODA->Register(this);
+  pRODA_->Register(this);
 
   ON_SCOPE_EXIT_DISMISS(undo);
 }
@@ -173,56 +173,56 @@ void Multiplexer::Connect(IRemoteObjectDictionaryAccess & roda)
  */
 void Multiplexer::Disconnect(void) noexcept
 {
-  gpcc::osal::MutexLocker connectMutexLocker(connectMutex);
+  gpcc::osal::MutexLocker connectMutexLocker(connectMutex_);
 
-  gpcc::osal::AdvancedMutexLocker muxMutexLocker(muxMutex);
+  gpcc::osal::AdvancedMutexLocker muxMutexLocker(muxMutex_);
 
   // not connected -> no effect
-  if (state == States::notConnected)
+  if (state_ == States::notConnected)
     return;
 
   // sanity check
-  if (state == States::disconnecting)
+  if (state_ == States::disconnecting)
     PANIC();
 
   // Start disconnection process.
   // From now on all notifications received via the multiplexer's RODAN interface will be ignored.
   // In particular response messages will not be delivered any more.
   {
-    gpcc::osal::MutexLocker portMutexLocker(portMutex);
-    state = States::disconnecting;
+    gpcc::osal::MutexLocker portMutexLocker(portMutex_);
+    state_ = States::disconnecting;
   }
 
   // switch ports to "not ready" if required and forget about old session IDs
-  for (auto const & spPort : ports)
+  for (auto const & spPort : ports_)
   {
-    if (spPort->state == MultiplexerPort::States::ready)
+    if (spPort->state_ == MultiplexerPort::States::ready)
     {
       {
-        gpcc::osal::MutexLocker portMutexLocker(portMutex);
-        spPort->state = MultiplexerPort::States::notReady;
-        spPort->execContextRequested = false;
-        spPort->oldestUsedSessionID = spPort->sessionID;
+        gpcc::osal::MutexLocker portMutexLocker(portMutex_);
+        spPort->state_ = MultiplexerPort::States::notReady;
+        spPort->execContextRequested_ = false;
+        spPort->oldestUsedSessionID_ = spPort->sessionID_;
       }
-      spPort->pRODAN->OnDisconnected();
+      spPort->pRODAN_->OnDisconnected();
     }
     else
     {
-      gpcc::osal::MutexLocker portMutexLocker(portMutex);
-      spPort->oldestUsedSessionID = spPort->sessionID;
+      gpcc::osal::MutexLocker portMutexLocker(portMutex_);
+      spPort->oldestUsedSessionID_ = spPort->sessionID_;
     }
   }
 
-  // muxMutex must be unlocked, because Unregister() blocks until potential ongoing calls to the RODAN interface
+  // muxMutex_ must be unlocked, because Unregister() blocks until potential ongoing calls to the RODAN interface
   // exposed by the multiplexer have completed.
   muxMutexLocker.Unlock();
-  pRODA->Unregister();
+  pRODA_->Unregister();
   muxMutexLocker.Relock();
 
   // finish disconnection
-  gpcc::osal::MutexLocker portMutexLocker(portMutex);
-  pRODA = nullptr;
-  state = States::notConnected;
+  gpcc::osal::MutexLocker portMutexLocker(portMutex_);
+  pRODA_ = nullptr;
+  state_ = States::notConnected;
 }
 
 /**
@@ -231,7 +231,7 @@ void Multiplexer::Disconnect(void) noexcept
  * Under the hood, unused ports whose shared_ptr has been dropped by the user will be recycled before new ones are
  * created.
  *
- * \pre   There are less than @ref maxNbOfPorts in use.
+ * \pre   There are less than @ref maxNbOfPorts_ in use.
  *
  * - - -
  *
@@ -243,7 +243,7 @@ void Multiplexer::Disconnect(void) noexcept
  *
  * \throws std::bad_alloc       Out of memory.
  *
- * \throws std::runtime_error   @ref maxNbOfPorts ports are already in use.
+ * \throws std::runtime_error   @ref maxNbOfPorts_ ports are already in use.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -258,26 +258,26 @@ void Multiplexer::Disconnect(void) noexcept
  */
 std::shared_ptr<MultiplexerPort> Multiplexer::CreatePort(void)
 {
-  gpcc::osal::MutexLocker muxMutexLocker(muxMutex);
-  gpcc::osal::MutexLocker portMutexLocker(portMutex);
+  gpcc::osal::MutexLocker muxMutexLocker(muxMutex_);
+  gpcc::osal::MutexLocker portMutexLocker(portMutex_);
 
   // look for an unused port
-  for (auto const & spPort : ports)
+  for (auto const & spPort : ports_)
   {
     if (spPort.use_count() == 1U)
     {
-      if (spPort->state != MultiplexerPort::States::noClientRegistered)
+      if (spPort->state_ != MultiplexerPort::States::noClientRegistered)
         gpcc::osal::Panic("Multiplexer::CreatePort: Dropped port has still a RODAN interface registered.");
 
       return spPort;
     }
   }
 
-  if (ports.size() == maxNbOfPorts)
+  if (ports_.size() == maxNbOfPorts_)
     throw std::runtime_error("Multiplexer::CreatePort: Maximum number of ports reached.");
 
-  ports.emplace_back(std::make_shared<MultiplexerPort>(*this, ports.size()));
-  return ports.back();
+  ports_.emplace_back(std::make_shared<MultiplexerPort>(*this, ports_.size()));
+  return ports_.back();
 }
 
 // <-- IRemoteObjectDictionaryAccessNotifiable
@@ -285,9 +285,9 @@ std::shared_ptr<MultiplexerPort> Multiplexer::CreatePort(void)
 /// \copydoc gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnReady
 void Multiplexer::OnReady(size_t const maxRequestSize, size_t const maxResponseSize) noexcept
 {
-  gpcc::osal::MutexLocker muxMutexLocker(muxMutex);
+  gpcc::osal::MutexLocker muxMutexLocker(muxMutex_);
 
-  switch (state)
+  switch (state_)
   {
     case States::notConnected:
       gpcc::osal::Panic("Multiplexer::OnReady: Not connected to any RODA interface.");
@@ -305,32 +305,32 @@ void Multiplexer::OnReady(size_t const maxRequestSize, size_t const maxResponseS
 
   // switch mutiplexer to "ready"
   {
-    gpcc::osal::MutexLocker portMutexLocker(portMutex);
+    gpcc::osal::MutexLocker portMutexLocker(portMutex_);
 
     if (maxRequestSize < (RequestBase::minimumUsefulRequestSize + ReturnStackItem::binarySize))
-      this->maxRequestSize = 0U;
+      this->maxRequestSize_ = 0U;
     else
-      this->maxRequestSize = maxRequestSize - ReturnStackItem::binarySize;
+      this->maxRequestSize_ = maxRequestSize - ReturnStackItem::binarySize;
 
     if (maxResponseSize < (ResponseBase::minimumUsefulResponseSize + ReturnStackItem::binarySize))
-      this->maxResponseSize = 0U;
+      this->maxResponseSize_ = 0U;
     else
-      this->maxResponseSize = maxResponseSize - ReturnStackItem::binarySize;
+      this->maxResponseSize_ = maxResponseSize - ReturnStackItem::binarySize;
 
-    state = States::ready;
+    state_ = States::ready;
   }
 
   // switch ports to "ready"
-  for (auto const & spPort : ports)
+  for (auto const & spPort : ports_)
   {
-    if (spPort->state == MultiplexerPort::States::notReady)
+    if (spPort->state_ == MultiplexerPort::States::notReady)
     {
       {
-        gpcc::osal::MutexLocker portMutexLocker(portMutex);
-        spPort->state = MultiplexerPort::States::ready;
+        gpcc::osal::MutexLocker portMutexLocker(portMutex_);
+        spPort->state_ = MultiplexerPort::States::ready;
       }
 
-      spPort->pRODAN->OnReady(this->maxRequestSize, this->maxResponseSize);
+      spPort->pRODAN_->OnReady(this->maxRequestSize_, this->maxResponseSize_);
     }
   }
 }
@@ -338,9 +338,9 @@ void Multiplexer::OnReady(size_t const maxRequestSize, size_t const maxResponseS
 /// \copydoc gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnDisconnected
 void Multiplexer::OnDisconnected(void) noexcept
 {
-  gpcc::osal::MutexLocker muxMutexLocker(muxMutex);
+  gpcc::osal::MutexLocker muxMutexLocker(muxMutex_);
 
-  switch (state)
+  switch (state_)
   {
     case States::notConnected:
       gpcc::osal::Panic("Multiplexer::OnDisconnected: Not connected to any RODA interface.");
@@ -358,28 +358,28 @@ void Multiplexer::OnDisconnected(void) noexcept
 
   // switch multiplexer to "not ready"
   {
-    gpcc::osal::MutexLocker portMutexLocker(portMutex);
-    state = States::notReady;
+    gpcc::osal::MutexLocker portMutexLocker(portMutex_);
+    state_ = States::notReady;
   }
 
   // switch ports to "not ready" and reset sessionID
-  for (auto const & spPort : ports)
+  for (auto const & spPort : ports_)
   {
-    if (spPort->state == MultiplexerPort::States::ready)
+    if (spPort->state_ == MultiplexerPort::States::ready)
     {
       {
-        gpcc::osal::MutexLocker portMutexLocker(portMutex);
-        spPort->state = MultiplexerPort::States::notReady;
-        spPort->execContextRequested = false;
-        spPort->oldestUsedSessionID = spPort->sessionID;
+        gpcc::osal::MutexLocker portMutexLocker(portMutex_);
+        spPort->state_ = MultiplexerPort::States::notReady;
+        spPort->execContextRequested_ = false;
+        spPort->oldestUsedSessionID_ = spPort->sessionID_;
       }
 
-      spPort->pRODAN->OnDisconnected();
+      spPort->pRODAN_->OnDisconnected();
     }
     else
     {
-      gpcc::osal::MutexLocker portMutexLocker(portMutex);
-      spPort->oldestUsedSessionID = spPort->sessionID;
+      gpcc::osal::MutexLocker portMutexLocker(portMutex_);
+      spPort->oldestUsedSessionID_ = spPort->sessionID_;
     }
   }
 }
@@ -387,9 +387,9 @@ void Multiplexer::OnDisconnected(void) noexcept
 /// \copydoc gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::OnRequestProcessed
 void Multiplexer::OnRequestProcessed(std::unique_ptr<ResponseBase> spResponse) noexcept
 {
-  gpcc::osal::MutexLocker muxMutexLocker(muxMutex);
+  gpcc::osal::MutexLocker muxMutexLocker(muxMutex_);
 
-  switch (state)
+  switch (state_)
   {
     case States::notConnected:
       gpcc::osal::Panic("Multiplexer::OnRequestProcessed: Not connected to any RODA interface.");
@@ -419,7 +419,7 @@ void Multiplexer::OnRequestProcessed(std::unique_ptr<ResponseBase> spResponse) n
 
   auto const rsi = spResponse->PopReturnStack();
 
-  if (rsi.GetID() != ownerID)
+  if (rsi.GetID() != ownerID_)
     return;
 
   // extract our information from the return stack item
@@ -432,15 +432,15 @@ void Multiplexer::OnRequestProcessed(std::unique_ptr<ResponseBase> spResponse) n
   if (gap != 0U)
     return;
 
-  if (index >= ports.size())
+  if (index >= ports_.size())
     return;
 
-  auto & spPort = ports[index];
+  auto & spPort = ports_[index];
 
   if (!myPing)
   {
-    if ((spPort->state == MultiplexerPort::States::ready) && (spPort->sessionID == sessionID))
-      spPort->pRODAN->OnRequestProcessed(std::move(spResponse));
+    if ((spPort->state_ == MultiplexerPort::States::ready) && (spPort->sessionID_ == sessionID))
+      spPort->pRODAN_->OnRequestProcessed(std::move(spResponse));
   }
   else
   {
@@ -451,20 +451,20 @@ void Multiplexer::OnRequestProcessed(std::unique_ptr<ResponseBase> spResponse) n
     if (!spResponse->IsReturnStackEmpty())
       return;
 
-    if (spPort->sessionID != sessionID)
+    if (spPort->sessionID_ != sessionID)
       return;
 
-    gpcc::osal::MutexLocker portMutexLocker(portMutex);
-    spPort->oldestUsedSessionID = spPort->sessionID;
+    gpcc::osal::MutexLocker portMutexLocker(portMutex_);
+    spPort->oldestUsedSessionID_ = spPort->sessionID_;
   }
 }
 
 /// \copydoc gpcc::cood::IRemoteObjectDictionaryAccessNotifiable::LoanExecutionContext
 void Multiplexer::LoanExecutionContext(void) noexcept
 {
-  gpcc::osal::MutexLocker muxMutexLocker(muxMutex);
+  gpcc::osal::MutexLocker muxMutexLocker(muxMutex_);
 
-  switch (state)
+  switch (state_)
   {
     case States::notConnected:
       gpcc::osal::Panic("Multiplexer::LoanExecutionContext: Not connected to any RODA interface.");
@@ -484,28 +484,28 @@ void Multiplexer::LoanExecutionContext(void) noexcept
   // - If any port is in state "not ready", then we will switch it to "ready".
   // - If a port is "ready", then we check if it has a pending request for a call to client's LoanExecutionContext()
   //   method, and -if so- we will serve the request.
-  for (auto const & spPort : ports)
+  for (auto const & spPort : ports_)
   {
-    if (spPort->state == MultiplexerPort::States::notReady)
+    if (spPort->state_ == MultiplexerPort::States::notReady)
     {
       {
-        gpcc::osal::MutexLocker portMutexLocker(portMutex);
-        spPort->state = MultiplexerPort::States::ready;
+        gpcc::osal::MutexLocker portMutexLocker(portMutex_);
+        spPort->state_ = MultiplexerPort::States::ready;
       }
 
-      spPort->pRODAN->OnReady(this->maxRequestSize, this->maxResponseSize);
+      spPort->pRODAN_->OnReady(this->maxRequestSize_, this->maxResponseSize_);
     }
-    else if (spPort->state == MultiplexerPort::States::ready)
+    else if (spPort->state_ == MultiplexerPort::States::ready)
     {
       {
-        gpcc::osal::MutexLocker portMutexLocker(portMutex);
-        if (!spPort->execContextRequested)
+        gpcc::osal::MutexLocker portMutexLocker(portMutex_);
+        if (!spPort->execContextRequested_)
           continue;
 
-        spPort->execContextRequested = false;
+        spPort->execContextRequested_ = false;
       }
 
-      spPort->pRODAN->LoanExecutionContext();
+      spPort->pRODAN_->LoanExecutionContext();
     }
     else
     {
