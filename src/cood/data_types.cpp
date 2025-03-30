@@ -559,7 +559,7 @@ std::string CANopenEncodedDataToString(gpcc::stream::IStreamReader& sr, size_t c
       float const r32 = sr.Read_float();
       char buf[32];
       int const status = snprintf(buf, sizeof(buf), "%G", static_cast<double>(r32));
-      if ((status < 0) || (static_cast<size_t>(status) > sizeof(buf)))
+      if ((status < 0) || (static_cast<size_t>(status) >= sizeof(buf)))
         throw std::runtime_error("CANopenEncodedDataToString: snprintf failed or requires unexpected buffer size");
 
       return buf;
