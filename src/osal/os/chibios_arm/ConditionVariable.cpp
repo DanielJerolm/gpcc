@@ -136,14 +136,11 @@ void ConditionVariable::Wait(Mutex & mutex)
  * ~~~{.cpp}
  * using gpcc::time::TimePoint;
  * using gpcc::time::TimeSpan;
- * using gpcc::time::GetPrecision_ns;
  *
  * gpcc::osal::MutexLocker locker(myMutex);
  *
  * // calculate timeout (here: 1 second from now)
- * TimePoint const tp = TimePoint::FromSystemClock(ConditionVariable::clockID);
- *                    + TimeSpan::sec(1);
- *                    + TimeSpan::ns(GetPrecision_ns(ConditionVariable::clockID));
+ * TimePoint const tp = TimePoint::FromSystemClock(ConditionVariable::clockID) + TimeSpan::sec(1);
  *
  * bool timeout = false;
  * while ((condition == false) && (timeout == false))
@@ -184,6 +181,7 @@ void ConditionVariable::Wait(Mutex & mutex)
  * The mutex will be locked again when the method returns due to a timeout condition.\n
  * The time must be specified using the clock @ref ConditionVariable::clockID. \n
  * If a minimum timespan until timeout shall be guaranteed, then the clock's precision should be added to the timespan.
+ * It can be queried via @ref gpcc::time::GetPrecision_ns().
  *
  * \retval true
  *   Woke up due to timeout.
