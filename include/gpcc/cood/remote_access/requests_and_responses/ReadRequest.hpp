@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #ifndef READREQUEST_HPP_202010091707
@@ -58,11 +58,11 @@ class ReadRequest final : public RequestBase
 
     ReadRequest(void) = delete;
 
-    ReadRequest(AccessType     const _accessType,
-                uint16_t       const _index,
-                uint8_t        const _subindex,
-                Object::attr_t const _permissions,
-                size_t         const _maxResponseSize);
+    ReadRequest(AccessType     const accessType,
+                uint16_t       const index,
+                uint8_t        const subindex,
+                Object::attr_t const permissions,
+                size_t         const maxResponseSize);
 
     ReadRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ReadRequestPassKey);
 
@@ -90,20 +90,20 @@ class ReadRequest final : public RequestBase
 
   private:
     /// Binary size of a serialized @ref ReadRequest object (excl. base class @ref RequestBase).
-    static size_t const readRequestBinarySize = 6U;
+    static size_t const readRequestBinarySize_ = 6U;
 
     /// Access type.
-    AccessType const accessType;
+    AccessType const accessType_;
 
     /// Index of the object that shall be read.
-    uint16_t const index;
+    uint16_t const index_;
 
     /// Subindex that shall be read.
-    uint8_t const subindex;
+    uint8_t const subindex_;
 
     /// Permissions provided by the originator of the read request.
     /** This is any combination of attr_ACCESS_X values from class @ref Object. */
-    Object::attr_t const permissions;
+    Object::attr_t const permissions_;
 
 
     static AccessType U8_to_AccessType(uint8_t const u8);
@@ -130,7 +130,7 @@ class ReadRequest final : public RequestBase
  */
 inline ReadRequest::AccessType ReadRequest::GetAccessType(void) const noexcept
 {
-  return accessType;
+  return accessType_;
 }
 
 /**
@@ -154,7 +154,7 @@ inline ReadRequest::AccessType ReadRequest::GetAccessType(void) const noexcept
  */
 inline uint16_t ReadRequest::GetIndex(void) const noexcept
 {
-  return index;
+  return index_;
 }
 
 /**
@@ -178,7 +178,7 @@ inline uint16_t ReadRequest::GetIndex(void) const noexcept
  */
 inline uint8_t ReadRequest::GetSubIndex(void) const noexcept
 {
-  return subindex;
+  return subindex_;
 }
 
 /**
@@ -202,7 +202,7 @@ inline uint8_t ReadRequest::GetSubIndex(void) const noexcept
  */
 inline Object::attr_t ReadRequest::GetPermissions(void) const noexcept
 {
-  return permissions;
+  return permissions_;
 }
 
 } // namespace cood

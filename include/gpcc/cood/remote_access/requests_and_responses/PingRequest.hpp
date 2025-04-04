@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #ifndef PINGREQUEST_HPP_202108051135
@@ -48,7 +48,7 @@ class PingRequest final : public RequestBase
   public:
     PingRequest(void) = delete;
 
-    PingRequest(size_t const _maxResponseSize);
+    PingRequest(size_t const maxResponseSize);
 
     PingRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, PingRequestPassKey);
 

@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #ifndef OBJECTENUMREQUEST_HPP_202103022210
@@ -65,10 +65,10 @@ class ObjectEnumRequest final : public RequestBase
 {
   public:
     ObjectEnumRequest(void) = delete;
-    ObjectEnumRequest(uint16_t                   const _startIndex,
-                      uint16_t                   const _lastIndex,
-                      gpcc::cood::Object::attr_t const _attrFilter,
-                      size_t                     const _maxResponseSize);
+    ObjectEnumRequest(uint16_t                   const startIndex,
+                      uint16_t                   const lastIndex,
+                      gpcc::cood::Object::attr_t const attrFilter,
+                      size_t                     const maxResponseSize);
 
     ObjectEnumRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectEnumRequestPassKey);
 
@@ -93,20 +93,20 @@ class ObjectEnumRequest final : public RequestBase
 
   private:
     /// Binary size of a serialized @ref ObjectEnumRequest object (excl. base class @ref RequestBase).
-    static size_t const objectEnumRequestBinarySize = 6U;
+    static size_t const objectEnumRequestBinarySize_ = 6U;
 
 
     /// Index where enumeration shall start.
     /** Objects located at indices less than this will not be enumerated. */
-    uint16_t const startIndex;
+    uint16_t const startIndex_;
 
     /// Index where enumeration shall stop.
     /** Objects located at indices larger than this will not be enumerated. */
-    uint16_t const lastIndex;
+    uint16_t const lastIndex_;
 
     /// Attribute-filter for enumeration.
     /** Only objects with at least one matching attribute bit will be enumerated. */
-    gpcc::cood::Object::attr_t attrFilter;
+    gpcc::cood::Object::attr_t attrFilter_;
 };
 
 /**
@@ -131,7 +131,7 @@ class ObjectEnumRequest final : public RequestBase
  */
 inline uint16_t ObjectEnumRequest::GetStartIndex(void) const noexcept
 {
-  return startIndex;
+  return startIndex_;
 }
 
 /**
@@ -156,7 +156,7 @@ inline uint16_t ObjectEnumRequest::GetStartIndex(void) const noexcept
  */
 inline uint16_t ObjectEnumRequest::GetLastIndex(void) const noexcept
 {
-  return lastIndex;
+  return lastIndex_;
 }
 
 /**
@@ -181,7 +181,7 @@ inline uint16_t ObjectEnumRequest::GetLastIndex(void) const noexcept
  */
 inline gpcc::cood::Object::attr_t ObjectEnumRequest::GetAttributeFilter(void) const noexcept
 {
-  return attrFilter;
+  return attrFilter_;
 }
 
 } // namespace cood

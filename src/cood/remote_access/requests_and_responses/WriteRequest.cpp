@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021, 2024 Daniel Jerolm
+    Copyright (C) 2021, 2024, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/requests_and_responses/WriteRequest.hpp>
@@ -19,7 +19,7 @@
 namespace gpcc {
 namespace cood {
 
-size_t const WriteRequest::writeRequestBinarySize;
+size_t const WriteRequest::writeRequestBinarySize_;
 
 /**
  * \brief Constructor.
@@ -34,22 +34,22 @@ size_t const WriteRequest::writeRequestBinarySize;
  *
  * - - -
  *
- * \param _accessType
+ * \param accessType
  * Access type.
  *
- * \param _index
+ * \param index
  * Index of the object that shall be written.
  *
- * \param _subindex
+ * \param subindex
  * Subindex that shall be written.
  *
- * \param _permissions
+ * \param permissions
  * Permissions for the write-operation provided by the originator of the write request.\n
  * This shall be composed by logical-or-combination of one or multiple Object::attr_ACCESS_xxx values.\n
  * The composed value shall have at least one write permission (@ref Object::attr_ACCESS_WR) bit set.\n
  * There shall be no other bits set except for write permission bits.
  *
- * \param _data
+ * \param data
  * Universal reference to an `std::vector<uint8_t>` containing the data that shall be written.\n
  * The data shall be encoded in CANopen format.\n
  * The vector shall contain at least one or two byte of data (depending on _accessType and _subindex) and no more than
@@ -59,7 +59,7 @@ size_t const WriteRequest::writeRequestBinarySize;
  * Afterwards the referenced vector will be in a valid but undefined state.\n
  * \n
  *
- * \param _maxResponseSize
+ * \param maxResponseSize
  * Maximum size (in byte) of the serialized response object that can be processed by the creator of this request.
  * The value should be the minimum of the capability of the creator and the maximum possible response size announced
  * by @ref IRemoteObjectDictionaryAccessNotifiable::OnReady(), parameter `maxResponseSize`.\n
@@ -75,34 +75,34 @@ size_t const WriteRequest::writeRequestBinarySize;
  * \htmlonly <style>div.image img[src="cood/RODA_ReqCTOR_MaxResponseSize.png"]{width:80%;}</style> \endhtmlonly
  * \image html "cood/RODA_ReqCTOR_MaxResponseSize.png" "Maximum response size with one ReturnStackItem"
  */
-WriteRequest::WriteRequest(AccessType           const _accessType,
-                           uint16_t             const _index,
-                           uint8_t              const _subindex,
-                           Object::attr_t       const _permissions,
-                           std::vector<uint8_t> &&    _data,
-                           size_t               const _maxResponseSize)
-: RequestBase(RequestTypes::writeRequest, _maxResponseSize)
-, accessType(_accessType)
-, index(_index)
-, subindex(_subindex)
-, permissions(_permissions)
-, data()
+WriteRequest::WriteRequest(AccessType           const accessType,
+                           uint16_t             const index,
+                           uint8_t              const subindex,
+                           Object::attr_t       const permissions,
+                           std::vector<uint8_t> &&    data,
+                           size_t               const maxResponseSize)
+: RequestBase(RequestTypes::writeRequest, maxResponseSize)
+, accessType_(accessType)
+, index_(index)
+, subindex_(subindex)
+, permissions_(permissions)
+, data_()
 {
-  if ((accessType != AccessType::singleSubindex) && (subindex > 1U))
+  if ((accessType_ != AccessType::singleSubindex) && (subindex_ > 1U))
     throw std::invalid_argument("WriteRequest::WriteRequest: Complete access requires '_subindex' in range 0..1");
 
-  if (   ((permissions & Object::attr_ACCESS_WR) == 0U)
-      || ((permissions & Object::attr_ACCESS_WR) != permissions))
+  if (   ((permissions_ & Object::attr_ACCESS_WR) == 0U)
+      || ((permissions_ & Object::attr_ACCESS_WR) != permissions_))
   {
     throw std::invalid_argument("WriteRequest::WriteRequest: '_permissions' invalid.");
   }
 
-  size_t const minReqData = ((accessType == AccessType::completeAccess_SI0_16bit) && (subindex == 0U)) ? 2U : 1U;
+  size_t const minReqData = ((accessType_ == AccessType::completeAccess_SI0_16bit) && (subindex_ == 0U)) ? 2U : 1U;
 
-  if ((_data.size() < minReqData) || (_data.size() > std::numeric_limits<uint16_t>::max()))
-    throw std::invalid_argument("WriteRequest::WriteRequest: '_data' is too small or too large");
+  if ((data.size() < minReqData) || (data.size() > std::numeric_limits<uint16_t>::max()))
+    throw std::invalid_argument("WriteRequest::WriteRequest: 'data' is too small or too large");
 
-  data = std::move(_data);
+  data_ = std::move(data);
 }
 
 /**
@@ -136,34 +136,34 @@ WriteRequest::WriteRequest(AccessType           const _accessType,
  */
 WriteRequest::WriteRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, WriteRequestPassKey)
 : RequestBase(RequestTypes::writeRequest, sr, versionOnHand)
-, accessType(U8_to_AccessType(sr.Read_uint8()))
-, index(sr.Read_uint16())
-, subindex(sr.Read_uint8())
-, permissions(static_cast<Object::attr_t>(sr.Read_uint16()))
-, data()
+, accessType_(U8_to_AccessType(sr.Read_uint8()))
+, index_(sr.Read_uint16())
+, subindex_(sr.Read_uint8())
+, permissions_(static_cast<Object::attr_t>(sr.Read_uint16()))
+, data_()
 {
-  if (versionOnHand != version)
+  if (versionOnHand != version_)
     throw std::runtime_error("WriteRequest::WriteRequest: Version not supported");
 
-  if ((accessType != AccessType::singleSubindex) && (subindex > 1U))
+  if ((accessType_ != AccessType::singleSubindex) && (subindex_ > 1U))
     throw std::runtime_error("WriteRequest::WriteRequest: Data read from 'sr' is invalid");
 
-  if (   ((permissions & Object::attr_ACCESS_WR) == 0U)
-      || ((permissions & Object::attr_ACCESS_WR) != permissions))
+  if (   ((permissions_ & Object::attr_ACCESS_WR) == 0U)
+      || ((permissions_ & Object::attr_ACCESS_WR) != permissions_))
   {
     throw std::runtime_error("WriteRequest::WriteRequest: Data read from 'sr' is invalid");
   }
 
-  size_t const minReqData = ((accessType == AccessType::completeAccess_SI0_16bit) && (subindex == 0U)) ? 2U : 1U;
+  size_t const minReqData = ((accessType_ == AccessType::completeAccess_SI0_16bit) && (subindex_ == 0U)) ? 2U : 1U;
 
   uint_fast16_t s = sr.Read_uint16();
   if (s < minReqData)
     throw std::runtime_error("WriteRequest::WriteRequest: Data read from 'sr' is invalid");
 
-  data.reserve(s);
+  data_.reserve(s);
   while (s != 0U)
   {
-    data.push_back(sr.Read_uint8());
+    data_.push_back(sr.Read_uint8());
     --s;
   }
 }
@@ -204,7 +204,7 @@ size_t WriteRequest::CalcMaxDataPayload(size_t const maxRequestSize, bool const 
   size_t maxDataPayload = maxRequestSize;
 
   // subtract overhead of base class RequestBase and class WriteRequest
-  size_t const binarySize = baseBinarySize + writeRequestBinarySize;
+  size_t const binarySize = baseBinarySize_ + writeRequestBinarySize_;
   if (maxDataPayload <= binarySize)
     return 0U;
   else
@@ -232,23 +232,23 @@ size_t WriteRequest::CalcMaxDataPayload(size_t const maxRequestSize, bool const 
 /// \copydoc gpcc::cood::RequestBase::GetBinarySize
 size_t WriteRequest::GetBinarySize(void) const
 {
-  return RequestBase::GetBinarySize() + writeRequestBinarySize + data.size();
+  return RequestBase::GetBinarySize() + writeRequestBinarySize_ + data_.size();
 }
 
 /// \copydoc gpcc::cood::RequestBase::ToBinary
 void WriteRequest::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
-  if (data.empty())
+  if (data_.empty())
     throw std::logic_error("WriteRequest::ToBinary: Object empty. Was it involved in a move-operation?");
 
   RequestBase::ToBinary(sw);
 
-  sw.Write_uint8(static_cast<uint8_t>(accessType));
-  sw.Write_uint16(index);
-  sw.Write_uint8(subindex);
-  sw.Write_uint16(permissions);
-  sw.Write_uint16(data.size());
-  sw.Write_uint8(data.data(), data.size());
+  sw.Write_uint8(static_cast<uint8_t>(accessType_));
+  sw.Write_uint16(index_);
+  sw.Write_uint8(subindex_);
+  sw.Write_uint16(permissions_);
+  sw.Write_uint16(data_.size());
+  sw.Write_uint8(data_.data(), data_.size());
 }
 
 /// \copydoc gpcc::cood::RequestBase::ToString
@@ -259,7 +259,7 @@ std::string WriteRequest::ToString(void) const
 
   s << "Write request (";
 
-  switch (accessType)
+  switch (accessType_)
   {
     case AccessType::singleSubindex:
       s << "single subindex";
@@ -274,21 +274,21 @@ std::string WriteRequest::ToString(void) const
       break;
   }
 
-  s << ") for " << gpcc::string::ToHex(index, 4U) << ':' << static_cast<unsigned int>(subindex) << ", "
-       "Permission = " << gpcc::string::ToHex(static_cast<uint16_t>(permissions), 4U) << ", "
-    << data.size() << " byte(s) of data";
+  s << ") for " << gpcc::string::ToHex(index_, 4U) << ':' << static_cast<unsigned int>(subindex_) << ", "
+       "Permission = " << gpcc::string::ToHex(static_cast<uint16_t>(permissions_), 4U) << ", "
+    << data_.size() << " byte(s) of data";
 
-  if (data.size() <= 16U)
+  if (data_.size() <= 16U)
   {
     s << ':' << gpcc::osal::endl;
 
     s << StringComposer::BaseHex << StringComposer::Uppercase << StringComposer::AlignRightPadZero;
-    for (uint_fast8_t i = 0U; i < data.size(); i++)
+    for (uint_fast8_t i = 0U; i < data_.size(); i++)
     {
       if (i != 0U)
         s << ' ';
 
-      s << "0x" << StringComposer::Width(2) << static_cast<unsigned int>(data[i]);
+      s << "0x" << StringComposer::Width(2) << static_cast<unsigned int>(data_[i]);
     }
   }
 
@@ -321,10 +321,10 @@ std::string WriteRequest::ToString(void) const
  */
 std::vector<uint8_t> const & WriteRequest::GetData(void) const
 {
-  if (data.empty())
+  if (data_.empty())
     throw std::logic_error("WriteRequest::GetData: Object empty. Was it involved in a move-operation?");
 
-  return data;
+  return data_;
 }
 
 /**

@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #ifndef OBJECTINFOREQUEST_HPP_202102131446
@@ -70,12 +70,12 @@ class ObjectInfoRequest final : public RequestBase
 {
   public:
     ObjectInfoRequest(void) = delete;
-    ObjectInfoRequest(uint16_t const _index,
-                      uint8_t  const _firstSubIndex,
-                      uint8_t  const _lastSubIndex,
-                      bool     const _inclusiveNames,
-                      bool     const _inclusiveAppSpecificMetaData,
-                      size_t   const _maxResponseSize);
+    ObjectInfoRequest(uint16_t const index,
+                      uint8_t  const firstSubIndex,
+                      uint8_t  const lastSubIndex,
+                      bool     const inclusiveNames,
+                      bool     const inclusiveAppSpecificMetaData,
+                      size_t   const maxResponseSize);
 
     ObjectInfoRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectInfoRequestPassKey);
 
@@ -102,23 +102,23 @@ class ObjectInfoRequest final : public RequestBase
 
   private:
     /// Binary size of a serialized @ref ObjectInfoRequest object (excl. base class @ref RequestBase).
-    static size_t const objectInfoRequestBinarySize = 5U;
+    static size_t const objectInfoRequestBinarySize_ = 5U;
 
 
     /// Index of the object whose meta data shall be queried.
-    uint16_t const index;
+    uint16_t const index_;
 
     /// First subindex whose meta data shall be queried.
-    uint8_t const firstSubIndex;
+    uint8_t const firstSubIndex_;
 
     /// Last subindex whose meta data shall be queried.
-    uint8_t const lastSubIndex;
+    uint8_t const lastSubIndex_;
 
     /// Flag indicating if object's and subindices' names shall be included in the response.
-    bool const inclusiveNames;
+    bool const inclusiveNames_;
 
     /// Flag indicating if application specific meta data of the subindices shall be included in the response.
-    bool const inclusiveAppSpecificMetaData;
+    bool const inclusiveAppSpecificMetaData_;
 };
 
 /**
@@ -142,7 +142,7 @@ class ObjectInfoRequest final : public RequestBase
  */
 inline uint16_t ObjectInfoRequest::GetIndex(void) const noexcept
 {
-  return index;
+  return index_;
 }
 
 /**
@@ -166,7 +166,7 @@ inline uint16_t ObjectInfoRequest::GetIndex(void) const noexcept
  */
 inline uint8_t ObjectInfoRequest::GetFirstSubIndex(void) const noexcept
 {
-  return firstSubIndex;
+  return firstSubIndex_;
 }
 
 /**
@@ -190,7 +190,7 @@ inline uint8_t ObjectInfoRequest::GetFirstSubIndex(void) const noexcept
  */
 inline uint8_t ObjectInfoRequest::GetLastSubIndex(void) const noexcept
 {
-  return lastSubIndex;
+  return lastSubIndex_;
 }
 
 /**
@@ -214,7 +214,7 @@ inline uint8_t ObjectInfoRequest::GetLastSubIndex(void) const noexcept
  */
 inline bool ObjectInfoRequest::IsInclusiveNames(void) const noexcept
 {
-  return inclusiveNames;
+  return inclusiveNames_;
 }
 
 /**
@@ -238,7 +238,7 @@ inline bool ObjectInfoRequest::IsInclusiveNames(void) const noexcept
  */
 inline bool ObjectInfoRequest::IsInclusiveAppSpecificMetaData(void) const noexcept
 {
-  return inclusiveAppSpecificMetaData;
+  return inclusiveAppSpecificMetaData_;
 }
 
 } // namespace cood

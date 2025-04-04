@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021, 2024 Daniel Jerolm
+    Copyright (C) 2021, 2024, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/requests_and_responses/ReadRequest.hpp>
@@ -19,7 +19,7 @@
 namespace gpcc {
 namespace cood {
 
-size_t const ReadRequest::readRequestBinarySize;
+size_t const ReadRequest::readRequestBinarySize_;
 
 /**
  * \brief Constructor.
@@ -34,23 +34,23 @@ size_t const ReadRequest::readRequestBinarySize;
  *
  * - - -
  *
- * \param _accessType
+ * \param accessType
  * Access type.
  *
- * \param _index
+ * \param index
  * Index of the object that shall be read.
  *
- * \param _subindex
+ * \param subindex
  * Subindex that shall be read.\n
  * In case of a complete access, this is the first subindex being read. It must be zero or one.
  *
- * \param _permissions
+ * \param permissions
  * Permissions for the read-operation provided by the originator of the read request.\n
  * This shall be composed by logical-or-combination of one or multiple Object::attr_ACCESS_xxx values.\n
  * The composed value shall have at least one read permission (@ref Object::attr_ACCESS_RD) bit set.\n
  * There shall be no other bits set except for read permission bits.
  *
- * \param _maxResponseSize
+ * \param maxResponseSize
  * Maximum size (in byte) of the serialized response object that can be processed by the creator of this request.
  * The value should be the minimum of the capability of the creator and the maximum possible response size announced
  * by @ref IRemoteObjectDictionaryAccessNotifiable::OnReady(), parameter `maxResponseSize`.\n
@@ -66,22 +66,22 @@ size_t const ReadRequest::readRequestBinarySize;
  * \htmlonly <style>div.image img[src="cood/RODA_ReqCTOR_MaxResponseSize.png"]{width:80%;}</style> \endhtmlonly
  * \image html "cood/RODA_ReqCTOR_MaxResponseSize.png" "Maximum response size with one ReturnStackItem"
  */
-ReadRequest::ReadRequest(AccessType     const _accessType,
-                         uint16_t       const _index,
-                         uint8_t        const _subindex,
-                         Object::attr_t const _permissions,
-                         size_t         const _maxResponseSize)
-: RequestBase(RequestTypes::readRequest, _maxResponseSize)
-, accessType(_accessType)
-, index(_index)
-, subindex(_subindex)
-, permissions(_permissions)
+ReadRequest::ReadRequest(AccessType     const accessType,
+                         uint16_t       const index,
+                         uint8_t        const subindex,
+                         Object::attr_t const permissions,
+                         size_t         const maxResponseSize)
+: RequestBase(RequestTypes::readRequest, maxResponseSize)
+, accessType_(accessType)
+, index_(index)
+, subindex_(subindex)
+, permissions_(permissions)
 {
-  if ((accessType != AccessType::singleSubindex) && (subindex > 1U))
+  if ((accessType_ != AccessType::singleSubindex) && (subindex_ > 1U))
     throw std::invalid_argument("ReadRequest::ReadRequest: Complete access requires '_subindex' in range 0..1");
 
-  if (   ((permissions & Object::attr_ACCESS_RD) == 0U)
-      || ((permissions & Object::attr_ACCESS_RD) != permissions))
+  if (   ((permissions_ & Object::attr_ACCESS_RD) == 0U)
+      || ((permissions_ & Object::attr_ACCESS_RD) != permissions_))
   {
     throw std::invalid_argument("ReadRequest::ReadRequest: '_permissions' invalid.");
   }
@@ -118,19 +118,19 @@ ReadRequest::ReadRequest(AccessType     const _accessType,
  */
 ReadRequest::ReadRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ReadRequestPassKey)
 : RequestBase(RequestTypes::readRequest, sr, versionOnHand)
-, accessType(U8_to_AccessType(sr.Read_uint8()))
-, index(sr.Read_uint16())
-, subindex(sr.Read_uint8())
-, permissions(static_cast<Object::attr_t>(sr.Read_uint16()))
+, accessType_(U8_to_AccessType(sr.Read_uint8()))
+, index_(sr.Read_uint16())
+, subindex_(sr.Read_uint8())
+, permissions_(static_cast<Object::attr_t>(sr.Read_uint16()))
 {
-  if (versionOnHand != version)
+  if (versionOnHand != version_)
     throw std::runtime_error("ReadRequest::ReadRequest: Version not supported");
 
-  if ((accessType != AccessType::singleSubindex) && (subindex > 1U))
+  if ((accessType_ != AccessType::singleSubindex) && (subindex_ > 1U))
     throw std::runtime_error("ReadRequest::ReadRequest: Data read from 'sr' is invalid");
 
-  if (   ((permissions & Object::attr_ACCESS_RD) == 0U)
-      || ((permissions & Object::attr_ACCESS_RD) != permissions))
+  if (   ((permissions_ & Object::attr_ACCESS_RD) == 0U)
+      || ((permissions_ & Object::attr_ACCESS_RD) != permissions_))
   {
     throw std::runtime_error("ReadRequest::ReadRequest: Data read from 'sr' is invalid");
   }
@@ -180,7 +180,7 @@ size_t ReadRequest::CalcMaxDataPayloadInResponse(size_t const maxResponseSize, b
 /// \copydoc gpcc::cood::RequestBase::GetBinarySize
 size_t ReadRequest::GetBinarySize(void) const
 {
-  return RequestBase::GetBinarySize() + readRequestBinarySize;
+  return RequestBase::GetBinarySize() + readRequestBinarySize_;
 }
 
 /// \copydoc gpcc::cood::RequestBase::ToBinary
@@ -188,10 +188,10 @@ void ReadRequest::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   RequestBase::ToBinary(sw);
 
-  sw.Write_uint8(static_cast<uint8_t>(accessType));
-  sw.Write_uint16(index);
-  sw.Write_uint8(subindex);
-  sw.Write_uint16(permissions);
+  sw.Write_uint8(static_cast<uint8_t>(accessType_));
+  sw.Write_uint16(index_);
+  sw.Write_uint8(subindex_);
+  sw.Write_uint16(permissions_);
 }
 
 /// \copydoc gpcc::cood::RequestBase::ToString
@@ -201,7 +201,7 @@ std::string ReadRequest::ToString(void) const
 
   s << "Read request (";
 
-  switch (accessType)
+  switch (accessType_)
   {
     case AccessType::singleSubindex:
       s << "single subindex";
@@ -216,8 +216,8 @@ std::string ReadRequest::ToString(void) const
       break;
   }
 
-  s << ") for " << gpcc::string::ToHex(index, 4U) << ':' << static_cast<unsigned int>(subindex) << ", "
-       "Permission = " << gpcc::string::ToHex(static_cast<uint16_t>(permissions), 4U);
+  s << ") for " << gpcc::string::ToHex(index_, 4U) << ':' << static_cast<unsigned int>(subindex_) << ", "
+       "Permission = " << gpcc::string::ToHex(static_cast<uint16_t>(permissions_), 4U);
 
   return s.Get();
 }

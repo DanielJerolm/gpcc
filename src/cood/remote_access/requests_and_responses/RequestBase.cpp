@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/requests_and_responses/RequestBase.hpp>
@@ -25,8 +25,8 @@ namespace cood {
 
 size_t  const RequestBase::minimumUsefulRequestSize;
 size_t  const RequestBase::maxRequestSize;
-uint8_t const RequestBase::version;
-size_t  const RequestBase::baseBinarySize;
+uint8_t const RequestBase::version_;
+size_t  const RequestBase::baseBinarySize_;
 
 /**
  * \brief Destructor.
@@ -86,8 +86,8 @@ RequestBase::~RequestBase(void)
 std::unique_ptr<RequestBase> RequestBase::FromBinary(gpcc::stream::IStreamReader & sr)
 {
   // check version
-  auto const _version = sr.Read_uint8();
-  if (_version != version)
+  auto const version = sr.Read_uint8();
+  if (version != version_)
     throw std::runtime_error("RequestBase::FromBinary: Version of serialized object is not supported");
 
   // check type and delegate to appropriate subclass
@@ -95,19 +95,19 @@ std::unique_ptr<RequestBase> RequestBase::FromBinary(gpcc::stream::IStreamReader
   switch (_type)
   {
     case RequestTypes::objectEnumRequest:
-      return std::make_unique<ObjectEnumRequest>(sr, _version, ObjectEnumRequestPassKey());
+      return std::make_unique<ObjectEnumRequest>(sr, version, ObjectEnumRequestPassKey());
 
     case RequestTypes::objectInfoRequest:
-      return std::make_unique<ObjectInfoRequest>(sr, _version, ObjectInfoRequestPassKey());
+      return std::make_unique<ObjectInfoRequest>(sr, version, ObjectInfoRequestPassKey());
 
     case RequestTypes::pingRequest:
-      return std::make_unique<PingRequest>(sr, _version, PingRequestPassKey());
+      return std::make_unique<PingRequest>(sr, version, PingRequestPassKey());
 
     case RequestTypes::readRequest:
-      return std::make_unique<ReadRequest>(sr, _version, ReadRequestPassKey());
+      return std::make_unique<ReadRequest>(sr, version, ReadRequestPassKey());
 
     case RequestTypes::writeRequest:
-      return std::make_unique<WriteRequest>(sr, _version, WriteRequestPassKey());
+      return std::make_unique<WriteRequest>(sr, version, WriteRequestPassKey());
   }
 
   throw std::logic_error("RequestBase::FromBinary: Internal error (no create-method)");
@@ -145,10 +145,10 @@ size_t RequestBase::GetBinarySize(void) const
 {
   static_assert(RequestBase::maxRequestSize > RequestBase::minimumUsefulRequestSize,
     "Maximum request size is less than the minimum useful size");
-  static_assert(RequestBase::baseBinarySize < RequestBase::minimumUsefulRequestSize,
+  static_assert(RequestBase::baseBinarySize_ < RequestBase::minimumUsefulRequestSize,
     "No payload left for subclass");
 
-  return baseBinarySize + (returnStack.size() * ReturnStackItem::binarySize);
+  return baseBinarySize_ + (returnStack_.size() * ReturnStackItem::binarySize);
 }
 
 /**
@@ -187,14 +187,14 @@ size_t RequestBase::GetBinarySize(void) const
 void RequestBase::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   // to be read by FromBinary()
-  sw.Write_uint8(version);
-  sw.Write_uint8(static_cast<uint8_t>(type));
+  sw.Write_uint8(version_);
+  sw.Write_uint8(static_cast<uint8_t>(type_));
 
   // to be read by CTOR
-  sw.Write_uint32(maxResponseSize);
+  sw.Write_uint32(maxResponseSize_);
 
-  sw.Write_uint8(returnStack.size());
-  for (auto const & e: returnStack)
+  sw.Write_uint8(returnStack_.size());
+  for (auto const & e: returnStack_)
     e.ToBinary(sw);
 }
 
@@ -228,14 +228,14 @@ void RequestBase::ToBinary(gpcc::stream::IStreamWriter & sw) const
  */
 void RequestBase::Push(ReturnStackItem const & rsi)
 {
-  if (returnStack.size() == std::numeric_limits<uint8_t>::max())
+  if (returnStack_.size() == std::numeric_limits<uint8_t>::max())
     throw std::runtime_error("RequestBase::Push: Stack size at maximum");
 
-  if (maxResponseSize > (ResponseBase::maxResponseSize - ReturnStackItem::binarySize))
+  if (maxResponseSize_ > (ResponseBase::maxResponseSize - ReturnStackItem::binarySize))
     throw std::logic_error("RequestBase::Push: 'maxResponseSize' would overflow");
 
-  returnStack.emplace_back(rsi);
-  maxResponseSize += ReturnStackItem::binarySize;
+  returnStack_.emplace_back(rsi);
+  maxResponseSize_ += ReturnStackItem::binarySize;
 }
 
 /**
@@ -259,11 +259,11 @@ void RequestBase::Push(ReturnStackItem const & rsi)
  */
 void RequestBase::UndoPush(void)
 {
-  if (returnStack.empty())
+  if (returnStack_.empty())
     throw std::logic_error("RequestBase::UndoPush: Empty");
 
-  returnStack.pop_back();
-  maxResponseSize -= ReturnStackItem::binarySize;
+  returnStack_.pop_back();
+  maxResponseSize_ -= ReturnStackItem::binarySize;
 }
 
 /**
@@ -289,8 +289,8 @@ void RequestBase::UndoPush(void)
  */
 void RequestBase::ExtractReturnStack(std::vector<ReturnStackItem> & dest) noexcept
 {
-  dest = std::move(returnStack);
-  returnStack.clear();
+  dest = std::move(returnStack_);
+  returnStack_.clear();
 }
 
 /**
@@ -315,7 +315,7 @@ void RequestBase::ExtractReturnStack(std::vector<ReturnStackItem> & dest) noexce
  */
 size_t RequestBase::GetReturnStackSize(void) const noexcept
 {
-  return returnStack.size() * ReturnStackItem::binarySize;
+  return returnStack_.size() * ReturnStackItem::binarySize;
 }
 
 /**
@@ -331,10 +331,10 @@ size_t RequestBase::GetReturnStackSize(void) const noexcept
  *
  * - - -
  *
- * \param _type
+ * \param type
  * Type of request.
  *
- * \param _maxResponseSize
+ * \param maxResponseSize
  * Maximum size (in byte) of the serialized response object that can be processed by the creator of this request.
  * The value should be the minimum of the capability of the creator and the maximum possible response size announced
  * by @ref IRemoteObjectDictionaryAccessNotifiable::OnReady(), parameter `maxResponseSize`.\n
@@ -350,15 +350,15 @@ size_t RequestBase::GetReturnStackSize(void) const noexcept
  * \htmlonly <style>div.image img[src="cood/RODA_ReqCTOR_MaxResponseSize.png"]{width:80%;}</style> \endhtmlonly
  * \image html "cood/RODA_ReqCTOR_MaxResponseSize.png" "Maximum response size with one ReturnStackItem"
  */
-RequestBase::RequestBase(RequestTypes const _type, size_t const _maxResponseSize)
-: type(_type)
+RequestBase::RequestBase(RequestTypes const type, size_t const maxResponseSize)
+: type_(type)
 , pPrevInIntrusiveDList(nullptr)
 , pNextInIntrusiveDList(nullptr)
-, maxResponseSize(_maxResponseSize)
-, returnStack()
+, maxResponseSize_(maxResponseSize)
+, returnStack_()
 {
-  if (   (maxResponseSize < ResponseBase::minimumUsefulResponseSize)
-      || (maxResponseSize > ResponseBase::maxResponseSize))
+  if (   (maxResponseSize_ < ResponseBase::minimumUsefulResponseSize)
+      || (maxResponseSize_ > ResponseBase::maxResponseSize))
   {
     throw std::invalid_argument("RequestBase::RequestBase: '_maxResponseSize' invalid");
   }
@@ -382,7 +382,7 @@ RequestBase::RequestBase(RequestTypes const _type, size_t const _maxResponseSize
  *
  * - - -
  *
- * \param _type
+ * \param type
  * Type of request.
  *
  * \param sr
@@ -391,27 +391,27 @@ RequestBase::RequestBase(RequestTypes const _type, size_t const _maxResponseSize
  * \param versionOnHand
  * Version of serialized object read from `sr`.
  */
-RequestBase::RequestBase(RequestTypes const _type, gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand)
-: type(_type)
+RequestBase::RequestBase(RequestTypes const type, gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand)
+: type_(type)
 , pPrevInIntrusiveDList(nullptr)
 , pNextInIntrusiveDList(nullptr)
-, returnStack()
+, returnStack_()
 {
-  if (versionOnHand != version)
+  if (versionOnHand != version_)
     throw std::runtime_error("RequestBase::RequestBase: Version not supported");
 
-  maxResponseSize = sr.Read_uint32();
-  if (   (maxResponseSize < ResponseBase::minimumUsefulResponseSize)
-      || (maxResponseSize > ResponseBase::maxResponseSize))
+  maxResponseSize_ = sr.Read_uint32();
+  if (   (maxResponseSize_ < ResponseBase::minimumUsefulResponseSize)
+      || (maxResponseSize_ > ResponseBase::maxResponseSize))
   {
     throw std::runtime_error("RequestBase::RequestBase: 'maxResponseSize' invalid");
   }
 
   uint_fast8_t n = sr.Read_uint8();
-  returnStack.reserve(n);
+  returnStack_.reserve(n);
   while (n != 0U)
   {
-    returnStack.emplace_back(sr);
+    returnStack_.emplace_back(sr);
     --n;
   }
 }
@@ -435,11 +435,11 @@ RequestBase::RequestBase(RequestTypes const _type, gpcc::stream::IStreamReader &
  * @ref RequestBase object that shall be copied.
  */
 RequestBase::RequestBase(RequestBase const & other)
-: type(other.type)
+: type_(other.type_)
 , pPrevInIntrusiveDList(nullptr)
 , pNextInIntrusiveDList(nullptr)
-, maxResponseSize(other.maxResponseSize)
-, returnStack(other.returnStack)
+, maxResponseSize_(other.maxResponseSize_)
+, returnStack_(other.returnStack_)
 {
 }
 
@@ -461,11 +461,11 @@ RequestBase::RequestBase(RequestBase const & other)
  * Afterwards, the stack of @ref ReturnStackItem objects of `other` will be empty.
  */
 RequestBase::RequestBase(RequestBase && other) noexcept
-: type(other.type)
+: type_(other.type_)
 , pPrevInIntrusiveDList(nullptr)
 , pNextInIntrusiveDList(nullptr)
-, maxResponseSize(other.maxResponseSize)
-, returnStack(std::move(other.returnStack))
+, maxResponseSize_(other.maxResponseSize_)
+, returnStack_(std::move(other.returnStack_))
 {
 }
 
@@ -492,14 +492,14 @@ RequestBase& RequestBase::operator=(RequestBase const & rhv)
 {
   if (&rhv != this)
   {
-    if (type != rhv.type)
+    if (type_ != rhv.type_)
       throw std::logic_error("RequestBase::operator=(&): Different types");
 
     // not sure if copy-assignment provides the strong guarantee, so we use two steps here...
-    auto copyOfReturnStack = rhv.returnStack;
-    returnStack = std::move(copyOfReturnStack);
+    auto copyOfReturnStack = rhv.returnStack_;
+    returnStack_ = std::move(copyOfReturnStack);
 
-    maxResponseSize = rhv.maxResponseSize;
+    maxResponseSize_ = rhv.maxResponseSize_;
   }
 
   return *this;
@@ -527,13 +527,13 @@ RequestBase& RequestBase::operator=(RequestBase && rhv)
 {
   if (&rhv != this)
   {
-    if (type != rhv.type)
+    if (type_ != rhv.type_)
       throw std::logic_error("RequestBase::operator=(&&): Different types");
 
-    returnStack = std::move(rhv.returnStack);
-    rhv.returnStack.clear();
+    returnStack_ = std::move(rhv.returnStack_);
+    rhv.returnStack_.clear();
 
-    maxResponseSize = rhv.maxResponseSize;
+    maxResponseSize_ = rhv.maxResponseSize_;
   }
 
   return *this;

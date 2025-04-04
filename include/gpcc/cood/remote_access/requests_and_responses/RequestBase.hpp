@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #ifndef REQUESTBASE_HPP_202006251835
@@ -120,18 +120,18 @@ class RequestBase
     /// Latest version of binary data supported by this class and its sub-classes.
     /** @ref ToBinary() will generate a binary with this version.\n
         @ref FromBinary() will accept this version and potential older versions, too. */
-    static uint8_t const version = 1U;
+    static uint8_t const version_ = 1U;
 
     /// Binary size (in byte) of a serialized @ref RequestBase object (excl. `returnStack` and derived class(es)).
-    static size_t const baseBinarySize = 7U;
+    static size_t const baseBinarySize_ = 7U;
 
 
     /// Type of request. Indicates the type of sub-class.
-    RequestTypes const type;
+    RequestTypes const type_;
 
 
-    RequestBase(RequestTypes const _type, size_t const _maxResponseSize);
-    RequestBase(RequestTypes const _type, gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand);
+    RequestBase(RequestTypes const type, size_t const maxResponseSize);
+    RequestBase(RequestTypes const type, gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand);
 
     RequestBase(RequestBase const & other);
     RequestBase(RequestBase && other) noexcept;
@@ -150,10 +150,10 @@ class RequestBase
     /// connected in between.
     /** The value refers to a serialized response object and includes any @ref ReturnStackItem objects contained in
         the response object. */
-    size_t maxResponseSize;
+    size_t maxResponseSize_;
 
     /// Stack of information required to route the response back to the originator of the request.
-    std::vector<ReturnStackItem> returnStack;
+    std::vector<ReturnStackItem> returnStack_;
 
 
     static RequestTypes ToRequestType(uint8_t const value);
@@ -180,7 +180,7 @@ class RequestBase
  */
 inline RequestBase::RequestTypes RequestBase::GetType(void) const noexcept
 {
-  return type;
+  return type_;
 }
 
 /**
@@ -205,7 +205,7 @@ inline RequestBase::RequestTypes RequestBase::GetType(void) const noexcept
  */
 inline size_t RequestBase::GetMaxResponseSize(void) const
 {
-  return maxResponseSize;
+  return maxResponseSize_;
 }
 
 /**

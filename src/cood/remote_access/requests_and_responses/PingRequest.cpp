@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/requests_and_responses/PingRequest.hpp>
@@ -27,7 +27,7 @@ namespace cood {
  *
  * - - -
  *
- * \param _maxResponseSize
+ * \param maxResponseSize
  * Maximum size (in byte) of the serialized response object that can be processed by the creator of this request.
  * The value should be the minimum of the capability of the creator and the maximum possible response size announced
  * by @ref IRemoteObjectDictionaryAccessNotifiable::OnReady(), parameter `maxResponseSize`.\n
@@ -43,8 +43,8 @@ namespace cood {
  * \htmlonly <style>div.image img[src="cood/RODA_ReqCTOR_MaxResponseSize.png"]{width:80%;}</style> \endhtmlonly
  * \image html "cood/RODA_ReqCTOR_MaxResponseSize.png" "Maximum response size with one ReturnStackItem"
  */
-PingRequest::PingRequest(size_t const _maxResponseSize)
-: RequestBase(RequestTypes::pingRequest, _maxResponseSize)
+PingRequest::PingRequest(size_t const maxResponseSize)
+: RequestBase(RequestTypes::pingRequest, maxResponseSize)
 {
 }
 
@@ -80,7 +80,7 @@ PingRequest::PingRequest(size_t const _maxResponseSize)
 PingRequest::PingRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, PingRequestPassKey)
 : RequestBase(RequestTypes::pingRequest, sr, versionOnHand)
 {
-  if (versionOnHand != version)
+  if (versionOnHand != version_)
     throw std::runtime_error("PingRequest::PingRequest: Version not supported");
 }
 

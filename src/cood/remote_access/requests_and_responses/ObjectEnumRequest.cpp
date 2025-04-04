@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021, 2024 Daniel Jerolm
+    Copyright (C) 2021, 2024, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumRequest.hpp>
@@ -18,7 +18,7 @@
 namespace gpcc {
 namespace cood {
 
-size_t const ObjectEnumRequest::objectEnumRequestBinarySize;
+size_t const ObjectEnumRequest::objectEnumRequestBinarySize_;
 
 /**
  * \brief Constructor.
@@ -33,19 +33,19 @@ size_t const ObjectEnumRequest::objectEnumRequestBinarySize;
  *
  * - - -
  *
- * \param _startIndex
+ * \param startIndex
  * Index where enumeration shall start.\n
  * Objects located at indices less than this will not be enumerated.
  *
- * \param _lastIndex
+ * \param lastIndex
  * Index where enumeration shall stop.\n
  * Objects located at indices larger than this will not be enumerated.
  *
- * \param _attrFilter
+ * \param attrFilter
  * Attribute-filter for enumeration.\n
  * Only objects with at least one matching attribute bit will be enumerated.
  *
- * \param _maxResponseSize
+ * \param maxResponseSize
  * Maximum size (in byte) of the serialized response object that can be processed by the creator of this request.
  * The value should be the minimum of the capability of the creator and the maximum possible response size announced
  * by @ref IRemoteObjectDictionaryAccessNotifiable::OnReady(), parameter `maxResponseSize`.\n
@@ -61,16 +61,16 @@ size_t const ObjectEnumRequest::objectEnumRequestBinarySize;
  * \htmlonly <style>div.image img[src="cood/RODA_ReqCTOR_MaxResponseSize.png"]{width:80%;}</style> \endhtmlonly
  * \image html "cood/RODA_ReqCTOR_MaxResponseSize.png" "Maximum response size with one ReturnStackItem"
  */
-ObjectEnumRequest::ObjectEnumRequest(uint16_t                   const _startIndex,
-                                     uint16_t                   const _lastIndex,
-                                     gpcc::cood::Object::attr_t const _attrFilter,
-                                     size_t                     const _maxResponseSize)
-: RequestBase(RequestTypes::objectEnumRequest, _maxResponseSize)
-, startIndex(_startIndex)
-, lastIndex(_lastIndex)
-, attrFilter(_attrFilter)
+ObjectEnumRequest::ObjectEnumRequest(uint16_t                   const startIndex,
+                                     uint16_t                   const lastIndex,
+                                     gpcc::cood::Object::attr_t const attrFilter,
+                                     size_t                     const maxResponseSize)
+: RequestBase(RequestTypes::objectEnumRequest, maxResponseSize)
+, startIndex_(startIndex)
+, lastIndex_(lastIndex)
+, attrFilter_(attrFilter)
 {
-  if ((startIndex > lastIndex) || (attrFilter == 0U))
+  if ((startIndex_ > lastIndex_) || (attrFilter_ == 0U))
     throw std::invalid_argument("ObjectEnumRequest::ObjectEnumRequest: Invalid args");
 }
 
@@ -105,14 +105,14 @@ ObjectEnumRequest::ObjectEnumRequest(uint16_t                   const _startInde
  */
 ObjectEnumRequest::ObjectEnumRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectEnumRequestPassKey)
 : RequestBase(RequestTypes::objectEnumRequest, sr, versionOnHand)
-, startIndex(sr.Read_uint16())
-, lastIndex(sr.Read_uint16())
-, attrFilter(static_cast<gpcc::cood::Object::attr_t>(sr.Read_uint16()))
+, startIndex_(sr.Read_uint16())
+, lastIndex_(sr.Read_uint16())
+, attrFilter_(static_cast<gpcc::cood::Object::attr_t>(sr.Read_uint16()))
 {
-  if (versionOnHand != version)
+  if (versionOnHand != version_)
     throw std::runtime_error("ObjectEnumRequest::ObjectEnumRequest: Version not supported");
 
-  if ((startIndex > lastIndex) || (attrFilter == 0U))
+  if ((startIndex_ > lastIndex_) || (attrFilter_ == 0U))
     throw std::runtime_error("ObjectEnumRequest::ObjectEnumRequest: Data read from 'sr' is invalid");
 }
 
@@ -121,7 +121,7 @@ ObjectEnumRequest::ObjectEnumRequest(gpcc::stream::IStreamReader & sr, uint8_t c
 /// \copydoc gpcc::cood::RequestBase::GetBinarySize
 size_t ObjectEnumRequest::GetBinarySize(void) const
 {
-  return RequestBase::GetBinarySize() + objectEnumRequestBinarySize;
+  return RequestBase::GetBinarySize() + objectEnumRequestBinarySize_;
 }
 
 /// \copydoc gpcc::cood::RequestBase::ToBinary
@@ -129,9 +129,9 @@ void ObjectEnumRequest::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   RequestBase::ToBinary(sw);
 
-  sw.Write_uint16(startIndex);
-  sw.Write_uint16(lastIndex);
-  sw.Write_uint16(static_cast<uint16_t>(attrFilter));
+  sw.Write_uint16(startIndex_);
+  sw.Write_uint16(lastIndex_);
+  sw.Write_uint16(static_cast<uint16_t>(attrFilter_));
 }
 
 /// \copydoc gpcc::cood::RequestBase::ToString
@@ -140,9 +140,9 @@ std::string ObjectEnumRequest::ToString(void) const
   gpcc::string::StringComposer s;
 
   s << "Object enum request. Start = "
-    << gpcc::string::ToHex(startIndex, 4U) << ", Last = "
-    << gpcc::string::ToHex(lastIndex, 4U) << ", AF = "
-    << gpcc::string::ToHex(static_cast<uint16_t>(attrFilter), 4U);
+    << gpcc::string::ToHex(startIndex_, 4U) << ", Last = "
+    << gpcc::string::ToHex(lastIndex_, 4U) << ", AF = "
+    << gpcc::string::ToHex(static_cast<uint16_t>(attrFilter_), 4U);
 
   return s.Get();
 }

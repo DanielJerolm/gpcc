@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021, 2024 Daniel Jerolm
+    Copyright (C) 2021, 2024, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/requests_and_responses/ObjectInfoRequest.hpp>
@@ -18,7 +18,7 @@
 namespace gpcc {
 namespace cood {
 
-size_t const ObjectInfoRequest::objectInfoRequestBinarySize;
+size_t const ObjectInfoRequest::objectInfoRequestBinarySize_;
 
 /**
  * \brief Constructor.
@@ -42,24 +42,24 @@ size_t const ObjectInfoRequest::objectInfoRequestBinarySize;
  *
  * - - -
  *
- * \param _index
+ * \param index
  * Index of the object whose meta data shall be read.
  *
- * \param _firstSubIndex
+ * \param firstSubIndex
  * Number of the first subindex whose meta data shall be read.
  *
- * \param _lastSubIndex
+ * \param lastSubIndex
  * Number of the last subindex whose meta data shall be read.
  *
- * \param _inclusiveNames
+ * \param inclusiveNames
  * Controls if the names of the object and the subindices shall be included in the response (true) or not (false).\n
  * If names are included, then the size of the response may increase significantly.
  *
- * \param _inclusiveAppSpecificMetaData
+ * \param inclusiveAppSpecificMetaData
  * Controls if application specific meta data of the subindices shall be included in the response (true) or not (false).\n
  * If application specific meta data is included, then the size of the response may increase significantly.
  *
- * \param _maxResponseSize
+ * \param maxResponseSize
  * Maximum size (in byte) of the serialized response object that can be processed by the creator of this request.
  * The value should be the minimum of the capability of the creator and the maximum possible response size announced
  * by @ref IRemoteObjectDictionaryAccessNotifiable::OnReady(), parameter `maxResponseSize`.\n
@@ -75,20 +75,20 @@ size_t const ObjectInfoRequest::objectInfoRequestBinarySize;
  * \htmlonly <style>div.image img[src="cood/RODA_ReqCTOR_MaxResponseSize.png"]{width:80%;}</style> \endhtmlonly
  * \image html "cood/RODA_ReqCTOR_MaxResponseSize.png" "Maximum response size with one ReturnStackItem"
  */
-ObjectInfoRequest::ObjectInfoRequest(uint16_t const _index,
-                                     uint8_t  const _firstSubIndex,
-                                     uint8_t  const _lastSubIndex,
-                                     bool     const _inclusiveNames,
-                                     bool     const _inclusiveAppSpecificMetaData,
-                                     size_t   const _maxResponseSize)
-: RequestBase(RequestTypes::objectInfoRequest, _maxResponseSize)
-, index(_index)
-, firstSubIndex(_firstSubIndex)
-, lastSubIndex(_lastSubIndex)
-, inclusiveNames(_inclusiveNames)
-, inclusiveAppSpecificMetaData(_inclusiveAppSpecificMetaData)
+ObjectInfoRequest::ObjectInfoRequest(uint16_t const index,
+                                     uint8_t  const firstSubIndex,
+                                     uint8_t  const lastSubIndex,
+                                     bool     const inclusiveNames,
+                                     bool     const inclusiveAppSpecificMetaData,
+                                     size_t   const maxResponseSize)
+: RequestBase(RequestTypes::objectInfoRequest, maxResponseSize)
+, index_(index)
+, firstSubIndex_(firstSubIndex)
+, lastSubIndex_(lastSubIndex)
+, inclusiveNames_(inclusiveNames)
+, inclusiveAppSpecificMetaData_(inclusiveAppSpecificMetaData)
 {
-  if (firstSubIndex > lastSubIndex)
+  if (firstSubIndex_ > lastSubIndex_)
     throw std::invalid_argument("ObjectInfoRequest::ObjectInfoRequest: first/last subindex invalid");
 }
 
@@ -123,18 +123,18 @@ ObjectInfoRequest::ObjectInfoRequest(uint16_t const _index,
  */
 ObjectInfoRequest::ObjectInfoRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectInfoRequestPassKey)
 : RequestBase(RequestTypes::objectInfoRequest, sr, versionOnHand)
-, index(sr.Read_uint16())
-, firstSubIndex(sr.Read_uint8())
-, lastSubIndex(sr.Read_uint8())
-, inclusiveNames(sr.Read_bool())
-, inclusiveAppSpecificMetaData(sr.Read_bool())
+, index_(sr.Read_uint16())
+, firstSubIndex_(sr.Read_uint8())
+, lastSubIndex_(sr.Read_uint8())
+, inclusiveNames_(sr.Read_bool())
+, inclusiveAppSpecificMetaData_(sr.Read_bool())
 {
   sr.Skip(6U);
 
-  if (versionOnHand != version)
+  if (versionOnHand != version_)
     throw std::runtime_error("ObjectInfoRequest::ObjectInfoRequest: Version not supported");
 
-  if (firstSubIndex > lastSubIndex)
+  if (firstSubIndex_ > lastSubIndex_)
     throw std::runtime_error("ObjectInfoRequest::ObjectInfoRequest: Data read from 'sr' is invalid");
 }
 
@@ -143,7 +143,7 @@ ObjectInfoRequest::ObjectInfoRequest(gpcc::stream::IStreamReader & sr, uint8_t c
 /// \copydoc gpcc::cood::RequestBase::GetBinarySize
 size_t ObjectInfoRequest::GetBinarySize(void) const
 {
-  return RequestBase::GetBinarySize() + objectInfoRequestBinarySize;
+  return RequestBase::GetBinarySize() + objectInfoRequestBinarySize_;
 }
 
 /// \copydoc gpcc::cood::RequestBase::ToBinary
@@ -151,11 +151,11 @@ void ObjectInfoRequest::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   RequestBase::ToBinary(sw);
 
-  sw.Write_uint16(index);
-  sw.Write_uint8(firstSubIndex);
-  sw.Write_uint8(lastSubIndex);
-  sw.Write_bool(inclusiveNames);
-  sw.Write_bool(inclusiveAppSpecificMetaData);
+  sw.Write_uint16(index_);
+  sw.Write_uint8(firstSubIndex_);
+  sw.Write_uint8(lastSubIndex_);
+  sw.Write_bool(inclusiveNames_);
+  sw.Write_bool(inclusiveAppSpecificMetaData_);
   sw.AlignToByteBoundary(false);
 }
 
@@ -165,15 +165,15 @@ std::string ObjectInfoRequest::ToString(void) const
   gpcc::string::StringComposer s;
 
   s << "Object info request for "
-    << gpcc::string::ToHex(index, 4U) << ", SI range "
-    << static_cast<unsigned int>(firstSubIndex) << ".." << static_cast<unsigned int>(lastSubIndex);
+    << gpcc::string::ToHex(index_, 4U) << ", SI range "
+    << static_cast<unsigned int>(firstSubIndex_) << ".." << static_cast<unsigned int>(lastSubIndex_);
 
-  if (inclusiveNames)
+  if (inclusiveNames_)
     s << ", incl. names";
   else
     s << ", excl. names";
 
-  if (inclusiveAppSpecificMetaData)
+  if (inclusiveAppSpecificMetaData_)
     s << ", incl. asm";
   else
     s << ", excl. asm";

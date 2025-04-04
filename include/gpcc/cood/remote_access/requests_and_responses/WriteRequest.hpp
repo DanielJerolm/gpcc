@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #ifndef WRITEREQUEST_HPP_202006251837
@@ -58,12 +58,12 @@ class WriteRequest final : public RequestBase
 
     WriteRequest(void) = delete;
 
-    WriteRequest(AccessType           const _accessType,
-                 uint16_t             const _index,
-                 uint8_t              const _subindex,
-                 Object::attr_t       const _permissions,
-                 std::vector<uint8_t> &&    _data,
-                 size_t               const _maxResponseSize);
+    WriteRequest(AccessType           const accessType,
+                 uint16_t             const index,
+                 uint8_t              const subindex,
+                 Object::attr_t       const permissions,
+                 std::vector<uint8_t> &&    data,
+                 size_t               const maxResponseSize);
 
     WriteRequest(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, WriteRequestPassKey);
 
@@ -92,24 +92,24 @@ class WriteRequest final : public RequestBase
 
   private:
     /// Binary size of a serialized @ref WriteRequest object (excl. base class @ref RequestBase).
-    static size_t const writeRequestBinarySize = 8U;
+    static size_t const writeRequestBinarySize_ = 8U;
 
 
     /// Access type.
-    AccessType const accessType;
+    AccessType const accessType_;
 
     /// Index of the object that shall be written.
-    uint16_t const index;
+    uint16_t const index_;
 
     /// Subindex that shall be written.
-    uint8_t const subindex;
+    uint8_t const subindex_;
 
     /// Permissions provided by the originator of the write request.
     /** This is any combination of attr_ACCESS_X values from class @ref Object. */
-    Object::attr_t const permissions;
+    Object::attr_t const permissions_;
 
     /// Data that shall be written.
-    std::vector<uint8_t> data;
+    std::vector<uint8_t> data_;
 
 
     static AccessType U8_to_AccessType(uint8_t const u8);
@@ -136,7 +136,7 @@ class WriteRequest final : public RequestBase
  */
 inline WriteRequest::AccessType WriteRequest::GetAccessType(void) const noexcept
 {
-  return accessType;
+  return accessType_;
 }
 
 /**
@@ -160,7 +160,7 @@ inline WriteRequest::AccessType WriteRequest::GetAccessType(void) const noexcept
  */
 inline uint16_t WriteRequest::GetIndex(void) const noexcept
 {
-  return index;
+  return index_;
 }
 
 /**
@@ -184,7 +184,7 @@ inline uint16_t WriteRequest::GetIndex(void) const noexcept
  */
 inline uint8_t WriteRequest::GetSubIndex(void) const noexcept
 {
-  return subindex;
+  return subindex_;
 }
 
 /**
@@ -208,7 +208,7 @@ inline uint8_t WriteRequest::GetSubIndex(void) const noexcept
  */
 inline Object::attr_t WriteRequest::GetPermissions(void) const noexcept
 {
-  return permissions;
+  return permissions_;
 }
 
 } // namespace cood
