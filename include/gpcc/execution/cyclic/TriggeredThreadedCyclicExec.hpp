@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #ifndef TRIGGEREDTHREADEDCYCLICEXEC_HPP_201612301706
@@ -214,9 +214,9 @@ class TriggeredThreadedCyclicExec
 
 
     TriggeredThreadedCyclicExec(char const * const pThreadName,
-                                stdif::IIRQ2ThreadWakeup & _trigger,
-                                time::TimeSpan const & _timeout,
-                                tIsPllLocked const & _isPllLockedFunc);
+                                stdif::IIRQ2ThreadWakeup & trigger,
+                                time::TimeSpan const & timeout,
+                                tIsPllLocked const & isPllLockedFunc);
     TriggeredThreadedCyclicExec(TriggeredThreadedCyclicExec const &) = delete;
     TriggeredThreadedCyclicExec(TriggeredThreadedCyclicExec &&) = delete;
     virtual ~TriggeredThreadedCyclicExec(void);
@@ -250,8 +250,8 @@ class TriggeredThreadedCyclicExec
   private:
     /// Enumeration with flags for asynchronous requests issued to the class' state machine.
     /** Note:\n
-        The enum values are stored in @ref asyncReqFlags (uint8_t) later. Multiple enum values may be
-        or-combined in @ref asyncReqFlags to allow multiple flags being set simultaneously.\n
+        The enum values are stored in @ref asyncReqFlags_ (uint8_t) later. Multiple enum values may be
+        or-combined in @ref asyncReqFlags_ to allow multiple flags being set simultaneously.\n
         _Therefore enum values must be a power of 2 (0,1,2,4,8,...)._ */
     enum class AsyncReqFlags
     {
@@ -263,32 +263,32 @@ class TriggeredThreadedCyclicExec
 
     /// Reference to a [IIRQ2ThreadWakeup](@ref gpcc::stdif::IIRQ2ThreadWakeup) subclass instance providing the cyclic
     /// trigger.
-    stdif::IIRQ2ThreadWakeup & trigger;
+    stdif::IIRQ2ThreadWakeup & trigger_;
 
     /// Timeout for the cyclic trigger.
-    time::TimeSpan const timeout;
+    time::TimeSpan const timeout_;
 
     /// Functor to a method for retrieving the PLL lock state.
     /** If no function/method is referenced, then the PLL lock state is not checked. */
-    tIsPllLocked const isPllLockedFunc;
+    tIsPllLocked const isPllLockedFunc_;
 
     /// Thread used for cyclic execution of the subclasses' code.
-    osal::Thread thread;
+    osal::Thread thread_;
 
     /// Mutex used to make things thread-safe.
-    mutable osal::Mutex mutex;
+    mutable osal::Mutex mutex_;
 
     /// Flags for signaling asynchronous requests to the @ref TriggeredThreadedCyclicExec's state machine.
-    /** @ref mutex is required. */
-    uint8_t asyncReqFlags;
+    /** @ref mutex_ is required. */
+    uint8_t asyncReqFlags_;
 
     /// Current state of the @ref TriggeredThreadedCyclicExec's state machine.
-    /** @ref mutex is required. */
-    States state;
+    /** @ref mutex_ is required. */
+    States state_;
 
     /// Counter used to implement the start delay.
-    /** @ref mutex is required. */
-    uint8_t startDelayCnt;
+    /** @ref mutex_ is required. */
+    uint8_t startDelayCnt_;
 
 
     void* InternalThreadEntry(void);

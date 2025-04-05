@@ -40,14 +40,14 @@ namespace cyclic {
  * _No copy is generated._\n
  * _The referenced string must not change during lifetime of the TriggeredThreadedCyclicExec object._\n
  * _nullptr is not allowed._
- * \param _trigger
+ * \param trigger
  * Reference to an [IIRQ2ThreadWakeup](@ref gpcc::stdif::IIRQ2ThreadWakeup) subclass instance that shall be
  * used to deliver the cyclic trigger.
- * \param _timeout
+ * \param timeout
  * Reference to a [TimeSpan](@ref gpcc::time::TimeSpan) instance providing the timeout for monitoring the cyclic
  * trigger. This should be approximately the expected period plus a reasonable safety-margin.\n
  * _A copy is generated._
- * \param _isPllLockedFunc
+ * \param isPllLockedFunc
  * Functor to a function/method that shall be used to retrieve if the PLL driving `_trigger` is in the locked
  * state or not.\n
  * If no PLL is used to drive `_trigger`, or if the lock state shall not be monitored, then no function/method
@@ -55,17 +55,17 @@ namespace cyclic {
  * _A copy is generated._
  */
 TriggeredThreadedCyclicExec::TriggeredThreadedCyclicExec(char const * const pThreadName,
-                                                         stdif::IIRQ2ThreadWakeup & _trigger,
-                                                         time::TimeSpan const & _timeout,
-                                                         tIsPllLocked const & _isPllLockedFunc)
-: trigger(_trigger)
-, timeout(_timeout)
-, isPllLockedFunc(_isPllLockedFunc)
-, thread(pThreadName)
-, mutex()
-, asyncReqFlags(static_cast<uint8_t>(AsyncReqFlags::none))
-, state(States::stopped)
-, startDelayCnt(0)
+                                                         stdif::IIRQ2ThreadWakeup & trigger,
+                                                         time::TimeSpan const & timeout,
+                                                         tIsPllLocked const & isPllLockedFunc)
+: trigger_(trigger)
+, timeout_(timeout)
+, isPllLockedFunc_(isPllLockedFunc)
+, thread_(pThreadName)
+, mutex_()
+, asyncReqFlags_(static_cast<uint8_t>(AsyncReqFlags::none))
+, state_(States::stopped)
+, startDelayCnt_(0)
 {
 }
 
@@ -86,8 +86,8 @@ TriggeredThreadedCyclicExec::TriggeredThreadedCyclicExec(char const * const pThr
  */
 TriggeredThreadedCyclicExec::~TriggeredThreadedCyclicExec(void)
 {
-  gpcc::osal::MutexLocker mutexLocker(mutex);
-  if (state != States::stopped)
+  gpcc::osal::MutexLocker mutexLocker(mutex_);
+  if (state_ != States::stopped)
     osal::Panic("TriggeredThreadedCyclicExec::~TriggeredThreadedCyclicExec: Still running");
 }
 
@@ -226,7 +226,7 @@ void TriggeredThreadedCyclicExec::StartThread(osal::Thread::SchedPolicy const sc
                                               osal::Thread::priority_t const priority,
                                               size_t const stackSize)
 {
-  thread.Start(std::bind(&TriggeredThreadedCyclicExec::InternalThreadEntry, this), schedPolicy, priority, stackSize);
+  thread_.Start(std::bind(&TriggeredThreadedCyclicExec::InternalThreadEntry, this), schedPolicy, priority, stackSize);
 }
 
 /**
@@ -255,8 +255,8 @@ void TriggeredThreadedCyclicExec::StopThread(void) noexcept
 {
   try
   {
-    thread.Cancel();
-    (void)thread.Join();
+    thread_.Cancel();
+    (void)thread_.Join();
   }
   catch (...)
   {
@@ -290,16 +290,16 @@ void TriggeredThreadedCyclicExec::StopThread(void) noexcept
  */
 void TriggeredThreadedCyclicExec::RequestStartSampling(uint8_t const startDelay)
 {
-  osal::MutexLocker mutexLocker(mutex);
+  osal::MutexLocker mutexLocker(mutex_);
 
-  if (state != States::stopped)
+  if (state_ != States::stopped)
     throw std::logic_error("TriggeredThreadedCyclicExec::RequestStartSampling: Current state must be \"Stopped\"");
 
-  if ((asyncReqFlags & (static_cast<uint8_t>(AsyncReqFlags::start) | static_cast<uint8_t>(AsyncReqFlags::stop))) != 0)
+  if ((asyncReqFlags_ & (static_cast<uint8_t>(AsyncReqFlags::start) | static_cast<uint8_t>(AsyncReqFlags::stop))) != 0)
     throw std::logic_error("TriggeredThreadedCyclicExec::RequestStartSampling: Start/Stop request already pending");
 
-  asyncReqFlags |= static_cast<uint8_t>(AsyncReqFlags::start);
-  startDelayCnt = startDelay;
+  asyncReqFlags_ |= static_cast<uint8_t>(AsyncReqFlags::start);
+  startDelayCnt_ = startDelay;
 }
 
 /**
@@ -321,13 +321,13 @@ void TriggeredThreadedCyclicExec::RequestStartSampling(uint8_t const startDelay)
  */
 void TriggeredThreadedCyclicExec::RequestStopSampling(void)
 {
-  osal::MutexLocker mutexLocker(mutex);
+  osal::MutexLocker mutexLocker(mutex_);
 
-  if ((asyncReqFlags & static_cast<uint8_t>(AsyncReqFlags::stop)) != 0)
+  if ((asyncReqFlags_ & static_cast<uint8_t>(AsyncReqFlags::stop)) != 0)
     throw std::logic_error("TriggeredThreadedCyclicExec::RequestStopSampling: Stop request already pending");
 
   // set stop request flag and clear a potential start request flag
-  asyncReqFlags = (asyncReqFlags | static_cast<uint8_t>(AsyncReqFlags::stop)) & static_cast<uint8_t>(~static_cast<uint8_t>(AsyncReqFlags::start));
+  asyncReqFlags_ = (asyncReqFlags_ | static_cast<uint8_t>(AsyncReqFlags::stop)) & static_cast<uint8_t>(~static_cast<uint8_t>(AsyncReqFlags::start));
 }
 
 /**
@@ -349,8 +349,8 @@ void TriggeredThreadedCyclicExec::RequestStopSampling(void)
  */
 TriggeredThreadedCyclicExec::States TriggeredThreadedCyclicExec::GetCurrentState(void) const
 {
-  osal::MutexLocker mutexLocker(mutex);
-  return state;
+  osal::MutexLocker mutexLocker(mutex_);
+  return state_;
 }
 
 /**
@@ -375,34 +375,34 @@ void* TriggeredThreadedCyclicExec::InternalThreadEntry(void)
   try
   {
     // always start in state stopped
-    osal::AdvancedMutexLocker mutexLocker(mutex);
-    state = States::stopped;
+    osal::AdvancedMutexLocker mutexLocker(mutex_);
+    state_ = States::stopped;
     mutexLocker.Unlock();
 
     // loop until thread cancellation is requested
-    while (!thread.IsCancellationPending())
+    while (!thread_.IsCancellationPending())
     {
       // wait for trigger
-      stdif::IIRQ2ThreadWakeup::Result const result = trigger.WaitWithTimeout(timeout);
+      stdif::IIRQ2ThreadWakeup::Result const result = trigger_.WaitWithTimeout(timeout_);
       bool const result_overrun = (result == stdif::IIRQ2ThreadWakeup::Result::AlreadySignalled);
       bool const result_timeout = (result == stdif::IIRQ2ThreadWakeup::Result::Timeout);
 
       mutexLocker.Relock();
 
-      switch (state)
+      switch (state_)
       {
         case States::stopped:
         {
-          if ((asyncReqFlags & static_cast<uint8_t>(AsyncReqFlags::stop)) != 0)
+          if ((asyncReqFlags_ & static_cast<uint8_t>(AsyncReqFlags::stop)) != 0)
           {
-            asyncReqFlags &= static_cast<uint8_t>(~static_cast<uint8_t>(AsyncReqFlags::stop));
+            asyncReqFlags_ &= static_cast<uint8_t>(~static_cast<uint8_t>(AsyncReqFlags::stop));
             mutexLocker.Unlock();
             OnStateChange(States::stopped, StopReasons::reqStopSampling);
           }
-          else if ((asyncReqFlags & static_cast<uint8_t>(AsyncReqFlags::start)) != 0)
+          else if ((asyncReqFlags_ & static_cast<uint8_t>(AsyncReqFlags::start)) != 0)
           {
-            asyncReqFlags &= static_cast<uint8_t>(~static_cast<uint8_t>(AsyncReqFlags::start));
-            state = States::starting;
+            asyncReqFlags_ &= static_cast<uint8_t>(~static_cast<uint8_t>(AsyncReqFlags::start));
+            state_ = States::starting;
             mutexLocker.Unlock();
             OnStateChange(States::starting, StopReasons::none);
           }
@@ -415,24 +415,24 @@ void* TriggeredThreadedCyclicExec::InternalThreadEntry(void)
 
         case States::starting:
         {
-          if ((asyncReqFlags & static_cast<uint8_t>(AsyncReqFlags::stop)) != 0)
+          if ((asyncReqFlags_ & static_cast<uint8_t>(AsyncReqFlags::stop)) != 0)
           {
-            asyncReqFlags &= static_cast<uint8_t>(~static_cast<uint8_t>(AsyncReqFlags::stop));
-            state = States::stopped;
+            asyncReqFlags_ &= static_cast<uint8_t>(~static_cast<uint8_t>(AsyncReqFlags::stop));
+            state_ = States::stopped;
             mutexLocker.Unlock();
             OnStateChange(States::stopped, StopReasons::reqStopSampling);
           }
           else
           {
-            if (startDelayCnt == 0)
+            if (startDelayCnt_ == 0)
             {
-              state = States::waitLock;
+              state_ = States::waitLock;
               mutexLocker.Unlock();
               OnStateChange(States::waitLock, StopReasons::none);
             }
             else
             {
-              startDelayCnt--;
+              startDelayCnt_--;
               mutexLocker.Unlock();
             }
           }
@@ -443,20 +443,20 @@ void* TriggeredThreadedCyclicExec::InternalThreadEntry(void)
         {
           if (result_timeout)
           {
-            state = States::stopped;
+            state_ = States::stopped;
             mutexLocker.Unlock();
             OnStateChange(States::stopped, StopReasons::triggerTimeout);
           }
-          else if ((asyncReqFlags & static_cast<uint8_t>(AsyncReqFlags::stop)) != 0)
+          else if ((asyncReqFlags_ & static_cast<uint8_t>(AsyncReqFlags::stop)) != 0)
           {
-            asyncReqFlags &= static_cast<uint8_t>(~static_cast<uint8_t>(AsyncReqFlags::stop));
-            state = States::stopped;
+            asyncReqFlags_ &= static_cast<uint8_t>(~static_cast<uint8_t>(AsyncReqFlags::stop));
+            state_ = States::stopped;
             mutexLocker.Unlock();
             OnStateChange(States::stopped, StopReasons::reqStopSampling);
           }
-          else if ((!isPllLockedFunc) || (isPllLockedFunc()))
+          else if ((!isPllLockedFunc_) || (isPllLockedFunc_()))
           {
-            state = States::running;
+            state_ = States::running;
             mutexLocker.Unlock();
             OnStateChange(States::running, StopReasons::none);
             OnStart();
@@ -472,22 +472,22 @@ void* TriggeredThreadedCyclicExec::InternalThreadEntry(void)
         {
           if (result_timeout)
           {
-            state = States::stopped;
+            state_ = States::stopped;
             mutexLocker.Unlock();
             OnStop();
             OnStateChange(States::stopped, StopReasons::triggerTimeout);
           }
-          else if ((isPllLockedFunc) && (!isPllLockedFunc()))
+          else if ((isPllLockedFunc_) && (!isPllLockedFunc_()))
           {
-            state = States::stopped;
+            state_ = States::stopped;
             mutexLocker.Unlock();
             OnStop();
             OnStateChange(States::stopped, StopReasons::pllLossOfLock);
           }
-          else if ((asyncReqFlags & static_cast<uint8_t>(AsyncReqFlags::stop)) != 0)
+          else if ((asyncReqFlags_ & static_cast<uint8_t>(AsyncReqFlags::stop)) != 0)
           {
-            asyncReqFlags &= static_cast<uint8_t>(~static_cast<uint8_t>(AsyncReqFlags::stop));
-            state = States::stopped;
+            asyncReqFlags_ &= static_cast<uint8_t>(~static_cast<uint8_t>(AsyncReqFlags::stop));
+            state_ = States::stopped;
             mutexLocker.Unlock();
             OnStop();
             OnStateChange(States::stopped, StopReasons::reqStopSampling);
@@ -499,7 +499,7 @@ void* TriggeredThreadedCyclicExec::InternalThreadEntry(void)
             if (!Sample(result_overrun))
             {
               mutexLocker.Relock();
-              state = States::stopped;
+              state_ = States::stopped;
               mutexLocker.Unlock();
               OnStop();
               OnStateChange(States::stopped, StopReasons::sampleRetFalse);
@@ -507,10 +507,10 @@ void* TriggeredThreadedCyclicExec::InternalThreadEntry(void)
           }
           break;
         }
-      } // switch (state)
+      } // switch (state_)
 
       Cyclic();
-    } // while (!thread.IsCancellationPending())
+    } // while (!thread_.IsCancellationPending())
   }
   catch (std::exception const & e)
   {
