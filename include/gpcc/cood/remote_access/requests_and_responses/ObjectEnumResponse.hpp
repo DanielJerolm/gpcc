@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #ifndef OBJECTENUMRESPONSE_HPP_202103042132
@@ -91,7 +91,7 @@ class ObjectEnumResponse final : public ResponseBase
   public:
     ObjectEnumResponse(void) = delete;
 
-    explicit ObjectEnumResponse(SDOAbortCode const _result);
+    explicit ObjectEnumResponse(SDOAbortCode const result);
 
     ObjectEnumResponse(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectEnumResponsePassKey);
 
@@ -113,8 +113,8 @@ class ObjectEnumResponse final : public ResponseBase
     // --> ResponseBase
 
     // for server
-    void SetError(SDOAbortCode const _result);
-    void SetData(std::vector<uint16_t> && _indices, bool const _complete);
+    void SetError(SDOAbortCode const result);
+    void SetData(std::vector<uint16_t> && indices, bool const complete);
 
     // for originator of enum request
     SDOAbortCode GetResult(void) const noexcept;
@@ -125,22 +125,22 @@ class ObjectEnumResponse final : public ResponseBase
   private:
     /// Binary size of a serialized @ref ObjectEnumResponse object with @ref SDOAbortCode::OK (excl. base class
     /// @ref ResponseBase and without any data).
-    static size_t const objectEnumResponseBinarySize = 7U;
+    static size_t const objectEnumResponseBinarySize_ = 7U;
 
     /// Maximum number of indices that can be encapsulated in this response object.
-    static size_t const maxNbOfIndices = 65536UL;
+    static size_t const maxNbOfIndices_ = 65536UL;
 
 
     /// Result of the enum operation.
-    SDOAbortCode result;
+    SDOAbortCode result_;
 
     /// Flag indicating if enumeration is complete.
-    /** This is only valid, if @ref result is @ref SDOAbortCode::OK */
-    bool complete;
+    /** This is only valid, if @ref result_ is @ref SDOAbortCode::OK */
+    bool complete_;
 
     /// Indices of enumerated objects.
-    /** This is only valid, if @ref result is @ref SDOAbortCode::OK */
-    std::vector<uint16_t> indices;
+    /** This is only valid, if @ref result_ is @ref SDOAbortCode::OK */
+    std::vector<uint16_t> indices_;
 };
 
 } // namespace cood

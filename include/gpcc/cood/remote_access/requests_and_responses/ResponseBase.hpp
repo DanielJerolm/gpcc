@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #ifndef RESPONSEBASE_HPP_202006282132
@@ -115,18 +115,18 @@ class ResponseBase
     /// Latest version of binary data supported by this class and its sub-classes.
     /** @ref ToBinary() will generate a binary with this version.\n
         @ref FromBinary() will accept this version and potential older versions, too. */
-    static uint8_t const version = 1U;
+    static uint8_t const version_ = 1U;
 
-    /// Binary size of a serialized @ref ResponseBase object (excl. `returnStack` and derived class(es)).
-    static size_t const baseBinarySize = 3U;
+    /// Binary size of a serialized @ref ResponseBase object (excl. `returnStack_` and derived class(es)).
+    static size_t const baseBinarySize_ = 3U;
 
 
     /// Type of response. Indicates the type of sub-class.
-    ResponseTypes const type;
+    ResponseTypes const type_;
 
 
-    explicit ResponseBase(ResponseTypes const _type);
-    ResponseBase(ResponseTypes const _type, gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand);
+    explicit ResponseBase(ResponseTypes const type);
+    ResponseBase(ResponseTypes const type, gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand);
 
     ResponseBase(ResponseBase const & other);
     ResponseBase(ResponseBase && other) noexcept;
@@ -142,7 +142,7 @@ class ResponseBase
     ResponseBase* pNextInIntrusiveDList;
 
     /// Stack of information required to route the response back to the originator of the request.
-    std::vector<ReturnStackItem> returnStack;
+    std::vector<ReturnStackItem> returnStack_;
 
 
     static ResponseTypes ToResponseType(uint8_t const value);

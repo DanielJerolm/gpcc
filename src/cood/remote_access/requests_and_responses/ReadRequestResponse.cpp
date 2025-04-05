@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021, 2024 Daniel Jerolm
+    Copyright (C) 2021, 2024, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/requests_and_responses/ReadRequestResponse.hpp>
@@ -20,7 +20,7 @@
 namespace gpcc {
 namespace cood {
 
-size_t const ReadRequestResponse::readRequestResponseBinarySize;
+size_t const ReadRequestResponse::readRequestResponseBinarySize_;
 
 /**
  * \brief Constructor. Creates a response object with encapsulated result initialized with an error value.
@@ -38,17 +38,17 @@ size_t const ReadRequestResponse::readRequestResponseBinarySize;
  *
  * - - -
  *
- * \param _result
+ * \param result
  * Result value that shall be encapsulated in the object.\n
  * This must be a negative status code. @ref SDOAbortCode::OK is not allowed.
  */
-ReadRequestResponse::ReadRequestResponse(SDOAbortCode const _result)
+ReadRequestResponse::ReadRequestResponse(SDOAbortCode const result)
 : ResponseBase(ResponseTypes::readRequestResponse)
-, result(_result)
-, data()
-, sizeInBit(0U)
+, result_(result)
+, data_()
+, sizeInBit_(0U)
 {
-  if (result == SDOAbortCode::OK)
+  if (result_ == SDOAbortCode::OK)
     throw std::invalid_argument("ReadRequestResponse::ReadRequestResponse: Negative result expected");
 }
 
@@ -83,20 +83,20 @@ ReadRequestResponse::ReadRequestResponse(SDOAbortCode const _result)
  */
 ReadRequestResponse::ReadRequestResponse(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ReadRequestResponsePassKey)
 : ResponseBase(ResponseTypes::readRequestResponse, sr, versionOnHand)
-, data()
-, sizeInBit(0U)
+, data_()
+, sizeInBit_(0U)
 {
   auto const result_u32 = sr.Read_uint32();
   try
   {
-    result = U32ToSDOAbortCode(result_u32);
+    result_ = U32ToSDOAbortCode(result_u32);
   }
   catch (std::exception const &)
   {
     std::throw_with_nested(std::runtime_error("ReadRequestResponse::ReadRequestResponse: Data read from 'sr' is invalid"));
   }
 
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     return;
 
   // s = number of bytes
@@ -108,12 +108,12 @@ ReadRequestResponse::ReadRequestResponse(gpcc::stream::IStreamReader & sr, uint8
   {
     if ((b == 0U) || (b > 8U))
       throw std::runtime_error("ReadRequestResponse::ReadRequestResponse: Data read from 'sr' is invalid");
-    sizeInBit = ((s - 1UL) * 8UL) + b;
+    sizeInBit_ = ((s - 1UL) * 8UL) + b;
 
-    data.reserve(s);
+    data_.reserve(s);
     while (s != 0U)
     {
-      data.push_back(sr.Read_uint8());
+      data_.push_back(sr.Read_uint8());
       --s;
     }
   }
@@ -143,12 +143,12 @@ ReadRequestResponse::ReadRequestResponse(gpcc::stream::IStreamReader & sr, uint8
  */
 ReadRequestResponse::ReadRequestResponse(ReadRequestResponse && other) noexcept
 : ResponseBase(std::move(other))
-, result(other.result)
-, data(std::move(other.data))
-, sizeInBit(other.sizeInBit)
+, result_(other.result_)
+, data_(std::move(other.data_))
+, sizeInBit_(other.sizeInBit_)
 {
-  other.data.clear();
-  other.sizeInBit = 0U;
+  other.data_.clear();
+  other.sizeInBit_ = 0U;
 }
 
 /**
@@ -188,7 +188,7 @@ size_t ReadRequestResponse::CalcMaxDataPayload(size_t const maxResponseSize, siz
   size_t maxDataPayload = maxResponseSize;
 
   // subtract overhead of ResponseBase and ReadRequestResponse
-  size_t const binarySize = baseBinarySize + readRequestResponseBinarySize;
+  size_t const binarySize = baseBinarySize_ + readRequestResponseBinarySize_;
   static_assert(binarySize <= ResponseBase::minimumUsefulResponseSize,
                 "Base size of serialized ReadRequestResponse exceeds ResponseBase::minimumUsefulResponseSize");
 
@@ -219,11 +219,11 @@ size_t ReadRequestResponse::GetBinarySize(void) const
   size_t s = ResponseBase::GetBinarySize();
 
   s += 4U;
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     return s;
 
   s += 3U;
-  s += data.size();
+  s += data_.size();
   return s;
 }
 
@@ -232,29 +232,29 @@ void ReadRequestResponse::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   ResponseBase::ToBinary(sw);
 
-  sw.Write_uint32(static_cast<uint32_t>(result));
+  sw.Write_uint32(static_cast<uint32_t>(result_));
 
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     return;
 
   // number of bytes
-  sw.Write_uint16(static_cast<uint16_t>(data.size()));
+  sw.Write_uint16(static_cast<uint16_t>(data_.size()));
 
   // number of bits in LAST byte
-  if (data.empty())
+  if (data_.empty())
   {
     sw.Write_uint8(0U);
   }
   else
   {
-    uint8_t b = sizeInBit % 8U;
+    uint8_t b = sizeInBit_ % 8U;
     if (b == 0U)
       b = 8U;
     sw.Write_uint8(b);
   }
 
   // data
-  sw.Write_uint8(data.data(), data.size());
+  sw.Write_uint8(data_.data(), data_.size());
 }
 
 /// \copydoc gpcc::cood::ResponseBase::ToString
@@ -262,23 +262,23 @@ std::string ReadRequestResponse::ToString(void) const
 {
   using gpcc::string::StringComposer;
   StringComposer s;
-  s << "Read request response: " << SDOAbortCodeToDescrString(result);
+  s << "Read request response: " << SDOAbortCodeToDescrString(result_);
 
-  if (result == SDOAbortCode::OK)
+  if (result_ == SDOAbortCode::OK)
   {
-    s << ", " << (sizeInBit / 8U) << '.' << (sizeInBit % 8U) << " byte(s) of data";
+    s << ", " << (sizeInBit_ / 8U) << '.' << (sizeInBit_ % 8U) << " byte(s) of data";
 
-    if (data.size() <= 16U)
+    if (data_.size() <= 16U)
     {
       s << ':' << gpcc::osal::endl;
 
       s << StringComposer::BaseHex << StringComposer::Uppercase << StringComposer::AlignRightPadZero;
-      for (uint_fast8_t i = 0U; i < data.size(); i++)
+      for (uint_fast8_t i = 0U; i < data_.size(); i++)
       {
         if (i != 0U)
           s << ' ';
 
-        s << "0x" << StringComposer::Width(2) << static_cast<unsigned int>(data[i]);
+        s << "0x" << StringComposer::Width(2) << static_cast<unsigned int>(data_[i]);
       }
     }
   }
@@ -306,18 +306,18 @@ std::string ReadRequestResponse::ToString(void) const
  *
  * - - -
  *
- * \param _result
+ * \param result
  * Desired value for the encapsulated result.\n
  * An error status is expected. @ref SDOAbortCode::OK is not allowed.
  */
-void ReadRequestResponse::SetError(SDOAbortCode const _result)
+void ReadRequestResponse::SetError(SDOAbortCode const result)
 {
-  if (_result == SDOAbortCode::OK)
+  if (result == SDOAbortCode::OK)
     throw std::invalid_argument("ReadRequestResponse::SetError: Negative result expected");
 
-  result = _result;
-  data.clear();
-  sizeInBit = 0U;
+  result_ = result;
+  data_.clear();
+  sizeInBit_ = 0U;
 }
 
 /**
@@ -340,27 +340,27 @@ void ReadRequestResponse::SetError(SDOAbortCode const _result)
  *
  * - - -
  *
- * \param _data
+ * \param data
  * The content of the referenced vector will be moved into the response object.\n
  * The referenced vector will be empty afterwards.
  *
- * \param _sizeInBit
+ * \param sizeInBit
  * Size of the data in bit.
  */
-void ReadRequestResponse::SetData(std::vector<uint8_t> && _data, size_t const _sizeInBit)
+void ReadRequestResponse::SetData(std::vector<uint8_t> && data, size_t const sizeInBit)
 {
-  if (_data.size() > std::numeric_limits<uint16_t>::max())
-    throw std::invalid_argument("ReadRequestResponse::SetData: _data too large.");
+  if (data.size() > std::numeric_limits<uint16_t>::max())
+    throw std::invalid_argument("ReadRequestResponse::SetData: data too large.");
 
-  if (_data.size() != ((_sizeInBit + 7U) / 8U))
-    throw std::invalid_argument("ReadRequestResponse::SetData: _data and _sizeInBit do not match.");
+  if (data.size() != ((sizeInBit + 7U) / 8U))
+    throw std::invalid_argument("ReadRequestResponse::SetData: data and sizeInBit do not match.");
 
-  data = std::move(_data);
-  _data.clear();
+  data_ = std::move(data);
+  data.clear();
 
-  sizeInBit = _sizeInBit;
+  sizeInBit_ = sizeInBit;
 
-  result = SDOAbortCode::OK;
+  result_ = SDOAbortCode::OK;
 }
 
 /**
@@ -384,7 +384,7 @@ void ReadRequestResponse::SetData(std::vector<uint8_t> && _data, size_t const _s
  */
 SDOAbortCode ReadRequestResponse::GetResult(void) const noexcept
 {
-  return result;
+  return result_;
 }
 
 /**
@@ -410,10 +410,10 @@ SDOAbortCode ReadRequestResponse::GetResult(void) const noexcept
  */
 size_t ReadRequestResponse::GetDataSize(void) const
 {
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     throw std::logic_error("ReadRequestResponse::GetDataSize: Read failed");
 
-  return sizeInBit;
+  return sizeInBit_;
 }
 
 /**
@@ -441,10 +441,10 @@ size_t ReadRequestResponse::GetDataSize(void) const
  */
 std::vector<uint8_t> const & ReadRequestResponse::GetData(void) const
 {
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     throw std::logic_error("ReadRequestResponse::GetData: Read failed");
 
-  return data;
+  return data_;
 }
 
 } // namespace cood

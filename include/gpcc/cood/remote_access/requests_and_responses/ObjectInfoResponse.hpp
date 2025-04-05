@@ -91,13 +91,13 @@ class ObjectInfoResponse final : public ResponseBase
   public:
     ObjectInfoResponse(void) = delete;
 
-    explicit ObjectInfoResponse(SDOAbortCode const _result);
+    explicit ObjectInfoResponse(SDOAbortCode const result);
     explicit ObjectInfoResponse(Object const & obj,
-                                uint8_t const _firstSubindex,
+                                uint8_t const firstSubindex,
                                 uint8_t lastSubindex,
-                                bool const _inclusiveNames,
-                                bool const _inclusiveAppSpecificMetaData,
-                                size_t const _maxResponseSize,
+                                bool const inclusiveNames,
+                                bool const inclusiveAppSpecificMetaData,
+                                size_t const maximumResponseSize,
                                 size_t const returnStackSize);
 
     ObjectInfoResponse(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectInfoResponsePassKey);
@@ -174,50 +174,50 @@ class ObjectInfoResponse final : public ResponseBase
 
 
     /// Result of the query operation.
-    SDOAbortCode result;
+    SDOAbortCode result_;
 
     /// Indicates if object's and subindices' names are included in queried meta data or not.
-    /** This is only valid, if @ref result is @ref SDOAbortCode::OK. */
-    bool inclusiveNames;
+    /** This is only valid, if @ref result_ is @ref SDOAbortCode::OK. */
+    bool inclusiveNames_;
 
     /// Indicates if application specific meta data of the subindices shall be included in queried meta data or not.
-    /** This is only valid, if @ref result is @ref SDOAbortCode::OK. */
-    bool inclusiveAppSpecificMetaData;
+    /** This is only valid, if @ref result_ is @ref SDOAbortCode::OK. */
+    bool inclusiveAppSpecificMetaData_;
 
 
     /// Object code of the object.
-    /** This is only valid, if @ref result is @ref SDOAbortCode::OK. */
-    Object::ObjectCode objectCode;
+    /** This is only valid, if @ref result_ is @ref SDOAbortCode::OK. */
+    Object::ObjectCode objectCode_;
 
     /// Data type of the object.
-    /** This is only valid, if @ref result is @ref SDOAbortCode::OK. */
-    DataType objType;
+    /** This is only valid, if @ref result_ is @ref SDOAbortCode::OK. */
+    DataType objType_;
 
     /// Name of the object.
-    /** This is only valid, if @ref result is @ref SDOAbortCode::OK and @ref inclusiveNames is true. */
-    std::string objName;
+    /** This is only valid, if @ref result_ is @ref SDOAbortCode::OK and @ref inclusiveNames_ is true. */
+    std::string objName_;
 
     /// Maximum number of subindices (incl. SI 0).
-    /** This is only valid, if @ref result is @ref SDOAbortCode::OK. */
-    uint16_t maxNbOfSubindices;
+    /** This is only valid, if @ref result_ is @ref SDOAbortCode::OK. */
+    uint16_t maxNbOfSubindices_;
 
-    /// Number of the first subindex described in @ref subindexDescr.
-    /** This is only valid, if @ref result is @ref SDOAbortCode::OK. \n
-        If @ref inclusiveAppSpecificMetaData is false, then this is 0 or 1 for an ARRAY object. */
-    uint8_t firstSubindex;
+    /// Number of the first subindex described in @ref subindexDescr_.
+    /** This is only valid, if @ref result_ is @ref SDOAbortCode::OK. \n
+        If @ref inclusiveAppSpecificMetaData_ is false, then this is 0 or 1 for an ARRAY object. */
+    uint8_t firstSubindex_;
 
     /// Subindex descriptions.
-    /** This is only valid, if @ref result is @ref SDOAbortCode::OK. \n
+    /** This is only valid, if @ref result_ is @ref SDOAbortCode::OK. \n
         For a VARIABLE object, this contains exactly one item.\n
-        For an ARRAY object, this contains 1..2 items, if @ref inclusiveAppSpecificMetaData is false.\n
-        For an ARRAy object, this contains 1..256 items, if @ref inclusiveAppSpecificMetaData is true.\n
+        For an ARRAY object, this contains 1..2 items, if @ref inclusiveAppSpecificMetaData_ is false.\n
+        For an ARRAy object, this contains 1..256 items, if @ref inclusiveAppSpecificMetaData_ is true.\n
         For a RECORD object, this contains 1..256 items.\n
         If the @ref ObjectInfoResponse was the source of a move-operation, then this is empty. */
-    std::vector<SubindexDescr> subindexDescr;
+    std::vector<SubindexDescr> subindexDescr_;
 
 
     void ValidateObjNotEmpty(void) const;
-    size_t CalcRemainingPayload(size_t const _maxResponseSize, size_t const returnStackSize) const;
+    size_t CalcRemainingPayload(size_t const maximumResponseSize, size_t const returnStackSize) const;
     uint8_t MapSubindexToSubIndexDescr(uint8_t const subindex) const;
 };
 

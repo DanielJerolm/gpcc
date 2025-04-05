@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021, 2024 Daniel Jerolm
+    Copyright (C) 2021, 2024, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/requests_and_responses/ObjectEnumResponse.hpp>
@@ -20,8 +20,8 @@
 namespace gpcc {
 namespace cood {
 
-size_t const ObjectEnumResponse::objectEnumResponseBinarySize;
-size_t const ObjectEnumResponse::maxNbOfIndices;
+size_t const ObjectEnumResponse::objectEnumResponseBinarySize_;
+size_t const ObjectEnumResponse::maxNbOfIndices_;
 
 /**
  * \brief Constructor. Creates a response object with encapsulated result initialized with an error status.
@@ -40,17 +40,17 @@ size_t const ObjectEnumResponse::maxNbOfIndices;
  *
  * - - -
  *
- * \param _result
+ * \param result
  * Result value that shall be encapsulated in the object.\n
  * This must be a negative status code. @ref SDOAbortCode::OK is not allowed.
  */
-ObjectEnumResponse::ObjectEnumResponse(SDOAbortCode const _result)
+ObjectEnumResponse::ObjectEnumResponse(SDOAbortCode const result)
 : ResponseBase(ResponseTypes::objectEnumResponse)
-, result(_result)
-, complete(false)
-, indices()
+, result_(result)
+, complete_(false)
+, indices_()
 {
-  if (result == SDOAbortCode::OK)
+  if (result_ == SDOAbortCode::OK)
     throw std::invalid_argument("ObjectEnumResponse::ObjectEnumResponse: Negative result expected");
 }
 
@@ -85,23 +85,23 @@ ObjectEnumResponse::ObjectEnumResponse(SDOAbortCode const _result)
  */
 ObjectEnumResponse::ObjectEnumResponse(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectEnumResponsePassKey)
 : ResponseBase(ResponseTypes::objectEnumResponse, sr, versionOnHand)
-, result(SDOAbortCode::GeneralError)
-, complete(false)
-, indices()
+, result_(SDOAbortCode::GeneralError)
+, complete_(false)
+, indices_()
 {
   auto const result_u32 = sr.Read_uint32();
   try
   {
-    result = U32ToSDOAbortCode(result_u32);
+    result_ = U32ToSDOAbortCode(result_u32);
   }
   catch (std::exception const &)
   {
     std::throw_with_nested(std::runtime_error("ObjectEnumResponse::ObjectEnumResponse: Data read from 'sr' is invalid"));
   }
 
-  if (result == SDOAbortCode::OK)
+  if (result_ == SDOAbortCode::OK)
   {
-    complete = sr.Read_bool();
+    complete_ = sr.Read_bool();
 
     // MSB...
     uint_fast32_t nbOfIndices = (sr.Read_bool()) ? (1UL << 16U) : 0U;
@@ -111,18 +111,18 @@ ObjectEnumResponse::ObjectEnumResponse(gpcc::stream::IStreamReader & sr, uint8_t
     nbOfIndices |= sr.Read_uint16();
     if (nbOfIndices != 0U)
     {
-      if (nbOfIndices > maxNbOfIndices)
+      if (nbOfIndices > maxNbOfIndices_)
         throw std::runtime_error("ObjectEnumResponse::ObjectEnumResponse: Data read from 'sr' is invalid");
 
       // if maximum number of indices is contained, then enumeration MUST be complete
-      if ((nbOfIndices == maxNbOfIndices) && (!complete))
+      if ((nbOfIndices == maxNbOfIndices_) && (!complete_))
         throw std::runtime_error("ObjectEnumResponse::ObjectEnumResponse: Data read from 'sr' is invalid");
 
-      indices.reserve(nbOfIndices);
+      indices_.reserve(nbOfIndices);
 
       // read first index
       uint16_t val = sr.Read_uint16();
-      indices.push_back(val);
+      indices_.push_back(val);
       --nbOfIndices;
 
       // read the others and check for ascending order
@@ -130,21 +130,21 @@ ObjectEnumResponse::ObjectEnumResponse(gpcc::stream::IStreamReader & sr, uint8_t
       {
         val = sr.Read_uint16();
 
-        if (val <= indices.back())
+        if (val <= indices_.back())
           throw std::runtime_error("ObjectEnumResponse::ObjectEnumResponse: Data read from 'sr' is invalid");
 
-        indices.push_back(val);
+        indices_.push_back(val);
         --nbOfIndices;
       }
 
       // if the last index is included, then enumeration MUST be complete
-      if ((!complete) && (indices.back() == 0xFFFFU))
+      if ((!complete_) && (indices_.back() == 0xFFFFU))
         throw std::runtime_error("ObjectEnumResponse::ObjectEnumResponse: Data read from 'sr' is invalid");
     }
     else
     {
       // if no index is included, then enumeration MUST be complete
-      if (!complete)
+      if (!complete_)
         throw std::runtime_error("ObjectEnumResponse::ObjectEnumResponse: Data read from 'sr' is invalid");
     }
   }
@@ -189,7 +189,7 @@ size_t ObjectEnumResponse::CalcMaxNbOfIndices(size_t const maxResponseSize, size
   size_t maxDataPayload = maxResponseSize;
 
   // subtract overhead of ResponseBase and ObjectEnumResponse
-  size_t const binarySize = baseBinarySize + objectEnumResponseBinarySize;
+  size_t const binarySize = baseBinarySize_ + objectEnumResponseBinarySize_;
   static_assert((binarySize + sizeof(uint16_t)) <= ResponseBase::minimumUsefulResponseSize,
                 "Base size of serialized ObjectEnumResponse plus one payload item exceeds ResponseBase::minimumUsefulResponseSize");
 
@@ -207,9 +207,9 @@ size_t ObjectEnumResponse::CalcMaxNbOfIndices(size_t const maxResponseSize, size
   // translate to number of indices
   size_t maxPossibleNbOfIndices = maxDataPayload / 2U;
 
-  // limit to maxNbOfIndices
-  if (maxPossibleNbOfIndices > maxNbOfIndices)
-    maxPossibleNbOfIndices = maxNbOfIndices;
+  // limit to maxNbOfIndices_
+  if (maxPossibleNbOfIndices > maxNbOfIndices_)
+    maxPossibleNbOfIndices = maxNbOfIndices_;
 
   // that's it
   return maxPossibleNbOfIndices;
@@ -227,7 +227,7 @@ size_t ObjectEnumResponse::GetBinarySize(void) const
   //       =4
   s += 4U;
 
-  if (result == SDOAbortCode::OK)
+  if (result_ == SDOAbortCode::OK)
   {
     // complete             0.1
     // MSB of indices.size  0.1
@@ -237,7 +237,7 @@ size_t ObjectEnumResponse::GetBinarySize(void) const
     //                     =3
     s += 3U;
 
-    s += indices.size() * sizeof(uint16_t);
+    s += indices_.size() * sizeof(uint16_t);
   }
 
   return s;
@@ -248,16 +248,16 @@ void ObjectEnumResponse::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   ResponseBase::ToBinary(sw);
 
-  sw.Write_uint32(static_cast<uint32_t>(result));
+  sw.Write_uint32(static_cast<uint32_t>(result_));
 
-  if (result == SDOAbortCode::OK)
+  if (result_ == SDOAbortCode::OK)
   {
-    sw.Write_bool(complete);
-    sw.Write_bool((indices.size() & 0x10000UL) != 0U);
+    sw.Write_bool(complete_);
+    sw.Write_bool((indices_.size() & 0x10000UL) != 0U);
     sw.AlignToByteBoundary(false);
 
-    sw.Write_uint16(static_cast<uint16_t>(indices.size() & 0xFFFFUL));
-    sw.Write_uint16(indices.data(), indices.size());
+    sw.Write_uint16(static_cast<uint16_t>(indices_.size() & 0xFFFFUL));
+    sw.Write_uint16(indices_.data(), indices_.size());
   }
 }
 
@@ -265,16 +265,16 @@ void ObjectEnumResponse::ToBinary(gpcc::stream::IStreamWriter & sw) const
 std::string ObjectEnumResponse::ToString(void) const
 {
   gpcc::string::StringComposer s;
-  s << "Object enum response: " << SDOAbortCodeToDescrString(result);
+  s << "Object enum response: " << SDOAbortCodeToDescrString(result_);
 
-  if (result == SDOAbortCode::OK)
+  if (result_ == SDOAbortCode::OK)
   {
     s << ", ";
 
-    if (!complete)
+    if (!complete_)
       s << "not ";
 
-    s << "complete, " << indices.size() << " indices";
+    s << "complete, " << indices_.size() << " indices";
   }
 
   return s.Get();
@@ -300,17 +300,17 @@ std::string ObjectEnumResponse::ToString(void) const
  *
  * - - -
  *
- * \param _result
+ * \param result
  * Desired value for the encapsulated result.\n
  * An error status is expected. @ref SDOAbortCode::OK is not allowed.
  */
-void ObjectEnumResponse::SetError(SDOAbortCode const _result)
+void ObjectEnumResponse::SetError(SDOAbortCode const result)
 {
-  if (_result == SDOAbortCode::OK)
+  if (result == SDOAbortCode::OK)
     throw std::invalid_argument("ObjectEnumResponse::SetError: Negative result expected");
 
-  result = _result;
-  indices.clear();
+  result_ = result;
+  indices_.clear();
 }
 
 /**
@@ -333,40 +333,40 @@ void ObjectEnumResponse::SetError(SDOAbortCode const _result)
  *
  * - - -
  *
- * \param _indices
+ * \param indices
  * The content of the referenced vector will be moved into the response object.\n
  * The indices must be sorted in ascending order.
  * The referenced vector will be empty afterwards.
  *
- * \param _complete
+ * \param complete
  * Indicates if the enumeration request has been completely served (true), or if there are some objects left to
  * enumerate (false) whose indices did not fit into the response.
  */
-void ObjectEnumResponse::SetData(std::vector<uint16_t> && _indices, bool const _complete)
+void ObjectEnumResponse::SetData(std::vector<uint16_t> && indices, bool const complete)
 {
-  if (_indices.size() > maxNbOfIndices)
-    throw std::invalid_argument("ObjectEnumResponse::SetData: _indices is too large.");
+  if (indices.size() > maxNbOfIndices_)
+    throw std::invalid_argument("ObjectEnumResponse::SetData: indices is too large.");
 
-  if (!_complete)
+  if (!complete)
   {
-    // _indices can't be empty if the enum operation is not complete
-    if (_indices.empty())
+    // indices can't be empty if the enum operation is not complete
+    if (indices.empty())
       throw std::invalid_argument("ObjectEnumResponse::SetData: Incomplete but no item");
 
     // if the last enumerated index is 0xFFFF, then the enum operation can't be incomplete
-    if (_indices.back() == 0xFFFFU)
+    if (indices.back() == 0xFFFFU)
       throw std::invalid_argument("ObjectEnumResponse::SetData: Incomplete but 0xFFFF included");
 
     // if all possible indices are enumerated, then the enum operation can't be incomplete
-    if (_indices.size() == maxNbOfIndices)
+    if (indices.size() == maxNbOfIndices_)
       throw std::invalid_argument("ObjectEnumResponse::SetData: Incomplete but all included");
   }
 
   // check for ascending order of enumerated indices
-  if (_indices.size() > 1U)
+  if (indices.size() > 1U)
   {
     int32_t prev = -1;
-    for (int32_t const e: _indices)
+    for (int32_t const e: indices)
     {
       if (e <= prev)
         throw std::invalid_argument("ObjectEnumResponse::SetData: Not properly sorted");
@@ -374,11 +374,11 @@ void ObjectEnumResponse::SetData(std::vector<uint16_t> && _indices, bool const _
     }
   }
 
-  indices = std::move(_indices);
-  _indices.clear();
+  indices_ = std::move(indices);
+  indices.clear();
 
-  result = SDOAbortCode::OK;
-  complete = _complete;
+  result_ = SDOAbortCode::OK;
+  complete_ = complete;
 }
 
 /**
@@ -402,7 +402,7 @@ void ObjectEnumResponse::SetData(std::vector<uint16_t> && _indices, bool const _
  */
 SDOAbortCode ObjectEnumResponse::GetResult(void) const noexcept
 {
-  return result;
+  return result_;
 }
 
 /**
@@ -443,18 +443,18 @@ SDOAbortCode ObjectEnumResponse::GetResult(void) const noexcept
  */
 bool ObjectEnumResponse::IsComplete(uint16_t * const pNextIndex) const
 {
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     throw std::logic_error("ObjectEnumResponse::IsComplete: Enumeration failed");
 
-  if (!complete)
+  if (!complete_)
   {
     // "indices" can't be empty if the enum operation is not complete
-    if (indices.empty())
+    if (indices_.empty())
       throw std::logic_error("ObjectEnumResponse::IsComplete: Invalid. Source of move?");
 
     if (pNextIndex != nullptr)
     {
-      uint32_t const nextIndex = indices.back() + 1UL;
+      uint32_t const nextIndex = indices_.back() + 1UL;
       if (nextIndex > 0xFFFFU)
         throw std::logic_error("ObjectEnumResponse::IsComplete: Invalid");
 
@@ -462,7 +462,7 @@ bool ObjectEnumResponse::IsComplete(uint16_t * const pNextIndex) const
     }
   }
 
-  return complete;
+  return complete_;
 }
 
 /**
@@ -496,38 +496,38 @@ bool ObjectEnumResponse::IsComplete(uint16_t * const pNextIndex) const
  */
 void ObjectEnumResponse::AddFragment(ObjectEnumResponse const & fragment)
 {
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     throw std::logic_error("ObjectEnumResponse::AddFragment: Enumeration failed.");
 
-  if (complete)
+  if (complete_)
     throw std::logic_error("ObjectEnumResponse::AddFragment: Already complete");
 
-  if (fragment.result != SDOAbortCode::OK)
+  if (fragment.result_ != SDOAbortCode::OK)
     throw std::invalid_argument("ObjectEnumResponse::AddFragment: Fragment contains bad result");
 
-  if (   (!indices.empty())
-      && (!fragment.indices.empty())
-      && (indices.back() >= fragment.indices.front()))
+  if (   (!indices_.empty())
+      && (!fragment.indices_.empty())
+      && (indices_.back() >= fragment.indices_.front()))
   {
     throw std::invalid_argument("ObjectEnumResponse::AddFragment: Discontinuity");
   }
 
   // determine new size and reserve storage
-  size_t const newSize = indices.size() + fragment.indices.size();
-  if (newSize > maxNbOfIndices)
+  size_t const newSize = indices_.size() + fragment.indices_.size();
+  if (newSize > maxNbOfIndices_)
     throw std::logic_error("ObjectEnumResponse::AddFragment");
 
-  indices.reserve(newSize);
+  indices_.reserve(newSize);
 
   // prepare for rollback
-  size_t const prevSize = indices.size();
-  ON_SCOPE_EXIT(undo) { indices.resize(prevSize); };
+  size_t const prevSize = indices_.size();
+  ON_SCOPE_EXIT(undo) { indices_.resize(prevSize); };
 
-  indices.insert(indices.end(), fragment.indices.begin(), fragment.indices.end());
+  indices_.insert(indices_.end(), fragment.indices_.begin(), fragment.indices_.end());
 
   ON_SCOPE_EXIT_DISMISS(undo);
 
-  complete = fragment.complete;
+  complete_ = fragment.complete_;
 }
 
 /**
@@ -557,10 +557,10 @@ void ObjectEnumResponse::AddFragment(ObjectEnumResponse const & fragment)
  */
 std::vector<uint16_t> const & ObjectEnumResponse::GetIndices(void) const
 {
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     throw std::logic_error("ObjectEnumResponse::GetIndices: Enumeration failed");
 
-  return indices;
+  return indices_;
 }
 
 } // namespace cood

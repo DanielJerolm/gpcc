@@ -33,23 +33,23 @@ namespace cood {
  *
  * - - -
  *
- * \param _result
+ * \param result
  * Result of the object meta data query operation.\n
  * @ref SDOAbortCode::OK is not allowed.
  */
-ObjectInfoResponse::ObjectInfoResponse(SDOAbortCode const _result)
+ObjectInfoResponse::ObjectInfoResponse(SDOAbortCode const result)
 : ResponseBase(ResponseTypes::objectInfoResponse)
-, result(_result)
-, inclusiveNames(false)
-, inclusiveAppSpecificMetaData(false)
-, objectCode(Object::ObjectCode::Null)
-, objType(DataType::null)
-, objName()
-, maxNbOfSubindices(0U)
-, firstSubindex(0U)
-, subindexDescr()
+, result_(result)
+, inclusiveNames_(false)
+, inclusiveAppSpecificMetaData_(false)
+, objectCode_(Object::ObjectCode::Null)
+, objType_(DataType::null)
+, objName_()
+, maxNbOfSubindices_(0U)
+, firstSubindex_(0U)
+, subindexDescr_()
 {
-  if (result == SDOAbortCode::OK)
+  if (result_ == SDOAbortCode::OK)
     throw std::invalid_argument("ObjectInfoResponse::ObjectInfoResponse: Result 'OK' not allowed for this CTOR");
 }
 
@@ -74,7 +74,7 @@ ObjectInfoResponse::ObjectInfoResponse(SDOAbortCode const _result)
  * \param obj
  * Unmodifiable reference to the object whose meta data shall be queried.
  *
- * \param _firstSubindex
+ * \param firstSubindex
  * Number of the first subindex that shall be contained in the response.\n
  * If the value exceeds the object's maximum number of subindices minus one, then this value will be reduced so that the
  * response contains the meta data of at least one subindex.
@@ -86,15 +86,15 @@ ObjectInfoResponse::ObjectInfoResponse(SDOAbortCode const _result)
  * The value returned by @ref GetLastQueriedSubindex() may be larger than this if the queried object is an ARRAY and if
  * application specific meta data is not included in the query.
  *
- * \param _inclusiveNames
+ * \param inclusiveNames
  * Controls if the names of the object and the subindices shall be included in the response (true) or not (false).\n
  * If names are included, then the size of the response may increase significantly.
  *
- * \param _inclusiveAppSpecificMetaData
+ * \param inclusiveAppSpecificMetaData
  * Controls if application specific meta data of the subindices shall be included in the response (true) or not (false).\n
  * If application specific meta data is included, then the size of the response may increase significantly.
  *
- * \param _maxResponseSize
+ * \param maximumResponseSize
  * Maximum permitted response size in byte.\n
  * The value refers to a serialized response object incl. potential @ref ReturnStackItem objects and response payload
  * data.
@@ -104,44 +104,44 @@ ObjectInfoResponse::ObjectInfoResponse(SDOAbortCode const _result)
  * response object.
  */
 ObjectInfoResponse::ObjectInfoResponse(Object const & obj,
-                                       uint8_t const _firstSubindex,
+                                       uint8_t const firstSubindex,
                                        uint8_t lastSubindex,
-                                       bool const _inclusiveNames,
-                                       bool const _inclusiveAppSpecificMetaData,
-                                       size_t const _maxResponseSize,
+                                       bool const inclusiveNames,
+                                       bool const inclusiveAppSpecificMetaData,
+                                       size_t const maximumResponseSize,
                                        size_t const returnStackSize)
 : ResponseBase(ResponseTypes::objectInfoResponse)
-, result(SDOAbortCode::OK)
-, inclusiveNames(_inclusiveNames)
-, inclusiveAppSpecificMetaData(_inclusiveAppSpecificMetaData)
-, objectCode(obj.GetObjectCode())
-, objType(obj.GetObjectDataType())
-, objName()
-, maxNbOfSubindices(obj.GetMaxNbOfSubindices())
-, firstSubindex(_firstSubindex)
-, subindexDescr()
+, result_(SDOAbortCode::OK)
+, inclusiveNames_(inclusiveNames)
+, inclusiveAppSpecificMetaData_(inclusiveAppSpecificMetaData)
+, objectCode_(obj.GetObjectCode())
+, objType_(obj.GetObjectDataType())
+, objName_()
+, maxNbOfSubindices_(obj.GetMaxNbOfSubindices())
+, firstSubindex_(firstSubindex)
+, subindexDescr_()
 {
-  if (firstSubindex > lastSubindex)
+  if (firstSubindex_ > lastSubindex)
     throw std::invalid_argument("ObjectInfoResponse::ObjectInfoResponse: Subindex range is invalid");
 
-  if ((maxNbOfSubindices == 0U) || (maxNbOfSubindices > 256U))
+  if ((maxNbOfSubindices_ == 0U) || (maxNbOfSubindices_ > 256U))
     throw std::logic_error("ObjectInfoResponse::ObjectInfoResponse: obj.GetMaxNbOfSubindices() returns invalid value");
 
-  if (inclusiveNames)
-    objName = obj.GetObjectName();
+  if (inclusiveNames_)
+    objName_ = obj.GetObjectName();
 
-  if (firstSubindex >= maxNbOfSubindices)
-    firstSubindex = maxNbOfSubindices - 1U;
+  if (firstSubindex_ >= maxNbOfSubindices_)
+    firstSubindex_ = maxNbOfSubindices_ - 1U;
 
   // ARRAY is special:
   // If application specific meta data is NOT included in the response, then all SIs have same properties. In that case
   // it is sufficient to collect information about SI0 and SI1 only. The information collected about SI1 can be used for
   // all other SIs too.
-  if ((objectCode == Object::ObjectCode::Array) && (!inclusiveAppSpecificMetaData))
+  if ((objectCode_ == Object::ObjectCode::Array) && (!inclusiveAppSpecificMetaData_))
   {
-    if (firstSubindex > 1U)
+    if (firstSubindex_ > 1U)
     {
-      firstSubindex = 1U;
+      firstSubindex_ = 1U;
       lastSubindex = 1U;
     }
     else if (lastSubindex > 1U)
@@ -150,36 +150,36 @@ ObjectInfoResponse::ObjectInfoResponse(Object const & obj,
     }
   }
 
-  if (lastSubindex >= maxNbOfSubindices)
-    lastSubindex = maxNbOfSubindices - 1U;
+  if (lastSubindex >= maxNbOfSubindices_)
+    lastSubindex = maxNbOfSubindices_ - 1U;
 
 
-  // Now [firstSubindex; lastSubindex] is the range of subindices we have to query and fill into "subindexDescr".
-  // We have to fill at least the information about "firstSubIndex" into "subindexDescr".
+  // Now [firstSubindex_; lastSubindex] is the range of subindices we have to query and fill into "subindexDescr_".
+  // We have to fill at least the information about "firstSubIndex" into "subindexDescr_".
   // The remaining number of queried subindices depends on the maximum payload capacity of the remote access response.
 
-  size_t remainingCapacity = CalcRemainingPayload(_maxResponseSize, returnStackSize);
+  size_t remainingCapacity = CalcRemainingPayload(maximumResponseSize, returnStackSize);
 
-  subindexDescr.reserve(((lastSubindex - firstSubindex) + 1U));
+  subindexDescr_.reserve(((lastSubindex - firstSubindex_) + 1U));
 
-  for (uint_fast16_t i = firstSubindex; i <= lastSubindex; i++)
+  for (uint_fast16_t i = firstSubindex_; i <= lastSubindex; i++)
   {
     // Query meta data from SI and determine binary size of the container created for the subindex' meta data.
-    subindexDescr.emplace_back(obj, i, inclusiveNames, inclusiveAppSpecificMetaData);
-    auto const s = subindexDescr.back().GetBinarySize();
+    subindexDescr_.emplace_back(obj, i, inclusiveNames_, inclusiveAppSpecificMetaData_);
+    auto const s = subindexDescr_.back().GetBinarySize();
 
     // capacity of response exceeded?
     if (s > remainingCapacity)
     {
       // Is it the first subindex description? -> :-( we have to deliver at least one description
-      if (i == firstSubindex)
+      if (i == firstSubindex_)
       {
         throw std::runtime_error("ObjectInfoResponse::ObjectInfoResponse: No space for at least one SI description");
       }
       else
       {
         // remove the last item and finish
-        subindexDescr.pop_back();
+        subindexDescr_.pop_back();
         break;
       }
     }
@@ -221,65 +221,65 @@ ObjectInfoResponse::ObjectInfoResponse(Object const & obj,
  */
 ObjectInfoResponse::ObjectInfoResponse(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ObjectInfoResponsePassKey)
 : ResponseBase(ResponseTypes::objectInfoResponse, sr, versionOnHand)
-, result(SDOAbortCode::GeneralError)
-, inclusiveNames(false)
-, inclusiveAppSpecificMetaData(false)
-, objectCode(Object::ObjectCode::Null)
-, objType(DataType::null)
-, objName()
-, maxNbOfSubindices(0U)
-, firstSubindex(0U)
-, subindexDescr()
+, result_(SDOAbortCode::GeneralError)
+, inclusiveNames_(false)
+, inclusiveAppSpecificMetaData_(false)
+, objectCode_(Object::ObjectCode::Null)
+, objType_(DataType::null)
+, objName_()
+, maxNbOfSubindices_(0U)
+, firstSubindex_(0U)
+, subindexDescr_()
 {
   try
   {
-    result = U32ToSDOAbortCode(sr.Read_uint32());
-    if (result != SDOAbortCode::OK)
+    result_ = U32ToSDOAbortCode(sr.Read_uint32());
+    if (result_ != SDOAbortCode::OK)
       return;
 
-    inclusiveNames = sr.Read_bool();
-    inclusiveAppSpecificMetaData = sr.Read_bool();
+    inclusiveNames_ = sr.Read_bool();
+    inclusiveAppSpecificMetaData_ = sr.Read_bool();
 
-    objectCode = Object::ToObjectCode(sr.Read_uint8());
-    objType    = ToDataType(sr.Read_uint16());
+    objectCode_ = Object::ToObjectCode(sr.Read_uint8());
+    objType_    = ToDataType(sr.Read_uint16());
 
-    if (inclusiveNames)
-      objName = sr.Read_string();
+    if (inclusiveNames_)
+      objName_ = sr.Read_string();
 
-    maxNbOfSubindices = sr.Read_uint16();
-    if ((maxNbOfSubindices == 0U) || (maxNbOfSubindices > 256U))
+    maxNbOfSubindices_ = sr.Read_uint16();
+    if ((maxNbOfSubindices_ == 0U) || (maxNbOfSubindices_ > 256U))
       throw std::runtime_error("Data read from 'sr' is invalid");
 
-    firstSubindex = sr.Read_uint8();
-    if (firstSubindex >= maxNbOfSubindices)
+    firstSubindex_ = sr.Read_uint8();
+    if (firstSubindex_ >= maxNbOfSubindices_)
       throw std::runtime_error("Data read from 'sr' is invalid");
 
     uint_fast16_t s = sr.Read_uint16();
     if ((s == 0U) || (s > 256U))
       throw std::runtime_error("Data read from 'sr' is invalid");
 
-    if ((objectCode == Object::ObjectCode::Array) && (!inclusiveAppSpecificMetaData))
+    if ((objectCode_ == Object::ObjectCode::Array) && (!inclusiveAppSpecificMetaData_))
     {
-      if (firstSubindex > 1U)
+      if (firstSubindex_ > 1U)
         throw std::runtime_error("Data read from 'sr' is invalid");
 
-      if ((firstSubindex + s) > 2U)
+      if ((firstSubindex_ + s) > 2U)
         throw std::runtime_error("Data read from 'sr' is invalid");
     }
     else
     {
-      if ((firstSubindex + s) > maxNbOfSubindices)
+      if ((firstSubindex_ + s) > maxNbOfSubindices_)
         throw std::runtime_error("Data read from 'sr' is invalid");
     }
 
-    subindexDescr.reserve(s);
+    subindexDescr_.reserve(s);
 
     do
     {
-      subindexDescr.emplace_back(sr);
+      subindexDescr_.emplace_back(sr);
 
-      if (   (subindexDescr.back().inclName != inclusiveNames)
-          || (subindexDescr.back().inclASM  != inclusiveAppSpecificMetaData))
+      if (   (subindexDescr_.back().inclName != inclusiveNames_)
+          || (subindexDescr_.back().inclASM  != inclusiveAppSpecificMetaData_))
       {
         throw std::runtime_error("Data read from 'sr' is invalid");
       }
@@ -300,31 +300,31 @@ size_t ObjectInfoResponse::GetBinarySize(void) const
 {
   size_t s = ResponseBase::GetBinarySize();
 
-  // result              4
-  // ---------------------
-  //                    =4
+  // result_              4
+  // ----------------------
+  //                     =4
   s += 4U;
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     return s;
 
-  // inclusiveNames               0.1
-  // inclusiveAppSpecificMetaData 0.1
-  //                              0.6
-  // objectCode                   +1
-  // objType                      +2
-  // objName                      variable
-  // maxNbOfSubindices            +2
-  // firstSubindex                +1
-  // subindexDescr.size           +2
+  // inclusiveNames_               0.1
+  // inclusiveAppSpecificMetaData_ 0.1
+  //                               0.6
+  // objectCode_                   +1
+  // objType_                      +2
+  // objName_                      variable
+  // maxNbOfSubindices_            +2
+  // firstSubindex_                +1
+  // subindexDescr_.size           +2
   // --------------------------------
-  //                              =9 + objName
+  //                               =9 + objName_
   s += 9U;
 
-  if (inclusiveNames)
-    s += objName.length() + 1U; // (incl. null-terminator)
+  if (inclusiveNames_)
+    s += objName_.length() + 1U; // (incl. null-terminator)
 
-  // subindexDescr
-  for (auto const & e: subindexDescr)
+  // subindexDescr_
+  for (auto const & e: subindexDescr_)
     s += e.GetBinarySize();
 
   return s;
@@ -335,27 +335,27 @@ void ObjectInfoResponse::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   ResponseBase::ToBinary(sw);
 
-  sw.Write_uint32(static_cast<uint32_t>(result));
+  sw.Write_uint32(static_cast<uint32_t>(result_));
 
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     return;
 
   ValidateObjNotEmpty();
 
-  sw.Write_bool(inclusiveNames);
-  sw.Write_bool(inclusiveAppSpecificMetaData);
+  sw.Write_bool(inclusiveNames_);
+  sw.Write_bool(inclusiveAppSpecificMetaData_);
 
-  sw.Write_uint8(Object::ToUint8(objectCode));
-  sw.Write_uint16(ToUint16(objType));
+  sw.Write_uint8(Object::ToUint8(objectCode_));
+  sw.Write_uint16(ToUint16(objType_));
 
-  if (inclusiveNames)
-    sw.Write_string(objName);
+  if (inclusiveNames_)
+    sw.Write_string(objName_);
 
-  sw.Write_uint16(maxNbOfSubindices);
-  sw.Write_uint8(firstSubindex);
-  sw.Write_uint16(subindexDescr.size());
+  sw.Write_uint16(maxNbOfSubindices_);
+  sw.Write_uint8(firstSubindex_);
+  sw.Write_uint16(subindexDescr_.size());
 
-  for (auto const & e: subindexDescr)
+  for (auto const & e: subindexDescr_)
     e.ToBinary(sw);
 }
 
@@ -363,11 +363,11 @@ void ObjectInfoResponse::ToBinary(gpcc::stream::IStreamWriter & sw) const
 std::string ObjectInfoResponse::ToString(void) const
 {
   gpcc::string::StringComposer s;
-  s << "Object info response (" << SDOAbortCodeToDescrString(result) << ')';
-  if (result == SDOAbortCode::OK)
+  s << "Object info response (" << SDOAbortCodeToDescrString(result_) << ')';
+  if (result_ == SDOAbortCode::OK)
   {
     ValidateObjNotEmpty();
-    s << ", incl. " << subindexDescr.size() << " subindex descriptions";
+    s << ", incl. " << subindexDescr_.size() << " subindex descriptions";
   }
 
   return s.Get();
@@ -405,12 +405,12 @@ std::string ObjectInfoResponse::ToString(void) const
  */
 void ObjectInfoResponse::AddFragment(ObjectInfoResponse && fragment)
 {
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     throw std::logic_error("ObjectInfoResponse::AddFragment: Query failed");
 
   ValidateObjNotEmpty();
 
-  if (objectCode == Object::ObjectCode::Variable)
+  if (objectCode_ == Object::ObjectCode::Variable)
     throw std::logic_error("ObjectInfoResponse::AddFragment: Call not expected for VARIABLE object.");
 
   uint8_t nextSI;
@@ -418,42 +418,42 @@ void ObjectInfoResponse::AddFragment(ObjectInfoResponse && fragment)
     throw std::logic_error("ObjectInfoResponse::AddFragment: Object is already complete.");
 
 
-  if (fragment.result != SDOAbortCode::OK)
+  if (fragment.result_ != SDOAbortCode::OK)
     throw std::invalid_argument("ObjectInfoResponse::AddFragment: Fragment has bad result code.");
 
   fragment.ValidateObjNotEmpty();
 
 
-  if (   (fragment.inclusiveNames != inclusiveNames)
-      || (fragment.inclusiveAppSpecificMetaData != inclusiveAppSpecificMetaData)
-      || (fragment.objectCode != objectCode)
-      || (fragment.objType != objType)
-      || (fragment.maxNbOfSubindices != maxNbOfSubindices))
+  if (   (fragment.inclusiveNames_ != inclusiveNames_)
+      || (fragment.inclusiveAppSpecificMetaData_ != inclusiveAppSpecificMetaData_)
+      || (fragment.objectCode_ != objectCode_)
+      || (fragment.objType_ != objType_)
+      || (fragment.maxNbOfSubindices_ != maxNbOfSubindices_))
   {
     throw std::invalid_argument("ObjectInfoResponse::AddFragment: Queried objects do not match");
   }
 
-  if (fragment.firstSubindex != nextSI)
+  if (fragment.firstSubindex_ != nextSI)
     throw std::invalid_argument("ObjectInfoResponse::AddFragment: Discontinuity");
 
-  if ((objectCode == Object::ObjectCode::Array) && (!inclusiveAppSpecificMetaData))
+  if ((objectCode_ == Object::ObjectCode::Array) && (!inclusiveAppSpecificMetaData_))
   {
-    if ((fragment.firstSubindex != 1U) || (fragment.subindexDescr.size() != 1U))
+    if ((fragment.firstSubindex_ != 1U) || (fragment.subindexDescr_.size() != 1U))
       throw std::invalid_argument("ObjectInfoResponse::AddFragment: Fragment invalid");
   }
   else
   {
-    if (firstSubindex + subindexDescr.size() + fragment.subindexDescr.size() > maxNbOfSubindices)
+    if (firstSubindex_ + subindexDescr_.size() + fragment.subindexDescr_.size() > maxNbOfSubindices_)
       throw std::logic_error("ObjectInfoResponse::AddFragment: Merge would result in invalid object");
   }
 
-  if (subindexDescr.capacity() < (subindexDescr.size() + fragment.subindexDescr.size()))
+  if (subindexDescr_.capacity() < (subindexDescr_.size() + fragment.subindexDescr_.size()))
     throw std::logic_error("ObjectInfoResponse::AddFragment: Capacity invalid");
 
-  for (auto & e: fragment.subindexDescr)
-    subindexDescr.emplace_back(std::move(e));
+  for (auto & e: fragment.subindexDescr_)
+    subindexDescr_.emplace_back(std::move(e));
 
-  fragment.subindexDescr.clear();
+  fragment.subindexDescr_.clear();
 }
 
 /**
@@ -477,7 +477,7 @@ void ObjectInfoResponse::AddFragment(ObjectInfoResponse && fragment)
  */
 SDOAbortCode ObjectInfoResponse::GetResult(void) const noexcept
 {
-  return result;
+  return result_;
 }
 
 /**
@@ -501,7 +501,7 @@ SDOAbortCode ObjectInfoResponse::GetResult(void) const noexcept
  */
 bool ObjectInfoResponse::IsInclusiveNames(void) const noexcept
 {
-  return inclusiveNames;
+  return inclusiveNames_;
 }
 
 /**
@@ -525,7 +525,7 @@ bool ObjectInfoResponse::IsInclusiveNames(void) const noexcept
  */
 bool ObjectInfoResponse::IsInclusiveAppSpecificMetaData(void) const noexcept
 {
-  return inclusiveAppSpecificMetaData;
+  return inclusiveAppSpecificMetaData_;
 }
 
 /**
@@ -551,10 +551,10 @@ bool ObjectInfoResponse::IsInclusiveAppSpecificMetaData(void) const noexcept
  */
 uint8_t ObjectInfoResponse::GetFirstQueriedSubindex(void) const
 {
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     throw std::logic_error("ObjectInfoResponse::GetFirstQueriedSubindex: Query failed");
 
-  return firstSubindex;
+  return firstSubindex_;
 }
 
 /**
@@ -582,24 +582,24 @@ uint8_t ObjectInfoResponse::GetFirstQueriedSubindex(void) const
  */
 uint8_t ObjectInfoResponse::GetLastQueriedSubindex(void) const
 {
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     throw std::logic_error("ObjectInfoResponse::GetLastQueriedSubindex: Query failed");
 
   ValidateObjNotEmpty();
 
-  if ((objectCode == Object::ObjectCode::Array) && (!inclusiveAppSpecificMetaData))
+  if ((objectCode_ == Object::ObjectCode::Array) && (!inclusiveAppSpecificMetaData_))
   {
     // If application specific meta data is not included, then for ARRAY objects SI1..SIn have the same meta data,
     // so SI1's meta data can be used for all subindices.
 
-    if ((firstSubindex + (subindexDescr.size() - 1U)) >= 1U)
-      return maxNbOfSubindices - 1U;
+    if ((firstSubindex_ + (subindexDescr_.size() - 1U)) >= 1U)
+      return maxNbOfSubindices_ - 1U;
     else
       return 0U;
   }
   else
   {
-    return (firstSubindex + (subindexDescr.size() - 1U));
+    return (firstSubindex_ + (subindexDescr_.size() - 1U));
   }
 }
 
@@ -636,20 +636,20 @@ uint8_t ObjectInfoResponse::GetLastQueriedSubindex(void) const
  */
 bool ObjectInfoResponse::IsComplete(uint8_t * const pNextSubindex) const
 {
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     throw std::logic_error("ObjectInfoResponse::IsComplete: Query failed");
 
   ValidateObjNotEmpty();
 
-  uint_fast16_t const nextSI = firstSubindex + subindexDescr.size();
+  uint_fast16_t const nextSI = firstSubindex_ + subindexDescr_.size();
 
-  if ((objectCode == Object::ObjectCode::Array) && (!inclusiveAppSpecificMetaData))
+  if ((objectCode_ == Object::ObjectCode::Array) && (!inclusiveAppSpecificMetaData_))
   {
     // Note:
-    // If application specific meta data is not included, then for ARRAY objects, firstSubindex is 0..1,
-    // subindexDescr.size() is 1..2 and the sum of both is always equal to or less than 2.
-    // This means: The first condition may only come true if maxNbOfSubindices is 1.
-    if ((nextSI == maxNbOfSubindices) || (nextSI == 2U))
+    // If application specific meta data is not included, then for ARRAY objects, firstSubindex_ is 0..1,
+    // subindexDescr_.size() is 1..2 and the sum of both is always equal to or less than 2.
+    // This means: The first condition may only come true if maxNbOfSubindices_ is 1.
+    if ((nextSI == maxNbOfSubindices_) || (nextSI == 2U))
     {
       return true;
     }
@@ -663,7 +663,7 @@ bool ObjectInfoResponse::IsComplete(uint8_t * const pNextSubindex) const
   }
   else
   {
-    if (nextSI == maxNbOfSubindices)
+    if (nextSI == maxNbOfSubindices_)
     {
       return true;
     }
@@ -700,10 +700,10 @@ bool ObjectInfoResponse::IsComplete(uint8_t * const pNextSubindex) const
  */
 Object::ObjectCode ObjectInfoResponse::GetObjectCode(void) const
 {
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     throw std::logic_error("ObjectInfoResponse::GetObjectCode: Query failed");
 
-  return objectCode;
+  return objectCode_;
 }
 
 /**
@@ -729,10 +729,10 @@ Object::ObjectCode ObjectInfoResponse::GetObjectCode(void) const
  */
 DataType ObjectInfoResponse::GetObjectDataType(void) const
 {
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     throw std::logic_error("ObjectInfoResponse::GetObjectDataType: Query failed");
 
-  return objType;
+  return objType_;
 }
 
 /**
@@ -762,13 +762,13 @@ DataType ObjectInfoResponse::GetObjectDataType(void) const
  */
 std::string const & ObjectInfoResponse::GetObjectName(void) const
 {
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     throw std::logic_error("ObjectInfoResponse::GetObjectName: Query failed");
 
-  if (!inclusiveNames)
+  if (!inclusiveNames_)
     throw std::logic_error("ObjectInfoResponse::GetObjectName: No names");
 
-  return objName;
+  return objName_;
 }
 
 /**
@@ -794,10 +794,10 @@ std::string const & ObjectInfoResponse::GetObjectName(void) const
  */
 uint16_t ObjectInfoResponse::GetMaxNbOfSubindices(void) const
 {
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     throw std::logic_error("ObjectInfoResponse::GetMaxNbOfSubindices: Query failed");
 
-  return maxNbOfSubindices;
+  return maxNbOfSubindices_;
 }
 
 /**
@@ -834,7 +834,7 @@ bool ObjectInfoResponse::IsSubIndexEmpty(uint8_t const subIdx) const
   // precondition "not source of move-operation" is checked by MapSubindexToSubIndexDescr()
 
   uint8_t const i = MapSubindexToSubIndexDescr(subIdx);
-  return subindexDescr[i].empty;
+  return subindexDescr_[i].empty;
 }
 
 /**
@@ -871,7 +871,7 @@ DataType ObjectInfoResponse::GetSubIdxDataType(uint8_t const subIdx) const
   // precondition "not source of move-operation" is checked by MapSubindexToSubIndexDescr()
 
   uint8_t const i = MapSubindexToSubIndexDescr(subIdx);
-  return subindexDescr[i].dataType;
+  return subindexDescr_[i].dataType;
 }
 
 /**
@@ -908,7 +908,7 @@ Object::attr_t ObjectInfoResponse::GetSubIdxAttributes(uint8_t const subIdx) con
   // precondition "not source of move-operation" is checked by MapSubindexToSubIndexDescr()
 
   uint8_t const i = MapSubindexToSubIndexDescr(subIdx);
-  return subindexDescr[i].attributes;
+  return subindexDescr_[i].attributes;
 }
 
 /**
@@ -945,7 +945,7 @@ size_t ObjectInfoResponse::GetSubIdxMaxSize(uint8_t const subIdx) const
   // precondition "not source of move-operation" is checked by MapSubindexToSubIndexDescr()
 
   uint8_t const i = MapSubindexToSubIndexDescr(subIdx);
-  return subindexDescr[i].maxSize;
+  return subindexDescr_[i].maxSize;
 }
 
 /**
@@ -985,19 +985,19 @@ std::string ObjectInfoResponse::GetSubIdxName(uint8_t const subIdx) const
 
   uint8_t const i = MapSubindexToSubIndexDescr(subIdx);
 
-  if (!subindexDescr[i].inclName)
+  if (!subindexDescr_[i].inclName)
     throw std::logic_error("ObjectInfoResponse::GetSubIdxName: No names");
 
-  if ((objectCode == Object::ObjectCode::Array) && (!inclusiveAppSpecificMetaData))
+  if ((objectCode_ == Object::ObjectCode::Array) && (!inclusiveAppSpecificMetaData_))
   {
     if (subIdx == 0U)
-      return subindexDescr[0].name;
+      return subindexDescr_[0].name;
     else
       return "Subindex " + std::to_string(static_cast<unsigned int>(subIdx));
   }
   else
   {
-    return subindexDescr[i].name;
+    return subindexDescr_[i].name;
   }
 }
 
@@ -1040,10 +1040,10 @@ size_t ObjectInfoResponse::GetAppSpecificMetaDataSize(uint8_t const subIdx) cons
 
   uint8_t const i = MapSubindexToSubIndexDescr(subIdx);
 
-  if (!subindexDescr[i].inclASM)
+  if (!subindexDescr_[i].inclASM)
     throw std::logic_error("ObjectInfoResponse::GetAppSpecificMetaDataSize: No ASM");
 
-  return subindexDescr[i].appSpecMetaData.size();
+  return subindexDescr_[i].appSpecMetaData.size();
 }
 
 /**
@@ -1083,10 +1083,10 @@ std::vector<uint8_t> ObjectInfoResponse::GetAppSpecificMetaData(uint8_t const su
 
   uint8_t const i = MapSubindexToSubIndexDescr(subIdx);
 
-  if (!subindexDescr[i].inclASM)
+  if (!subindexDescr_[i].inclASM)
     throw std::logic_error("ObjectInfoResponse::GetAppSpecificMetaData: No ASM");
 
-  return subindexDescr[i].appSpecMetaData;
+  return subindexDescr_[i].appSpecMetaData;
 }
 
 /**
@@ -1108,7 +1108,7 @@ std::vector<uint8_t> ObjectInfoResponse::GetAppSpecificMetaData(uint8_t const su
  */
 void ObjectInfoResponse::ValidateObjNotEmpty(void) const
 {
-  if (subindexDescr.empty())
+  if (subindexDescr_.empty())
     throw std::logic_error("ObjectInfoResponse::ValidateObjNotEmpty: Object was source of move-operation.");
 }
 
@@ -1138,7 +1138,7 @@ void ObjectInfoResponse::ValidateObjNotEmpty(void) const
  *
  * - - -
  *
- * \param _maxResponseSize
+ * \param maximumResponseSize
  * Maximum permitted response size in byte.\n
  * The value refers to a serialized response object incl. potential @ref ReturnStackItem objects and response payload
  * data.
@@ -1150,10 +1150,10 @@ void ObjectInfoResponse::ValidateObjNotEmpty(void) const
  * \return
  * Maximum size (in byte) of the data payload that could be added to this object.
  */
-size_t ObjectInfoResponse::CalcRemainingPayload(size_t const _maxResponseSize, size_t const returnStackSize) const
+size_t ObjectInfoResponse::CalcRemainingPayload(size_t const maximumResponseSize, size_t const returnStackSize) const
 {
   // start
-  size_t remainingDataPayloadCapacity = _maxResponseSize;
+  size_t remainingDataPayloadCapacity = maximumResponseSize;
 
   // subtract current size of the object
   auto const binarySize = GetBinarySize();
@@ -1173,7 +1173,7 @@ size_t ObjectInfoResponse::CalcRemainingPayload(size_t const _maxResponseSize, s
 }
 
 /**
- * \brief Determines the index in @ref subindexDescr that contains the meta data of a given subindex.
+ * \brief Determines the index in @ref subindexDescr_ that contains the meta data of a given subindex.
  *
  * \pre   The result of the query is @ref SDOAbortCode::OK.
  *
@@ -1201,39 +1201,39 @@ size_t ObjectInfoResponse::CalcRemainingPayload(size_t const _maxResponseSize, s
  * Subindex.
  *
  * \return
- * Index in @ref subindexDescr that contains the meta data of the object's subindex referenced by `subindex`.
+ * Index in @ref subindexDescr_ that contains the meta data of the object's subindex referenced by `subindex`.
  */
 uint8_t ObjectInfoResponse::MapSubindexToSubIndexDescr(uint8_t const subindex) const
 {
-  if (result != SDOAbortCode::OK)
+  if (result_ != SDOAbortCode::OK)
     throw std::logic_error("ObjectInfoResponse::MapSubindexToSubIndexDescr: Query failed");
 
   ValidateObjNotEmpty();
 
-  if (subindex >= maxNbOfSubindices)
+  if (subindex >= maxNbOfSubindices_)
     throw SubindexNotExistingError();
 
-  if ((objectCode == Object::ObjectCode::Array) && (!inclusiveAppSpecificMetaData))
+  if ((objectCode_ == Object::ObjectCode::Array) && (!inclusiveAppSpecificMetaData_))
   {
-    // note: firstSubindex is 0 or 1
+    // note: firstSubindex_ is 0 or 1
 
-    if (subindex < firstSubindex)
+    if (subindex < firstSubindex_)
       throw std::logic_error("ObjectInfoResponse::MapSubindexToSubIndexDescr: No information about 'subIdx'");
 
-    if (subindex == firstSubindex)
+    if (subindex == firstSubindex_)
       return 0U;
 
-    if ((firstSubindex == 0U) && (subindexDescr.size() == 1U))
+    if ((firstSubindex_ == 0U) && (subindexDescr_.size() == 1U))
       throw std::logic_error("ObjectInfoResponse::MapSubindexToSubIndexDescr: No information about 'subIdx'");
 
-    return (firstSubindex == 0U) ? 1U : 0U;
+    return (firstSubindex_ == 0U) ? 1U : 0U;
   }
   else
   {
-    if ((subindex < firstSubindex) || (subindex > (firstSubindex + (subindexDescr.size() - 1U))))
+    if ((subindex < firstSubindex_) || (subindex > (firstSubindex_ + (subindexDescr_.size() - 1U))))
       throw std::logic_error("ObjectInfoResponse::MapSubindexToSubIndexDescr: No information about 'subIdx'");
 
-    return subindex - firstSubindex;
+    return subindex - firstSubindex_;
   }
 }
 

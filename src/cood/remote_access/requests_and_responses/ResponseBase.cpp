@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/requests_and_responses/ResponseBase.hpp>
@@ -24,8 +24,8 @@ namespace cood {
 
 size_t  const ResponseBase::minimumUsefulResponseSize;
 size_t  const ResponseBase::maxResponseSize;
-uint8_t const ResponseBase::version;
-size_t  const ResponseBase::baseBinarySize;
+uint8_t const ResponseBase::version_;
+size_t  const ResponseBase::baseBinarySize_;
 
 
 /**
@@ -86,8 +86,8 @@ ResponseBase::~ResponseBase(void)
 std::unique_ptr<ResponseBase> ResponseBase::FromBinary(gpcc::stream::IStreamReader & sr)
 {
   // check version
-  auto const _version = sr.Read_uint8();
-  if (_version != version)
+  auto const version = sr.Read_uint8();
+  if (version != version_)
     throw std::runtime_error("ResponseBase::FromBinary: Version of serialized object is not supported");
 
   // check type and delegate to appropriate subclass
@@ -95,19 +95,19 @@ std::unique_ptr<ResponseBase> ResponseBase::FromBinary(gpcc::stream::IStreamRead
   switch (_type)
   {
     case ResponseTypes::objectEnumResponse:
-      return std::make_unique<ObjectEnumResponse>(sr, _version, ObjectEnumResponsePassKey());
+      return std::make_unique<ObjectEnumResponse>(sr, version, ObjectEnumResponsePassKey());
 
     case ResponseTypes::objectInfoResponse:
-      return std::make_unique<ObjectInfoResponse>(sr, _version, ObjectInfoResponsePassKey());
+      return std::make_unique<ObjectInfoResponse>(sr, version, ObjectInfoResponsePassKey());
 
     case ResponseTypes::pingResponse:
-      return std::make_unique<PingResponse>(sr, _version, PingResponsePassKey());
+      return std::make_unique<PingResponse>(sr, version, PingResponsePassKey());
 
     case ResponseTypes::readRequestResponse:
-      return std::make_unique<ReadRequestResponse>(sr, _version, ReadRequestResponsePassKey());
+      return std::make_unique<ReadRequestResponse>(sr, version, ReadRequestResponsePassKey());
 
     case ResponseTypes::writeRequestResponse:
-      return std::make_unique<WriteRequestResponse>(sr, _version, WriteRequestResponsePassKey());
+      return std::make_unique<WriteRequestResponse>(sr, version, WriteRequestResponsePassKey());
   }
 
   throw std::logic_error("ResponseBase::FromBinary: Internal error (no create method)");
@@ -143,7 +143,7 @@ std::unique_ptr<ResponseBase> ResponseBase::FromBinary(gpcc::stream::IStreamRead
  */
 size_t ResponseBase::GetBinarySize(void) const
 {
-  return baseBinarySize + (returnStack.size() * ReturnStackItem::binarySize);
+  return baseBinarySize_ + (returnStack_.size() * ReturnStackItem::binarySize);
 }
 
 /**
@@ -182,12 +182,12 @@ size_t ResponseBase::GetBinarySize(void) const
 void ResponseBase::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   // to be read by FromBinary()
-  sw.Write_uint8(version);
-  sw.Write_uint8(static_cast<uint8_t>(type));
+  sw.Write_uint8(version_);
+  sw.Write_uint8(static_cast<uint8_t>(type_));
 
   // to be read by CTOR
-  sw.Write_uint8(returnStack.size());
-  for (auto const & e: returnStack)
+  sw.Write_uint8(returnStack_.size());
+  for (auto const & e: returnStack_)
     e.ToBinary(sw);
 }
 
@@ -217,13 +217,13 @@ void ResponseBase::ToBinary(gpcc::stream::IStreamWriter & sw) const
  */
 void ResponseBase::SetReturnStack(std::vector<ReturnStackItem> && rs)
 {
-  if (!returnStack.empty())
+  if (!returnStack_.empty())
     throw std::logic_error("ResponseBase::SetReturnStack: Stack not empty");
 
   if (rs.size() > std::numeric_limits<uint8_t>::max())
     throw std::invalid_argument("ResponseBase::SetReturnStack: Two many items in 'rs'");
 
-  returnStack = std::move(rs);
+  returnStack_ = std::move(rs);
   rs.clear();
 }
 
@@ -248,7 +248,7 @@ void ResponseBase::SetReturnStack(std::vector<ReturnStackItem> && rs)
  */
 bool ResponseBase::IsReturnStackEmpty(void) const noexcept
 {
-  return returnStack.empty();
+  return returnStack_.empty();
 }
 
 /**
@@ -276,11 +276,11 @@ bool ResponseBase::IsReturnStackEmpty(void) const noexcept
  */
 ReturnStackItem ResponseBase::PopReturnStack(void)
 {
-  if (returnStack.empty())
+  if (returnStack_.empty())
     throw std::runtime_error("ResponseBase::PopReturnStack: Stack empty");
 
-  ReturnStackItem rsi = returnStack.back();
-  returnStack.pop_back();
+  ReturnStackItem rsi = returnStack_.back();
+  returnStack_.pop_back();
   return rsi;
 }
 
@@ -305,7 +305,7 @@ ReturnStackItem ResponseBase::PopReturnStack(void)
  */
 ResponseBase::ResponseTypes ResponseBase::GetType(void) const noexcept
 {
-  return type;
+  return type_;
 }
 
 /**
@@ -321,14 +321,14 @@ ResponseBase::ResponseTypes ResponseBase::GetType(void) const noexcept
  *
  * - - -
  *
- * \param _type
+ * \param type
  * Type of response.
  */
-ResponseBase::ResponseBase(ResponseTypes const _type)
-: type(_type)
+ResponseBase::ResponseBase(ResponseTypes const type)
+: type_(type)
 , pPrevInIntrusiveDList(nullptr)
 , pNextInIntrusiveDList(nullptr)
-, returnStack()
+, returnStack_()
 {
 }
 
@@ -350,7 +350,7 @@ ResponseBase::ResponseBase(ResponseTypes const _type)
  *
  * - - -
  *
- * \param _type
+ * \param type
  * Type of request.
  *
  * \param sr
@@ -359,20 +359,20 @@ ResponseBase::ResponseBase(ResponseTypes const _type)
  * \param versionOnHand
  * Version of serialized object read from `sr`.
  */
-ResponseBase::ResponseBase(ResponseTypes const _type, gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand)
-: type(_type)
+ResponseBase::ResponseBase(ResponseTypes const type, gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand)
+: type_(type)
 , pPrevInIntrusiveDList(nullptr)
 , pNextInIntrusiveDList(nullptr)
-, returnStack()
+, returnStack_()
 {
-  if (versionOnHand != version)
+  if (versionOnHand != version_)
     throw std::runtime_error("ResponseBase::ResponseBase: Version not supported");
 
   uint_fast8_t n = sr.Read_uint8();
-  returnStack.reserve(n);
+  returnStack_.reserve(n);
   while (n != 0U)
   {
-    returnStack.emplace_back(sr);
+    returnStack_.emplace_back(sr);
     --n;
   }
 }
@@ -396,10 +396,10 @@ ResponseBase::ResponseBase(ResponseTypes const _type, gpcc::stream::IStreamReade
  * @ref ResponseBase object that shall be copied.
  */
 ResponseBase::ResponseBase(ResponseBase const & other)
-: type(other.type)
+: type_(other.type_)
 , pPrevInIntrusiveDList(nullptr)
 , pNextInIntrusiveDList(nullptr)
-, returnStack(other.returnStack)
+, returnStack_(other.returnStack_)
 {
 }
 
@@ -421,10 +421,10 @@ ResponseBase::ResponseBase(ResponseBase const & other)
  * Afterwards, the stack of @ref ReturnStackItem objects of `other` will be empty.
  */
 ResponseBase::ResponseBase(ResponseBase && other) noexcept
-: type(other.type)
+: type_(other.type_)
 , pPrevInIntrusiveDList(nullptr)
 , pNextInIntrusiveDList(nullptr)
-, returnStack(std::move(other.returnStack))
+, returnStack_(std::move(other.returnStack_))
 {
 }
 
@@ -451,12 +451,12 @@ ResponseBase& ResponseBase::operator=(ResponseBase const & rhv)
 {
   if (&rhv != this)
   {
-    if (type != rhv.type)
+    if (type_ != rhv.type_)
       throw std::logic_error("ResponseBase::operator=(&): Different types");
 
     // not sure if copy-assignment provides the strong guarantee, so we use two steps here...
-    auto copyOfReturnStack = rhv.returnStack;
-    returnStack = std::move(copyOfReturnStack);
+    auto copyOfReturnStack = rhv.returnStack_;
+    returnStack_ = std::move(copyOfReturnStack);
   }
 
   return *this;
@@ -484,11 +484,11 @@ ResponseBase& ResponseBase::operator=(ResponseBase && rhv)
 {
   if (&rhv != this)
   {
-    if (type != rhv.type)
+    if (type_ != rhv.type_)
       throw std::logic_error("ResponseBase::operator=(&&): Different types");
 
-    returnStack = std::move(rhv.returnStack);
-    rhv.returnStack.clear();
+    returnStack_ = std::move(rhv.returnStack_);
+    rhv.returnStack_.clear();
   }
 
   return *this;

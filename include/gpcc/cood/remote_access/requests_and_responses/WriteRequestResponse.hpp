@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #ifndef WRITEREQUESTRESPONSE_HPP_202006292122
@@ -49,7 +49,7 @@ class WriteRequestResponse final : public ResponseBase
   public:
     WriteRequestResponse(void) = delete;
 
-    explicit WriteRequestResponse(SDOAbortCode const _result);
+    explicit WriteRequestResponse(SDOAbortCode const result);
 
     WriteRequestResponse(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, WriteRequestResponsePassKey);
 
@@ -69,17 +69,17 @@ class WriteRequestResponse final : public ResponseBase
     // --> ResponseBase
 
     // for server
-    void SetResult(SDOAbortCode const _result) noexcept;
+    void SetResult(SDOAbortCode const result) noexcept;
 
     // for originator of request
     SDOAbortCode GetResult(void) const noexcept;
 
   private:
     /// Binary size of a serialized @ref WriteRequestResponse object (excl. base class @ref ResponseBase).
-    static size_t const writeRequestResponseBinarySize = 4U;
+    static size_t const writeRequestResponseBinarySize_ = 4U;
 
     /// Result of the write request.
-    SDOAbortCode result;
+    SDOAbortCode result_;
 };
 
 /**
@@ -98,12 +98,12 @@ class WriteRequestResponse final : public ResponseBase
  *
  * - - -
  *
- * \param _result
+ * \param result
  * Desired value for the encapsulated result value.
  */
-inline void WriteRequestResponse::SetResult(SDOAbortCode const _result) noexcept
+inline void WriteRequestResponse::SetResult(SDOAbortCode const result) noexcept
 {
-  result = _result;
+  result_ = result;
 }
 
 /**
@@ -127,7 +127,7 @@ inline void WriteRequestResponse::SetResult(SDOAbortCode const _result) noexcept
  */
 inline SDOAbortCode WriteRequestResponse::GetResult(void) const noexcept
 {
-  return result;
+  return result_;
 }
 
 } // namespace cood

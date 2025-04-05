@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021, 2024 Daniel Jerolm
+    Copyright (C) 2021, 2024, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cood/remote_access/requests_and_responses/WriteRequestResponse.hpp>
@@ -18,7 +18,7 @@
 namespace gpcc {
 namespace cood {
 
-size_t const WriteRequestResponse::writeRequestResponseBinarySize;
+size_t const WriteRequestResponse::writeRequestResponseBinarySize_;
 
 /**
  * \brief Constructor.
@@ -33,12 +33,12 @@ size_t const WriteRequestResponse::writeRequestResponseBinarySize;
  *
  * - - -
  *
- * \param _result
+ * \param result
  * Result value that shall be encapsulated in the object.
  */
-WriteRequestResponse::WriteRequestResponse(SDOAbortCode const _result)
+WriteRequestResponse::WriteRequestResponse(SDOAbortCode const result)
 : ResponseBase(ResponseTypes::writeRequestResponse)
-, result(_result)
+, result_(result)
 {
 }
 
@@ -77,7 +77,7 @@ WriteRequestResponse::WriteRequestResponse(gpcc::stream::IStreamReader & sr, uin
   auto const result_u32 = sr.Read_uint32();
   try
   {
-    result = U32ToSDOAbortCode(result_u32);
+    result_ = U32ToSDOAbortCode(result_u32);
   }
   catch (std::exception const &)
   {
@@ -90,7 +90,7 @@ WriteRequestResponse::WriteRequestResponse(gpcc::stream::IStreamReader & sr, uin
 /// \copydoc gpcc::cood::ResponseBase::GetBinarySize
 size_t WriteRequestResponse::GetBinarySize(void) const
 {
-  return ResponseBase::GetBinarySize() + writeRequestResponseBinarySize;
+  return ResponseBase::GetBinarySize() + writeRequestResponseBinarySize_;
 }
 
 /// \copydoc gpcc::cood::ResponseBase::ToBinary
@@ -98,14 +98,14 @@ void WriteRequestResponse::ToBinary(gpcc::stream::IStreamWriter & sw) const
 {
   ResponseBase::ToBinary(sw);
 
-  sw.Write_uint32(static_cast<uint32_t>(result));
+  sw.Write_uint32(static_cast<uint32_t>(result_));
 }
 
 /// \copydoc gpcc::cood::ResponseBase::ToString
 std::string WriteRequestResponse::ToString(void) const
 {
   gpcc::string::StringComposer s;
-  s << "Write request response: " << SDOAbortCodeToDescrString(result);
+  s << "Write request response: " << SDOAbortCodeToDescrString(result_);
 
   return s.Get();
 }

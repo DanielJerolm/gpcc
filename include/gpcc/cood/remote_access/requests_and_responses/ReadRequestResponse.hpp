@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #ifndef READREQUESTRESPONSE_HPP_202010101331
@@ -64,7 +64,7 @@ class ReadRequestResponse final : public ResponseBase
   public:
     ReadRequestResponse(void) = delete;
 
-    explicit ReadRequestResponse(SDOAbortCode const _result);
+    explicit ReadRequestResponse(SDOAbortCode const result);
 
     ReadRequestResponse(gpcc::stream::IStreamReader & sr, uint8_t const versionOnHand, ReadRequestResponsePassKey);
 
@@ -86,8 +86,8 @@ class ReadRequestResponse final : public ResponseBase
     // --> ResponseBase
 
     // for server
-    void SetError(SDOAbortCode const _result);
-    void SetData(std::vector<uint8_t> && _data, size_t const _sizeInBit);
+    void SetError(SDOAbortCode const result);
+    void SetData(std::vector<uint8_t> && data, size_t const sizeInBit);
 
     // for originator of read request
     SDOAbortCode GetResult(void) const noexcept;
@@ -95,21 +95,21 @@ class ReadRequestResponse final : public ResponseBase
     std::vector<uint8_t> const & GetData(void) const;
 
   private:
-    /// Binary size of a serialized @ref ReadRequestResponse object with __positive__ @ref result
+    /// Binary size of a serialized @ref ReadRequestResponse object with __positive__ @ref result_
     /// (excl. base class @ref ResponseBase and any data).
-    static size_t const readRequestResponseBinarySize = 7U;
+    static size_t const readRequestResponseBinarySize_ = 7U;
 
 
     /// Result of the read request.
-    SDOAbortCode result;
+    SDOAbortCode result_;
 
     /// Data that has been read.
-    /** This is only valid, if @ref result is @ref SDOAbortCode::OK. */
-    std::vector<uint8_t> data;
+    /** This is only valid, if @ref result_ is @ref SDOAbortCode::OK. */
+    std::vector<uint8_t> data_;
 
-    /// Size of @ref data in bit.
-    /** This is only valid, if @ref result is @ref SDOAbortCode::OK. */
-    size_t sizeInBit;
+    /// Size of @ref data_ in bit.
+    /** This is only valid, if @ref result_ is @ref SDOAbortCode::OK. */
+    size_t sizeInBit_;
 };
 
 } // namespace cood
