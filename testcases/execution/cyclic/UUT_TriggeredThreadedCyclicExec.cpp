@@ -19,67 +19,67 @@ namespace gpcc_tests {
 namespace execution {
 namespace cyclic {
 
-UUT_TriggeredThreadedCyclicExec::UUT_TriggeredThreadedCyclicExec(Trace & _trace,
-                                                                 gpcc::stdif::IIRQ2ThreadWakeup & _trigger,
+UUT_TriggeredThreadedCyclicExec::UUT_TriggeredThreadedCyclicExec(Trace & trace,
+                                                                 gpcc::stdif::IIRQ2ThreadWakeup & trigger,
                                                                  gpcc::time::TimeSpan const & waitForTriggerTimeout)
-: TriggeredThreadedCyclicExec("UUT", _trigger, waitForTriggerTimeout, std::bind(&UUT_TriggeredThreadedCyclicExec::IsPllRunning, this))
-, trace(_trace)
-, pTTCEStartStopCtrl(nullptr)
-, mutex()
-, sampleRetVal(true)
-, isPllRunningRetVal(true)
+: TriggeredThreadedCyclicExec("UUT", trigger, waitForTriggerTimeout, std::bind(&UUT_TriggeredThreadedCyclicExec::IsPllRunning, this))
+, trace_(trace)
+, pTTCEStartStopCtrl_(nullptr)
+, mutex_()
+, sampleRetVal_(true)
+, isPllRunningRetVal_(true)
 {
 }
 
-void UUT_TriggeredThreadedCyclicExec::SetTTCEStartStopCtrl(TTCEStartStopCtrl* const _pTTCEStartStopCtrl)
+void UUT_TriggeredThreadedCyclicExec::SetTTCEStartStopCtrl(TTCEStartStopCtrl* const pTTCEStartStopCtrl)
 {
-  pTTCEStartStopCtrl = _pTTCEStartStopCtrl;
+  pTTCEStartStopCtrl_ = pTTCEStartStopCtrl;
 }
 
 
 void UUT_TriggeredThreadedCyclicExec::SetSampleRetVal(bool const value)
 {
-  gpcc::osal::MutexLocker mutexLocker(mutex);
-  sampleRetVal = value;
+  gpcc::osal::MutexLocker mutexLocker(mutex_);
+  sampleRetVal_ = value;
 }
 void UUT_TriggeredThreadedCyclicExec::SetIsPllRunningRetVal(bool const value)
 {
-  gpcc::osal::MutexLocker mutexLocker(mutex);
-  isPllRunningRetVal = value;
+  gpcc::osal::MutexLocker mutexLocker(mutex_);
+  isPllRunningRetVal_ = value;
 }
 
 void UUT_TriggeredThreadedCyclicExec::Cyclic(void)
 {
-  trace.Record(Trace::TRACE_CYCLIC);
+  trace_.Record(Trace::TRACE_CYCLIC);
 }
 void UUT_TriggeredThreadedCyclicExec::OnStart(void)
 {
-  trace.Record(Trace::TRACE_ONSTART);
+  trace_.Record(Trace::TRACE_ONSTART);
 }
 void UUT_TriggeredThreadedCyclicExec::OnStop(void)
 {
-  trace.Record(Trace::TRACE_ONSTOP);
+  trace_.Record(Trace::TRACE_ONSTOP);
 }
 bool UUT_TriggeredThreadedCyclicExec::Sample(bool const overrun)
 {
-  trace.Record(Trace::BuildTraceValue_Sample(overrun));
+  trace_.Record(Trace::BuildTraceValue_Sample(overrun));
 
-  gpcc::osal::MutexLocker mutexLocker(mutex);
-  return sampleRetVal;
+  gpcc::osal::MutexLocker mutexLocker(mutex_);
+  return sampleRetVal_;
 }
 void UUT_TriggeredThreadedCyclicExec::OnStateChange(States const newState, StopReasons const stopReason)
 {
-  trace.Record(Trace::BuildTraceValue_OnStateChange(newState, stopReason));
-  if (pTTCEStartStopCtrl)
-    pTTCEStartStopCtrl->OnTTCEStateChange(newState, stopReason);
+  trace_.Record(Trace::BuildTraceValue_OnStateChange(newState, stopReason));
+  if (pTTCEStartStopCtrl_)
+    pTTCEStartStopCtrl_->OnTTCEStateChange(newState, stopReason);
 }
 
 bool UUT_TriggeredThreadedCyclicExec::IsPllRunning(void)
 {
-  trace.Record(Trace::TRACE_ISPLLRUN);
+  trace_.Record(Trace::TRACE_ISPLLRUN);
 
-  gpcc::osal::MutexLocker mutexLocker(mutex);
-  return isPllRunningRetVal;
+  gpcc::osal::MutexLocker mutexLocker(mutex_);
+  return isPllRunningRetVal_;
 }
 
 } // namespace cyclic

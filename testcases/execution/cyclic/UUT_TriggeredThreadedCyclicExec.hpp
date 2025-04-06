@@ -50,8 +50,8 @@ using gpcc::execution::cyclic::TTCEStartStopCtrl;
 class UUT_TriggeredThreadedCyclicExec final : public TriggeredThreadedCyclicExec
 {
   public:
-    UUT_TriggeredThreadedCyclicExec(Trace & _trace,
-                                    gpcc::stdif::IIRQ2ThreadWakeup & _trigger,
+    UUT_TriggeredThreadedCyclicExec(Trace & trace,
+                                    gpcc::stdif::IIRQ2ThreadWakeup & trigger,
                                     gpcc::time::TimeSpan const & waitForTriggerTimeout);
     UUT_TriggeredThreadedCyclicExec(UUT_TriggeredThreadedCyclicExec const &) = delete;
     UUT_TriggeredThreadedCyclicExec(UUT_TriggeredThreadedCyclicExec &&) = delete;
@@ -60,21 +60,21 @@ class UUT_TriggeredThreadedCyclicExec final : public TriggeredThreadedCyclicExec
     UUT_TriggeredThreadedCyclicExec& operator=(UUT_TriggeredThreadedCyclicExec const &) = delete;
     UUT_TriggeredThreadedCyclicExec& operator=(UUT_TriggeredThreadedCyclicExec &&) = delete;
 
-    void SetTTCEStartStopCtrl(TTCEStartStopCtrl* const _pTTCEStartStopCtrl);
+    void SetTTCEStartStopCtrl(TTCEStartStopCtrl* const pTTCEStartStopCtrl);
 
 
     void SetSampleRetVal(bool const value);
     void SetIsPllRunningRetVal(bool const value);
 
   private:
-    Trace & trace;
-    TTCEStartStopCtrl* pTTCEStartStopCtrl;
+    Trace & trace_;
+    TTCEStartStopCtrl* pTTCEStartStopCtrl_;
 
-    gpcc::osal::Mutex mutex;
-    // Return value used when Sample() is called next time. "mutex" is required.
-    bool sampleRetVal;
-    // Return value used when IsPllRunning() is called next time. "mutex" is required.
-    bool isPllRunningRetVal;
+    gpcc::osal::Mutex mutex_;
+    // Return value used when Sample() is called next time. "mutex_" is required.
+    bool sampleRetVal_;
+    // Return value used when IsPllRunning() is called next time. "mutex_" is required.
+    bool isPllRunningRetVal_;
 
 
     void Cyclic(void) override;
