@@ -23,7 +23,7 @@
 namespace gpcc {
 namespace cood {
 
-size_t constexpr Multiplexer::maxNbOfPorts_;
+size_t constexpr Multiplexer::maxNbOfPorts;
 
 /**
  * \brief Constructor.
@@ -231,7 +231,7 @@ void Multiplexer::Disconnect(void) noexcept
  * Under the hood, unused ports whose shared_ptr has been dropped by the user will be recycled before new ones are
  * created.
  *
- * \pre   There are less than @ref maxNbOfPorts_ in use.
+ * \pre   There are less than @ref maxNbOfPorts in use.
  *
  * - - -
  *
@@ -243,7 +243,7 @@ void Multiplexer::Disconnect(void) noexcept
  *
  * \throws std::bad_alloc       Out of memory.
  *
- * \throws std::runtime_error   @ref maxNbOfPorts_ ports are already in use.
+ * \throws std::runtime_error   @ref maxNbOfPorts ports are already in use.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -273,7 +273,7 @@ std::shared_ptr<MultiplexerPort> Multiplexer::CreatePort(void)
     }
   }
 
-  if (ports_.size() == maxNbOfPorts_)
+  if (ports_.size() == maxNbOfPorts)
     throw std::runtime_error("Multiplexer::CreatePort: Maximum number of ports reached.");
 
   ports_.emplace_back(std::make_shared<MultiplexerPort>(*this, ports_.size()));

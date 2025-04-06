@@ -135,7 +135,7 @@ class Multiplexer final : private IRemoteObjectDictionaryAccessNotifiable
 
   public:
     /// Maximum number of exposed ports.
-    static size_t constexpr maxNbOfPorts_ = 256U;
+    static size_t constexpr maxNbOfPorts = 256U;
 
 
     Multiplexer(void);

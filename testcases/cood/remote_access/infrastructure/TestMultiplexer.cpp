@@ -698,9 +698,9 @@ TEST_F(gpcc_cood_Multiplexer_DeathTestsF, Mux_CallToRODANwhileServerOff)
 TEST_F(gpcc_cood_Multiplexer_TestsF, CreatePort_WhileNotConnected)
 {
   std::vector<std::shared_ptr<MultiplexerPort>> ports;
-  ports.reserve(Multiplexer::maxNbOfPorts_);
+  ports.reserve(Multiplexer::maxNbOfPorts);
 
-  for (size_t i = 0U; i < Multiplexer::maxNbOfPorts_; ++i)
+  for (size_t i = 0U; i < Multiplexer::maxNbOfPorts; ++i)
   {
     ASSERT_NO_THROW(ports.emplace_back(spUUT->CreatePort())) << "Could not create the expected number of ports!";
     ASSERT_TRUE(ports.back() != nullptr);
@@ -722,9 +722,9 @@ TEST_F(gpcc_cood_Multiplexer_TestsF, CreatePort_WhileConnected_ServerOff)
 
   // create ports
   std::vector<std::shared_ptr<MultiplexerPort>> ports;
-  ports.reserve(Multiplexer::maxNbOfPorts_);
+  ports.reserve(Multiplexer::maxNbOfPorts);
 
-  for (size_t i = 0U; i < Multiplexer::maxNbOfPorts_; ++i)
+  for (size_t i = 0U; i < Multiplexer::maxNbOfPorts; ++i)
   {
     ASSERT_NO_THROW(ports.emplace_back(spUUT->CreatePort())) << "Could not create the expected number of ports!";
     ASSERT_TRUE(ports.back() != nullptr);
@@ -750,9 +750,9 @@ TEST_F(gpcc_cood_Multiplexer_TestsF, CreatePort_WhileConnected_ServerOn)
 
   // create ports
   std::vector<std::shared_ptr<MultiplexerPort>> ports;
-  ports.reserve(Multiplexer::maxNbOfPorts_);
+  ports.reserve(Multiplexer::maxNbOfPorts);
 
-  for (size_t i = 0U; i < Multiplexer::maxNbOfPorts_; ++i)
+  for (size_t i = 0U; i < Multiplexer::maxNbOfPorts; ++i)
   {
     ASSERT_NO_THROW(ports.emplace_back(spUUT->CreatePort())) << "Could not create the expected number of ports!";
     ASSERT_TRUE(ports.back() != nullptr);
