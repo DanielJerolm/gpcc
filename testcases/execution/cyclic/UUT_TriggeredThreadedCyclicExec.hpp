@@ -14,28 +14,25 @@
 #include <gpcc/execution/cyclic/TriggeredThreadedCyclicExec.hpp>
 #include <gpcc/osal/Mutex.hpp>
 
-namespace gpcc
-{
-  namespace execution
-  {
-    namespace cyclic
-    {
-      class TTCEStartStopCtrl;
-    }
-  }
-  namespace stdif
-  {
-    class IIRQ2ThreadWakeup;
-  }
-  namespace time
-  {
-    class TimeSpan;
-  }
-}
+namespace gpcc      {
+namespace execution {
+namespace cyclic    {
+  class TTCEStartStopCtrl;
+}}}
+
+namespace gpcc  {
+namespace stdif {
+  class IIRQ2ThreadWakeup;
+}}
+
+namespace gpcc {
+namespace time {
+  class TimeSpan;
+}}
 
 namespace gpcc_tests {
-namespace execution {
-namespace cyclic {
+namespace execution  {
+namespace cyclic     {
 
 class Trace;
 
@@ -71,8 +68,10 @@ class UUT_TriggeredThreadedCyclicExec final : public TriggeredThreadedCyclicExec
     TTCEStartStopCtrl* pTTCEStartStopCtrl_;
 
     gpcc::osal::Mutex mutex_;
+
     // Return value used when Sample() is called next time. "mutex_" is required.
     bool sampleRetVal_;
+
     // Return value used when IsPllRunning() is called next time. "mutex_" is required.
     bool isPllRunningRetVal_;
 

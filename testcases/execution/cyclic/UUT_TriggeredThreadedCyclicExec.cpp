@@ -16,13 +16,16 @@
 #include <functional>
 
 namespace gpcc_tests {
-namespace execution {
-namespace cyclic {
+namespace execution  {
+namespace cyclic     {
 
 UUT_TriggeredThreadedCyclicExec::UUT_TriggeredThreadedCyclicExec(Trace & trace,
                                                                  gpcc::stdif::IIRQ2ThreadWakeup & trigger,
                                                                  gpcc::time::TimeSpan const & waitForTriggerTimeout)
-: TriggeredThreadedCyclicExec("UUT", trigger, waitForTriggerTimeout, std::bind(&UUT_TriggeredThreadedCyclicExec::IsPllRunning, this))
+: TriggeredThreadedCyclicExec("UUT",
+                              trigger,
+                              waitForTriggerTimeout,
+                              std::bind(&UUT_TriggeredThreadedCyclicExec::IsPllRunning, this))
 , trace_(trace)
 , pTTCEStartStopCtrl_(nullptr)
 , mutex_()
@@ -36,12 +39,12 @@ void UUT_TriggeredThreadedCyclicExec::SetTTCEStartStopCtrl(TTCEStartStopCtrl* co
   pTTCEStartStopCtrl_ = pTTCEStartStopCtrl;
 }
 
-
 void UUT_TriggeredThreadedCyclicExec::SetSampleRetVal(bool const value)
 {
   gpcc::osal::MutexLocker mutexLocker(mutex_);
   sampleRetVal_ = value;
 }
+
 void UUT_TriggeredThreadedCyclicExec::SetIsPllRunningRetVal(bool const value)
 {
   gpcc::osal::MutexLocker mutexLocker(mutex_);
@@ -52,14 +55,17 @@ void UUT_TriggeredThreadedCyclicExec::Cyclic(void)
 {
   trace_.Record(Trace::TRACE_CYCLIC);
 }
+
 void UUT_TriggeredThreadedCyclicExec::OnStart(void)
 {
   trace_.Record(Trace::TRACE_ONSTART);
 }
+
 void UUT_TriggeredThreadedCyclicExec::OnStop(void)
 {
   trace_.Record(Trace::TRACE_ONSTOP);
 }
+
 bool UUT_TriggeredThreadedCyclicExec::Sample(bool const overrun)
 {
   trace_.Record(Trace::BuildTraceValue_Sample(overrun));
@@ -67,6 +73,7 @@ bool UUT_TriggeredThreadedCyclicExec::Sample(bool const overrun)
   gpcc::osal::MutexLocker mutexLocker(mutex_);
   return sampleRetVal_;
 }
+
 void UUT_TriggeredThreadedCyclicExec::OnStateChange(States const newState, StopReasons const stopReason)
 {
   trace_.Record(Trace::BuildTraceValue_OnStateChange(newState, stopReason));
