@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #include "TriggerProvider.hpp"
@@ -20,18 +20,18 @@ namespace gpcc_tests {
 namespace execution {
 namespace cyclic {
 
-TriggerProvider::TriggerProvider(gpcc::time::TimeSpan const _expectedWaitWithTimeoutValue,
-                                 uint32_t const _permanentTriggerSleep_ms)
+TriggerProvider::TriggerProvider(gpcc::time::TimeSpan const expectedWaitWithTimeoutValue,
+                                 uint32_t const permanentTriggerSleep_ms)
 : gpcc::stdif::IIRQ2ThreadWakeup()
-, expectedWaitWithTimeoutValue(_expectedWaitWithTimeoutValue)
-, permanentTriggerSleep_ms(_permanentTriggerSleep_ms)
-, mutex()
-, threadInWaitWithTimeout(false)
-, threadInWaitWithTimeoutSetConvar()
-, continueFlag(false)
-, permanentContinue(false)
-, continueFlagSetConvar()
-, desiredReturnValue(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK)
+, expectedWaitWithTimeoutValue_(expectedWaitWithTimeoutValue)
+, permanentTriggerSleep_ms_(permanentTriggerSleep_ms)
+, mutex_()
+, threadInWaitWithTimeout_(false)
+, threadInWaitWithTimeoutSetConvar_()
+, continueFlag_(false)
+, permanentContinue_(false)
+, continueFlagSetConvar_()
+, desiredReturnValue_(gpcc::stdif::IIRQ2ThreadWakeup::Result::OK)
 {
 }
 
@@ -43,35 +43,36 @@ bool TriggerProvider::WaitForThread(uint32_t const timeout_ms)
 
   using namespace gpcc::time;
 
-  gpcc::osal::MutexLocker mutexLocker(mutex);
+  gpcc::osal::MutexLocker mutexLocker(mutex_);
 
   TimePoint const absTimeout = TimePoint::FromSystemClock(gpcc::osal::ConditionVariable::clockID)
                              + TimeSpan::ms(timeout_ms);
-  while ((!threadInWaitWithTimeout) || (continueFlag))
+  while ((!threadInWaitWithTimeout_) || (continueFlag_))
   {
-    if (threadInWaitWithTimeoutSetConvar.TimeLimitedWait(mutex, absTimeout))
+    if (threadInWaitWithTimeoutSetConvar_.TimeLimitedWait(mutex_, absTimeout))
     {
       // timeout
       break;
     }
   }
 
-  return threadInWaitWithTimeout;
+  return threadInWaitWithTimeout_;
 }
-void TriggerProvider::Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result const _desiredReturnValue, bool const permanent)
-{
-  gpcc::osal::MutexLocker mutexLocker(mutex);
 
-  if (!threadInWaitWithTimeout)
+void TriggerProvider::Trigger(gpcc::stdif::IIRQ2ThreadWakeup::Result const desiredReturnValue, bool const permanent)
+{
+  gpcc::osal::MutexLocker mutexLocker(mutex_);
+
+  if (!threadInWaitWithTimeout_)
     throw std::runtime_error("TriggerProvider::Trigger: No thread inside WaitWithTimeout()");
 
-  if (continueFlag)
+  if (continueFlag_)
     throw std::runtime_error("TriggerProvider::Trigger: Trigger already pending!");
 
-  continueFlag = true;
-  permanentContinue = permanent;
-  desiredReturnValue = _desiredReturnValue;
-  continueFlagSetConvar.Signal();
+  continueFlag_ = true;
+  permanentContinue_ = permanent;
+  desiredReturnValue_ = desiredReturnValue;
+  continueFlagSetConvar_.Signal();
 }
 
 // --> gpcc::stdif::IIRQ2ThreadWakeup
@@ -80,6 +81,7 @@ bool TriggerProvider::SignalFromISR(void) noexcept
   gpcc::osal::Panic("Unexpected call to TriggerProvider::SignalFromISR");
   return false;
 }
+
 bool TriggerProvider::SignalFromThread(void)
 {
   gpcc::osal::Panic("Unexpected call to TriggerProvider::SignalFromThread");
@@ -93,33 +95,34 @@ gpcc::stdif::IIRQ2ThreadWakeup::Result TriggerProvider::Wait(void)
   // never reached, but makes compiler happy
   return gpcc::stdif::IIRQ2ThreadWakeup::Result::OK;
 }
+
 gpcc::stdif::IIRQ2ThreadWakeup::Result TriggerProvider::WaitWithTimeout(gpcc::time::TimeSpan const & timeout)
 {
-  if (timeout != expectedWaitWithTimeoutValue)
+  if (timeout != expectedWaitWithTimeoutValue_)
     gpcc::osal::Panic("TriggerProvider::WaitWithTimeout: UUT passed unexpected timeout value");
 
-  gpcc::osal::MutexLocker mutexLocker(mutex);
+  gpcc::osal::MutexLocker mutexLocker(mutex_);
 
-  if (threadInWaitWithTimeout)
-    gpcc::osal::Panic("TriggerProvider::WaitWithTimeout: threadInWaitWithTimeout already set");
+  if (threadInWaitWithTimeout_)
+    gpcc::osal::Panic("TriggerProvider::WaitWithTimeout: threadInWaitWithTimeout_ already set");
 
   // signal that a thread is within WaitWithTimeout()
-  threadInWaitWithTimeout = true;
-  threadInWaitWithTimeoutSetConvar.Signal();
+  threadInWaitWithTimeout_ = true;
+  threadInWaitWithTimeoutSetConvar_.Signal();
 
-  ON_SCOPE_EXIT() { threadInWaitWithTimeout = false; };
+  ON_SCOPE_EXIT() { threadInWaitWithTimeout_ = false; };
 
   // wait for go
-  while ((!continueFlag) && (!permanentContinue))
-    continueFlagSetConvar.Wait(mutex);
+  while ((!continueFlag_) && (!permanentContinue_))
+    continueFlagSetConvar_.Wait(mutex_);
 
-  continueFlag = false;
+  continueFlag_ = false;
 
-  if (permanentContinue)
-    gpcc::osal::Thread::Sleep_ms(permanentTriggerSleep_ms);
+  if (permanentContinue_)
+    gpcc::osal::Thread::Sleep_ms(permanentTriggerSleep_ms_);
 
   // leave WaitWithTimeout()
-  return desiredReturnValue;
+  return desiredReturnValue_;
 }
 // <-- gpcc::stdif::IIRQ2ThreadWakeup
 
