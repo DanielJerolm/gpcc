@@ -959,10 +959,17 @@ void StringComposer::PrintiToBuffer(char* const buffer, size_t const bufferSize,
   int const width = CalcWidthForsnprintf(type);
   char fmt[maxFmtStrBufSize];
   int status;
+
+  // fmt is generated. Don't complain.
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+
   if (!SetupFormatString(fmt, type))
     status = sniprintf(buffer, bufferSize, fmt, width, value);
   else
     status = sniprintf(buffer, bufferSize, fmt, width, prec_, value);
+
+  #pragma GCC diagnostic pop
 
   if (status < 0)
     throw std::logic_error("sniprintf failed");

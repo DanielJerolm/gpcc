@@ -55,7 +55,7 @@ Multiplexer::Multiplexer(void)
 , ports_()
 {
   auto const uipThis = reinterpret_cast<uintptr_t>(this);
-  #if UINTPTR_WIDTH == UINT32_WIDTH
+  #if UINTPTR_MAX == UINT32_MAX
     ownerID_ = static_cast<uint32_t>(uipThis);
   #else
     ownerID_ = (static_cast<uint32_t>(uipThis)) ^ (static_cast<uint32_t>(uipThis >> 32U));
