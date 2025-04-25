@@ -3,10 +3,7 @@
 # developers. Instead add those custom patterns to your global .gitignore
 # file.
 
-# Generated doxygen documentation
-/doc/doxygen/html/
-
-# Build locations
+# Build locations (includes doxygen output)
 /build_*
 
 # This project is using vscode as IDE by default. The vs-code folder shall be
