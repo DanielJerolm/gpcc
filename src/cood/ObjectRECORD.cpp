@@ -55,7 +55,7 @@ namespace cood {
  * \param _structsNativeSizeInByte
  * Size of the structure referenced by `_pStruct` in bytes.\n
  * The value shall contain any padding bytes or gap bytes required by the native rules for data representation
- * and memory layout.
+ * and memory layout. Zero is not allowed.
  *
  * \param _pMutex
  * Pointer to a mutex protecting access to the native data referenced by `_pStruct`.\n
@@ -92,6 +92,9 @@ ObjectRECORD::ObjectRECORD(std::string            const & _name,
 {
   if (pStruct == nullptr)
     throw std::invalid_argument("ObjectRECORD::ObjectRECORD: '_pStruct' is nullptr");
+
+  if (structsNativeSizeInByte == 0U)
+    throw std::invalid_argument("ObjectRECORD::ObjectRECORD: '_structsNativeSizeInByte' is zero");
 
   if (structsNativeSizeInByte > (static_cast<size_t>(std::numeric_limits<decltype(SubIdxDescr::byteOffset)>::max()) + 1U))
     throw std::invalid_argument("ObjectRECORD::ObjectRECORD: '_structsNativeSizeInByte' exceeds max. byte offset in SubIdxDescr");
