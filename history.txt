@@ -4,6 +4,8 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
+- Fix UBSan findings
+
 - StringComposer::SetupFormatString contains a TODO
 
 - Use github's issue tracking instead of this file
