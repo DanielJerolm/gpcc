@@ -4,8 +4,6 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
-- Fix UBSan findings
-
 - StringComposer::SetupFormatString contains a TODO
 
 - Use github's issue tracking instead of this file
@@ -204,6 +202,9 @@ Next to do:
 
 History:
 ===============================================================================
+2025-05-29
+- Fix UBSan findings
+
 2025-04-23
 - Remove compiler warnings detected by gcc-arm-none-eabi.posix-epos
 
