@@ -83,7 +83,7 @@ add_subdirectory(extern/gpcc)
 For development of GPCC and for purposes of automated testing (e.g. github actions), GPCC can also be directly cloned and build "standalone".
 
 The way GPCC is used determines which artifacts are build:
-| Artifact                                    | CMake sub-project                 | stand alone
+| Artifact                                    | CMake sub-project                 | Stand alone
 | ------------------------------------------- | --------------------------------- | ---------------------------------
 | static library `gpcc`                       | productive + unittest environment | productive + unittest environment
 | object library `gpcc_testcases`             | unittest environment only         | unittest environment only
@@ -111,7 +111,8 @@ Then:
 - From there you can explore the documentation.
 
 ### Build and run unittests from shell
-Note that GPCC uses two separate build-folders for the _productive_ environment and for the _unittest_ environment.  
+Note that GPCC uses separate build-folders for the _productive_ environment, for the _unittest_ environment, and for
+the _unittest_ environment with UBSan.  
 The following example configures the build-folder for the unittest environment (./build_unittest) for building the unittests for the native linux host applying _debug_ configuration settings:
 ```
 # We start in GPCC's root folder
@@ -121,8 +122,19 @@ $ ./build_unittest.sh all
 $ ./execute_unittests.sh
 ```
 
+### Build and run unittests with UBSan from shell
+Note that GPCC uses separate build-folders for the _productive_ environment, for the _unittest_ environment, and for the _unittest_ environment with UBSan.  
+The following example configures the build-folder for the unittest environment with UBSan (./build_unittest-ubsan) for building the unittests for the native linux host applying _debug_ configuration settings and GCC's Undefined Behaviour Sanitizer:
+```
+# We start in GPCC's root folder
+$ cd scripts
+$ ./cmake_config_nativelinux-unittest-ubsan.sh
+$ ./build_unittest-ubsan.sh all
+$ ./execute_unittests-ubsan.sh
+```
+
 ### Build productive library for native Linux
-Note that GPCC uses two separate build-folders for the _productive_ environment and for the _unittest_ environment.  
+Note that GPCC uses separate build-folders for the _productive_ environment, for the _unittest_ environment, and for the _unittest_ environment with UBSan.  
 The following example configures the build-folder for the productive environment (./build_productive) for building the productive library for the native linux host applying _release_ configuration settings:
 ```
 # We start in GPCC's root folder
@@ -147,9 +159,11 @@ In GPCC's root folder invoke vscode:
 $ vscode .
 ```
 
-GPCC uses two separate build-folders for the _productive_ environment and for the _unittest_ environment. During CMake initialization of a build-folder, a file `compile_commands.json` will be created in the build-folder. The file is required by Intellisense to understand the code.
+GPCC uses separate build-folders for the _productive_ environment, for the _unittest_ environment, and for the _unittest_ environment with UBSan. During CMake initialization of a build-folder, a file `compile_commands.json` will be created in the build-folder. The file is required by Intellisense to understand the code.
 
-In the previous chapters, the CMake initialization of the build-folders has been accomplished via the shell-scripts in the scripts-folder. Most actions that can be accomplished via the scripts can also be triggered via vscode tasks. Let's configure the build folders. Run the following tasks:
+In the previous chapters, the CMake initialization of the build-folders has been accomplished via the shell-scripts in the scripts-folder. A subset of the scripts can be invoked via vscode tasks. With the vscode settings supplied with GPCC, you can build the _productive_ environment and the _unittest_ environment _without_ UBSan from within vscode.
+
+Let's configure the build folders. Run the following tasks:
 - Main menue: Terminal --> Run Task... --> CMake configure: Native Linux productive (release)
 - Main menue: Terminal --> Run Task... --> CMake configure: Native Linux unittest (debug)
 
@@ -157,8 +171,8 @@ Now open a file, e.g. `src/cli/CLI.cpp`.
 
 In the bottom right of the vscode window there should be a bell and a label `Linux-Productive` or `Linux-Unittest`. The label is only visible, if a cpp- or hpp-file is currently open. For instance it will vanish, if you open this markdown file you are currently reading.
 
-The label indicates the currently active _C/C++ configuration_. If you click on the label, then a menue appears at the top of the vscode window and you can select the configuration. By changing between `Linux-Productive` or `Linux-Unittest` Intellisense instantly switches between the _productive_ environment and the _unittest_ environment. In both environments #defines and include-paths may differ and thus Intellisense will evaluate preprocessor directives and #includes differently.
+The label indicates the currently active _C/C++ configuration_. If you click on the label, then a menue appears at the top of the vscode window and you can select the configuration. By changing between `Linux-Productive` or `Linux-Unittest` Intellisense instantly switches between the _productive_ environment and the _unittest_ environment _without_ UBSan. In both environments #defines and include-paths may differ and thus Intellisense will evaluate preprocessor directives and #includes differently.
 
-For now, you should not see any "problems" and there should be no errors highlighted in the code.
+For now, you should not see any entries in the "problems window" and there should be no errors highlighted in the code.
 
 If #include statements are marked with a red underline the most likely error is that the build-folder that corresponds to the selected C/C++ configuration does not contain a `compile_commands.json` file.
