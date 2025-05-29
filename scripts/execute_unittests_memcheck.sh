@@ -9,7 +9,7 @@
 # Copyright (C) 2025 Daniel Jerolm
 
 
-# This script executes the all non-death unittests with valgrind/memcheck.
+# This script executes all non-death unittests with valgrind/memcheck.
 #
 # Invocation:
 # ./execute_unittests_memcheck.sh [args]

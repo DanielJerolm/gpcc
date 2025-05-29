@@ -25,7 +25,7 @@ fi
 # ensure that the build-folder exists
 if [ ! -d "../build_productive" ]; then
   echo "Build-folder does not exist."
-  echo "Did you run 'cmake_config_linux-productive-release.sh' ?"
+  echo "Did you run any of the 'cmake_config_*-productive-*.sh' scripts?"
   exit 1
 fi
 
