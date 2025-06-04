@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #include "FakeEEPROMUndo.hpp"
@@ -23,14 +23,16 @@ FakeEEPROMUndo::FakeEEPROMUndo(uint32_t const _startAddress, size_t const _size,
 , size(_size)
 , spMem(new uint8_t[_size])
 {
-  memcpy(spMem.get(), pData, size);
+  if (size != 0U)
+    memcpy(spMem.get(), pData, size);
 }
 FakeEEPROMUndo::FakeEEPROMUndo(FakeEEPROMUndo const & other)
 : startAddress(other.startAddress)
 , size(other.size)
 , spMem(new uint8_t[other.size])
 {
-  memcpy(spMem.get(), other.spMem.get(), size);
+  if (size != 0U)
+    memcpy(spMem.get(), other.spMem.get(), size);
 }
 FakeEEPROMUndo::FakeEEPROMUndo(FakeEEPROMUndo && other)
 : startAddress(other.startAddress)
@@ -50,7 +52,8 @@ FakeEEPROMUndo& FakeEEPROMUndo::operator=(FakeEEPROMUndo const & other)
       size = other.size;
     }
     startAddress = other.startAddress;
-    memcpy(spMem.get(), other.spMem.get(), size);
+    if (size != 0U)
+      memcpy(spMem.get(), other.spMem.get(), size);
   }
 
   return *this;
@@ -70,7 +73,8 @@ FakeEEPROMUndo& FakeEEPROMUndo::operator=(FakeEEPROMUndo && other)
 
 void FakeEEPROMUndo::Revert(void* const pMem) const
 {
-  memcpy(static_cast<uint8_t*>(pMem) + startAddress, spMem.get(), size);
+  if (size != 0U)
+    memcpy(static_cast<uint8_t*>(pMem) + startAddress, spMem.get(), size);
 }
 
 } // namespace file_systems

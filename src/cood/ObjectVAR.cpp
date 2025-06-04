@@ -363,26 +363,33 @@ SDOAbortCode ObjectVAR::Write(uint8_t const subIdx,
   }
 
   // finally write to the object's data
-  switch (nBytesNative)
+  if (nElements_ == 1U)
   {
-    case 1U:
-      *static_cast<uint8_t*>(pData_) = *pTempMem;
-      break;
+    switch (nBytesNative)
+    {
+      case 1U:
+        *static_cast<uint8_t*>(pData_) = static_cast<uint8_t>(localMem);
+        break;
 
-    case 2U:
-      *static_cast<uint16_t*>(pData_) = *reinterpret_cast<uint16_t*>(pTempMem);
-      break;
+      case 2U:
+        *static_cast<uint16_t*>(pData_) = static_cast<uint16_t>(localMem);
+        break;
 
-    case 4U:
-      *static_cast<uint32_t*>(pData_) = *reinterpret_cast<uint32_t*>(pTempMem);
-      break;
+      case 4U:
+        *static_cast<uint32_t*>(pData_) = static_cast<uint32_t>(localMem);
+        break;
 
-    case 8U:
-      *static_cast<uint64_t*>(pData_) = localMem;
-      break;
+      case 8U:
+        *static_cast<uint64_t*>(pData_) = localMem;
+        break;
 
-    default:
-      memcpy(pData_, pTempMem, nBytesNative);
+      default:
+        memcpy(pData_, pTempMem, nBytesNative);
+    }
+  }
+  else
+  {
+    memcpy(pData_, pTempMem, nBytesNative);
   }
 
   try

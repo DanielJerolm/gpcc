@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #include "LogMessage.hpp"
@@ -38,7 +38,7 @@ LogMessage::LogMessage(string::SharedString const & _srcName, LogType const _typ
 , type(static_cast<uint8_t>(_type))
 , pNext(nullptr)
 {
-};
+}
 
 } // namespace internal
 } // namespace log

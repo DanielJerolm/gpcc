@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2019 Daniel Jerolm
+    Copyright (C) 2019, 2025 Daniel Jerolm
 */
 
 #include "IntrusiveDList.hpp"
@@ -33,7 +33,7 @@ template <class T>
 IntrusiveDList<T>::iterator::iterator(void) noexcept
 : pItem(nullptr)
 {
-};
+}
 
 /**
  * \brief Compares two iterators for equality.
@@ -257,7 +257,7 @@ template <class T>
 IntrusiveDList<T>::iterator::iterator(T* const _pItem) noexcept
 : pItem(_pItem)
 {
-};
+}
 
 // ==> class IntrusiveDList::iterator
 
@@ -279,7 +279,7 @@ template <class T>
 IntrusiveDList<T>::const_iterator::const_iterator(void) noexcept
 : pItem(nullptr)
 {
-};
+}
 
 /**
  * \brief Copy-constructor. Creates a const_iterator via copy-construction from an iterator.
@@ -301,7 +301,7 @@ template <class T>
 IntrusiveDList<T>::const_iterator::const_iterator(iterator const & other) noexcept
 : pItem(other.pItem)
 {
-};
+}
 
 /**
  * \brief Move-constructor. Creates a const_iterator via move-construction from an iterator.
@@ -324,7 +324,7 @@ template <class T>
 IntrusiveDList<T>::const_iterator::const_iterator(iterator && other) noexcept
 : pItem(other.pItem)
 {
-};
+}
 
 /**
  * \brief Copy-assignment operator. Copy-assigns an iterator to this.
@@ -607,7 +607,7 @@ template <class T>
 IntrusiveDList<T>::const_iterator::const_iterator(T* const _pItem) noexcept
 : pItem(_pItem)
 {
-};
+}
 
 // ==> class IntrusiveDList::const_iterator
 

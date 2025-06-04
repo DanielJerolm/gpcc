@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2021 Daniel Jerolm
+    Copyright (C) 2021, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cli/exceptions.hpp>
@@ -33,7 +33,7 @@ UserEnteredInvalidArgsError::UserEnteredInvalidArgsError(void)
 : std::runtime_error("User entered invalid arguments.")
 , details("")
 {
-};
+}
 
 /**
  * \brief Constructor. Creates a @ref UserEnteredInvalidArgsError exception with details provided.\n
@@ -65,7 +65,7 @@ UserEnteredInvalidArgsError::UserEnteredInvalidArgsError(std::string const & _de
 : std::runtime_error("User entered invalid arguments.")
 , details(_details)
 {
-};
+}
 
 /**
  * \brief Constructor. Creates a @ref UserEnteredInvalidArgsError exception with details provided.\n
@@ -97,7 +97,7 @@ UserEnteredInvalidArgsError::UserEnteredInvalidArgsError(std::string && _details
 : std::runtime_error("User entered invalid arguments.")
 , details(std::move(_details))
 {
-};
+}
 
 } // namespace cli
 } // namespace gpcc

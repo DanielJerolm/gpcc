@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011, 2024 Daniel Jerolm
+    Copyright (C) 2011, 2024, 2025 Daniel Jerolm
 */
 
 #include <gpcc/container/BitField.hpp>
@@ -572,7 +572,9 @@ void BitField::Resize(size_t const newSize)
       if (newElements > currElements)
       {
         // (enlarge)
-        memcpy(spNewStorage.get(), spStorage.get(), currElements * sizeof(storage_t));
+        if (currElements != 0U)
+          memcpy(spNewStorage.get(), spStorage.get(), currElements * sizeof(storage_t));
+
         memset(spNewStorage.get() + currElements, 0x00, (newElements - currElements) * sizeof(storage_t));
       }
       else
@@ -619,7 +621,9 @@ void BitField::Resize(size_t const newSize)
 void BitField::ClearAll(void) noexcept
 {
   size_t const nElements = nbOf_storage_t_elements(nBits);
-  memset(spStorage.get(), 0x00, nElements * sizeof(storage_t));
+
+  if (nElements != 0U)
+    memset(spStorage.get(), 0x00, nElements * sizeof(storage_t));
 }
 
 /**
@@ -639,7 +643,9 @@ void BitField::ClearAll(void) noexcept
 void BitField::SetAll(void) noexcept
 {
   size_t const nElements = nbOf_storage_t_elements(nBits);
-  memset(spStorage.get(), 0xFF, nElements * sizeof(storage_t));
+
+  if (nElements != 0U)
+    memset(spStorage.get(), 0xFF, nElements * sizeof(storage_t));
 }
 
 /**

@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #include "FakeEEPROM.hpp"
@@ -36,7 +36,9 @@ FakeEEPROM::FakeEEPROM(size_t const _size, size_t const _pageSize)
     throw std::invalid_argument("FakeEEPROM::FakeEEPROM: _pageSize does not divide _size without remainder");
 
   spMem.reset(new uint8_t[size]);
-  memset(spMem.get(), 0x00, size);
+
+  if (size != 0U)
+    memset(spMem.get(), 0x00, size);
 }
 FakeEEPROM::FakeEEPROM(FakeEEPROM const & other)
 : gpcc::stdif::IRandomAccessStorage(other)
@@ -51,7 +53,8 @@ FakeEEPROM::FakeEEPROM(FakeEEPROM const & other)
 , enableUndo(other.enableUndo)
 , undoList(other.undoList)
 {
-  memcpy(spMem.get(), other.spMem.get(), size);
+  if (size != 0U)
+    memcpy(spMem.get(), other.spMem.get(), size);
 }
 FakeEEPROM::FakeEEPROM(FakeEEPROM && other)
 : gpcc::stdif::IRandomAccessStorage(std::move(other))
@@ -84,7 +87,8 @@ FakeEEPROM& FakeEEPROM::operator=(FakeEEPROM const & other)
     writeAndCheckAccessTillFailure = other.writeAndCheckAccessTillFailure;
     readAccessesTillThrow = other.readAccessesTillThrow;
     pageSize = other.pageSize;
-    memcpy(spMem.get(), other.spMem.get(), size);
+    if (size != 0U)
+      memcpy(spMem.get(), other.spMem.get(), size);
     enableUndo = other.enableUndo;
     undoList = other.undoList;
 
@@ -138,7 +142,8 @@ void FakeEEPROM::Read(uint32_t address, size_t n, void* pBuffer) const
   }
 
   CheckAccessBounds(address, n);
-  memcpy(pBuffer, spMem.get() + address, n);
+  if (n != 0U)
+    memcpy(pBuffer, spMem.get() + address, n);
 }
 void FakeEEPROM::Write(uint32_t address, size_t n, void const * pBuffer)
 {
@@ -156,7 +161,8 @@ void FakeEEPROM::Write(uint32_t address, size_t n, void const * pBuffer)
   void * const pDest = spMem.get() + address;
   if (enableUndo)
     undoList.push_back(FakeEEPROMUndo(address, n, pDest));
-  memcpy(pDest, pBuffer, n);
+  if (n != 0U)
+    memcpy(pDest, pBuffer, n);
 }
 bool FakeEEPROM::WriteAndCheck(uint32_t address, size_t n, void const * pBuffer, void* pAuxBuffer)
 {

@@ -204,6 +204,7 @@ History:
 ===============================================================================
 2025-05-29
 - Add support for building unittests with UBSan.
+- Fix UBSan findings
 
 2025-04-23
 - Remove compiler warnings detected by gcc-arm-none-eabi.posix-epos

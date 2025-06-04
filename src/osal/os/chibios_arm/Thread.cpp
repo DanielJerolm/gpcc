@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011, 2024 Daniel Jerolm
+    Copyright (C) 2011, 2024, 2025 Daniel Jerolm
 */
 
 #ifdef OS_CHIBIOS_ARM
@@ -16,7 +16,6 @@
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/string/StringComposer.hpp>
 #include <gpcc/string/tools.hpp>
-#include <cxxabi.h>
 #include <stdexcept>
 #include <system_error>
 
@@ -980,11 +979,6 @@ msg_t Thread::InternalThreadEntry2(void) noexcept
       threadState = ThreadState::terminated;
 
       return TEC_TerminateNow;
-    }
-    catch (abi::__forced_unwind const &)
-    {
-      // catching abi::__forced_unwind should be impossible on this platform
-      PANIC();
     }
     catch (std::exception const & e)
     {

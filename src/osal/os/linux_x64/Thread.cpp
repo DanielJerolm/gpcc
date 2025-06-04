@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011, 2024 Daniel Jerolm
+    Copyright (C) 2011, 2024, 2025 Daniel Jerolm
 */
 
 #ifdef OS_LINUX_X64
@@ -15,7 +15,6 @@
 #include <gpcc/osal/MutexLocker.hpp>
 #include <gpcc/osal/Panic.hpp>
 #include <gpcc/string/StringComposer.hpp>
-#include <cxxabi.h>
 #include <sched.h>
 #include <time.h>
 #include <unistd.h>
@@ -1145,8 +1144,8 @@ ThreadRegistry& Thread::InternalGetThreadRegistry(void)
  *
  * __Exception safety:__\n
  * Strong guarantee.\n
- * The only exception which could be thrown is the special exception `abi::__forced_unwind` which is used by
- * pthread-library to implement deferred thread cancellation.
+ * The only exception which could be thrown is the special exception `abi::__forced_unwind` (or similar) which is used
+ * by pthread-library to implement deferred thread cancellation.
  *
  * __Thread cancellation safety:__\n
  * Welcome and properly handled.
@@ -1180,8 +1179,8 @@ void* Thread::InternalThreadEntry1(void* arg)
  *
  * __Exception safety:__\n
  * Strong guarantee.\n
- * The only exception which could be thrown is the special exception `abi::__forced_unwind` which is used by
- * pthread-library to implement deferred thread cancellation.
+ * The only exception which could be thrown is the special exception `abi::__forced_unwind` (or similar) which is used
+ * by pthread-library to implement deferred thread cancellation.
  *
  * __Thread cancellation safety:__\n
  * Welcome and properly handled.
@@ -1211,7 +1210,11 @@ void* Thread::InternalThreadEntry2(void)
     // set threadState to ThreadState::terminated
     threadState = ThreadState::terminated;
   }
-  catch (abi::__forced_unwind const &)
+  catch (std::exception const & e)
+  {
+    Panic("Thread::InternalThreadEntry2: Caught exception: ", e);
+  }
+  catch (...)
   {
     // Thread was cancelled using POSIX functionality.
     // Do not forget to set threadState to ThreadState::terminated and rethrow the exception.
@@ -1224,18 +1227,10 @@ void* Thread::InternalThreadEntry2(void)
     }
     catch (...)
     {
-      PANIC(); // Handling of deferred cancellation (abi::__forced_unwind) failed
+      PANIC(); // Handling of deferred cancellation failed
     }
 
     throw;
-  }
-  catch (std::exception const & e)
-  {
-    Panic("Thread::InternalThreadEntry2: Caught exception: ", e);
-  }
-  catch (...)
-  {
-    Panic("Thread::InternalThreadEntry2: Caught unknown exception");
   }
 
   return retVal;
