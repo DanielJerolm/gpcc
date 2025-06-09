@@ -58,7 +58,7 @@ function(GuessUserSettings)
       message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported OS")
     endif()
 
-  else()
+  elseif(GPCC_TargetEnvironment STREQUAL "unittest")
 
     if(CMAKE_SYSTEM_NAME STREQUAL "chibios")
       message(FATAL_ERROR "Cannot guess settings: OS 'chibios' is not supported in unittest environment")
@@ -79,6 +79,8 @@ function(GuessUserSettings)
       message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported OS")
     endif()
 
+  else()
+    message(FATAL_ERROR "Cannot guess settings: Unknown GPCC target environment")
   endif()
 
 endfunction()
@@ -120,6 +122,27 @@ function(CheckUserSettings)
                         "Allowed values: ${GPCC_OSValues}")
   endif()
 
+  if(${GPCC_OS} STREQUAL "chibios_arm")
+    if(NOT (CMAKE_SYSTEM_NAME STREQUAL "chibios"))
+      message(FATAL_ERROR "Error: 'GPCC_OS' is 'chibios_*', but the target OS is not ChibiOS.")
+    endif()
+  endif()
+
+    if(${GPCC_OS} STREQUAL "epos_arm")
+    if(NOT (CMAKE_SYSTEM_NAME STREQUAL "epos"))
+      message(FATAL_ERROR "Error: 'GPCC_OS' is 'epos_*', but the target OS is not EPOS.")
+    endif()
+  endif()
+
+  if((${GPCC_OS} STREQUAL "linux_arm") OR
+     (${GPCC_OS} STREQUAL "linux_arm_tfc") OR
+     (${GPCC_OS} STREQUAL "linux_x64") OR
+     (${GPCC_OS} STREQUAL "linux_x64_tfc"))
+    if(NOT (CMAKE_SYSTEM_NAME STREQUAL "Linux"))
+      message(FATAL_ERROR "Error: 'GPCC_OS' is 'Linux*', but the target OS is not Linux.")
+    endif()
+  endif()
+
   # exclude operating systems that are not supported in the productive/unittest environment
   if(${GPCC_TargetEnvironment} STREQUAL "productive")
 
@@ -149,9 +172,18 @@ function(ValidateCompilerInUse)
     if(NOT CMAKE_COMPILER_IS_GNUCXX)
       message(FATAL_ERROR "Error: 'GPCC_Compiler' is 'gcc_arm', but the current compiler is not the gnu compiler!")
     endif()
+    if(NOT ((CMAKE_SYSTEM_PROCESSOR STREQUAL "arm") OR
+            (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64") OR
+            (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")))
+      message(FATAL_ERROR "Error: 'GPCC_Compiler' is 'gcc_arm', but the target CPU is not ARM.")
+    endif()
   elseif(${GPCC_Compiler} STREQUAL "gcc_x64")
     if(NOT CMAKE_COMPILER_IS_GNUCXX)
       message(FATAL_ERROR "Error: 'GPCC_Compiler' is 'gcc_x64', but the current compiler is not the gnu compiler!")
+    endif()
+    if(NOT ((CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64") OR
+            (CMAKE_SYSTEM_PROCESSOR STREQUAL "x64")))
+      message(FATAL_ERROR "Error: 'GPCC_Compiler' is 'gcc_x64', but the target CPU is not x64.")
     endif()
   else()
     message(FATAL_ERROR "Error: Value of 'GPCC_Compiler' is not supported by function 'ValidateCompilerInUse'.")

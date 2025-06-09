@@ -18,6 +18,8 @@
 # gpcc/build_doxygen_${CONFIGURATION}/html
 # gpcc/build_doxygen_${CONFIGURATION}/warnings.log
 
+set -e
+
 CONFIGURATIONS="chibios_arm chibios_arm_extract_all
                epos_arm epos_arm_extract_all
                linux_arm linux_arm_extract_all
