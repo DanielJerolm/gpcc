@@ -25,6 +25,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install valgrind
+      run: sudo apt-get -y install valgrind
+
     - name: CMake configure
       working-directory: ${{github.workspace}}/scripts
       run: ./cmake_config_unittest-buildsrv_release.sh
