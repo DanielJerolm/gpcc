@@ -4,27 +4,27 @@
   "version": "2.0.0",
   "tasks": [
     {
-        "label": "CMake configure: Native Linux productive (release)",
+        "label": "CMake configure: Productive (release)",
         "type": "shell",
-        "command": "./cmake_config_nativelinux-productive-release.sh",
+        "command": "./cmake_config_productive_release.sh",
         "options": {
             "cwd": "${workspaceFolder}/scripts"
         },
         "problemMatcher": []
     },
     {
-        "label": "CMake configure: Native Linux unittest (debug)",
+        "label": "CMake configure: Unittest (debug)",
         "type": "shell",
-        "command": "./cmake_config_nativelinux-unittest-debug.sh",
+        "command": "./cmake_config_unittest_debug.sh",
         "options": {
             "cwd": "${workspaceFolder}/scripts"
         },
         "problemMatcher": []
     },
     {
-        "label": "CMake configure: Native Linux unittest (release)",
+        "label": "CMake configure: Unittest (release)",
         "type": "shell",
-        "command": "./cmake_config_nativelinux-unittest-release.sh",
+        "command": "./cmake_config_unittest_release.sh",
         "options": {
             "cwd": "${workspaceFolder}/scripts"
         },
@@ -83,15 +83,6 @@
         ]
     },
     {
-        "label": "doxygen (linux_x64)",
-        "type": "shell",
-        "command": "./build_doxygen_linux_x64.sh",
-        "options": {
-            "cwd": "${workspaceFolder}/scripts"
-        },
-        "problemMatcher": []
-    },
-    {
         "label": "doxygen (linux_x64_tfc)",
         "type": "shell",
         "command": "./build_doxygen_linux_x64_tfc.sh",
@@ -128,15 +119,6 @@
         "args": [
             "--gtest_filter=-*Death*"
         ],
-        "options": {
-            "cwd": "${workspaceFolder}/scripts"
-        },
-        "problemMatcher": []
-    },
-    {
-        "label": "Run all non-death-unittests (memcheck)",
-        "type": "shell",
-        "command": "./execute_unittests_memcheck.sh",
         "options": {
             "cwd": "${workspaceFolder}/scripts"
         },

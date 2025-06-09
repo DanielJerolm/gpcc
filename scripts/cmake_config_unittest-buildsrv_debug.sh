@@ -13,10 +13,9 @@ set -e
 cd ..
 
 cmake -S . \
-      -B build_unittest \
+      -B build_unittest-buildsrv \
+      -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain_gcc_ubsan.cmake \
       -DGPCC_TargetEnvironment:STRING=unittest \
-      -DGPCC_Compiler:STRING=gcc_x64 \
-      -DGPCC_OS:STRING=linux_x64_tfc \
-      -DCMAKE_BUILD_TYPE=Release
+      -DCMAKE_BUILD_TYPE=Debug
 
 echo "Done"

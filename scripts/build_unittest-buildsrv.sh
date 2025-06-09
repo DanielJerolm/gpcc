@@ -9,10 +9,10 @@
 # Copyright (C) 2025 Daniel Jerolm
 
 
-# This script performs a build-, rebuild-, or clean-operation in the ./build_productive folder.
+# This script performs a build-, rebuild-, or clean-operation in the ./build_unittest-buildsrv folder.
 #
 # Invocation:
-# ./build_productive.sh (clean | all | rebuild)
+# ./build_unittest-buildsrv.sh (clean | all | rebuild)
 
 set -e
 
@@ -23,10 +23,10 @@ if [ $# -ne 1 ]; then
 fi
 
 # ensure that the build-folder exists
-if [ ! -d "../build_productive" ]; then
+if [ ! -d "../build_unittest-buildsrv" ]; then
   echo "Build-folder does not exist."
-  echo "Did you run any of the 'cmake_config_productive_*.sh' scripts?"
+  echo "Did you run any of the 'cmake_config_unittest-buildsrv_*.sh' scripts?"
   exit 1
 fi
 
-./build_x.sh build_productive $1
+./build_x.sh build_unittest-buildsrv $1

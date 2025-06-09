@@ -9,15 +9,15 @@
 # Copyright (C) 2025 Daniel Jerolm
 
 
-# This script builds, rebuilds, or cleans the unittest library and the unittest executable.
+# This script performs a build-, rebuild-, or clean-operation in the ./build_unittest folder.
 #
 # Invocation:
-# ./build_unittest (clean | all | rebuild)
+# ./build_unittest.sh (clean | all | rebuild)
 
 set -e
 
 # ensure that exactly one argument has been passed to the script
-if [ $# -eq 0 ]; then
+if [ $# -ne 1 ]; then
   echo "One argument expected: 'clean' or 'all' or 'rebuild'"
   exit 1
 fi
@@ -25,7 +25,7 @@ fi
 # ensure that the build-folder exists
 if [ ! -d "../build_unittest" ]; then
   echo "Build-folder does not exist."
-  echo "Did you run any of the 'cmake_config_*-unittest-*.sh' scripts?"
+  echo "Did you run any of the 'cmake_config_unittest_*.sh' scripts?"
   exit 1
 fi
 

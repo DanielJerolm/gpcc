@@ -9,7 +9,7 @@
 # Copyright (C) 2025 Daniel Jerolm
 
 
-# This script performs a build, rebuild, or clean operartion on a CMake build-folder.
+# This script performs a build, rebuild, or clean operartion in a CMake build-folder.
 #
 # Invocation:
 # ./build_x.sh <build-folder> (clean | all | rebuild)

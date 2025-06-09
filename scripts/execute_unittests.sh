@@ -9,7 +9,7 @@
 # Copyright (C) 2025 Daniel Jerolm
 
 
-# This script executes all unittests.
+# This script executes all unittests from the ./build_unittest folder.
 #
 # Invocation:
 # ./execute_unittests.sh [args]
@@ -18,8 +18,7 @@
 # It could be used to configure a filter:
 # ./execute_unittests.sh --gtest_filter=Testsuite.Testcase
 
-
 set -e
 
 cd ../build_unittest/output
-./unittests "$@"
+./unittests $@

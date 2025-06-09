@@ -9,18 +9,16 @@
 # Copyright (C) 2025 Daniel Jerolm
 
 
-# This script executes all unittests that have been build using the CMake configuration with
-# GCC's Undefined Behaviour Sanitizer (UBSan).
+# This script executes all unittests from the ./build_unittest-notfc folder.
 #
 # Invocation:
-# ./execute_unittests-ubsan.sh [args]
+# ./execute_unittests-notfc.sh [args]
 #
 # <args> is an optional parameter that is passed to the unittest executable.
 # It could be used to configure a filter:
-# ./execute_unittests-ubsan.sh --gtest_filter=Testsuite.Testcase
-
+# ./execute_unittests-notfc.sh --gtest_filter=Testsuite.Testcase
 
 set -e
 
-cd ../build_unittest-ubsan/output
-./unittests "$@"
+cd ../build_unittest-notfc/output
+./unittests $@

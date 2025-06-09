@@ -27,14 +27,14 @@ jobs:
 
     - name: CMake configure
       working-directory: ${{github.workspace}}/scripts
-      run: ./cmake_config_nativelinux-unittest-debug.sh
+      run: ./cmake_config_unittest-buildsrv_release.sh
 
     - name: Build
       working-directory: ${{github.workspace}}/scripts
       run: |
         echo "Number of cores: $(nproc)"
-        ./build_unittest.sh all
+        ./build_unittest-buildsrv.sh all
 
     - name: Execute unittests
-      working-directory: ${{github.workspace}}/build_unittest/output
-      run: ./unittests
+      working-directory: ${{github.workspace}}/scripts
+      run: ./execute_unittests-buildsrv.sh

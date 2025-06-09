@@ -16,7 +16,7 @@ FontReset='\033[0m'
 FontBoldRed='\033[1;91m'
 
 cmake -S . \
-      -B build_unittest \
+      -B build_unittest-notfc \
       -DGPCC_TargetEnvironment:STRING=unittest \
       -DGPCC_Compiler:STRING=gcc_x64 \
       -DGPCC_OS:STRING=linux_x64 \
@@ -24,7 +24,7 @@ cmake -S . \
       -DGPCC_SkipLoadDependentTests=OFF \
       -DGPCC_SkipVeryBigMemTests=OFF \
       -DGPCC_SkipSpecialRightsBasedTests=OFF \
-      -DCMAKE_BUILD_TYPE=Debug
+      -DCMAKE_BUILD_TYPE=Release
 
 echo "Done"
 echo
