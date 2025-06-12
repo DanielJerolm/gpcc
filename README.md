@@ -48,9 +48,11 @@ The following measures are applied:
 - GCC toolchain
 - CMake 3.21 or newer
 - doxygen 1.9.8 or newer
+- valgrind (recommended)
 - vscode (recommended) with C/C++ Extension Pack
 
 # Getting started
+## Build as a submodule
 GPCC is typically integrated as a git submodule into a git superproject.
 
 GPCC distinguishes two environments: _Productive environment_ and _unittest environment_.  
@@ -92,7 +94,7 @@ The way GPCC is used determines which artifacts are build:
 Note that libarary `gpcc` contains additional classes if GPCC is configured for the unittest environment. These additional classes may be useful for unittesting components of the top level project. They are of no use (or not even applicable) in the productive environment.
 
 ## Build standalone
-### Generate doxygen documentation
+### Build doxygen documentation
 There are multiple configuration files for doxygen, each tuned to a specific configuration of GPCC:  
 _operating system_ + _TFC (y/n)_ + _extract all (y/n)_
 
@@ -111,35 +113,35 @@ Then:
 - From there you can explore the documentation.
 
 ### Build and run unittests from shell
-Note that GPCC uses separate build-folders for the _productive_ environment, for the _unittest_ environment, and for
-the _unittest_ environment with UBSan.  
-The following example configures the build-folder for the unittest environment (./build_unittest) for building the unittests for the native linux host applying _debug_ configuration settings:
+There are three configurations for building a unittest executable standalone. Each has its own independent build-folder:
+
+| Name              | Build folder              | Use case
+| ----------------- | ------------------------- | -----------
+| unittest          | ./build_unittest          | For everyday use during development.
+| unittest-buildsrv | ./build_unittest-buildsrv | Applies UBSan and memcheck (valgrind). 50-60% slower. This is intended for the build server.
+| unittest-notfc    | ./build_unittest-notfc    | Builds unittests without presence of TFC. This enables a few tests for the OSAL that require absence of TFC. This is used on rare occasions and only locally.
+
+For each configuration, there are three scripts to configure, build, and execute the unittests:
+- cmake_config_\<Name\>_\<debug | release\>.sh
+- build_\<Name\>.sh (clean | all | rebuild)
+- execute_\<Name\>.sh [args to be forwarded to googletest]
+
+Example:
 ```
 # We start in GPCC's root folder
 $ cd scripts
-$ ./cmake_config_nativelinux-unittest-debug.sh
+$ ./cmake_config_unittest_debug.sh
 $ ./build_unittest.sh all
 $ ./execute_unittests.sh
 ```
 
-### Build and run unittests with UBSan from shell
-Note that GPCC uses separate build-folders for the _productive_ environment, for the _unittest_ environment, and for the _unittest_ environment with UBSan.  
-The following example configures the build-folder for the unittest environment with UBSan (./build_unittest-ubsan) for building the unittests for the native linux host applying _debug_ configuration settings and GCC's Undefined Behaviour Sanitizer:
+### Build productive library
+The productive library for the native host can be build as shown in the example below.  
+Likewise unittests, there is an independent build folder: ./build_productive
 ```
 # We start in GPCC's root folder
 $ cd scripts
-$ ./cmake_config_nativelinux-unittest-ubsan.sh
-$ ./build_unittest-ubsan.sh all
-$ ./execute_unittests-ubsan.sh
-```
-
-### Build productive library for native Linux
-Note that GPCC uses separate build-folders for the _productive_ environment, for the _unittest_ environment, and for the _unittest_ environment with UBSan.  
-The following example configures the build-folder for the productive environment (./build_productive) for building the productive library for the native linux host applying _release_ configuration settings:
-```
-# We start in GPCC's root folder
-$ cd scripts
-$ ./cmake_config_nativelinux-productive-release.sh
+$ ./cmake_config_productive_release.sh
 $ ./build_productive.sh all
 ```
 
@@ -159,19 +161,19 @@ In GPCC's root folder invoke vscode:
 $ vscode .
 ```
 
-GPCC uses separate build-folders for the _productive_ environment, for the _unittest_ environment, and for the _unittest_ environment with UBSan. During CMake initialization of a build-folder, a file `compile_commands.json` will be created in the build-folder. The file is required by Intellisense to understand the code.
+GPCC uses separate build-folders for the _productive_ environment and for the different configurations of the _unittest_ environment. During CMake initialization of a build-folder, a file `compile_commands.json` will be created in the build-folder. The file is required by Intellisense to understand the code.
 
-In the previous chapters, the CMake initialization of the build-folders has been accomplished via the shell-scripts in the scripts-folder. A subset of the scripts can be invoked via vscode tasks. With the vscode settings supplied with GPCC, you can build the _productive_ environment and the _unittest_ environment _without_ UBSan from within vscode.
+In the previous chapters, the CMake initialization of the build-folders has been accomplished via the shell-scripts in the scripts-folder. A subset of the scripts can be invoked via vscode tasks. With the vscode settings supplied with GPCC, you can build the productive library and the unittest executable from within vscode.
 
 Let's configure the build folders. Run the following tasks:
-- Main menue: Terminal --> Run Task... --> CMake configure: Native Linux productive (release)
-- Main menue: Terminal --> Run Task... --> CMake configure: Native Linux unittest (debug)
+- Main menue: Terminal --> Run Task... --> CMake configure: Productive (release)
+- Main menue: Terminal --> Run Task... --> CMake configure: Unittest (debug)
 
 Now open a file, e.g. `src/cli/CLI.cpp`.
 
-In the bottom right of the vscode window there should be a bell and a label `Linux-Productive` or `Linux-Unittest`. The label is only visible, if a cpp- or hpp-file is currently open. For instance it will vanish, if you open this markdown file you are currently reading.
+In the bottom right of the vscode window there should be a bell and a label `Linux-x64-Productive` or `Linux-x64-Unittest`. The label is only visible, if a cpp- or hpp-file is currently open. For instance it will vanish, if you open this markdown file you are currently reading.
 
-The label indicates the currently active _C/C++ configuration_. If you click on the label, then a menue appears at the top of the vscode window and you can select the configuration. By changing between `Linux-Productive` or `Linux-Unittest` Intellisense instantly switches between the _productive_ environment and the _unittest_ environment _without_ UBSan. In both environments #defines and include-paths may differ and thus Intellisense will evaluate preprocessor directives and #includes differently.
+The label indicates the currently active _C/C++ configuration_. If you click on the label, then a menue appears at the top of the vscode window and you can select the configuration. By changing between `Linux-x64-Productive` and `Linux-x64-Unittest` Intellisense instantly switches between the build folders and also between the _productive_ environment and the _unittest_ environment. In both environments #defines and include-paths may differ and thus Intellisense will evaluate preprocessor directives and #includes differently.
 
 For now, you should not see any entries in the "problems window" and there should be no errors highlighted in the code.
 

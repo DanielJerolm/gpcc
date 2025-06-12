@@ -55,6 +55,8 @@ Note:
 - The execution time of the unittests is significantly larger due to absence of TFC (approx. x100).
 - Testcases may fail due to missing user permissions.
 
+There is a separate build-folder and configuration script for this configuration. See `scripts/cmake_config_unittest-notfc_*.sh`.
+
 ## Other options
 __GPCC_CliNoFontStyles__  
 Disables CLI font style control. This is mandatory when building for the unittest environment.
