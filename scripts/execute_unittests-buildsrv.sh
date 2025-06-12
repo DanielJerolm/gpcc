@@ -21,6 +21,13 @@
 
 set -e
 
+# ensure that the unittest executable is existing
+if [ ! -f "../build_unittest-buildsrv/output/unittests" ]; then
+  echo "The unittest executable is not existing."
+  echo "Did you run 'cmake_config_unittest-buildsrv_*.sh' and 'build_unittest-buildsrv.sh' ?"
+  exit 1
+fi
+
 if [ $# -eq 0 ]; then
 
   cd ../build_unittest-buildsrv/output

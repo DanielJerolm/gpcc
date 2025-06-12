@@ -20,5 +20,12 @@
 
 set -e
 
+# ensure that the unittest executable is existing
+if [ ! -f "../build_unittest-notfc/output/unittests" ]; then
+  echo "The unittest executable is not existing."
+  echo "Did you run 'cmake_config_unittest-notfc_*.sh' and 'build_unittest-notfc.sh' ?"
+  exit 1
+fi
+
 cd ../build_unittest-notfc/output
 ./unittests $@
