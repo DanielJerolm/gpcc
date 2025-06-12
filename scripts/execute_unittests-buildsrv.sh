@@ -14,11 +14,9 @@
 # Invocation:
 # ./execute_unittests-buildsrv.sh [args]
 #
-# <args> is an optional parameter that can be used to filter testcases.
-# Currently the filter must not select any death tests.
-#
-# Example:
-# ./execute_unittests-buildsrv.sh Testsuite.Testcase
+# <args> is an optional parameter that is passed to the unittest executable.
+# It could be used to configure a filter:
+# ./execute_unittests-buildsrv.sh --gtest_filter=Testsuite.Testcase
 #
 
 set -e
@@ -33,12 +31,9 @@ if [ $# -eq 0 ]; then
   # Run all non-death tests with memcheck
   valgrind --tool=memcheck --leak-check=full --show-leak-kinds=definite,indirect,possible ./unittests --gtest_filter=-*Death*
 
-elif [ $# -eq 1 ]; then
+else
 
   cd ../build_unittest-buildsrv/output
-  valgrind --tool=memcheck --leak-check=full --show-leak-kinds=definite,indirect,possible ./unittests --gtest_filter=$1
+  valgrind --tool=memcheck --leak-check=full --show-leak-kinds=definite,indirect,possible ./unittests $@
 
-else
-  echo "Exactly one argument expected: Testsuite.Testcase"
-  exit 1
 fi
