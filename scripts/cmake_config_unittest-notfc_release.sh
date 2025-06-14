@@ -20,7 +20,7 @@ cmake -S . \
       -DGPCC_TargetEnvironment:STRING=unittest \
       -DGPCC_Compiler:STRING=gcc_x64 \
       -DGPCC_OS:STRING=linux_x64 \
-      -DGPCC_SkipTFCBasedTests=OFF \
+      -DGPCC_SkipTFCBasedTests=ON \
       -DGPCC_SkipLoadDependentTests=OFF \
       -DGPCC_SkipVeryBigMemTests=OFF \
       -DGPCC_SkipSpecialRightsBasedTests=OFF \
@@ -28,9 +28,12 @@ cmake -S . \
 
 echo "Done"
 echo
-echo -e "${FontBoldRed}=================================================================="
-echo                  "= Note: GPCC has been configured to be build with load-dependent ="
-echo                  "= unittests. This configuration requires an idle machine and is  ="
-echo                  "= intended for manual use only. It is not suitablable for        ="
-echo                  "= automated CI/CD pipelines.                                     ="
-echo -e               "==================================================================${FontReset}"
+echo -e "${FontBoldRed}=========================================================================="
+echo                  "= Note:                                                                  ="
+echo                  "= GPCC has been configured to be build with additional special testcases ="
+echo                  "= enabled. These tests have special requirements (e.g. an idle machine)  ="
+echo                  "= and may fail sporadically if the requirements are not met.             ="
+echo                  "= This configuration is for manual use only. It is in particular not     ="
+echo                  "= suitable for automated CI/CD pipelines.                                ="
+echo                  "= See docs/special_unittest_configuration_options.md for details.        ="
+echo -e               "==========================================================================${FontReset}"

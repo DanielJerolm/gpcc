@@ -20,6 +20,9 @@
 
 set -e
 
+FontReset='\033[0m'
+FontBoldRed='\033[1;91m'
+
 # ensure that the unittest executable is existing
 if [ ! -f "../build_unittest-notfc/output/unittests" ]; then
   echo "The unittest executable is not existing."
@@ -28,4 +31,16 @@ if [ ! -f "../build_unittest-notfc/output/unittests" ]; then
 fi
 
 cd ../build_unittest-notfc/output
+
+set +e
 ./unittests $@
+
+if [ $? -ne 0 ]; then
+  echo -e "${FontBoldRed}====================================================================="
+  echo                  "= There is at least one failed test. This is not completely         ="
+  echo                  "= unanticipated since additional \"special\" tests are enabled.       ="
+  echo                  "= Check the output carefully.                                       ="
+  echo                  "= See docs/special_unittest_configuration_options.md for details.   ="
+  echo -e               "=====================================================================${FontReset}"
+  exit 1
+fi
