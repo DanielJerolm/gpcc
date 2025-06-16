@@ -14,69 +14,59 @@ function(GuessUserSettings)
 
   # Guess compiler
   if(CMAKE_COMPILER_IS_GNUCXX)
-    if((CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64") OR
-       (CMAKE_SYSTEM_PROCESSOR STREQUAL "x64"))
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|x64")
       set(GPCC_Compiler "gcc_x64" CACHE STRING "" FORCE)
-    elseif((CMAKE_SYSTEM_PROCESSOR STREQUAL "arm") OR
-           (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64") OR
-           (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64"))
+    elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm.*|aarch.*|cortex.*")
       set(GPCC_Compiler "gcc_arm" CACHE STRING "" FORCE)
     else()
-      message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported processor")
+      message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported processor '${CMAKE_SYSTEM_PROCESSOR}'")
     endif()
   else()
     message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported compiler")
   endif()
 
-  # Guess OS
+  # Guess OS (productive environment)
   if(GPCC_TargetEnvironment STREQUAL "productive")
 
     if(CMAKE_SYSTEM_NAME STREQUAL "chibios")
-      if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
+      if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm.*|aarch.*|cortex.*")
         set(GPCC_OS "chibios_arm" CACHE STRING "" FORCE)
       else()
-        message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported processor")
+        message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported processor '${CMAKE_SYSTEM_PROCESSOR}'")
       endif()
     elseif(CMAKE_SYSTEM_NAME STREQUAL "epos")
-      if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
+      if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm.*|aarch.*|cortex.*")
         set(GPCC_OS "epos_arm" CACHE STRING "" FORCE)
       else()
-        message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported processor")
+        message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported processor '${CMAKE_SYSTEM_PROCESSOR}'")
       endif()
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-      if((CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64") OR
-         (CMAKE_SYSTEM_PROCESSOR STREQUAL "x64"))
+      if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|x64")
         set(GPCC_OS "linux_x64" CACHE STRING "" FORCE)
-      elseif((CMAKE_SYSTEM_PROCESSOR STREQUAL "arm") OR
-             (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64") OR
-             (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64"))
+      elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm.*|aarch.*|cortex.*")
         set(GPCC_Compiler "linux_arm" CACHE STRING "" FORCE)
       else()
-        message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported processor")
+        message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported processor '${CMAKE_SYSTEM_PROCESSOR}'")
       endif()
     else()
-      message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported OS")
+      message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported OS '${CMAKE_SYSTEM_NAME}'")
     endif()
 
+  # Guess OS (unittest environment)
   elseif(GPCC_TargetEnvironment STREQUAL "unittest")
 
-    if(CMAKE_SYSTEM_NAME STREQUAL "chibios")
-      message(FATAL_ERROR "Cannot guess settings: OS 'chibios' is not supported in unittest environment")
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "epos")
-      message(FATAL_ERROR "Cannot guess settings: OS 'epos' is not supported in unittest environment")
+    if(CMAKE_SYSTEM_NAME MATCHES "chibios|epos")
+      message(FATAL_ERROR "Cannot guess settings: OS '${CMAKE_SYSTEM_NAME}' is not supported in unittest environment")
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-      if((CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64") OR
-         (CMAKE_SYSTEM_PROCESSOR STREQUAL "x64"))
+      if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|x64")
         set(GPCC_OS "linux_x64_tfc" CACHE STRING "" FORCE)
-      elseif((CMAKE_SYSTEM_PROCESSOR STREQUAL "arm") OR
-             (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64") OR
-             (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64"))
+      elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm.*|aarch.*|cortex.*")
         set(GPCC_Compiler "linux_arm_tfc" CACHE STRING "" FORCE)
       else()
-        message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported processor")
+        message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported processor '${CMAKE_SYSTEM_PROCESSOR}'")
       endif()
     else()
-      message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported OS")
+      message(FATAL_ERROR "Cannot guess settings: Unknown/unsupported OS '${CMAKE_SYSTEM_NAME}'")
     endif()
 
   else()
@@ -122,42 +112,35 @@ function(CheckUserSettings)
                         "Allowed values: ${GPCC_OSValues}")
   endif()
 
-  if(${GPCC_OS} STREQUAL "chibios_arm")
+  if(${GPCC_OS} MATCHES "chibios.*")
     if(NOT (CMAKE_SYSTEM_NAME STREQUAL "chibios"))
-      message(FATAL_ERROR "Error: 'GPCC_OS' is 'chibios_*', but the target OS is not ChibiOS.")
+      message(FATAL_ERROR "Error: GPCC_OS is '${GPCC_OS}', but the target OS is not ChibiOS.")
     endif()
   endif()
 
-    if(${GPCC_OS} STREQUAL "epos_arm")
+  if(${GPCC_OS} MATCHES "epos.*")
     if(NOT (CMAKE_SYSTEM_NAME STREQUAL "epos"))
-      message(FATAL_ERROR "Error: 'GPCC_OS' is 'epos_*', but the target OS is not EPOS.")
+      message(FATAL_ERROR "Error: GPCC_OS is '${GPCC_OS}', but the target OS is not EPOS.")
     endif()
   endif()
 
-  if((${GPCC_OS} STREQUAL "linux_arm") OR
-     (${GPCC_OS} STREQUAL "linux_arm_tfc") OR
-     (${GPCC_OS} STREQUAL "linux_x64") OR
-     (${GPCC_OS} STREQUAL "linux_x64_tfc"))
+  if(${GPCC_OS} MATCHES "linux.*")
     if(NOT (CMAKE_SYSTEM_NAME STREQUAL "Linux"))
-      message(FATAL_ERROR "Error: 'GPCC_OS' is 'Linux*', but the target OS is not Linux.")
+      message(FATAL_ERROR "Error: GPCC_OS is '${GPCC_OS}', but the target OS is not Linux.")
     endif()
   endif()
 
   # exclude operating systems that are not supported in the productive/unittest environment
   if(${GPCC_TargetEnvironment} STREQUAL "productive")
 
-    if(${GPCC_OS} STREQUAL "linux_arm_tfc")
-      message(FATAL_ERROR "Error: 'GPCC_OS=linux_arm_tfc' is not supported for the productive environment.")
-    elseif(${GPCC_OS} STREQUAL "linux_x64_tfc")
-      message(FATAL_ERROR "Error: 'GPCC_OS=linux_x64_tfc' is not supported for the productive environment.")
+    if(${GPCC_OS} MATCHES ".*tfc.*")
+      message(FATAL_ERROR "Error: OSAL with TFC is not supported in the productive environment.")
     endif()
 
   else()
 
-    if(${GPCC_OS} STREQUAL "chibios_arm")
-      message(FATAL_ERROR "Error: 'GPCC_OS=chibios_arm' is not supported for the unittest environment.")
-    elseif(${GPCC_OS} STREQUAL "epos_arm")
-      message(FATAL_ERROR "Error: 'GPCC_OS=epos_arm' is not supported for the unittest environment.")
+    if(NOT (${GPCC_OS} MATCHES "linux.*"))
+      message(FATAL_ERROR "Error: GPCC_OS '${GPCC_OS}' is not supported for the unittest environment.")
     endif()
 
   endif()
@@ -170,20 +153,17 @@ function(ValidateCompilerInUse)
 
   if(${GPCC_Compiler} STREQUAL "gcc_arm")
     if(NOT CMAKE_COMPILER_IS_GNUCXX)
-      message(FATAL_ERROR "Error: 'GPCC_Compiler' is 'gcc_arm', but the current compiler is not the gnu compiler!")
+      message(FATAL_ERROR "Error: GPCC_Compiler is '${GPCC_Compiler}', but the current compiler is not the gnu compiler!")
     endif()
-    if(NOT ((CMAKE_SYSTEM_PROCESSOR STREQUAL "arm") OR
-            (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64") OR
-            (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")))
-      message(FATAL_ERROR "Error: 'GPCC_Compiler' is 'gcc_arm', but the target CPU is not ARM.")
+    if(NOT (CMAKE_SYSTEM_PROCESSOR MATCHES "arm.*|aarch.*|cortex.*"))
+      message(FATAL_ERROR "Error: GPCC_Compiler is '${GPCC_Compiler}', but the target CPU is not ARM.")
     endif()
   elseif(${GPCC_Compiler} STREQUAL "gcc_x64")
     if(NOT CMAKE_COMPILER_IS_GNUCXX)
-      message(FATAL_ERROR "Error: 'GPCC_Compiler' is 'gcc_x64', but the current compiler is not the gnu compiler!")
+      message(FATAL_ERROR "Error: GPCC_Compiler is '${GPCC_Compiler}', but the current compiler is not the gnu compiler!")
     endif()
-    if(NOT ((CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64") OR
-            (CMAKE_SYSTEM_PROCESSOR STREQUAL "x64")))
-      message(FATAL_ERROR "Error: 'GPCC_Compiler' is 'gcc_x64', but the target CPU is not x64.")
+    if(NOT (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|x64"))
+      message(FATAL_ERROR "Error: GPCC_Compiler is '${GPCC_Compiler}', but the target CPU is not x64.")
     endif()
   else()
     message(FATAL_ERROR "Error: Value of 'GPCC_Compiler' is not supported by function 'ValidateCompilerInUse'.")
@@ -197,8 +177,7 @@ function(ValidateSkipTestOptions)
 
   # If TFC-based tests are not skipped, then an OSAL with TFC is mandatory
   if((NOT GPCC_SkipTFCBasedTests) AND
-     (NOT (${GPCC_OS} STREQUAL "linux_arm_tfc")) AND
-     (NOT (${GPCC_OS} STREQUAL "linux_x64_tfc")))
+     (NOT (${GPCC_OS} MATCHES ".*_tfc")))
     message(WARNING "TFC is not present and unittests that rely on TFC are not excluded!\n"
                     "Check options 'GPCC_SkipTFCBasedTests' and 'GPCC_OS'.")
   endif()
@@ -265,17 +244,14 @@ endfunction()
 function(SetupLinkLibraries target)
   # This sets up the linkage to other libraries required by GPCC in some configurations.
 
-  if(${GPCC_OS} STREQUAL "chibios_arm")
+  if(${GPCC_OS} MATCHES "chibios.*")
     # The top-level project will provide the required linkage to a library containing ChibiOS/RT
     # and a suitable C++ runtime.
 
-  elseif(${GPCC_OS} STREQUAL "epos_arm")
+  elseif(${GPCC_OS} MATCHES "epos.*")
     target_link_libraries(${target} PUBLIC epos_kernel)
 
-  elseif((${GPCC_OS} STREQUAL "linux_arm") OR
-         (${GPCC_OS} STREQUAL "linux_arm_tfc") OR
-         (${GPCC_OS} STREQUAL "linux_x64") OR
-         (${GPCC_OS} STREQUAL "linux_x64_tfc"))
+  elseif(${GPCC_OS} MATCHES "linux.*")
 
     find_package(Threads)
     if (NOT CMAKE_USE_PTHREADS_INIT)
