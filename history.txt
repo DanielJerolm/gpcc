@@ -202,6 +202,9 @@ Next to do:
 
 History:
 ===============================================================================
+2025-07-15
+- Fix doxygen warning (could not reference SetPanicHandler())
+
 2025-07-14
 - Adopt breaking change of EPOS-API (return value of epos_convar_TimeLimitedWait())
 
