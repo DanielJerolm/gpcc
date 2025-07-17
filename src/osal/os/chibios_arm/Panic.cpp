@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #ifdef OS_CHIBIOS_ARM
@@ -334,7 +334,7 @@ void Panic(char const * const pFileName, int const line, std::exception const & 
  * \brief Retrieves the currently configured panic handler function.
  *
  * This is intended to query and store the current panic handler before setting up a custom one via
- * @ref SetPanicHandler(). At a later point in time, the previous panic handler can be recovered.
+ * @ref gpcc::osal::SetPanicHandler(). At a later point in time, the previous panic handler can be recovered.
  *
  * A typical scenario that requires recovery of the original panic handler is the temporary installation of a custom
  * panic handler during a unittest case.
