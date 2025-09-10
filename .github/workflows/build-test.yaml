@@ -15,6 +15,9 @@ on:
   # Allows triggering this workflow manually from the Action tab
   workflow_dispatch:
 
+permissions:
+  read-all
+
 jobs:
   build-and-test:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
