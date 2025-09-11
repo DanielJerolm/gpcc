@@ -16,7 +16,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  read-all
+  contents:
+    read
 
 jobs:
   build-and-test:
