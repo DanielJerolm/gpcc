@@ -17,7 +17,7 @@ will be included from a top-level CMake project via `add_subdirectory(gpcc)`.
   `gcc_arm` or `gcc_x64`.
 
 - GPCC_OS:  
-  `chibios_arm`, `epos_arm`, `linux_arm`, `linux_arm_tfc`, `linux_x64`, `linux_x64_tfc`
+  `chibios_arm`, `epos_arm`, `linux_arm`, `linux_arm_tfc`, `linux_x64`, `linux_x64_tfc`, `zephyr`
 
 For details please inspect `CMakeLists.txt`.
 
@@ -44,6 +44,7 @@ chibios_arm   | target_link_libraries(gpcc PUBLIC <chibios_and_cpp_runtime>)
 epos_arm      | Presence of library `epos_kernel`
 linux_arm     | -
 linux_x64     | -
+zephyr        | TODO ZEPHYR
 
 __Artifacts build:__
 - Static library `gpcc`

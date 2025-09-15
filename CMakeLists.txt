@@ -37,7 +37,7 @@ set_property(CACHE GPCC_Compiler PROPERTY STRINGS ${GPCC_CompilerValues})
 # User setting "GPCC_OS"
 # ---------------------------------------------------------------------------------------------------------------------
 set(GPCC_OS CACHE STRING "Operating system present on the target where GPCC will be used.")
-set(GPCC_OSValues "chibios_arm;epos_arm;linux_arm;linux_arm_tfc;linux_x64;linux_x64_tfc")
+set(GPCC_OSValues "chibios_arm;epos_arm;linux_arm;linux_arm_tfc;linux_x64;linux_x64_tfc;zephyr")
 
 string(REPLACE ";"  ", " osValues_str "${GPCC_OSValues}")
 set_property(CACHE GPCC_OS PROPERTY STRINGS ${GPCC_OSValues})
