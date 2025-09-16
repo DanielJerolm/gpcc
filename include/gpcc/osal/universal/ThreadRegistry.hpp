@@ -8,7 +8,13 @@
     Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
-#if (defined(OS_CHIBIOS_ARM) || defined(OS_EPOS_ARM) || defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC))
+#if (   defined(OS_CHIBIOS_ARM)    \
+     || defined(OS_EPOS_ARM)       \
+     || defined(OS_LINUX_ARM)      \
+     || defined(OS_LINUX_ARM_TFC)  \
+     || defined(OS_LINUX_X64)      \
+     || defined(OS_LINUX_X64_TFC)  \
+     || defined(OS_ZEPHYR))
 
 #ifndef THREADREGISTRY_HPP_201701282133
 #define THREADREGISTRY_HPP_201701282133
@@ -101,4 +107,4 @@ inline ThreadRegistry::iterator ThreadRegistry::ThreadListEnd(void) const
 } // namespace gpcc
 
 #endif // #ifndef THREADREGISTRY_HPP_201701282133
-#endif // #if (defined(OS_CHIBIOS_ARM) || defined(OS_EPOS_ARM) || defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC))
+#endif // #if OS_*

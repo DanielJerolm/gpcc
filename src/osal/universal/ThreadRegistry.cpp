@@ -8,7 +8,13 @@
     Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
-#if (defined(OS_CHIBIOS_ARM) || defined(OS_EPOS_ARM) || defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC))
+#if (   defined(OS_CHIBIOS_ARM)    \
+     || defined(OS_EPOS_ARM)       \
+     || defined(OS_LINUX_ARM)      \
+     || defined(OS_LINUX_ARM_TFC)  \
+     || defined(OS_LINUX_X64)      \
+     || defined(OS_LINUX_X64_TFC)  \
+     || defined(OS_ZEPHYR))
 
 #include <gpcc/osal/ThreadRegistry.hpp>
 #include <gpcc/osal/Thread.hpp>
@@ -112,4 +118,4 @@ void ThreadRegistry::UnregisterThread(Thread const & thread)
 } // namespace osal
 } // namespace gpcc
 
-#endif // #if (defined(OS_CHIBIOS_ARM) || defined(OS_EPOS_ARM) || defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC))
+#endif // #if OS_*
