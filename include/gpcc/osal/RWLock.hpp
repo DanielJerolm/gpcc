@@ -35,4 +35,8 @@
 #include "universal/RWLock.hpp"
 #endif
 
+#ifdef OS_ZEPHYR
+#include "universal/RWLock.hpp"
+#endif
+
 #endif // #ifndef RWLOCK_HPP_201701271625

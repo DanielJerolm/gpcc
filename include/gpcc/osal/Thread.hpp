@@ -35,4 +35,8 @@
 #include "os/linux_x64_tfc/Thread.hpp"
 #endif
 
+#ifdef OS_ZEPHYR
+#include "os/zephyr/Thread.hpp"
+#endif
+
 #endif // #ifndef THREAD_HPP_201701271627

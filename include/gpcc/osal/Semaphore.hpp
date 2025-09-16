@@ -35,4 +35,8 @@
 #include "os/linux_x64_tfc/Semaphore.hpp"
 #endif
 
+#ifdef OS_ZEPHYR
+#include "os/zephyr/Semaphore.hpp"
+#endif
+
 #endif // #ifndef SEMAPHORE_HPP_201701271629

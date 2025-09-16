@@ -35,4 +35,8 @@
 #include "os/linux_x64_tfc/ConditionVariable.hpp"
 #endif
 
+#ifdef OS_ZEPHYR
+#include "os/zephyr/ConditionVariable.hpp"
+#endif
+
 #endif // #ifndef CONDITIONVARIABLE_HPP_201701271622

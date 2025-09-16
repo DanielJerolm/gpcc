@@ -35,4 +35,8 @@
 #include "os/linux_x64_tfc/Mutex.hpp"
 #endif
 
+#ifdef OS_ZEPHYR
+#include "os/zephyr/Mutex.hpp"
+#endif
+
 #endif // #ifndef MUTEX_HPP_201701271624

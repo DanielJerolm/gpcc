@@ -35,4 +35,8 @@
 #include "universal/RWLockReadLocker.hpp"
 #endif
 
+#ifdef OS_ZEPHYR
+#include "universal/RWLockReadLocker.hpp"
+#endif
+
 #endif // #ifndef RWLOCKREADLOCKER_HPP_201806301441

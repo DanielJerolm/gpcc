@@ -35,4 +35,8 @@
 #include "os/linux_x64_tfc/Panic.hpp"
 #endif
 
+#ifdef OS_ZEPHYR
+#include "os/zephyr/Panic.hpp"
+#endif
+
 #endif // #ifndef PANIC_HPP_201701271625

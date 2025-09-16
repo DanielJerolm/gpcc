@@ -35,4 +35,8 @@
 #include "universal/MutexLocker.hpp"
 #endif
 
+#ifdef OS_ZEPHYR
+#include "universal/MutexLocker.hpp"
+#endif
+
 #endif // #ifndef MUTEXLOCKER_HPP_201701271624

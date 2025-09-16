@@ -35,4 +35,8 @@
 #include "universal/IThreadRegistry.hpp"
 #endif
 
+#ifdef OS_ZEPHYR
+#include "universal/IThreadRegistry.hpp"
+#endif
+
 #endif /* #ifndef ITHREADREGISTRY_HPP_201701271623 */

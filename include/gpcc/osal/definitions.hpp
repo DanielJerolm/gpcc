@@ -35,4 +35,8 @@
 #include "os/linux_x64_tfc/definitions.hpp"
 #endif
 
+#ifdef OS_ZEPHYR
+#include "os/zephyr/definitions.hpp"
+#endif
+
 #endif // DEFINITIONS_HPP_202408132013

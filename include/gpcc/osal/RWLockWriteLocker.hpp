@@ -35,4 +35,8 @@
 #include "universal/RWLockWriteLocker.hpp"
 #endif
 
+#ifdef OS_ZEPHYR
+#include "universal/RWLockWriteLocker.hpp"
+#endif
+
 #endif // #ifndef RWLOCKWRITELOCKER_HPP_201806301442

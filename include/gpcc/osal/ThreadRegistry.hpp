@@ -35,4 +35,8 @@
 #include "universal/ThreadRegistry.hpp"
 #endif
 
+#ifdef OS_ZEPHYR
+#include "universal/ThreadRegistry.hpp"
+#endif
+
 #endif // #ifndef THREADREGISTRY_HPP_201701271627
