@@ -8,7 +8,13 @@
     Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
-#if (defined(OS_CHIBIOS_ARM) || defined(OS_EPOS_ARM) || defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC))
+#if (   defined(OS_CHIBIOS_ARM)    \
+     || defined(OS_EPOS_ARM)       \
+     || defined(OS_LINUX_ARM)      \
+     || defined(OS_LINUX_ARM_TFC)  \
+     || defined(OS_LINUX_X64)      \
+     || defined(OS_LINUX_X64_TFC)  \
+     || defined(OS_ZEPHYR))
 
 #ifndef ADVANCEDMUTEXLOCKER_HPP_201701271629
 #define ADVANCEDMUTEXLOCKER_HPP_201701271629
@@ -203,4 +209,4 @@ inline bool AdvancedMutexLocker::IsLocked(void) const noexcept
 } // namespace gpcc
 
 #endif // #ifndef ADVANCEDMUTEXLOCKER_HPP_201701271629
-#endif // #if (defined(OS_CHIBIOS_ARM) || defined(OS_EPOS_ARM) || defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC))
+#endif // #if OS_*
