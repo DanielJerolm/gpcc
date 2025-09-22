@@ -83,7 +83,7 @@ FixCapFIFO<T, SIZET>::FixCapFIFO(size_t const capacity)
  * - - -
  *
  * \param other
- * Unmodifiable reference to the other FIFO instance that shall be copied.
+ * The other FIFO instance that shall be copied.
  */
 template <typename T, typename SIZET>
 FixCapFIFO<T, SIZET>::FixCapFIFO(FixCapFIFO<T, SIZET> const & other)
@@ -113,7 +113,7 @@ FixCapFIFO<T, SIZET>::FixCapFIFO(FixCapFIFO<T, SIZET> const & other)
  * - - -
  *
  * \param rhv
- * Unmodifiable reference to the other FIFO instance.\n
+ * The other FIFO instance.\n
  * Both FIFOs must have the same capacity.
  *
  * \return
@@ -155,7 +155,7 @@ FixCapFIFO<T, SIZET>& FixCapFIFO<T, SIZET>::operator=(FixCapFIFO<T, SIZET> const
  * - - -
  *
  * \param rhv
- * Universal reference to the other FIFO instance whose content shall be move-assigned to this instance.\n
+ * The other FIFO instance whose content shall be move-assigned to this instance.\n
  * The other FIFO instance is left in empty state. Its capacity is valid, but undefined.
  *
  * \return
@@ -524,7 +524,7 @@ size_t FixCapFIFO<T, SIZET>::Pop(T* const pDest, size_t const n) noexcept
  * - - -
  *
  * \param pOtherData
- * Pointer to the memory of the other FIFO. Data is copied from this location into this FIFO's storage according to
+ * Pointer to the memory of the other FIFO. Data is copied from that location into this FIFO's storage according to
  * @ref size_, @ref rdIndex_ and @ref wrIndex_.
  */
 template <typename T, typename SIZET>
