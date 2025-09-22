@@ -549,8 +549,7 @@ void FixCapFIFO<T, SIZET>::CopyFromOther(T const * const pOtherData) noexcept
       // not full, wrap: |xxx    xxx|
       //                  <b>    <a>
       SIZET const a = (capacity_ - rdIndex_);
-      if (a != 0U)
-        memcpy(spMemory_.get() + rdIndex_, pOtherData + rdIndex_, a * sizeof(T));
+      memcpy(spMemory_.get() + rdIndex_, pOtherData + rdIndex_, a * sizeof(T));
 
       SIZET const b = size_ - a;
       if (b != 0U)
