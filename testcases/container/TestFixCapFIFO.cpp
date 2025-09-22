@@ -161,7 +161,7 @@ static void UnsafePopAndCheckValues(UUTTYPE & uut,
 }
 
 /**
- * \brief Pushes @p count values onto the @p uut using `Push().`
+ * \brief Pushes @p count values onto the @p uut using `PushMultiple().`
  *
  * The pushed values start with @p nextPushedValue. Each pushed value is incremented by one, so that each pushed value
  * is unique.
@@ -222,7 +222,7 @@ static void PushValues(UUTTYPE & uut,
   for (size_t i = 0U; i < count; ++i)
     data.push_back(static_cast<T>(nextPushedValue + i));
 
-  size_t const pushed = uut.Push(data.data(), data.size());
+  size_t const pushed = uut.PushMultiple(data.data(), data.size());
   ASSERT_LE(pushed, count);
 
   nextPushedValue += pushed;
@@ -230,7 +230,7 @@ static void PushValues(UUTTYPE & uut,
 }
 
 /**
- * \brief Pops @p count values from @p uut using `Pop()` and checks the popped values.
+ * \brief Pops @p count values from @p uut using `PopMultiple()` and checks the popped values.
  *
  * The popped values are compared with an expected value. The first expected value is @p nextExpectedPoppedValue. The
  * expected value is incremented for each popped value. This function is the counterpart of @ref PushValues().
@@ -288,7 +288,7 @@ static void PopAndCheckValues(UUTTYPE & uut,
   // prepare vector for popped data
   std::vector<T> data(count);
 
-  size_t const popped = uut.Pop(data.data(), data.size());
+  size_t const popped = uut.PopMultiple(data.data(), data.size());
   ASSERT_LE(popped, data.size());
   data.resize(popped);
 
@@ -596,9 +596,9 @@ TEST(gpcc_container_FixCapFIFO_Tests, UnsafePushPop)
 
 TEST(gpcc_container_FixCapFIFO_Tests, PushPop)
 {
-  // This test case pushes and pops different numbers of elements onto and from the FIFO using Push() and Pop(),
-  // starting at different states of the FIFO. The FIFO state is comprised of the index of the read-pointer and
-  // write-pointer. All possible states are generated using two nested loops.
+  // This test case pushes and pops different numbers of elements onto and from the FIFO using PushMultiple() and
+  // PopMultiple(), starting at different states of the FIFO. The FIFO state is comprised of the index of the
+  // read-pointer and write-pointer. All possible states are generated using two nested loops.
 
   // counter for creating unique values pushed onto the UUT during this test and for checking the popped values
   uint32_t pushValue = 0U;

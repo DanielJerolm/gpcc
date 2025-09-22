@@ -89,8 +89,8 @@ class FixCapFIFO final
     void UnsafePush(T const value) noexcept;
     T UnsafePop(void) noexcept;
 
-    size_t Push(T const * const pSrc, size_t const n) noexcept;
-    size_t Pop(T* const pDest, size_t const n) noexcept;
+    size_t PushMultiple(T const * const pSrc, size_t const n) noexcept;
+    size_t PopMultiple(T* const pDest, size_t const n) noexcept;
 
   private:
     /// Memory used by the FIFO to store elements of type T.

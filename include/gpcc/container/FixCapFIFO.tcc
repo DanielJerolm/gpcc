@@ -393,7 +393,7 @@ T FixCapFIFO<T, SIZET>::UnsafePop(void) noexcept
  * less than @p n.
  */
 template <typename T, typename SIZET>
-size_t FixCapFIFO<T, SIZET>::Push(T const * const pSrc, size_t const n) noexcept
+size_t FixCapFIFO<T, SIZET>::PushMultiple(T const * const pSrc, size_t const n) noexcept
 {
   if (n == 0U)
     return 0U;
@@ -464,7 +464,7 @@ size_t FixCapFIFO<T, SIZET>::Push(T const * const pSrc, size_t const n) noexcept
  * than @p n.
  */
 template <typename T, typename SIZET>
-size_t FixCapFIFO<T, SIZET>::Pop(T* const pDest, size_t const n) noexcept
+size_t FixCapFIFO<T, SIZET>::PopMultiple(T* const pDest, size_t const n) noexcept
 {
   if (n == 0U)
     return 0U;
