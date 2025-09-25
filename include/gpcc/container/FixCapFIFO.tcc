@@ -143,8 +143,6 @@ FixCapFIFO<T, SIZET>& FixCapFIFO<T, SIZET>::operator=(FixCapFIFO<T, SIZET> const
 /**
  * \brief Move-assigns the content of another FIFO instance to this instance.
  *
- * \note  The capacity of the FIFO may be reduced or enlarged.
- *
  * - - -
  *
  * __Thread safety:__\n
