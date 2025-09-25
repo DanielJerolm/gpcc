@@ -152,7 +152,7 @@ static void UnsafePopAndCheckValues(UUTTYPE & uut,
   {
     ASSERT_FALSE(uut.IsEmpty()) << "UUT is empty. n = " << n << ", nextExpectedValue = " << value;
     auto const poppedValue = uut.UnsafePop();
-    EXPECT_EQ(poppedValue, value) << "Popped value is invalid. n = " << n;
+    ASSERT_EQ(poppedValue, value) << "Popped value is invalid. n = " << n;
     ++value;
     --n;
   }
@@ -805,7 +805,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignmentSelf)
   EXPECT_EQ(uut.UnsafePop(), 3U);
 }
 
-TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignmentCapacityMismath)
+TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_OtherHasSmallerCapacity)
 {
   FixCapFIFO<uint32_t, uint8_t> uut1(2U);
   uut1.UnsafePush(1U);
@@ -814,11 +814,53 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignmentCapacityMismath)
   FixCapFIFO<uint32_t, uint8_t> uut2(4U);
   uut2.UnsafePush(55U);
 
-  ASSERT_THROW(uut2 = uut1, std::logic_error);
+  ASSERT_NO_THROW(uut2 = uut1);
 
   ASSERT_EQ(uut1.Size(), 2U);
   EXPECT_EQ(uut1.UnsafePop(), 1U);
   EXPECT_EQ(uut1.UnsafePop(), 3U);
+
+  ASSERT_EQ(uut2.Size(), 2U);
+  EXPECT_EQ(uut2.UnsafePop(), 1U);
+  EXPECT_EQ(uut2.UnsafePop(), 3U);
+}
+
+TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_OtherHasLargerCapacity)
+{
+  FixCapFIFO<uint32_t, uint8_t> uut1(4U);
+  uut1.UnsafePush(1U);
+  uut1.UnsafePush(3U);
+
+  FixCapFIFO<uint32_t, uint8_t> uut2(2U);
+  uut2.UnsafePush(55U);
+
+  ASSERT_NO_THROW(uut2 = uut1);
+
+  ASSERT_EQ(uut1.Size(), 2U);
+  EXPECT_EQ(uut1.UnsafePop(), 1U);
+  EXPECT_EQ(uut1.UnsafePop(), 3U);
+
+  ASSERT_EQ(uut2.Size(), 2U);
+  EXPECT_EQ(uut2.UnsafePop(), 1U);
+  EXPECT_EQ(uut2.UnsafePop(), 3U);
+}
+
+TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_InsufficientCapacity)
+{
+  FixCapFIFO<uint32_t, uint8_t> uut1(4U);
+  uut1.UnsafePush(1U);
+  uut1.UnsafePush(3U);
+  uut1.UnsafePush(8U);
+
+  FixCapFIFO<uint32_t, uint8_t> uut2(2U);
+  uut2.UnsafePush(55U);
+
+  ASSERT_THROW(uut2 = uut1, std::logic_error);
+
+  ASSERT_EQ(uut1.Size(), 3U);
+  EXPECT_EQ(uut1.UnsafePop(), 1U);
+  EXPECT_EQ(uut1.UnsafePop(), 3U);
+  EXPECT_EQ(uut1.UnsafePop(), 8U);
 
   ASSERT_EQ(uut2.Size(), 1U);
   EXPECT_EQ(uut2.UnsafePop(), 55U);

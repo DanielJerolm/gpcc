@@ -110,7 +110,7 @@ class FixCapFIFO final
     /// Index of next element to be read in @ref spMemory_.
     SIZET rdIndex_;
 
-    void CopyFromOther(T const * const pOtherData) noexcept;
+    void CopyFromOther(FixCapFIFO const & other) noexcept;
 };
 
 } // namespace container

@@ -68,7 +68,7 @@ FixCapFIFO<T, SIZET>::FixCapFIFO(size_t const capacity)
 }
 
 /**
- * \brief Copy constructor. Creates a deep copy of another FIFO instance.
+ * \brief Copy constructor. Creates a copy of another FIFO instance.
  *
  * - - -
  *
@@ -90,14 +90,17 @@ FixCapFIFO<T, SIZET>::FixCapFIFO(FixCapFIFO<T, SIZET> const & other)
 : spMemory_(new T[other.capacity_])
 , capacity_(other.capacity_)
 , size_(other.size_)
-, wrIndex_(other.wrIndex_)
-, rdIndex_(other.rdIndex_)
+, wrIndex_(other.size_ & (~capacity_))
+, rdIndex_(0U)
 {
-  CopyFromOther(other.spMemory_.get());
+  CopyFromOther(other);
 }
 
 /**
  * \brief Copy-assigns the content of another FIFO instance to this instance.
+ *
+ * The FIFOs may have different capacity, but this FIFO's capacity must be sufficient for the current content
+ * of the other FIFO instance.
  *
  * - - -
  *
@@ -107,14 +110,15 @@ FixCapFIFO<T, SIZET>::FixCapFIFO(FixCapFIFO<T, SIZET> const & other)
  * __Exception safety:__\n
  * Strong guarantee.
  *
+ * \throws std::logic_error   This FIFO's capacity is too small.
+ *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
  *
  * - - -
  *
  * \param rhv
- * The other FIFO instance.\n
- * Both FIFOs must have the same capacity.
+ * The other FIFO instance.
  *
  * \return
  * Reference to self.
@@ -124,13 +128,13 @@ FixCapFIFO<T, SIZET>& FixCapFIFO<T, SIZET>::operator=(FixCapFIFO<T, SIZET> const
 {
   if (&rhv != this)
   {
-    if (capacity_ != rhv.capacity_)
-      throw std::logic_error("Different capacity");
+    if (capacity_ < rhv.size_)
+      throw std::logic_error("Insufficient capacity");
 
-    size_ = rhv.size_;
-    wrIndex_ = rhv.wrIndex_;
-    rdIndex_ = rhv.rdIndex_;
-    CopyFromOther(rhv.spMemory_.get());
+    size_    = rhv.size_;
+    wrIndex_ = rhv.size_ & (~capacity_);
+    rdIndex_ = 0U;
+    CopyFromOther(rhv);
   }
 
   return *this;
@@ -507,8 +511,15 @@ size_t FixCapFIFO<T, SIZET>::PopMultiple(T* const pDest, size_t const n) noexcep
 /**
  * \brief Copies the data of another FIFO into this.
  *
- * This is used during copy-construction and copy-assignment. The caller must ensure, that all members of the two FIFOs
- * (of course except for @ref spMemory_ and its content) are the same.
+ * This is used during copy-construction and copy-assignment.
+ *
+ * Regardles of the current value of `other.rdIndex`, other's data is copied into this FIFO starting at
+ * `this->spMemory_[0]`.
+ *
+ * \pre   The caller must ensure the following:
+ *        - `this->size_ == other.size_`
+ *        - `this->rdIndex_ == 0`
+ *        - `this->wrIndex_ == other.size_`
  *
  * - - -
  *
@@ -523,37 +534,41 @@ size_t FixCapFIFO<T, SIZET>::PopMultiple(T* const pDest, size_t const n) noexcep
  *
  * - - -
  *
- * \param pOtherData
- * Pointer to the memory of the other FIFO. Data is copied from that location into this FIFO's storage according to
- * @ref size_, @ref rdIndex_ and @ref wrIndex_.
+ * \param other
+ * The other FIFO instance whose content shall be copied into this instance.
  */
 template <typename T, typename SIZET>
-void FixCapFIFO<T, SIZET>::CopyFromOther(T const * const pOtherData) noexcept
+void FixCapFIFO<T, SIZET>::CopyFromOther(FixCapFIFO const & other) noexcept
 {
   if (size_ != 0U)
   {
-    if (rdIndex_ == wrIndex_)
-    {
-      // full: |xxxxxxxxxx|
-      //        <-size_-->
-      memcpy(spMemory_.get(), pOtherData, size_ * sizeof(T));
-    }
-    else if (rdIndex_ < wrIndex_)
+    if (other.rdIndex_ < other.wrIndex_)
     {
       // not full, no wrap: |     xxxx |
-      //                       -->    <-- size_t
-      memcpy(spMemory_.get() + rdIndex_, pOtherData + rdIndex_, size_ * sizeof(T));
+      //                       -->    <-- size_
+      memcpy(spMemory_.get(), other.spMemory_.get() + other.rdIndex_, size_ * sizeof(T));
     }
     else
     {
-      // not full, wrap: |xxx    xxx|
-      //                  <b>    <a>
-      SIZET const a = (capacity_ - rdIndex_);
-      memcpy(spMemory_.get() + rdIndex_, pOtherData + rdIndex_, a * sizeof(T));
+      // Three cases:
+      // a) Not full and wrap:
+      // |xxx    xxx|
+      //  <b>    <a>
+      //
+      // b) Full and wrap, other.rdIndex != 0
+      // |xxxxxxxxxx|
+      //  <--b-><a->
+      //
+      // c) Full and wrap, other.rdIndex == 0
+      // |xxxxxxxxxx|
+      //  <--a----->  (b = 0)
+
+      SIZET const a = (other.capacity_ - other.rdIndex_);
+      memcpy(spMemory_.get(), other.spMemory_.get() + other.rdIndex_, a * sizeof(T));
 
       SIZET const b = size_ - a;
       if (b != 0U)
-        memcpy(spMemory_.get(), pOtherData, b * sizeof(T));
+        memcpy(spMemory_.get() + a, other.spMemory_.get(), b * sizeof(T));
     }
   }
 }
