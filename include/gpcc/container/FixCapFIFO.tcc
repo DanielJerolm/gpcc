@@ -303,10 +303,6 @@ void FixCapFIFO<T, SIZET>::Clear(void) noexcept
 /**
  * \brief Pushes one element onto the FIFO.
  *
- * \pre   The FIFO is not full.\n
- *        The precondition is not checked. If it is violated, then undefined behaviour will occur.\n
- *        Use @ref IsFull() or @ref Size() in conjunction with this method.
- *
  * - - -
  *
  * __Thread safety:__\n
@@ -323,21 +319,24 @@ void FixCapFIFO<T, SIZET>::Clear(void) noexcept
  *
  * \param value
  * Element that shall be pushed onto the FIFO.
+ *
+ * \retval true   Success.
+ * \retval false  FIFO is full. @p value has __not__ been pushed onto the FIFO.
  */
 template <typename T, typename SIZET>
-void FixCapFIFO<T, SIZET>::UnsafePush(T const value) noexcept
+bool FixCapFIFO<T, SIZET>::Push(T const value) noexcept
 {
+  if (IsFull())
+    return false;
+
   spMemory_[wrIndex_] = value;
   wrIndex_ = (wrIndex_ + 1U) & (~capacity_);
   size_++;
+  return true;
 }
 
 /**
  * \brief Pops one item from the FIFO.
- *
- * \pre   The FIFO is not empty.\n
- *        The precondition is not checked. If it is violated, then undefined behaviour will occur.\n
- *        Use @ref IsEmpty() or @ref Size() in conjunction with this method.
  *
  * - - -
  *
@@ -353,16 +352,23 @@ void FixCapFIFO<T, SIZET>::UnsafePush(T const value) noexcept
  *
  * - - -
  *
- * \return
- * Element popped from the FIFO.
+ * \param value
+ * The popped item is written into the referenced value.
+ *
+ * \retval true   Success.
+ * \retval false  FIFO is empty. The variable referenced by @p value has not been modified.
  */
 template <typename T, typename SIZET>
-T FixCapFIFO<T, SIZET>::UnsafePop(void) noexcept
+bool FixCapFIFO<T, SIZET>::Pop(T & value) noexcept
 {
+  if (IsEmpty())
+    return false;
+
   size_--;
   auto const prevRdIdx = rdIndex_;
   rdIndex_ = (rdIndex_ + 1U) & (~capacity_);
-  return spMemory_[prevRdIdx];
+  value = spMemory_[prevRdIdx];
+  return true;
 }
 
 /**

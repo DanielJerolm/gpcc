@@ -22,9 +22,10 @@ namespace container  {
 using gpcc::container::FixCapFIFO;
 
 /**
- * \brief Pushes @p count values onto the @p uut using `UnsafePush().`
+ * \brief Pushes @p count values onto the @p uut using `Push().`
  *
- * The UUT's status is queried via `IsFull()` before each invocation of `UnsafePush()`.
+ * The UUT's status is queried via `IsFull()` before each invocation of `Push()`. This function expects, that the FIFO
+ * is not full.
  *
  * The pushed values start with @p nextPushedValue. After each push the value is incremented, so that each value pushed
  * onto the UUT is unique.
@@ -71,9 +72,9 @@ using gpcc::container::FixCapFIFO;
  * If this function succeeds, then the referenced value will be increased by @p count.
  */
 template<typename UUTTYPE, typename T, typename SIZET>
-static void UnsafePushValues(UUTTYPE & uut,
-                             SIZET const count,
-                             T & nextPushedValue)
+static void UsePush(UUTTYPE & uut,
+                    SIZET const count,
+                    T & nextPushedValue)
 {
   // !! This must be invoked using ASSERT_NO_FATAL_FAILURE() !!
 
@@ -82,7 +83,7 @@ static void UnsafePushValues(UUTTYPE & uut,
   while (n != 0U)
   {
     ASSERT_FALSE(uut.IsFull()) << "UUT is full. n = " << n << ", next pushed value = " << value;
-    uut.UnsafePush(value);
+    ASSERT_TRUE(uut.Push(value));
     ++value;
     --n;
   }
@@ -91,12 +92,13 @@ static void UnsafePushValues(UUTTYPE & uut,
 }
 
 /**
- * \brief Pops @p count values from @p uut using `UnsafePop()` and checks the popped values.
+ * \brief Pops @p count values from @p uut using `Pop()` and checks the popped values.
  *
- * The UUT's status is queried via `IsEmpty()` before each invocation of `UnsafePop()`.
+ * The UUT's status is queried via `IsEmpty()` before each invocation of `Pop()`. This function expects, that the FIFO
+ * is not empty.
  *
  * The popped values are compared with an expected value. The first expected value is @p nextExpectedPoppedValue. The
- * expected value is incremented after each pop. This function is the counterpart of @ref UnsafePushValues().
+ * expected value is incremented after each pop. This function is the counterpart of @ref UsePush().
  *
  * If no error (failed ASSERT_* or C++ exception) occurrs, then finally @p nextExpectedPoppedValue will be updated, so
  * that the next call to this function seamlessly continues the number sequence of expected values.
@@ -140,9 +142,9 @@ static void UnsafePushValues(UUTTYPE & uut,
  * If this function succeeds, then the referenced value will be increased by @p count.
  */
 template<typename UUTTYPE, typename T, typename SIZET>
-static void UnsafePopAndCheckValues(UUTTYPE & uut,
-                                    SIZET const count,
-                                    T & nextExpectedValue)
+static void UsePopAndCheckValues(UUTTYPE & uut,
+                                 SIZET const count,
+                                 T & nextExpectedValue)
 {
   // !! This must be invoked using ASSERT_NO_FATAL_FAILURE() !!
 
@@ -151,7 +153,8 @@ static void UnsafePopAndCheckValues(UUTTYPE & uut,
   while (n != 0U)
   {
     ASSERT_FALSE(uut.IsEmpty()) << "UUT is empty. n = " << n << ", nextExpectedValue = " << value;
-    auto const poppedValue = uut.UnsafePop();
+    T poppedValue;
+    ASSERT_TRUE(uut.Pop(poppedValue));
     ASSERT_EQ(poppedValue, value) << "Popped value is invalid. n = " << n;
     ++value;
     --n;
@@ -209,10 +212,10 @@ static void UnsafePopAndCheckValues(UUTTYPE & uut,
  * If this function succeeds, then the referenced value will be increased by @p actuallyPushed.
  */
 template<typename UUTTYPE, typename T>
-static void PushValues(UUTTYPE & uut,
-                       size_t const count,
-                       size_t & actuallyPushed,
-                       T & nextPushedValue)
+static void UsePushMultiple(UUTTYPE & uut,
+                            size_t const count,
+                            size_t & actuallyPushed,
+                            T & nextPushedValue)
 {
   // !! This must be invoked using ASSERT_NO_FATAL_FAILURE() !!
 
@@ -233,7 +236,7 @@ static void PushValues(UUTTYPE & uut,
  * \brief Pops @p count values from @p uut using `PopMultiple()` and checks the popped values.
  *
  * The popped values are compared with an expected value. The first expected value is @p nextExpectedPoppedValue. The
- * expected value is incremented for each popped value. This function is the counterpart of @ref PushValues().
+ * expected value is incremented for each popped value. This function is the counterpart of @ref UsePushMultiple().
  *
  * If no error (failed ASSERT_* or C++ exception) occurrs, then finally @p nextExpectedPoppedValue will be updated, so
  * that the next call to this function seamlessly continues the number sequence of expected values.
@@ -278,10 +281,10 @@ static void PushValues(UUTTYPE & uut,
  * If this function succeeds, then the referenced value will be increased by @p count.
  */
 template<typename UUTTYPE, typename T>
-static void PopAndCheckValues(UUTTYPE & uut,
-                              size_t const count,
-                              size_t & actuallyPopped,
-                              T & nextExpectedValue)
+static void UsePopMultipleAndCheckValues(UUTTYPE & uut,
+                                         size_t const count,
+                                         size_t & actuallyPopped,
+                                         T & nextExpectedValue)
 {
   // !! This must be invoked using ASSERT_NO_FATAL_FAILURE() !!
 
@@ -340,16 +343,19 @@ TEST(gpcc_container_FixCapFIFO_Tests, Construction_InvalidArgs)
 TEST(gpcc_container_FixCapFIFO_Tests, Clear)
 {
   FixCapFIFO<uint32_t, uint8_t> uut(2U);
-  uut.UnsafePush(1U);
-  uut.UnsafePush(2U);
+  ASSERT_TRUE(uut.Push(1U));
+  ASSERT_TRUE(uut.Push(2U));
 
   uut.Clear();
   ASSERT_TRUE(uut.IsEmpty());
   ASSERT_FALSE(uut.IsFull());
   ASSERT_EQ(uut.Size(), 0U);
 
-  uut.UnsafePush(3);
-  EXPECT_EQ(uut.UnsafePop(), 3U);
+  ASSERT_TRUE(uut.Push(3));
+  uint32_t v;
+  ASSERT_TRUE(uut.Pop(v));
+  EXPECT_EQ(v, 3U);
+
   EXPECT_TRUE(uut.IsEmpty());
   EXPECT_FALSE(uut.IsFull());
   EXPECT_EQ(uut.Size(), 0U);
@@ -364,17 +370,20 @@ TEST(gpcc_container_FixCapFIFO_Tests, ClearWhileEmpty)
   ASSERT_FALSE(uut.IsFull());
   ASSERT_EQ(uut.Size(), 0U);
 
-  uut.UnsafePush(3);
-  EXPECT_EQ(uut.UnsafePop(), 3U);
+  ASSERT_TRUE(uut.Push(3));
+  uint32_t v;
+  ASSERT_TRUE(uut.Pop(v));
+  EXPECT_EQ(v, 3U);
+
   EXPECT_TRUE(uut.IsEmpty());
   EXPECT_FALSE(uut.IsFull());
   EXPECT_EQ(uut.Size(), 0U);
 }
 
-TEST(gpcc_container_FixCapFIFO_Tests, BasicUnsafePushPop_Capacity1)
+TEST(gpcc_container_FixCapFIFO_Tests, BasicPushPop_Capacity1)
 {
-  // This test case checks basic operation of the UUT's unsafe push and pop methods for a UUT with capacity 1.
-  // gpcc_container_FixCapFIFO_Tests.UnsafePushPop performs a thorough test of the methods covering all possible
+  // This test case checks basic operation of the UUT's Push() and Pop() methods for an UUT with capacity 1.
+  // gpcc_container_FixCapFIFO_Tests.PushPop performs a thorough test of these methods covering all possible
   // scenarios.
 
   FixCapFIFO<uint32_t, uint8_t> uut(1U);
@@ -383,35 +392,48 @@ TEST(gpcc_container_FixCapFIFO_Tests, BasicUnsafePushPop_Capacity1)
   ASSERT_FALSE(uut.IsFull());
   ASSERT_EQ(uut.Size(), 0U);
 
+  // attempt to pop empty FIFO
+  uint32_t v = 0xDEADBEEFUL;
+  ASSERT_FALSE(uut.Pop(v));
+  EXPECT_EQ(v, 0xDEADBEEFUL);
+
   // Push "1"
-  uut.UnsafePush(1U);
+  ASSERT_TRUE(uut.Push(1U));
+  ASSERT_FALSE(uut.IsEmpty());
+  ASSERT_TRUE(uut.IsFull());
+  ASSERT_EQ(uut.Size(), 1U);
+
+  // attempt to push to full FIFO
+  ASSERT_FALSE(uut.Push(55U));
   ASSERT_FALSE(uut.IsEmpty());
   ASSERT_TRUE(uut.IsFull());
   ASSERT_EQ(uut.Size(), 1U);
 
   // Pop "1"
-  EXPECT_EQ(uut.UnsafePop(), 1U);
+  ASSERT_TRUE(uut.Pop(v));
+  EXPECT_EQ(v, 1U);
   ASSERT_TRUE(uut.IsEmpty());
   ASSERT_FALSE(uut.IsFull());
   ASSERT_EQ(uut.Size(), 0U);
 
   // Push "2"
-  uut.UnsafePush(2U);
+  ASSERT_TRUE(uut.Push(2U));
   ASSERT_FALSE(uut.IsEmpty());
   ASSERT_TRUE(uut.IsFull());
   ASSERT_EQ(uut.Size(), 1U);
 
   // Pop "2"
-  EXPECT_EQ(uut.UnsafePop(), 2U);
+  ASSERT_TRUE(uut.Pop(v));
+  EXPECT_EQ(v, 2U);
   ASSERT_TRUE(uut.IsEmpty());
   ASSERT_FALSE(uut.IsFull());
   ASSERT_EQ(uut.Size(), 0U);
 }
 
-TEST(gpcc_container_FixCapFIFO_Tests, BasicUnsafePushPop_Capacity2)
+TEST(gpcc_container_FixCapFIFO_Tests, BasicPushPop_Capacity2)
 {
-  // This test case checks basic operation of the UUT's unsafe push and pop methods for a UUT with capacity 2.
-  // gpcc_container_FixCapFIFO_Tests.UnsafePushPop performs a thorough test of the methods covering all possible
+  // This test case checks basic operation of the UUT's Push() and Pop() methods for an UUT with capacity 2.
+  // gpcc_container_FixCapFIFO_Tests.PushPop performs a thorough test of these methods covering all possible
   // scenarios.
 
   FixCapFIFO<uint32_t, uint8_t> uut(2U);
@@ -420,42 +442,56 @@ TEST(gpcc_container_FixCapFIFO_Tests, BasicUnsafePushPop_Capacity2)
   ASSERT_FALSE(uut.IsFull());
   ASSERT_EQ(uut.Size(), 0U);
 
+  // attempt to pop empty FIFO
+  uint32_t v = 0xDEADBEEFUL;
+  ASSERT_FALSE(uut.Pop(v));
+  EXPECT_EQ(v, 0xDEADBEEFUL);
+
   // Push "1"
-  uut.UnsafePush(1U);
+  ASSERT_TRUE(uut.Push(1U));
   ASSERT_FALSE(uut.IsEmpty());
   ASSERT_FALSE(uut.IsFull());
   ASSERT_EQ(uut.Size(), 1U);
 
   // Pop "1"
-  EXPECT_EQ(uut.UnsafePop(), 1U);
+  ASSERT_TRUE(uut.Pop(v));
+  EXPECT_EQ(v, 1U);
   ASSERT_TRUE(uut.IsEmpty());
   ASSERT_FALSE(uut.IsFull());
   ASSERT_EQ(uut.Size(), 0U);
 
   // Push "2" and "3"
-  uut.UnsafePush(2U);
+  ASSERT_TRUE(uut.Push(2U));
   ASSERT_FALSE(uut.IsEmpty());
   ASSERT_FALSE(uut.IsFull());
   ASSERT_EQ(uut.Size(), 1U);
 
-  uut.UnsafePush(3U);
+  ASSERT_TRUE(uut.Push(3U));
+  ASSERT_FALSE(uut.IsEmpty());
+  ASSERT_TRUE(uut.IsFull());
+  ASSERT_EQ(uut.Size(), 2U);
+
+  // attempt to push to full FIFO
+  ASSERT_FALSE(uut.Push(55U));
   ASSERT_FALSE(uut.IsEmpty());
   ASSERT_TRUE(uut.IsFull());
   ASSERT_EQ(uut.Size(), 2U);
 
   // Pop "2" and "3"
-  EXPECT_EQ(uut.UnsafePop(), 2U);
+  ASSERT_TRUE(uut.Pop(v));
+  EXPECT_EQ(v, 2U);
   ASSERT_FALSE(uut.IsEmpty());
   ASSERT_FALSE(uut.IsFull());
   ASSERT_EQ(uut.Size(), 1U);
 
-  EXPECT_EQ(uut.UnsafePop(), 3U);
+  ASSERT_TRUE(uut.Pop(v));
+  EXPECT_EQ(v, 3U);
   ASSERT_TRUE(uut.IsEmpty());
   ASSERT_FALSE(uut.IsFull());
   ASSERT_EQ(uut.Size(), 0U);
 }
 
-TEST(gpcc_container_FixCapFIFO_Tests, BasicPushPop_Capacity1)
+TEST(gpcc_container_FixCapFIFO_Tests, BasicPushMultiplePopMultiple_Capacity1)
 {
   uint32_t pushValue = 0U;
   uint32_t popValue = 0U;
@@ -465,7 +501,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, BasicPushPop_Capacity1)
   for (uint_fast8_t i = 0U; i < 2U; ++i)
   {
     size_t nbOfPushedValues = 0U;
-    PushValues(uut, 2U, nbOfPushedValues, pushValue);
+    UsePushMultiple(uut, 2U, nbOfPushedValues, pushValue);
     ASSERT_EQ(nbOfPushedValues, 1U);
 
     ASSERT_FALSE(uut.IsEmpty());
@@ -473,7 +509,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, BasicPushPop_Capacity1)
     ASSERT_EQ(uut.Size(), 1U);
 
     size_t nbOfPoppedValues = 0U;
-    PopAndCheckValues(uut, 2U, nbOfPoppedValues, popValue);
+    UsePopMultipleAndCheckValues(uut, 2U, nbOfPoppedValues, popValue);
     ASSERT_EQ(nbOfPoppedValues, 1U);
 
     ASSERT_TRUE(uut.IsEmpty());
@@ -482,7 +518,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, BasicPushPop_Capacity1)
   }
 }
 
-TEST(gpcc_container_FixCapFIFO_Tests, BasicPushPop_Capacity2)
+TEST(gpcc_container_FixCapFIFO_Tests, BasicPushMultiplePopMultiple_Capacity2)
 {
   uint32_t pushValue = 0U;
   uint32_t popValue = 0U;
@@ -492,7 +528,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, BasicPushPop_Capacity2)
   for (uint_fast8_t i = 0U; i < 2U; ++i)
   {
     size_t nbOfPushedValues = 0U;
-    PushValues(uut, 3U, nbOfPushedValues, pushValue);
+    UsePushMultiple(uut, 3U, nbOfPushedValues, pushValue);
     ASSERT_EQ(nbOfPushedValues, 2U);
 
     ASSERT_FALSE(uut.IsEmpty());
@@ -500,7 +536,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, BasicPushPop_Capacity2)
     ASSERT_EQ(uut.Size(), 2U);
 
     size_t nbOfPoppedValues = 0U;
-    PopAndCheckValues(uut, 3U, nbOfPoppedValues, popValue);
+    UsePopMultipleAndCheckValues(uut, 3U, nbOfPoppedValues, popValue);
     ASSERT_EQ(nbOfPoppedValues, 2U);
 
     ASSERT_TRUE(uut.IsEmpty());
@@ -509,10 +545,10 @@ TEST(gpcc_container_FixCapFIFO_Tests, BasicPushPop_Capacity2)
   }
 }
 
-TEST(gpcc_container_FixCapFIFO_Tests, UnsafePushPop)
+TEST(gpcc_container_FixCapFIFO_Tests, PushPop)
 {
-  // This test case pushes and pops different numbers of elements onto and from the FIFO using UnsafePush() and
-  // UnsafePop(), starting at different states of the FIFO. The FIFO state is comprised of the index of read-pointer and
+  // This test case pushes and pops different numbers of elements onto and from the FIFO using Push() and Pop(),
+  // starting at different states of the FIFO. The FIFO state is comprised of the index of read-pointer and
   // write-pointer. All possible states are generated using two nested loops.
 
   // counter for creating unique values pushed onto the UUT during this test and for checking the popped values
@@ -549,14 +585,14 @@ TEST(gpcc_container_FixCapFIFO_Tests, UnsafePushPop)
         // Move read- and write-index into position using whitebox knowledge
         if (initialRdIdx <= initialWrIdx)
         {
-          ASSERT_NO_FATAL_FAILURE(UnsafePushValues(uut, initialWrIdx, pushValue));
-          ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(uut, initialRdIdx, popValue));
+          ASSERT_NO_FATAL_FAILURE(UsePush(uut, initialWrIdx, pushValue));
+          ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(uut, initialRdIdx, popValue));
         }
         else
         {
-          ASSERT_NO_FATAL_FAILURE(UnsafePushValues(uut, capacity, pushValue));
-          ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(uut, initialRdIdx, popValue));
-          ASSERT_NO_FATAL_FAILURE(UnsafePushValues(uut, initialWrIdx, pushValue));
+          ASSERT_NO_FATAL_FAILURE(UsePush(uut, capacity, pushValue));
+          ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(uut, initialRdIdx, popValue));
+          ASSERT_NO_FATAL_FAILURE(UsePush(uut, initialWrIdx, pushValue));
         }
 
         ASSERT_EQ(uut.IsEmpty(), (initialNbOfElements == 0U));
@@ -569,14 +605,14 @@ TEST(gpcc_container_FixCapFIFO_Tests, UnsafePushPop)
 
         // Test:
         // Push n values, check FIFO state, pop n values, check FIFO state
-        ASSERT_NO_FATAL_FAILURE(UnsafePushValues(uut, n, pushValue));
+        ASSERT_NO_FATAL_FAILURE(UsePush(uut, n, pushValue));
 
         size_t const expectedSize = initialNbOfElements + n;
         ASSERT_EQ(uut.IsEmpty(), (expectedSize == 0U));
         ASSERT_EQ(uut.IsFull(), (expectedSize == capacity));
         ASSERT_EQ(uut.Size(), expectedSize);
 
-        ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(uut, n, popValue));
+        ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(uut, n, popValue));
 
         ASSERT_EQ(uut.IsEmpty(), (initialNbOfElements == 0U));
         ASSERT_EQ(uut.IsFull(), (initialNbOfElements == capacity));
@@ -584,7 +620,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, UnsafePushPop)
 
         // Aftermath:
         // Pop and check 'initialNbOfElements' values due to the precondition
-        ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(uut, initialNbOfElements, popValue));
+        ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(uut, initialNbOfElements, popValue));
 
         ASSERT_TRUE(uut.IsEmpty());
         ASSERT_FALSE(uut.IsFull());
@@ -594,7 +630,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, UnsafePushPop)
   } // for initialRdIdx...
 }
 
-TEST(gpcc_container_FixCapFIFO_Tests, PushPop)
+TEST(gpcc_container_FixCapFIFO_Tests, PushMultiplePopMultiple)
 {
   // This test case pushes and pops different numbers of elements onto and from the FIFO using PushMultiple() and
   // PopMultiple(), starting at different states of the FIFO. The FIFO state is comprised of the index of the
@@ -632,14 +668,14 @@ TEST(gpcc_container_FixCapFIFO_Tests, PushPop)
         // Move read- and write-index into position using whitebox knowledge
         if (initialRdIdx <= initialWrIdx)
         {
-          ASSERT_NO_FATAL_FAILURE(UnsafePushValues(uut, initialWrIdx, pushValue));
-          ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(uut, initialRdIdx, popValue));
+          ASSERT_NO_FATAL_FAILURE(UsePush(uut, initialWrIdx, pushValue));
+          ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(uut, initialRdIdx, popValue));
         }
         else
         {
-          ASSERT_NO_FATAL_FAILURE(UnsafePushValues(uut, capacity, pushValue));
-          ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(uut, initialRdIdx, popValue));
-          ASSERT_NO_FATAL_FAILURE(UnsafePushValues(uut, initialWrIdx, pushValue));
+          ASSERT_NO_FATAL_FAILURE(UsePush(uut, capacity, pushValue));
+          ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(uut, initialRdIdx, popValue));
+          ASSERT_NO_FATAL_FAILURE(UsePush(uut, initialWrIdx, pushValue));
         }
 
         ASSERT_EQ(uut.IsEmpty(), (initialNbOfElements == 0U));
@@ -653,7 +689,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, PushPop)
         // Test:
         // Push n values, check FIFO state, pop n values, check FIFO state
         size_t nbOfPushedValues = 0U;
-        PushValues(uut, n, nbOfPushedValues, pushValue);
+        UsePushMultiple(uut, n, nbOfPushedValues, pushValue);
 
         size_t const expectedSize = initialNbOfElements + nbOfPushedValues;
         ASSERT_EQ(uut.IsEmpty(), (expectedSize == 0U));
@@ -661,7 +697,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, PushPop)
         ASSERT_EQ(uut.Size(), expectedSize);
 
         size_t nbOfPoppedValues = 0U;
-        PopAndCheckValues(uut, n, nbOfPoppedValues, popValue);
+        UsePopMultipleAndCheckValues(uut, n, nbOfPoppedValues, popValue);
 
         size_t expectedNbOfElements = (initialNbOfElements + nbOfPushedValues) - nbOfPoppedValues;
         ASSERT_EQ(uut.IsEmpty(), (expectedNbOfElements == 0U));
@@ -670,7 +706,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, PushPop)
 
         // Aftermath:
         // Pop and check 'expectedNbOfElements' values due to the precondition
-        ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(uut, expectedNbOfElements, popValue));
+        ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(uut, expectedNbOfElements, popValue));
 
         ASSERT_TRUE(uut.IsEmpty());
         ASSERT_FALSE(uut.IsFull());
@@ -718,14 +754,14 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyCTOR)
       // Move read- and write-index into position using whitebox knowledge
       if (initialRdIdx <= initialWrIdx)
       {
-        ASSERT_NO_FATAL_FAILURE(UnsafePushValues(uut, initialWrIdx, pushValue));
-        ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(uut, initialRdIdx, popValue));
+        ASSERT_NO_FATAL_FAILURE(UsePush(uut, initialWrIdx, pushValue));
+        ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(uut, initialRdIdx, popValue));
       }
       else
       {
-        ASSERT_NO_FATAL_FAILURE(UnsafePushValues(uut, capacity, pushValue));
-        ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(uut, initialRdIdx, popValue));
-        ASSERT_NO_FATAL_FAILURE(UnsafePushValues(uut, initialWrIdx, pushValue));
+        ASSERT_NO_FATAL_FAILURE(UsePush(uut, capacity, pushValue));
+        ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(uut, initialRdIdx, popValue));
+        ASSERT_NO_FATAL_FAILURE(UsePush(uut, initialWrIdx, pushValue));
       }
 
       ASSERT_EQ(uut.IsEmpty(), (initialNbOfElements == 0U));
@@ -755,14 +791,14 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyCTOR)
         if (n != 0U)
         {
           // push n values, check FIFO state, pop n values, check FIFO state
-          ASSERT_NO_FATAL_FAILURE(UnsafePushValues(copyOfUUT, n, copyOfPushValue));
+          ASSERT_NO_FATAL_FAILURE(UsePush(copyOfUUT, n, copyOfPushValue));
 
           size_t const expectedSize = initialNbOfElements + n;
           ASSERT_EQ(copyOfUUT.IsEmpty(), (expectedSize == 0U));
           ASSERT_EQ(copyOfUUT.IsFull(), (expectedSize == capacity));
           ASSERT_EQ(copyOfUUT.Size(), expectedSize);
 
-          ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(copyOfUUT, n, copyOfPopValue));
+          ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(copyOfUUT, n, copyOfPopValue));
 
           ASSERT_EQ(copyOfUUT.IsEmpty(), (initialNbOfElements == 0U));
           ASSERT_EQ(copyOfUUT.IsFull(), (initialNbOfElements == capacity));
@@ -770,7 +806,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyCTOR)
         }
 
         // pop 'initialNbOfElements' elements from copyOfUUT that originate from the precondition
-        ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(copyOfUUT, initialNbOfElements, copyOfPopValue));
+        ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(copyOfUUT, initialNbOfElements, copyOfPopValue));
 
         ASSERT_TRUE(copyOfUUT.IsEmpty());
         ASSERT_FALSE(copyOfUUT.IsFull());
@@ -782,7 +818,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyCTOR)
       ASSERT_EQ(uut.IsFull(), (initialNbOfElements == capacity));
       ASSERT_EQ(uut.Size(), initialNbOfElements);
 
-      ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(uut, initialNbOfElements, popValue));
+      ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(uut, initialNbOfElements, popValue));
 
       ASSERT_TRUE(uut.IsEmpty());
       ASSERT_FALSE(uut.IsFull());
@@ -795,75 +831,93 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignmentSelf)
 {
   FixCapFIFO<uint32_t, uint8_t> uut(2U);
 
-  uut.UnsafePush(1U);
-  uut.UnsafePush(3U);
+  ASSERT_TRUE(uut.Push(1U));
+  ASSERT_TRUE(uut.Push(3U));
 
   uut = uut;
 
   ASSERT_EQ(uut.Size(), 2U);
-  EXPECT_EQ(uut.UnsafePop(), 1U);
-  EXPECT_EQ(uut.UnsafePop(), 3U);
+  uint32_t v;
+  ASSERT_TRUE(uut.Pop(v));
+  EXPECT_EQ(v, 1U);
+  ASSERT_TRUE(uut.Pop(v));
+  EXPECT_EQ(v, 3U);
 }
 
 TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_OtherHasSmallerCapacity)
 {
   FixCapFIFO<uint32_t, uint8_t> uut1(2U);
-  uut1.UnsafePush(1U);
-  uut1.UnsafePush(3U);
+  ASSERT_TRUE(uut1.Push(1U));
+  ASSERT_TRUE(uut1.Push(3U));
 
   FixCapFIFO<uint32_t, uint8_t> uut2(4U);
-  uut2.UnsafePush(55U);
+  ASSERT_TRUE(uut2.Push(55U));
 
   ASSERT_NO_THROW(uut2 = uut1);
 
   ASSERT_EQ(uut1.Size(), 2U);
-  EXPECT_EQ(uut1.UnsafePop(), 1U);
-  EXPECT_EQ(uut1.UnsafePop(), 3U);
+  uint32_t v;
+  ASSERT_TRUE(uut1.Pop(v));
+  EXPECT_EQ(v, 1U);
+  ASSERT_TRUE(uut1.Pop(v));
+  EXPECT_EQ(v, 3U);
 
   ASSERT_EQ(uut2.Size(), 2U);
-  EXPECT_EQ(uut2.UnsafePop(), 1U);
-  EXPECT_EQ(uut2.UnsafePop(), 3U);
+  ASSERT_TRUE(uut2.Pop(v));
+  EXPECT_EQ(v, 1U);
+  ASSERT_TRUE(uut2.Pop(v));
+  EXPECT_EQ(v, 3U);
 }
 
 TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_OtherHasLargerCapacity)
 {
   FixCapFIFO<uint32_t, uint8_t> uut1(4U);
-  uut1.UnsafePush(1U);
-  uut1.UnsafePush(3U);
+  ASSERT_TRUE(uut1.Push(1U));
+  ASSERT_TRUE(uut1.Push(3U));
 
   FixCapFIFO<uint32_t, uint8_t> uut2(2U);
-  uut2.UnsafePush(55U);
+  ASSERT_TRUE(uut2.Push(55U));
 
   ASSERT_NO_THROW(uut2 = uut1);
 
   ASSERT_EQ(uut1.Size(), 2U);
-  EXPECT_EQ(uut1.UnsafePop(), 1U);
-  EXPECT_EQ(uut1.UnsafePop(), 3U);
+  uint32_t v;
+  ASSERT_TRUE(uut1.Pop(v));
+  EXPECT_EQ(v, 1U);
+  ASSERT_TRUE(uut1.Pop(v));
+  EXPECT_EQ(v, 3U);
 
   ASSERT_EQ(uut2.Size(), 2U);
-  EXPECT_EQ(uut2.UnsafePop(), 1U);
-  EXPECT_EQ(uut2.UnsafePop(), 3U);
+  ASSERT_TRUE(uut2.Pop(v));
+  EXPECT_EQ(v, 1U);
+  ASSERT_TRUE(uut2.Pop(v));
+  EXPECT_EQ(v, 3U);
 }
 
 TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_InsufficientCapacity)
 {
   FixCapFIFO<uint32_t, uint8_t> uut1(4U);
-  uut1.UnsafePush(1U);
-  uut1.UnsafePush(3U);
-  uut1.UnsafePush(8U);
+  ASSERT_TRUE(uut1.Push(1U));
+  ASSERT_TRUE(uut1.Push(3U));
+  ASSERT_TRUE(uut1.Push(8U));
 
   FixCapFIFO<uint32_t, uint8_t> uut2(2U);
-  uut2.UnsafePush(55U);
+  ASSERT_TRUE(uut2.Push(55U));
 
   ASSERT_THROW(uut2 = uut1, std::logic_error);
 
   ASSERT_EQ(uut1.Size(), 3U);
-  EXPECT_EQ(uut1.UnsafePop(), 1U);
-  EXPECT_EQ(uut1.UnsafePop(), 3U);
-  EXPECT_EQ(uut1.UnsafePop(), 8U);
+  uint32_t v;
+  ASSERT_TRUE(uut1.Pop(v));
+  EXPECT_EQ(v, 1U);
+  ASSERT_TRUE(uut1.Pop(v));
+  EXPECT_EQ(v, 3U);
+  ASSERT_TRUE(uut1.Pop(v));
+  EXPECT_EQ(v, 8U);
 
   ASSERT_EQ(uut2.Size(), 1U);
-  EXPECT_EQ(uut2.UnsafePop(), 55U);
+  ASSERT_TRUE(uut2.Pop(v));
+  EXPECT_EQ(v, 55U);
 }
 
 TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment)
@@ -908,14 +962,14 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment)
       // Move read- and write-index into position using whitebox knowledge
       if (initialRdIdx <= initialWrIdx)
       {
-        ASSERT_NO_FATAL_FAILURE(UnsafePushValues(uut, initialWrIdx, pushValue));
-        ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(uut, initialRdIdx, popValue));
+        ASSERT_NO_FATAL_FAILURE(UsePush(uut, initialWrIdx, pushValue));
+        ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(uut, initialRdIdx, popValue));
       }
       else
       {
-        ASSERT_NO_FATAL_FAILURE(UnsafePushValues(uut, capacity, pushValue));
-        ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(uut, initialRdIdx, popValue));
-        ASSERT_NO_FATAL_FAILURE(UnsafePushValues(uut, initialWrIdx, pushValue));
+        ASSERT_NO_FATAL_FAILURE(UsePush(uut, capacity, pushValue));
+        ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(uut, initialRdIdx, popValue));
+        ASSERT_NO_FATAL_FAILURE(UsePush(uut, initialWrIdx, pushValue));
       }
 
       ASSERT_EQ(uut.IsEmpty(), (initialNbOfElements == 0U));
@@ -945,14 +999,14 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment)
         if (n != 0U)
         {
           // push n values, check FIFO state, pop n values, check FIFO state
-          ASSERT_NO_FATAL_FAILURE(UnsafePushValues(uut2, n, copyOfPushValue));
+          ASSERT_NO_FATAL_FAILURE(UsePush(uut2, n, copyOfPushValue));
 
           size_t const expectedSize = initialNbOfElements + n;
           ASSERT_EQ(uut2.IsEmpty(), (expectedSize == 0U));
           ASSERT_EQ(uut2.IsFull(), (expectedSize == capacity));
           ASSERT_EQ(uut2.Size(), expectedSize);
 
-          ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(uut2, n, copyOfPopValue));
+          ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(uut2, n, copyOfPopValue));
 
           ASSERT_EQ(uut2.IsEmpty(), (initialNbOfElements == 0U));
           ASSERT_EQ(uut2.IsFull(), (initialNbOfElements == capacity));
@@ -968,7 +1022,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment)
       ASSERT_EQ(uut.IsFull(), (initialNbOfElements == capacity));
       ASSERT_EQ(uut.Size(), initialNbOfElements);
 
-      ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(uut, initialNbOfElements, popValue));
+      ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(uut, initialNbOfElements, popValue));
 
       ASSERT_TRUE(uut.IsEmpty());
       ASSERT_FALSE(uut.IsFull());
@@ -981,16 +1035,19 @@ TEST(gpcc_container_FixCapFIFO_Tests, MoveAssignmentSelf)
 {
   FixCapFIFO<uint32_t, uint8_t> uut(2U);
 
-  uut.UnsafePush(1U);
-  uut.UnsafePush(3U);
+  ASSERT_TRUE(uut.Push(1U));
+  ASSERT_TRUE(uut.Push(3U));
 
   GPCC_DISABLE_WARN_SELFMOVE();
   uut = std::move(uut);
   GPCC_RESTORE_WARN_SELFMOVE();
 
   ASSERT_EQ(uut.Size(), 2U);
-  EXPECT_EQ(uut.UnsafePop(), 1U);
-  EXPECT_EQ(uut.UnsafePop(), 3U);
+  uint32_t v;
+  ASSERT_TRUE(uut.Pop(v));
+  EXPECT_EQ(v, 1U);
+  ASSERT_TRUE(uut.Pop(v));
+  EXPECT_EQ(v, 3U);
 }
 
 TEST(gpcc_container_FixCapFIFO_Tests, MoveAssignment)
@@ -1033,14 +1090,14 @@ TEST(gpcc_container_FixCapFIFO_Tests, MoveAssignment)
         // Move read- and write-index into position using whitebox knowledge
         if (initialRdIdx <= initialWrIdx)
         {
-          ASSERT_NO_FATAL_FAILURE(UnsafePushValues(uut, initialWrIdx, pushValue));
-          ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(uut, initialRdIdx, popValue));
+          ASSERT_NO_FATAL_FAILURE(UsePush(uut, initialWrIdx, pushValue));
+          ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(uut, initialRdIdx, popValue));
         }
         else
         {
-          ASSERT_NO_FATAL_FAILURE(UnsafePushValues(uut, capacity, pushValue));
-          ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(uut, initialRdIdx, popValue));
-          ASSERT_NO_FATAL_FAILURE(UnsafePushValues(uut, initialWrIdx, pushValue));
+          ASSERT_NO_FATAL_FAILURE(UsePush(uut, capacity, pushValue));
+          ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(uut, initialRdIdx, popValue));
+          ASSERT_NO_FATAL_FAILURE(UsePush(uut, initialWrIdx, pushValue));
         }
 
         ASSERT_EQ(uut.IsEmpty(), (initialNbOfElements == 0U));
@@ -1053,9 +1110,9 @@ TEST(gpcc_container_FixCapFIFO_Tests, MoveAssignment)
 
         // Setup 2nd uut: Capacity same/twice of 1st uut, and push some content.
         FixCapFIFO<uint32_t, uint8_t> uut2(capacity * ((n % 2U) + 1U));
-        uut2.UnsafePush(0U);
-        uut2.UnsafePush(8U);
-        uut2.UnsafePush(15U);
+        ASSERT_TRUE(uut2.Push(0U));
+        ASSERT_TRUE(uut2.Push(8U));
+        ASSERT_TRUE(uut2.Push(15U));
 
         // Test: Move-assign content of uut to uut2
         uut2 = std::move(uut);
@@ -1066,21 +1123,21 @@ TEST(gpcc_container_FixCapFIFO_Tests, MoveAssignment)
         ASSERT_GE(uut.Capacity(), 1U);
 
         // Test: Use uut2: Push n values, check FIFO state, pop n values, check FIFO state
-        ASSERT_NO_FATAL_FAILURE(UnsafePushValues(uut2, n, pushValue));
+        ASSERT_NO_FATAL_FAILURE(UsePush(uut2, n, pushValue));
 
         size_t const expectedSize = initialNbOfElements + n;
         ASSERT_EQ(uut2.IsEmpty(), (expectedSize == 0U));
         ASSERT_EQ(uut2.IsFull(), (expectedSize == capacity));
         ASSERT_EQ(uut2.Size(), expectedSize);
 
-        ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(uut2, n, popValue));
+        ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(uut2, n, popValue));
 
         ASSERT_EQ(uut2.IsEmpty(), (initialNbOfElements == 0U));
         ASSERT_EQ(uut2.IsFull(), (initialNbOfElements == capacity));
         ASSERT_EQ(uut2.Size(), initialNbOfElements);
 
         // Pop and check 'initialNbOfElements' values from uut2 due to the precondition
-        ASSERT_NO_FATAL_FAILURE(UnsafePopAndCheckValues(uut2, initialNbOfElements, popValue));
+        ASSERT_NO_FATAL_FAILURE(UsePopAndCheckValues(uut2, initialNbOfElements, popValue));
 
         ASSERT_TRUE(uut2.IsEmpty());
         ASSERT_FALSE(uut2.IsFull());

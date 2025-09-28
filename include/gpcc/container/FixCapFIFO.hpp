@@ -86,8 +86,8 @@ class FixCapFIFO final
 
     void Clear(void) noexcept;
 
-    void UnsafePush(T const value) noexcept;
-    T UnsafePop(void) noexcept;
+    bool Push(T const value) noexcept;
+    bool Pop(T & value) noexcept;
 
     size_t PushMultiple(T const * const pSrc, size_t const n) noexcept;
     size_t PopMultiple(T* const pDest, size_t const n) noexcept;
