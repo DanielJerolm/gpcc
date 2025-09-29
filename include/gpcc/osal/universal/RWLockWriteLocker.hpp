@@ -8,7 +8,13 @@
     Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
-#if (defined(OS_CHIBIOS_ARM) || defined(OS_EPOS_ARM) || defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC))
+#if (   defined(OS_CHIBIOS_ARM)    \
+     || defined(OS_EPOS_ARM)       \
+     || defined(OS_LINUX_ARM)      \
+     || defined(OS_LINUX_ARM_TFC)  \
+     || defined(OS_LINUX_X64)      \
+     || defined(OS_LINUX_X64_TFC)  \
+     || defined(OS_ZEPHYR))
 
 #ifndef RWLOCKWRITELOCKER_HPP_201806301438
 #define RWLOCKWRITELOCKER_HPP_201806301438
@@ -150,5 +156,4 @@ inline RWLockWriteLocker::~RWLockWriteLocker(void)
 } // namespace gpcc
 
 #endif // RWLOCKWRITELOCKER_HPP_201806301438
-
-#endif // #if (defined(OS_CHIBIOS_ARM) || defined(OS_EPOS_ARM) || defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC))
+#endif // #if OS_*

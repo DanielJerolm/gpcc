@@ -8,7 +8,13 @@
     Copyright (C) 2011, 2024 Daniel Jerolm
 */
 
-#if (defined(OS_CHIBIOS_ARM) || defined(OS_EPOS_ARM) || defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC))
+#if (   defined(OS_CHIBIOS_ARM)    \
+     || defined(OS_EPOS_ARM)       \
+     || defined(OS_LINUX_ARM)      \
+     || defined(OS_LINUX_ARM_TFC)  \
+     || defined(OS_LINUX_X64)      \
+     || defined(OS_LINUX_X64_TFC)  \
+     || defined(OS_ZEPHYR))
 
 #ifndef RWLOCK_HPP_201701280949
 #define RWLOCK_HPP_201701280949
@@ -123,4 +129,4 @@ class RWLock final
 } // namespace gpcc
 
 #endif // #ifndef RWLOCK_HPP_201701280949
-#endif // #if (defined(OS_CHIBIOS_ARM) || defined(OS_EPOS_ARM) || defined(OS_LINUX_ARM) || defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64) || defined(OS_LINUX_X64_TFC))
+#endif // #if OS_*
