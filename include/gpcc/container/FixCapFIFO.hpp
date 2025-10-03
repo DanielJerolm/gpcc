@@ -95,11 +95,10 @@ class FixCapFIFO final
     std::unique_ptr<T[]> spMemory_;
 
     /// Capacity of the FIFO.
-    /** This is a power of 2.\n
-        This is not const by intention (simple impl. of move-assignment operator). */
+    /** This is not const by intention (simple impl. of move-assignment operator). */
     SIZET capacity_;
 
-    /// Number of items in the FIFO.
+    /// Number of items currently stored in the FIFO.
     SIZET size_;
 
     /// Index of next element to be written in @ref spMemory_.
@@ -107,6 +106,7 @@ class FixCapFIFO final
 
     /// Index of next element to be read in @ref spMemory_.
     SIZET rdIndex_;
+
 
     void CopyFromOther(FixCapFIFO const & other) noexcept;
 };

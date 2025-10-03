@@ -9,7 +9,6 @@
 */
 
 #include "FixCapFIFO.hpp"
-#include <gpcc/math/checks.hpp>
 #include <limits>
 #include <stdexcept>
 #include <cstring>
@@ -33,8 +32,8 @@ namespace container {
  * - - -
  *
  * \param capacity
- * Desired capacity for the FIFO.\n
- * This must be a power of 2. Zero is not allowed.
+ * Desired capacity for the FIFO. The value must fit into the type specified by `SIZET`.\n
+ * Zero is not allowed.
  */
 template <typename T, typename SIZET>
 FixCapFIFO<T, SIZET>::FixCapFIFO(size_t const capacity)
@@ -57,12 +56,14 @@ FixCapFIFO<T, SIZET>::FixCapFIFO(size_t const capacity)
                 && (sizeof(SIZET) <= sizeof(size_t)),
                 "SIZET must be an unsigned integral type. Its size must be equal to or less than 'size_t'.");
 
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wtype-limits"
   if (   (capacity == 0U)
-      || (capacity > std::numeric_limits<SIZET>::max())
-      || (!gpcc::math::IsPowerOf2(capacity)))
+      || (capacity > std::numeric_limits<SIZET>::max()))
   {
     throw std::invalid_argument("Invalid args");
   }
+  #pragma GCC diagnostic pop
 
   spMemory_.reset(new T[capacity]);
 }
@@ -90,7 +91,7 @@ FixCapFIFO<T, SIZET>::FixCapFIFO(FixCapFIFO<T, SIZET> const & other)
 : spMemory_(new T[other.capacity_])
 , capacity_(other.capacity_)
 , size_(other.size_)
-, wrIndex_(other.size_ & (~capacity_))
+, wrIndex_((size_ == capacity_) ? 0U : size_)
 , rdIndex_(0U)
 {
   CopyFromOther(other);
@@ -132,7 +133,7 @@ FixCapFIFO<T, SIZET>& FixCapFIFO<T, SIZET>::operator=(FixCapFIFO<T, SIZET> const
       throw std::logic_error("Insufficient capacity");
 
     size_    = rhv.size_;
-    wrIndex_ = rhv.size_ & (~capacity_);
+    wrIndex_ = (size_ == capacity_) ? 0U : size_;
     rdIndex_ = 0U;
     CopyFromOther(rhv);
   }
@@ -295,7 +296,7 @@ bool FixCapFIFO<T, SIZET>::IsFull(void) const noexcept
 template <typename T, typename SIZET>
 void FixCapFIFO<T, SIZET>::Clear(void) noexcept
 {
-  size_ = 0U;
+  size_    = 0U;
   rdIndex_ = 0U;
   wrIndex_ = 0U;
 }
@@ -329,9 +330,13 @@ bool FixCapFIFO<T, SIZET>::Push(T const value) noexcept
   if (IsFull())
     return false;
 
-  spMemory_[wrIndex_] = value;
-  wrIndex_ = (wrIndex_ + 1U) & (~capacity_);
+  spMemory_[wrIndex_++] = value;
+
+  if (wrIndex_ == capacity_)
+    wrIndex_ = 0U;
+
   size_++;
+
   return true;
 }
 
@@ -364,10 +369,13 @@ bool FixCapFIFO<T, SIZET>::Pop(T & value) noexcept
   if (IsEmpty())
     return false;
 
+  value = spMemory_[rdIndex_++];
+
+  if (rdIndex_ == capacity_)
+    rdIndex_ = 0U;
+
   size_--;
-  auto const prevRdIdx = rdIndex_;
-  rdIndex_ = (rdIndex_ + 1U) & (~capacity_);
-  value = spMemory_[prevRdIdx];
+
   return true;
 }
 
@@ -407,8 +415,8 @@ size_t FixCapFIFO<T, SIZET>::PushMultiple(T const * const pSrc, size_t const n) 
     return 0U;
 
   // calculate number of free slots and number of elements to be pushed
-  SIZET const free = capacity_ - size_;
-  size_t const tbp = std::min(static_cast<size_t>(free), n);
+  size_t const free = capacity_ - size_;
+  size_t const tbp = std::min(free, n);
 
   if (wrIndex_ < rdIndex_)
   {
@@ -424,7 +432,9 @@ size_t FixCapFIFO<T, SIZET>::PushMultiple(T const * const pSrc, size_t const n) 
     if (untilWrap >= tbp)
     {
       memcpy(spMemory_.get() + wrIndex_, pSrc, tbp * sizeof(T));
-      wrIndex_ = (wrIndex_ + tbp) & (capacity_ - 1U);
+      wrIndex_ += tbp;
+      if (wrIndex_ == capacity_)
+        wrIndex_ = 0U;
       size_ += tbp;
     }
     else
@@ -494,7 +504,9 @@ size_t FixCapFIFO<T, SIZET>::PopMultiple(T* const pDest, size_t const n) noexcep
     if (untilWrap >= tbp)
     {
       memcpy(pDest, spMemory_.get() + rdIndex_, tbp * sizeof(T));
-      rdIndex_ = (rdIndex_ + tbp) & (capacity_ - 1U);
+      rdIndex_ += tbp;
+      if (rdIndex_ == capacity_)
+        rdIndex_ = 0U;
       size_ -= tbp;
     }
     else
@@ -523,7 +535,7 @@ size_t FixCapFIFO<T, SIZET>::PopMultiple(T* const pDest, size_t const n) noexcep
  * \pre   The caller must ensure the following:
  *        - `this->size_ == other.size_`
  *        - `this->rdIndex_ == 0`
- *        - `this->wrIndex_ == other.size_`
+ *        - `this->wrIndex_ == this->size_ % this->capacity_`
  *
  * - - -
  *
@@ -567,10 +579,10 @@ void FixCapFIFO<T, SIZET>::CopyFromOther(FixCapFIFO const & other) noexcept
       // |xxxxxxxxxx|
       //  <--a----->  (b = 0)
 
-      SIZET const a = (other.capacity_ - other.rdIndex_);
+      size_t const a = (other.capacity_ - other.rdIndex_);
       memcpy(spMemory_.get(), other.spMemory_.get() + other.rdIndex_, a * sizeof(T));
 
-      SIZET const b = size_ - a;
+      size_t const b = size_ - a;
       if (b != 0U)
         memcpy(spMemory_.get() + a, other.spMemory_.get(), b * sizeof(T));
     }

@@ -310,10 +310,10 @@ static void UsePopMultipleAndCheckValues(UUTTYPE & uut,
 
 TEST(gpcc_container_FixCapFIFO_Tests, Construction)
 {
-  // test a few common capacity values (2^0 .. 2^7).
-  for (uint_fast8_t i = 0U; i < 8U; ++i)
+  std::array<size_t, 5> capacities{1U, 2U, 3U, 12U, 16U};
+
+  for (auto const capacity: capacities)
   {
-    size_t const capacity = 2UL << i;
     FixCapFIFO<uint8_t, size_t> uut(capacity);
 
     EXPECT_EQ(uut.Capacity(), capacity);
@@ -331,10 +331,6 @@ TEST(gpcc_container_FixCapFIFO_Tests, Construction_InvalidArgs)
 
   // zero capacity is not allowed
   EXPECT_THROW(spUUT = std::make_unique<FixCapFIFOu8u8>(0U), std::invalid_argument);
-
-  // capacity must be power of two
-  EXPECT_THROW(spUUT = std::make_unique<FixCapFIFOu8u8>(3U), std::invalid_argument);
-  EXPECT_THROW(spUUT = std::make_unique<FixCapFIFOu8u8>(17U), std::invalid_argument);
 
   // capacity must not exceed maximum value of template parameter SIZET
   EXPECT_THROW(spUUT = std::make_unique<FixCapFIFOu8u8>(256U), std::invalid_argument);
