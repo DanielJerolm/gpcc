@@ -23,28 +23,24 @@ namespace container {
  *
  * # Purpose
  * This class implements a light-weight FIFO with fixed capacity. It is designed for usage from both thread and
- * interrupt context by the following measures:
- * - Except for its constructor, it does not allocate memory at runtime.
- * - Methods do not throw by guarantee.
- * - Methods do not use any functions from the C/C++ runtime that are unavailable or incompatible with interrupt
- *   context. `memcpy()` is considered available and compatible with interrupt context.
+ * interrupt context.
  *
- * If the caller applies proper locking, then this FIFO can be used to transfer data between interrupt and thread
- * context. Please refer to the thread-safety notes of each method to determine if it can be used from interrupt
- * context.
+ * If the user applies the locking mechanisms for synchronization of thread and interrupt context offered by the
+ * specific operating system properly, then this FIFO can be used to transfer data between interrupt and thread context.
+ * Please refer to the thread-safety notes of each method to determine which methods of the FIFO can be used from
+ * interrupt context.
  *
- * # Optimizations and limitations
- * Especially single push/pop operations are heavily optimized for ARM and x64 CPUs. The number of generated
- * instructions is minimal if @p SIZET is set to `size_t`. However, the RAM footprint of a @ref FixCapFIFO instance
- * can be reduced if @p SIZET is set to a smaller type at the cost of 1-2 additional machine instructions for push/pop
- * operations.
- *
- * The type @p T of the elements stored in the FIFO is limited to trivial types such as PODs (plain old data types).
+ * The following measures were applied to methods that can be invoked from interrupt context:
+ * - No memory allocation.
+ * - No exceptions are thrown, not even under the hood.
+ * - FIFO overflow/underflow awareness and report by return value.
+ * - No use of functions from the C/C++ runtime that are unavailable or incompatible with interrupt context.\n
+ *   `memcpy()` is considered available and compatible with interrupt context.
  *
  * # Differentiation from STL
  * The STL offers `std::queue`. For use cases that do not involve interrupt context, you should prefer `std::queue` for
  * the following reasons:
- * - No limitation on the data type of the elements stored in the FIFO
+ * - No limitation on the data type of the elements stored in the FIFO.
  * - Rich API.
  *
  * However, if interrupt context is involved, `std::queue` must not be used and @ref FixCapFIFO is an alternative.
@@ -52,12 +48,14 @@ namespace container {
  * - - -
  *
  * \tparam T
- * Data type of the items.
+ * Data type of the items stored in the FIFO.\n
+ * The type is limited to trivial types such as PODs (plain old data types).
  *
  * \param SIZET
- * Data type used for the FIFO's capacity, size, and internal management. The default is `size_t` which gives best
- * performance. However, on size-constrained systems, a smaller datatype can be selected to reduce the footprint of the
- * FIFO object.
+ * Data type used _internally_ for the FIFO's capacity, size, and indexing. The default is `size_t`, which gives best
+ * performance. However, on size-constrained systems, a smaller datatype (e.g. `uint8_t`) can be selected to reduce the
+ * RAM footprint of an FIFO object.\n
+ * Regardless of `SIZET`, the _public API_ of the FIFO always uses `size_t` to express capacity and size values.
  *
  * - - -
  *
