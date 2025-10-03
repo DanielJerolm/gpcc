@@ -42,7 +42,7 @@ using gpcc::container::FixCapFIFO;
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - @p uut is left in an undefined state.
+ * - @p uut is left in a valid, but undefined state.
  * - @p nextPushedValue is not modified.
  *
  * __Thread cancellation safety:__\n
@@ -56,9 +56,6 @@ using gpcc::container::FixCapFIFO;
  * \tparam T
  * Type of @p nextPushedValue.
  *
- * \tparam SIZET
- * Type of @p count.
- *
  * - - -
  *
  * \param uut
@@ -71,15 +68,15 @@ using gpcc::container::FixCapFIFO;
  * Next value to be pushed.\n
  * If this function succeeds, then the referenced value will be increased by @p count.
  */
-template<typename UUTTYPE, typename T, typename SIZET>
+template<typename UUTTYPE, typename T>
 static void UsePush(UUTTYPE & uut,
-                    SIZET const count,
+                    size_t const count,
                     T & nextPushedValue)
 {
   // !! This must be invoked using ASSERT_NO_FATAL_FAILURE() !!
 
   T value = nextPushedValue;
-  SIZET n = count;
+  size_t n = count;
   while (n != 0U)
   {
     ASSERT_FALSE(uut.IsFull()) << "UUT is full. n = " << n << ", next pushed value = " << value;
@@ -113,9 +110,6 @@ static void UsePush(UUTTYPE & uut,
  * \tparam T
  * Type of @p nextExpectedPoppedValue.
  *
- * \tparam SIZET
- * Type of @p count.
- *
  * - - -
  *
  * __Thread safety:__\n
@@ -123,7 +117,7 @@ static void UsePush(UUTTYPE & uut,
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - @p uut is left in an undefined state.
+ * - @p uut is left in a valid, but undefined state.
  * - @p nextExpectedPoppedValue is not modified.
  *
  * __Thread cancellation safety:__\n
@@ -141,19 +135,19 @@ static void UsePush(UUTTYPE & uut,
  * Expectation for the next popped value.\n
  * If this function succeeds, then the referenced value will be increased by @p count.
  */
-template<typename UUTTYPE, typename T, typename SIZET>
+template<typename UUTTYPE, typename T>
 static void UsePopAndCheckValues(UUTTYPE & uut,
-                                 SIZET const count,
+                                 size_t const count,
                                  T & nextExpectedValue)
 {
   // !! This must be invoked using ASSERT_NO_FATAL_FAILURE() !!
 
   T value = nextExpectedValue;
-  SIZET n = count;
+  size_t n = count;
   while (n != 0U)
   {
     ASSERT_FALSE(uut.IsEmpty()) << "UUT is empty. n = " << n << ", nextExpectedValue = " << value;
-    T poppedValue;
+    T poppedValue = 0;
     ASSERT_TRUE(uut.Pop(poppedValue));
     ASSERT_EQ(poppedValue, value) << "Popped value is invalid. n = " << n;
     ++value;
@@ -181,7 +175,7 @@ static void UsePopAndCheckValues(UUTTYPE & uut,
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - @p uut is left in an undefined state.
+ * - @p uut is left in a valid, but undefined state.
  * - @p nextPushedValue is not modified.
  *
  * __Thread cancellation safety:__\n
@@ -258,7 +252,7 @@ static void UsePushMultiple(UUTTYPE & uut,
  *
  * __Exception safety:__\n
  * Basic guarantee:
- * - @p uut is left in an undefined state.
+ * - @p uut is left in a valid, but undefined state.
  * - @p nextExpectedPoppedValue is not modified.
  *
  * __Thread cancellation safety:__\n
@@ -310,7 +304,7 @@ static void UsePopMultipleAndCheckValues(UUTTYPE & uut,
 
 TEST(gpcc_container_FixCapFIFO_Tests, Construction)
 {
-  std::array<size_t, 5> capacities{1U, 2U, 3U, 12U, 16U};
+  std::array<size_t, 6U> const capacities{1U, 2U, 3U, 8U, 12U, 16U};
 
   for (auto const capacity: capacities)
   {
@@ -347,8 +341,9 @@ TEST(gpcc_container_FixCapFIFO_Tests, Clear)
   ASSERT_FALSE(uut.IsFull());
   ASSERT_EQ(uut.Size(), 0U);
 
-  ASSERT_TRUE(uut.Push(3));
-  uint32_t v;
+  // check that push and pop work after clear
+  ASSERT_TRUE(uut.Push(3U));
+  uint32_t v = 0U;
   ASSERT_TRUE(uut.Pop(v));
   EXPECT_EQ(v, 3U);
 
@@ -366,8 +361,9 @@ TEST(gpcc_container_FixCapFIFO_Tests, ClearWhileEmpty)
   ASSERT_FALSE(uut.IsFull());
   ASSERT_EQ(uut.Size(), 0U);
 
-  ASSERT_TRUE(uut.Push(3));
-  uint32_t v;
+  // check that push and pop work after clear
+  ASSERT_TRUE(uut.Push(3U));
+  uint32_t v = 0U;
   ASSERT_TRUE(uut.Pop(v));
   EXPECT_EQ(v, 3U);
 
@@ -383,7 +379,6 @@ TEST(gpcc_container_FixCapFIFO_Tests, BasicPushPop_Capacity1)
   // scenarios.
 
   FixCapFIFO<uint32_t, uint8_t> uut(1U);
-
   ASSERT_TRUE(uut.IsEmpty());
   ASSERT_FALSE(uut.IsFull());
   ASSERT_EQ(uut.Size(), 0U);
@@ -433,7 +428,6 @@ TEST(gpcc_container_FixCapFIFO_Tests, BasicPushPop_Capacity2)
   // scenarios.
 
   FixCapFIFO<uint32_t, uint8_t> uut(2U);
-
   ASSERT_TRUE(uut.IsEmpty());
   ASSERT_FALSE(uut.IsFull());
   ASSERT_EQ(uut.Size(), 0U);
@@ -489,6 +483,10 @@ TEST(gpcc_container_FixCapFIFO_Tests, BasicPushPop_Capacity2)
 
 TEST(gpcc_container_FixCapFIFO_Tests, BasicPushMultiplePopMultiple_Capacity1)
 {
+  // This test case checks basic operation of the UUT's PushMultiple() and PopMultiple() methods for an UUT with
+  // capacity 1. gpcc_container_FixCapFIFO_Tests.PushMultiplePopMultiple performs a thorough test of these methods
+  // covering all possible scenarios.
+
   uint32_t pushValue = 0U;
   uint32_t popValue = 0U;
 
@@ -496,6 +494,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, BasicPushMultiplePopMultiple_Capacity1)
 
   for (uint_fast8_t i = 0U; i < 2U; ++i)
   {
+    // Attempt to push 2 values. 1 value should actually be pushed.
     size_t nbOfPushedValues = 0U;
     UsePushMultiple(uut, 2U, nbOfPushedValues, pushValue);
     ASSERT_EQ(nbOfPushedValues, 1U);
@@ -504,9 +503,27 @@ TEST(gpcc_container_FixCapFIFO_Tests, BasicPushMultiplePopMultiple_Capacity1)
     ASSERT_TRUE(uut.IsFull());
     ASSERT_EQ(uut.Size(), 1U);
 
+    // Attempt to push 2 value to a full FIFO.
+    UsePushMultiple(uut, 2U, nbOfPushedValues, pushValue);
+    ASSERT_EQ(nbOfPushedValues, 0U);
+
+    ASSERT_FALSE(uut.IsEmpty());
+    ASSERT_TRUE(uut.IsFull());
+    ASSERT_EQ(uut.Size(), 1U);
+
+    // Attempt to pop 2 values. 1 value should actually be popped.
     size_t nbOfPoppedValues = 0U;
     UsePopMultipleAndCheckValues(uut, 2U, nbOfPoppedValues, popValue);
     ASSERT_EQ(nbOfPoppedValues, 1U);
+
+    ASSERT_TRUE(uut.IsEmpty());
+    ASSERT_FALSE(uut.IsFull());
+    ASSERT_EQ(uut.Size(), 0U);
+
+    // Attempt to pop 2 values from an empty FIFO.
+    nbOfPoppedValues = 0U;
+    UsePopMultipleAndCheckValues(uut, 2U, nbOfPoppedValues, popValue);
+    ASSERT_EQ(nbOfPoppedValues, 0U);
 
     ASSERT_TRUE(uut.IsEmpty());
     ASSERT_FALSE(uut.IsFull());
@@ -516,6 +533,10 @@ TEST(gpcc_container_FixCapFIFO_Tests, BasicPushMultiplePopMultiple_Capacity1)
 
 TEST(gpcc_container_FixCapFIFO_Tests, BasicPushMultiplePopMultiple_Capacity2)
 {
+  // This test case checks basic operation of the UUT's PushMultiple() and PopMultiple() methods for an UUT with
+  // capacity 2. gpcc_container_FixCapFIFO_Tests.PushMultiplePopMultiple performs a thorough test of these methods
+  // covering all possible scenarios.
+
   uint32_t pushValue = 0U;
   uint32_t popValue = 0U;
 
@@ -523,6 +544,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, BasicPushMultiplePopMultiple_Capacity2)
 
   for (uint_fast8_t i = 0U; i < 2U; ++i)
   {
+    // Attempt to push 3 values. 2 values should actually be pushed.
     size_t nbOfPushedValues = 0U;
     UsePushMultiple(uut, 3U, nbOfPushedValues, pushValue);
     ASSERT_EQ(nbOfPushedValues, 2U);
@@ -531,6 +553,15 @@ TEST(gpcc_container_FixCapFIFO_Tests, BasicPushMultiplePopMultiple_Capacity2)
     ASSERT_TRUE(uut.IsFull());
     ASSERT_EQ(uut.Size(), 2U);
 
+    // Attempt to push 2 value to a full FIFO.
+    UsePushMultiple(uut, 2U, nbOfPushedValues, pushValue);
+    ASSERT_EQ(nbOfPushedValues, 0U);
+
+    ASSERT_FALSE(uut.IsEmpty());
+    ASSERT_TRUE(uut.IsFull());
+    ASSERT_EQ(uut.Size(), 2U);
+
+    // Attempt to pop 3 values. 2 values should actually be popped.
     size_t nbOfPoppedValues = 0U;
     UsePopMultipleAndCheckValues(uut, 3U, nbOfPoppedValues, popValue);
     ASSERT_EQ(nbOfPoppedValues, 2U);
@@ -538,14 +569,68 @@ TEST(gpcc_container_FixCapFIFO_Tests, BasicPushMultiplePopMultiple_Capacity2)
     ASSERT_TRUE(uut.IsEmpty());
     ASSERT_FALSE(uut.IsFull());
     ASSERT_EQ(uut.Size(), 0U);
+
+    // Attempt to pop 2 values from an empty FIFO.
+    nbOfPoppedValues = 0U;
+    UsePopMultipleAndCheckValues(uut, 2U, nbOfPoppedValues, popValue);
+    ASSERT_EQ(nbOfPoppedValues, 0U);
+
+    ASSERT_TRUE(uut.IsEmpty());
+    ASSERT_FALSE(uut.IsFull());
+    ASSERT_EQ(uut.Size(), 0U);
   }
+}
+
+TEST(gpcc_container_FixCapFIFO_Tests, PushMultiple_Zero)
+{
+  FixCapFIFO<uint32_t, uint8_t> uut(2U);
+
+  // PushMultiple() with n = 0
+  uint32_t const values[2] = {11U, 12U};
+  ASSERT_EQ(uut.PushMultiple(values, 0U), 0U);
+
+  // FIFO should still be empty
+  ASSERT_TRUE(uut.IsEmpty());
+  ASSERT_FALSE(uut.IsFull());
+  ASSERT_EQ(uut.Size(), 0U);
+}
+
+TEST(gpcc_container_FixCapFIFO_Tests, PopMultiple_Zero)
+{
+  FixCapFIFO<uint32_t, uint8_t> uut(2U);
+  ASSERT_TRUE(uut.Push(1U));
+  ASSERT_TRUE(uut.Push(2U));
+
+  // PopMultiple() with n = 0
+  uint32_t values[2] = { 0U, 0U };
+  ASSERT_EQ(uut.PopMultiple(values, 0U), 0U);
+
+  // values should not have changed
+  EXPECT_EQ(values[0], 0U);
+  EXPECT_EQ(values[1], 0U);
+
+  // FIFO should still be full
+  ASSERT_FALSE(uut.IsEmpty());
+  ASSERT_TRUE(uut.IsFull());
+  ASSERT_EQ(uut.Size(), 2U);
+
+  // Pop values
+  uint32_t v = 0U;
+  ASSERT_TRUE(uut.Pop(v));
+  EXPECT_EQ(v, 1U);
+  ASSERT_TRUE(uut.Pop(v));
+  EXPECT_EQ(v, 2U);
+
+  ASSERT_TRUE(uut.IsEmpty());
+  ASSERT_FALSE(uut.IsFull());
+  ASSERT_EQ(uut.Size(), 0U);
 }
 
 TEST(gpcc_container_FixCapFIFO_Tests, PushPop)
 {
-  // This test case pushes and pops different numbers of elements onto and from the FIFO using Push() and Pop(),
-  // starting at different states of the FIFO. The FIFO state is comprised of the index of read-pointer and
-  // write-pointer. All possible states are generated using two nested loops.
+  // This test case pushes and pops different numbers of elements onto and from the UUT using Push() and Pop(),
+  // starting at different states of the UUT. The UUT's state is comprised of the index of the read-pointer and the
+  // write-pointer. All possible states are generated using nested loops.
 
   // counter for creating unique values pushed onto the UUT during this test and for checking the popped values
   uint32_t pushValue = 0U;
@@ -555,11 +640,11 @@ TEST(gpcc_container_FixCapFIFO_Tests, PushPop)
 
   // 1st variable of test: Initial read-index
   // Note: "<=" results in intentional wrap around of read-index
-  for (uint_fast8_t initialRdIdx = 0U; initialRdIdx <= capacity; ++initialRdIdx)
+  for (size_t initialRdIdx = 0U; initialRdIdx <= capacity; ++initialRdIdx)
   {
     // 2nd varibale of test: Initial write-index
     // Note: "<=" results in intentional wrap around of write-index
-    for (uint_fast8_t initialWrIdx = 0U; initialWrIdx <= capacity; ++initialWrIdx)
+    for (size_t initialWrIdx = 0U; initialWrIdx <= capacity; ++initialWrIdx)
     {
       // calculate the initial number of elements in the UUT after the precondition has been setup
       size_t const initialNbOfElements =   (initialRdIdx <= initialWrIdx) ?
@@ -570,7 +655,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, PushPop)
       size_t const freeSlots = capacity - initialNbOfElements;
 
       // 3rd variable of test: Number of elements pushed onto the FIFO after precondition has been established
-      for (uint_fast8_t n = 0U; n <= freeSlots; ++n)
+      for (size_t n = 0U; n <= freeSlots; ++n)
       {
         if (popValue != pushValue)
           throw std::logic_error("Testcase internal error");
@@ -628,9 +713,9 @@ TEST(gpcc_container_FixCapFIFO_Tests, PushPop)
 
 TEST(gpcc_container_FixCapFIFO_Tests, PushMultiplePopMultiple)
 {
-  // This test case pushes and pops different numbers of elements onto and from the FIFO using PushMultiple() and
-  // PopMultiple(), starting at different states of the FIFO. The FIFO state is comprised of the index of the
-  // read-pointer and write-pointer. All possible states are generated using two nested loops.
+  // This test case pushes and pops different numbers of elements onto and from the UUT using PushMultiple() and
+  // PopMultiple(), starting at different states of the UUT. The UUT state is comprised of the index of the
+  // read-pointer and the write-pointer. All possible states are generated using nested loops.
 
   // counter for creating unique values pushed onto the UUT during this test and for checking the popped values
   uint32_t pushValue = 0U;
@@ -640,11 +725,11 @@ TEST(gpcc_container_FixCapFIFO_Tests, PushMultiplePopMultiple)
 
   // 1st variable of test: Initial read-index
   // Note: "<=" results in intentional wrap around of read-index
-  for (uint_fast8_t initialRdIdx = 0U; initialRdIdx <= capacity; ++initialRdIdx)
+  for (size_t initialRdIdx = 0U; initialRdIdx <= capacity; ++initialRdIdx)
   {
     // 2nd varibale of test: Initial write-index
     // Note: "<=" results in intentional wrap around of write-index
-    for (uint_fast8_t initialWrIdx = 0U; initialWrIdx <= capacity; ++initialWrIdx)
+    for (size_t initialWrIdx = 0U; initialWrIdx <= capacity; ++initialWrIdx)
     {
       // calculate the initial number of elements in the UUT after the precondition has been setup
       size_t const initialNbOfElements =   (initialRdIdx <= initialWrIdx) ?
@@ -653,7 +738,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, PushMultiplePopMultiple)
 
       // 3rd variable of test: Number of elements pushed onto the FIFO after precondition has been established
       // Note: n may exceed the number of free slots. This is by intention.
-      for (uint_fast8_t n = 0U; n <= capacity; ++n)
+      for (size_t n = 0U; n <= capacity; ++n)
       {
         if (popValue != pushValue)
           throw std::logic_error("Testcase internal error");
@@ -695,7 +780,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, PushMultiplePopMultiple)
         size_t nbOfPoppedValues = 0U;
         UsePopMultipleAndCheckValues(uut, n, nbOfPoppedValues, popValue);
 
-        size_t expectedNbOfElements = (initialNbOfElements + nbOfPushedValues) - nbOfPoppedValues;
+        size_t const expectedNbOfElements = (initialNbOfElements + nbOfPushedValues) - nbOfPoppedValues;
         ASSERT_EQ(uut.IsEmpty(), (expectedNbOfElements == 0U));
         ASSERT_EQ(uut.IsFull(), (expectedNbOfElements == capacity));
         ASSERT_EQ(uut.Size(), expectedNbOfElements);
@@ -714,12 +799,12 @@ TEST(gpcc_container_FixCapFIFO_Tests, PushMultiplePopMultiple)
 
 TEST(gpcc_container_FixCapFIFO_Tests, CopyCTOR)
 {
-  // This test generates all possible states of the FIFO using two nested loops and tests copy-construction of a new
-  // instance from each state. The FIFO state is comprised of the index of read-pointer and write-pointer.
+  // This test generates all possible states of the UUT using nested loops and tests copy-construction of a new
+  // instance from each state. The UUT's state is comprised of the index of the read-pointer and the write-pointer.
   // For each state, all possible numbers of elements are pushed/popped to/from the copied instance.
 
   // Counter for creating unique values pushed onto the original UUT during this test and for checking the popped
-  // values. Note that the copied instance uses its own number sequence.
+  // values. Note that the copied instances use their own number sequences.
   uint32_t pushValue = 0U;
   uint32_t popValue = 0U;
 
@@ -727,11 +812,11 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyCTOR)
 
   // 1st variable of test: Initial read-index
   // Note: "<=" results in intentional wrap around of read-index
-  for (uint_fast8_t initialRdIdx = 0U; initialRdIdx <= capacity; ++initialRdIdx)
+  for (size_t initialRdIdx = 0U; initialRdIdx <= capacity; ++initialRdIdx)
   {
     // 2nd varibale of test: Initial write-index
     // Note: "<=" results in intentional wrap around of write-index
-    for (uint_fast8_t initialWrIdx = 0U; initialWrIdx <= capacity; ++initialWrIdx)
+    for (size_t initialWrIdx = 0U; initialWrIdx <= capacity; ++initialWrIdx)
     {
       // calculate the initial number of elements in the UUT after the precondition has been setup
       size_t const initialNbOfElements =   (initialRdIdx <= initialWrIdx) ?
@@ -774,7 +859,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyCTOR)
         // create new instance using copy-construction
         FixCapFIFO<uint32_t, uint8_t> copyOfUUT(uut);
 
-        // the copy uses its own sequence of values
+        // the copied instance uses its own sequence of values
         uint32_t copyOfPopValue = popValue;
         uint32_t copyOfPushValue = pushValue;
 
@@ -809,7 +894,8 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyCTOR)
         ASSERT_EQ(copyOfUUT.Size(), 0U);
       } // for n...
 
-      // Finally check status and content of UUT. It should not have been changed by creating all the copies.
+      // Finally check status and content of the original UUT.
+      // It should not have been changed by creating all the copies.
       ASSERT_EQ(uut.IsEmpty(), (initialNbOfElements == 0U));
       ASSERT_EQ(uut.IsFull(), (initialNbOfElements == capacity));
       ASSERT_EQ(uut.Size(), initialNbOfElements);
@@ -826,14 +912,13 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyCTOR)
 TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignmentSelf)
 {
   FixCapFIFO<uint32_t, uint8_t> uut(2U);
-
   ASSERT_TRUE(uut.Push(1U));
   ASSERT_TRUE(uut.Push(3U));
 
   uut = uut;
 
   ASSERT_EQ(uut.Size(), 2U);
-  uint32_t v;
+  uint32_t v = 0U;
   ASSERT_TRUE(uut.Pop(v));
   EXPECT_EQ(v, 1U);
   ASSERT_TRUE(uut.Pop(v));
@@ -852,13 +937,14 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_OtherHasSmallerCapacity)
   ASSERT_NO_THROW(uut2 = uut1);
 
   ASSERT_EQ(uut1.Size(), 2U);
-  uint32_t v;
+  uint32_t v = 0U;
   ASSERT_TRUE(uut1.Pop(v));
   EXPECT_EQ(v, 1U);
   ASSERT_TRUE(uut1.Pop(v));
   EXPECT_EQ(v, 3U);
 
   ASSERT_EQ(uut2.Size(), 2U);
+  v = 0U;
   ASSERT_TRUE(uut2.Pop(v));
   EXPECT_EQ(v, 1U);
   ASSERT_TRUE(uut2.Pop(v));
@@ -877,13 +963,14 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_OtherHasLargerCapacity)
   ASSERT_NO_THROW(uut2 = uut1);
 
   ASSERT_EQ(uut1.Size(), 2U);
-  uint32_t v;
+  uint32_t v = 0U;
   ASSERT_TRUE(uut1.Pop(v));
   EXPECT_EQ(v, 1U);
   ASSERT_TRUE(uut1.Pop(v));
   EXPECT_EQ(v, 3U);
 
   ASSERT_EQ(uut2.Size(), 2U);
+  v = 0U;
   ASSERT_TRUE(uut2.Pop(v));
   EXPECT_EQ(v, 1U);
   ASSERT_TRUE(uut2.Pop(v));
@@ -903,7 +990,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_InsufficientCapacity)
   ASSERT_THROW(uut2 = uut1, std::logic_error);
 
   ASSERT_EQ(uut1.Size(), 3U);
-  uint32_t v;
+  uint32_t v = 0U;
   ASSERT_TRUE(uut1.Pop(v));
   EXPECT_EQ(v, 1U);
   ASSERT_TRUE(uut1.Pop(v));
@@ -912,14 +999,15 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_InsufficientCapacity)
   EXPECT_EQ(v, 8U);
 
   ASSERT_EQ(uut2.Size(), 1U);
+  v = 0U;
   ASSERT_TRUE(uut2.Pop(v));
   EXPECT_EQ(v, 55U);
 }
 
 TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment)
 {
-  // This test generates all possible states of the FIFO using two nested loops and tests copy-assignment of the FIFO's
-  // content to a 2nd instance from each state. The FIFO state is comprised of the index of the read-pointer and the
+  // This test generates all possible states of the UUT using nested loops and tests copy-assignment of the UUT's
+  // content to a 2nd instance from each state. The UUT's state is comprised of the index of the read-pointer and the
   // write-pointer. For each state, all possible numbers of elements are pushed/popped to/from the 2nd instance that was
   // the target of the copy-assignment.
 
@@ -935,11 +1023,11 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment)
 
   // 1st variable of test: Initial read-index
   // Note: "<=" results in intentional wrap around of read-index
-  for (uint_fast8_t initialRdIdx = 0U; initialRdIdx <= capacity; ++initialRdIdx)
+  for (size_t initialRdIdx = 0U; initialRdIdx <= capacity; ++initialRdIdx)
   {
     // 2nd varibale of test: Initial write-index
     // Note: "<=" results in intentional wrap around of write-index
-    for (uint_fast8_t initialWrIdx = 0U; initialWrIdx <= capacity; ++initialWrIdx)
+    for (size_t initialWrIdx = 0U; initialWrIdx <= capacity; ++initialWrIdx)
     {
       // calculate the initial number of elements in the UUT after the precondition has been setup
       size_t const initialNbOfElements =   (initialRdIdx <= initialWrIdx) ?
@@ -1030,7 +1118,6 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment)
 TEST(gpcc_container_FixCapFIFO_Tests, MoveAssignmentSelf)
 {
   FixCapFIFO<uint32_t, uint8_t> uut(2U);
-
   ASSERT_TRUE(uut.Push(1U));
   ASSERT_TRUE(uut.Push(3U));
 
@@ -1039,7 +1126,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, MoveAssignmentSelf)
   GPCC_RESTORE_WARN_SELFMOVE();
 
   ASSERT_EQ(uut.Size(), 2U);
-  uint32_t v;
+  uint32_t v = 0U;
   ASSERT_TRUE(uut.Pop(v));
   EXPECT_EQ(v, 1U);
   ASSERT_TRUE(uut.Pop(v));
@@ -1048,8 +1135,8 @@ TEST(gpcc_container_FixCapFIFO_Tests, MoveAssignmentSelf)
 
 TEST(gpcc_container_FixCapFIFO_Tests, MoveAssignment)
 {
-  // This test generates all possible states of the FIFO using two nested loops and tests move-assignment of the FIFO's
-  // content to a 2nd instance from each state. The FIFO state is comprised of the index of the read-pointer and the
+  // This test generates all possible states of the UUT using nested loops and tests move-assignment of the UUT's
+  // content to a 2nd instance from each state. The UUT's state is comprised of the index of the read-pointer and the
   // write-pointer. The 2nd instance has either the same or twice the capacity of the 1st instance.
 
   // counter for creating unique values pushed onto the UUT during this test and for checking the popped values
@@ -1060,11 +1147,11 @@ TEST(gpcc_container_FixCapFIFO_Tests, MoveAssignment)
 
   // 1st variable of test: Initial read-index
   // Note: "<=" results in intentional wrap around of read-index
-  for (uint_fast8_t initialRdIdx = 0U; initialRdIdx <= capacity; ++initialRdIdx)
+  for (size_t initialRdIdx = 0U; initialRdIdx <= capacity; ++initialRdIdx)
   {
     // 2nd varibale of test: Initial write-index
     // Note: "<=" results in intentional wrap around of write-index
-    for (uint_fast8_t initialWrIdx = 0U; initialWrIdx <= capacity; ++initialWrIdx)
+    for (size_t initialWrIdx = 0U; initialWrIdx <= capacity; ++initialWrIdx)
     {
       // calculate the initial number of elements in the UUT after the precondition has been setup
       size_t const initialNbOfElements =   (initialRdIdx <= initialWrIdx) ?
@@ -1075,7 +1162,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, MoveAssignment)
       size_t const freeSlots = capacity - initialNbOfElements;
 
       // 3rd variable of test: Number of elements pushed/popped to/from the FIFO after move-assignment
-      for (uint_fast8_t n = 0U; n <= freeSlots; ++n)
+      for (size_t n = 0U; n <= freeSlots; ++n)
       {
         if (popValue != pushValue)
           throw std::logic_error("Testcase internal error");
@@ -1104,7 +1191,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, MoveAssignment)
         // - read index is (initialRdIdx % capacity) now
         // - write index is (initialWrIdx % capacity) now
 
-        // Setup 2nd uut: Capacity same/twice of 1st uut, and push some content.
+        // Setup 2nd uut: Capacity same or twice of 1st uut (depends on n), and push some content.
         FixCapFIFO<uint32_t, uint8_t> uut2(capacity * ((n % 2U) + 1U));
         ASSERT_TRUE(uut2.Push(0U));
         ASSERT_TRUE(uut2.Push(8U));
