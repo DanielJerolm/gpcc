@@ -4,6 +4,7 @@
 
 name: Scorecard analysis workflow
 on:
+  # This line has been committed to assert the trigger manually
   # For Branch-Protection check. Only the default branch is supported. See
   # https://github.com/ossf/scorecard/blob/main/docs/checks.md#branch-protection
   branch_protection_rule:
