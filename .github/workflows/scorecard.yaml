@@ -4,7 +4,6 @@
 
 name: Scorecard analysis workflow
 on:
-  # This line has been committed to assert the trigger manually
   # For Branch-Protection check. Only the default branch is supported. See
   # https://github.com/ossf/scorecard/blob/main/docs/checks.md#branch-protection
   branch_protection_rule:
@@ -13,7 +12,6 @@ on:
   schedule:
     # Weekly on Saturdays.
     - cron:  '30 1 * * 6'
-  pull_request:
   push:
     branches: [ "develop" ]
 
@@ -56,7 +54,7 @@ jobs:
         with:
           name: SARIF file
           path: results.sarif
-          retention-days: 5
+          retention-days: 7
 
       # Upload the results to GitHub's code scanning dashboard (optional).
       # Commenting out will disable upload of results to your repo's Code Scanning dashboard
