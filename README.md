@@ -1,5 +1,7 @@
 
-# GPCC [![Run unittests](https://github.com/DanielJerolm/gpcc/actions/workflows/build-test.yaml/badge.svg)](https://github.com/DanielJerolm/gpcc/actions/workflows/build-test.yaml)
+# GPCC
+[![Run unittests](https://github.com/DanielJerolm/gpcc/actions/workflows/build-test.yaml/badge.svg)](https://github.com/DanielJerolm/gpcc/actions/workflows/build-test.yaml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/DanielJerolm/gpcc/badge)](https://scorecard.dev/viewer/?uri=github.com/DanielJerolm/gpcc)
 
 The swiss army knife for C++ cross-platform portable embedded software.
 
