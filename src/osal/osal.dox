@@ -55,6 +55,7 @@
  * Linux ARM (32/64 bit) with TFC for unit tests | linux_arm_tfc
  * Linux x64                                     | linux_x64
  * Linux x64 with TFC for unit tests             | linux_x64_tfc
+ * Zephyr                                        | zephyr
  *
  * # Documentation
  * Though the OSAL's API is identical among all supported platforms and operating systems, there are small differences
@@ -212,6 +213,7 @@
  * ChibiOS/RT       | Forwards the text message passed to Panic() to `chSysHalt()`.
  * EPOS             | Forwards the text message passed to Panic() to `epos_Panic()`.
  * Linux            | Dumps the text message passed to Panic() to `stderr` and aborts the process.
+ * Zephyr           | Switch log system to panic mode, dump text message to `printk()`, and invoke `k_panic()`.
  */
 
 /**
@@ -243,6 +245,7 @@
  * linux_x64     | Thread with highest priority
  * linux_arm_tfc | LIFO (not relevant in TFC environment)
  * linux_x64_tfc | LIFO (not relevant in TFC environment)
+ * zephyr        | Thread with highest priority
  *
  * ## Mutex
  * OS / Platform | Priority Inheritance Protocol | Thread that locks when another thread unlocks | Runtime error checks
@@ -253,6 +256,7 @@
  * linux_x64     | Yes                           | Thread with highest priority                  | none
  * linux_arm_tfc | No                            | Random (not relevant in TFC environment)      | Recursion, unlock without lock
  * linux_x64_tfc | No                            | Random (not relevant in TFC environment)      | Recursion, unlock without lock
+ * zephyr        | Yes                           | Thread with highest priority                  | Recursion, unlock without lock, unlock order violation
  *
  * ## Semaphore
  * OS / Platform | Thread unblocked upon post/increment
@@ -263,6 +267,7 @@
  * linux_x64     | Thread with highest priority and longest wait-time
  * linux_arm_tfc | Random (not relevant in TFC environment)
  * linux_x64_tfc | Random (not relevant in TFC environment)
+ * zephyr        | Thread with highest priority
  *
  * ## Thread
  * OS / Platform | Increase of sleep time by Sleep_ms() and Sleep_ns()
@@ -273,6 +278,7 @@
  * linux_x64     | Same as epos_arm
  * linux_arm_tfc | Zero
  * linux_x64_tfc | Zero
+ * zephyr        | Round up to system tick period + 0..1 system tick periods
  *
  * ### ChibiOS/RT (chibios_arm)
  * - Scheduling policies `Other`, `Idle`, and `Batch` are emulated by mapping them to specific fixed priorities (see
@@ -336,6 +342,7 @@
  * linux_x64     | `pthread_setcancelstate()`                                             | yes          | Full integration in stack unwind
  * linux_arm_tfc | `pthread_setcancelstate()`                                             | yes          | Full integration in stack unwind
  * linux_x64_tfc | `pthread_setcancelstate()`                                             | yes          | Full integration in stack unwind
+ * zephyr        | None                                                                   | yes          | not supported
  *
  * @anchor GPCC_OSAL_THREADING_INTEROP_THDEXIT
  * ## Thread exit
@@ -350,7 +357,7 @@
  * linux_x64     | `pthread_exit()`                               | yes          | Full integration in stack unwind
  * linux_arm_tfc | `pthread_exit()`                               | yes          | Full integration in stack unwind
  * linux_x64_tfc | `pthread_exit()`                               | yes          | Full integration in stack unwind
- *
+ * zephyr        | None                                           | yes          | not supported
  */
 
 /**
