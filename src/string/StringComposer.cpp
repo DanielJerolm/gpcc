@@ -952,7 +952,7 @@ std::string StringComposer::Get(void) const
  * \param value
  * Value that shall be converted into a string.
  */
-#if defined(_NEWLIB_VERSION)
+#if defined(GPCC_HAVE_SNIPRINTF)
 template<typename T>
 void StringComposer::PrintiToBuffer(char* const buffer, size_t const bufferSize, Type const type, T const value) const
 {

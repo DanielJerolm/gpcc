@@ -65,7 +65,7 @@ std::string ToHex(T const value, uint8_t const digits)
   int status;
   if (sizeof(T) <= sizeof(unsigned long))
   {
-    #if defined(_NEWLIB_VERSION)
+    #if defined(GPCC_HAVE_SNIPRINTF)
       status = sniprintf(buffer, sizeof(buffer), "0x%0*lX", static_cast<int>(digits), static_cast<unsigned long>(value));
     #else
       status = snprintf(buffer, sizeof(buffer), "0x%0*lX", static_cast<int>(digits), static_cast<unsigned long>(value));
@@ -73,7 +73,7 @@ std::string ToHex(T const value, uint8_t const digits)
   }
   else
   {
-    #if defined(_NEWLIB_VERSION)
+    #if defined(GPCC_HAVE_SNIPRINTF)
       status = sniprintf(buffer, sizeof(buffer), "0x%0*llX", static_cast<int>(digits), static_cast<unsigned long long>(value));
     #else
       status = snprintf(buffer, sizeof(buffer), "0x%0*llX", static_cast<int>(digits), static_cast<unsigned long long>(value));
@@ -210,7 +210,7 @@ std::string ToHexNoPrefix(T const value, uint8_t const digits)
   int status;
   if (sizeof(T) <= sizeof(unsigned long))
   {
-    #if defined(_NEWLIB_VERSION)
+    #if defined(GPCC_HAVE_SNIPRINTF)
       status = sniprintf(buffer, sizeof(buffer), "%0*lX", static_cast<int>(digits), static_cast<unsigned long>(value));
     #else
       status = snprintf(buffer, sizeof(buffer), "%0*lX", static_cast<int>(digits), static_cast<unsigned long>(value));
@@ -218,7 +218,7 @@ std::string ToHexNoPrefix(T const value, uint8_t const digits)
   }
   else
   {
-    #if defined(_NEWLIB_VERSION)
+    #if defined(GPCC_HAVE_SNIPRINTF)
       status = sniprintf(buffer, sizeof(buffer), "%0*llX", static_cast<int>(digits), static_cast<unsigned long long>(value));
     #else
       status = snprintf(buffer, sizeof(buffer), "%0*llX", static_cast<int>(digits), static_cast<unsigned long long>(value));
