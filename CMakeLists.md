@@ -44,7 +44,7 @@ chibios_arm   | target_link_libraries(gpcc PUBLIC <chibios_and_cpp_runtime>)
 epos_arm      | Presence of library `epos_kernel`
 linux_arm     | -
 linux_x64     | -
-zephyr        | Presence of library `app`
+zephyr        | Presence of library `zephyr_interface`
 
 __Artifacts build:__
 - Static library `gpcc`
