@@ -16,22 +16,17 @@
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/raii/unique_c_ptr.hpp>
 #include <gpcc/string/StringComposer.hpp>
+#include <limits>
 #include <stdexcept>
 #include <system_error>
 #include <cerrno>
 
-#if !defined(CONFIG_INIT_STACKS)
-  #error "GPCC requires Zephyr CONFIG_INIT_STACKS"
-#endif
 #if !defined(CONFIG_THREAD_STACK_INFO)
   #error "GPCC requires Zephyr CONFIG_THREAD_STACK_INFO"
 #endif
 
 namespace
 {
-  // Thread return value used to indicate cancellation.
-  void* constexpr threadCancelledTAG = (void*)-1;
-
   // Exception used to emulate deferred cancellation.
   class ThreadCancellationException final
   {
@@ -179,9 +174,12 @@ Thread::Thread(std::string const & name)
 , threadStateRunningCondVar_()
 , pStack_(nullptr)
 , stackSize_(0U)
+, thread_()
+, thread_id_()
 , threadRetVal_(nullptr)
 , cancelabilityEnabled_(false)
 , cancellationPending_(false)
+, cancelled_(false)
 {
   InternalGetThreadRegistry().RegisterThread(*this);
 }
@@ -331,27 +329,27 @@ std::string Thread::GetInfo(size_t const nameFieldWidth) const
   gpcc::osal::MutexLocker mutexLocker(mutex_);
 
   if (name_.size() <= nameFieldWidth)
-    infoLine << StringComposer::Width(nameFieldWidth) << name;
+    infoLine << StringComposer::Width(nameFieldWidth) << name_;
   else
-    infoLine << name.substr(0, nameFieldWidth - 3U) << "...";
+    infoLine << name_.substr(0, nameFieldWidth - 3U) << "...";
 
   infoLine << ' ';
 
-  if (threadState_ != noThreadOrJoined)
+  if (threadState_ != ThreadState::noThreadOrJoined)
   {
     char buf[24];
-    char const * state = k_thread_state_str(thread_, buf, sizeof(buf));
+    char const * state = k_thread_state_str(thread_id_, buf, sizeof(buf));
     infoLine << StringComposer::Width(sizeof(buf)) << state;
 
     infoLine << StringComposer::AlignRight;
 
-    int priority = k_thread_priority_get(thread_);
+    int priority = k_thread_priority_get(thread_id_);
     infoLine << StringComposer::Width(4) << priority;
 
     infoLine << StringComposer::Width(10) << stackSize_;
 
     size_t freeSpace = 0U;
-    int status = k_thread_stack_space_get(thread_, freeSpace);
+    int status = k_thread_stack_space_get(thread_id_, &freeSpace);
     if (status != 0)
       throw std::system_error(status, std::generic_category(), "k_thread_stack_space_get() failed");
 
@@ -423,10 +421,10 @@ void Thread::Start(tEntryFunction const & entryFunction,
   // Check parameters
   // ('priority' and 'schedPolicy' are checked in UniversalPrioToZephyrPrio())
   if (!entryFunction)
-    throw std::invalid_argument("Thread::Start: Inv. args.");
+    throw std::invalid_argument("Inv. args.");
 
   if ((stackSize < GetMinStackSize()) || ((stackSize % GetStackAlign()) != 0U))
-    throw std::invalid_argument("Thread::Start: Inv. args.");
+    throw std::invalid_argument("Inv. args.");
 
   // map universal priority to Zephyr
   int const mappedPrio = UniversalPrioToZephyrPrio(priority, schedPolicy);
@@ -436,7 +434,7 @@ void Thread::Start(tEntryFunction const & entryFunction,
 
   // check that there is currently no thread
   if (threadState_ != ThreadState::noThreadOrJoined)
-    throw std::logic_error("Thread::Start: Precons");
+    throw std::logic_error("Thread alread existing");
 
   // allocate memory for stack
   pStack_ = k_thread_stack_alloc(stackSize, 0U);
@@ -454,31 +452,32 @@ void Thread::Start(tEntryFunction const & entryFunction,
   // prepare thread start
   entryFunction_        = entryFunction;
   threadState_          = ThreadState::starting;
+  threadRetVal_         = nullptr;
   cancelabilityEnabled_ = true;
   cancellationPending_  = false;
+  cancelled_            = false;
 
-  k_tid_t const tid = k_thread_create(&thread_,
-                                      pStack_, stackSize,
-                                      &Thread::InternalThreadEntry1,
-                                      this, nullptr, nullptr,
-                                      mappedPrio,
-                                      0U,
-                                      K_NO_WAIT);
-  if (tid != &thread_)
-    PANIC();
+  // start thread
+  thread_id_ = k_thread_create(&thread_,
+                               pStack_, stackSize,
+                               &Thread::InternalThreadEntry1,
+                               this, nullptr, nullptr,
+                               mappedPrio,
+                               0U,
+                               K_NO_WAIT);
 
   // Wait until the new thread leaves the starting-state. Any unexpected error here will result in panic.
   try
   {
-    while (threadState == ThreadState::starting)
-      threadStateRunningCondVar.Wait(mutex);
+    while (threadState_ == ThreadState::starting)
+      threadStateRunningCondVar_.Wait(mutex_);
   }
   catch (...)
   {
     PANIC();
   }
 
-  ON_SCOPE_EXIT_DISSMISS(releaseStack);
+  ON_SCOPE_EXIT_DISMISS(releaseStack);
 }
 
 /**
@@ -512,20 +511,20 @@ void Thread::Cancel(void)
 
   // verify that the object manages a thread, which has not yet been joined
   if (threadState_ == ThreadState::noThreadOrJoined)
-    throw std::logic_error("Thread::Cancel: Precons");
+    throw std::logic_error("No thread");
 
   // not yet terminated?
   if (threadState_ != ThreadState::terminated)
   {
     // verify, that the current thread is not the one managed by this object
     if (IsItMe())
-      throw std::logic_error("Thread::Cancel: Precons");
+      throw std::logic_error("Wrong caller");
 
     // verify, that cancellation of the thread has not yet been requested
     if (cancellationPending_)
-      throw std::logic_error("Thread::Cancel: Cancellation already requested");
+      throw std::logic_error("Already pending");
 
-    cancellationPending_ = true;
+    cancellationPending_.store(true, std::memory_order_relaxed);
   }
 }
 
@@ -571,16 +570,15 @@ void* Thread::Join(bool* const pCancelled)
 
     // verify that the object manages a thread, which has not yet been joined
     if (threadState_ == ThreadState::noThreadOrJoined)
-      throw std::logic_error("Thread::Join: Precons");
+      throw std::logic_error("No thread");
 
     // verify, that the current thread is not the one managed by this object
     if (IsItMe())
-      throw std::logic_error("Thread::Join: Precons");
+      throw std::logic_error("Wrong caller");
   }
 
-  // Wait for termination and join with thread.
-  int status = k_thread_join(thread_, K_FOREVER);
-
+  // wait for termination and join with thread
+  int status = k_thread_join(&thread_, K_FOREVER);
   if (status != 0)
     throw std::system_error(status, std::generic_category(), "k_thread_join() failed");
 
@@ -594,8 +592,8 @@ void* Thread::Join(bool* const pCancelled)
 
     threadState_ = ThreadState::noThreadOrJoined;
 
+    // release stack
     status = k_thread_stack_free(pStack_);
-
     if (status != 0)
       PANIC();
 
@@ -603,12 +601,9 @@ void* Thread::Join(bool* const pCancelled)
 
     // anyone interested in if the thread was cancelled?
     if (pCancelled != nullptr)
-      *pCancelled = (threadRetVal_ == threadCancelledTAG);
+      *pCancelled = cancelled_;
 
-    if (threadRetVal_ == threadCancelledTAG)
-      return nullptr;
-    else
-      return threadRetVal_;
+    return threadRetVal_;
   }
   catch (...)
   {
@@ -651,7 +646,7 @@ bool Thread::SetCancelabilityEnabled(bool const enable)
 {
   // verify that the current thread is the one managed by this object
   if (!IsItMe())
-    throw std::logic_error("Thread::SetCancelabilityEnabled: Precons");
+    throw std::logic_error("Wrong caller");
 
   bool const retVal = cancelabilityEnabled_;
   cancelabilityEnabled_ = enable;
@@ -683,9 +678,9 @@ bool Thread::IsCancellationPending(void) const
 {
   // verify that the current thread is the one managed by this object
   if (!IsItMe())
-    throw std::logic_error("Thread::IsCancellationPending: Precons");
+    throw std::logic_error("Wrong caller");
 
-  return cancellationPending_;
+  return cancellationPending_.load(std::memory_order_relaxed);
 }
 
 /**
@@ -710,9 +705,9 @@ void Thread::TestForCancellation(void)
 {
   // verify that the current thread is the one managed by this object
   if (!IsItMe())
-    throw std::logic_error("Thread::TestForCancellation: Precons");
+    throw std::logic_error("Wrong caller");
 
-  if (cancellationPending_)
+  if (cancellationPending_.load(std::memory_order_relaxed))
     throw ThreadCancellationException();
 }
 
@@ -746,7 +741,7 @@ void Thread::TerminateNow(void* const threadReturnValue)
 {
   // verify that the current thread is the one managed by this object
   if (!IsItMe())
-    throw std::logic_error("Thread::TerminateNow: Precons");
+    throw std::logic_error("Wrong caller");
 
   throw ThreadTerminateNowException(threadReturnValue);
 }
@@ -856,11 +851,12 @@ void Thread::InternalThreadEntry2(void) noexcept
   // execute thread entry function
   try
   {
-    threadRetVal_ = entryFunction();
+    threadRetVal_ = entryFunction_();
   }
   catch (ThreadCancellationException const &)
   {
-    threadRetVal_ = threadCancelledTAG;
+    cancelled_ = true;
+    threadRetVal_ = nullptr;
   }
   catch (ThreadTerminateNowException const & e)
   {
@@ -912,11 +908,11 @@ int Thread::UniversalPrioToZephyrPrio(priority_t const priority, SchedPolicy con
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wtype-limits"
   if ((priority < minPriority) || (priority > maxPriority))
-    throw std::invalid_argument("Invalid sched. priority/policy");
+    throw std::invalid_argument("Invalid prio/policy");
   #pragma GCC diagnostic pop
 
   if ((priority != 0U) && (schedpolicy != SchedPolicy::Fifo) && (schedpolicy != SchedPolicy::RR))
-    throw std::invalid_argument("Invalid sched. priority/policy");
+    throw std::invalid_argument("Invalid prio/policy");
 
   int prio = 0U;
   switch (schedpolicy)
@@ -938,7 +934,7 @@ int Thread::UniversalPrioToZephyrPrio(priority_t const priority, SchedPolicy con
       break;
 
     case SchedPolicy::Fifo:
-      throw std::logic_error("schedpolicy not supported");
+      throw std::logic_error("Policy not supported");
 
     case SchedPolicy::RR:
       prio = maxPriority - (priority - minPriority);

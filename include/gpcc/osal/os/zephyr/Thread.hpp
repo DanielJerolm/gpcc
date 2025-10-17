@@ -340,7 +340,7 @@ class Thread final
     /// States of the encapsulated thread.
     enum class ThreadState
     {
-      noThreadOrJoined, ///<No thread existing or thread has been joined. @ref thread_ is invalid.
+      noThreadOrJoined, ///<No thread existing or thread has been joined. @ref thread_ and @ref thread_id_ are invalid.
       starting,         ///<Thread is starting.
       running,          ///<Thread is running.
       terminated        ///<Thread has terminated, but not yet joined.
@@ -381,18 +381,23 @@ class Thread final
 
     /// Size of stack.
     /** @ref mutex_ is required.\n
-        If @ref threadState_ is @ref ThreadState::noThreadOrJoined, then this is `nullptr`. */
+        If @ref threadState_ is @ref ThreadState::noThreadOrJoined, then this is undefined. */
     size_t stackSize_;
 
     /// The encapsulated Zephyr thread.
     /** @ref mutex_ is required.\n
-        If @ref threadState_ is @ref ThreadState::noThreadOrJoined, then the content is undefined.\n
-        In all other cases this refers to a valid object. */
+        If @ref threadState_ is @ref ThreadState::noThreadOrJoined, then the content is undefined. */
     struct k_thread thread_;
 
-    /// Thread return value.
+    /// ID of the encapsulated Zephyr thread.
     /** @ref mutex_ is required.\n
-        Content is valid, if @ref threadState_ is @ref ThreadState::terminated. */
+        If @ref threadState_ is @ref ThreadState::noThreadOrJoined, then the value is undefined. */
+    k_tid_t thread_id_;
+
+
+    /// Thread return value.
+    /** No mutex required: This is only accessed by the thread managed by this object and before thread start
+        and after thread join. */
     void* threadRetVal_;
 
 
@@ -402,11 +407,14 @@ class Thread final
         false = disabled (note: cancellation requests are not ignored, but queued!) */
     bool cancelabilityEnabled_;
 
-    /// Thread cancellation pending flag.
+    /// Flag indicating if a cancellation request is pending.
     /** true  = thread cancellation is pending\n
         false = thread cancellation is not pending */
     std::atomic<bool> cancellationPending_;
 
+    /// Flag indicating if the thread actually was cancelled (true) or terminated gracefully (false).
+    /** No mutex required: This is only accessed before thread start and after joining. */
+    bool cancelled_;
 
 
     static ThreadRegistry& InternalGetThreadRegistry(void);
@@ -526,6 +534,7 @@ inline std::string Thread::GetName(void) const
  */
 inline bool Thread::IsItMe(void) const
 {
+  // This is allowed even in thread_ is invalid, because the ADDRESS is checked.
   return (k_current_get() == &thread_);
 }
 

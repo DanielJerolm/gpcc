@@ -54,7 +54,7 @@ Mutex::~Mutex(void)
   // Lock for accessing 'owner' is not accessible.
   // Testing without the required lock will not create false positives, but there is a small chance that a usage error
   // is not detected. This is acceptable, since the altenative is to have no check at all.
-  if (mutex_->owner != nullptr)
+  if (mutex_.owner != nullptr)
     Panic("Mutex::~Mutex: Mutex is locked");
 }
 
@@ -83,7 +83,7 @@ void Mutex::Lock(void)
 
   if (status == 0)
   {
-    if (mutex_->lock_count > 1U)
+    if (mutex_.lock_count > 1U)
       Panic("Mutex::Lock: Recursion");
   }
   else
@@ -125,7 +125,7 @@ bool Mutex::TryLock(void)
     case 0:
     {
       // First lock?
-      if (mutex_->lock_count == 1U)
+      if (mutex_.lock_count == 1U)
         return true;
 
       // ...otherwise the mutex is already locked by the calling thread.
@@ -166,7 +166,7 @@ void Mutex::Unlock(void) noexcept
   if (mutex_.owner != k_current_get())
     Panic("Mutex::Unlock");
 
-  int const status = k_mutex_unlock(mutex_);
+  int const status = k_mutex_unlock(&mutex_);
   if (status != 0)
     Panic("Mutex::Unlock");
 }

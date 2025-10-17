@@ -59,7 +59,7 @@ static void DefaultPanicHandler(char const * const pMessage) noexcept
 #endif
 
   if (pMessage != nullptr)
-    printk(pMessage);
+    printk("%s", pMessage);
   else
     printk("No panic message provided");
 

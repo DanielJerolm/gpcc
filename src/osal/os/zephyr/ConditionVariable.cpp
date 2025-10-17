@@ -115,7 +115,7 @@ ConditionVariable::~ConditionVariable(void)
  */
 void ConditionVariable::Wait(Mutex & mutex)
 {
-  int const status = k_condvar_wait(condvar_, &mutex.mutex_, K_FOREVER);
+  int const status = k_condvar_wait(&condVar_, &mutex.mutex_, K_FOREVER);
 
   if (status != 0)
     throw std::system_error(status, std::generic_category(), "k_condvar_wait() failed");
@@ -210,7 +210,7 @@ bool ConditionVariable::TimeLimitedWait(Mutex & mutex, time::TimePoint const & a
   if (remaining_time.ns() <= 0)
     PANIC(); // Arithmetic error
 
-  int const status = k_condvar_wait(condvar_, &mutex.mutex_, K_NSEC(remaining_time.ns()));
+  int const status = k_condvar_wait(&condVar_, &mutex.mutex_, K_NSEC(remaining_time.ns()));
 
   switch (status)
   {
