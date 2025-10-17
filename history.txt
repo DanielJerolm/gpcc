@@ -25,7 +25,7 @@ Next to do:
     - [OK] ThreadRegistry
     - [OK] clock
   - [OK] Fix all TODO ZEPHYR
-  - [  ] Build against Zephyr & fix compiler issues
+  - [OK] Build against Zephyr & fix compiler issues
 
 - StringComposer::SetupFormatString contains a TODO
 
