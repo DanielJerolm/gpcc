@@ -12,7 +12,7 @@
 #define UNIQUE_C_PTR_HPP_202501121951
 
 #include <memory>
-#include <stdlib.h>
+#include <cstdlib>
 
 namespace gpcc {
 namespace raii {
