@@ -298,3 +298,34 @@ function(SetCompilerAndLanguageOptions target)
   endif()
 
 endfunction()
+
+
+function(SetupDoxygenPredefinedTag values)
+  # This appends all values that should appear in a doxyfile's PREDEFINED tag to the list "values".
+
+  if(${GPCC_Compiler} STREQUAL "gcc_arm")
+    list(APPEND ${values} "COMPILER_GCC_ARM")
+  elseif(${GPCC_Compiler} STREQUAL "gcc_x64")
+    list(APPEND ${values} "COMPILER_GCC_X64")
+  else()
+    message(FATAL_ERROR "Error: Value of 'GPCC_Compiler' is not supported by function 'SetupDoxygenPredefinedTag'.")
+  endif()
+
+  if(${GPCC_OS} STREQUAL "chibios_arm")
+    list(APPEND ${values} "OS_CHIBIOS_ARM")
+  elseif(${GPCC_OS} STREQUAL "epos_arm")
+    list(APPEND ${values} "OS_EPOS_ARM")
+  elseif(${GPCC_OS} STREQUAL "linux_arm")
+    list(APPEND ${values} "OS_LINUX_ARM")
+  elseif(${GPCC_OS} STREQUAL "linux_arm_tfc")
+    list(APPEND ${values} "OS_LINUX_ARM_TFC")
+  elseif(${GPCC_OS} STREQUAL "linux_x64")
+    list(APPEND ${values} "OS_LINUX_X64")
+  elseif(${GPCC_OS} STREQUAL "linux_x64_tfc")
+    list(APPEND ${values} "OS_LINUX_X64_TFC")
+  else()
+    message(FATAL_ERROR "Error: Value of 'GPCC_OS' is not supported by function 'SetupDoxygenPredefinedTag'.")
+  endif()
+
+  set(${values} "${${values}}" PARENT_SCOPE)
+endfunction()
