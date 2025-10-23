@@ -9,16 +9,16 @@
 # Copyright (C) 2025 Daniel Jerolm
 
 
-# This script performs a build-, rebuild-, or clean-operation in the ./build_productive folder.
+# This script performs a build-operation in the ./build_productive folder.
 #
 # Invocation:
-# ./build_productive.sh (clean | all | rebuild)
+# ./build_productive.sh (clean | all | rebuild | dox)
 
 set -e
 
 # ensure that exactly one argument has been passed to the script
 if [ $# -ne 1 ]; then
-  echo "One argument expected: 'clean' or 'all' or 'rebuild'"
+  echo "One argument expected: 'clean', 'all', 'rebuild', or 'dox'"
   exit 1
 fi
 
