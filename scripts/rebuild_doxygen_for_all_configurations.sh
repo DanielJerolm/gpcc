@@ -21,11 +21,11 @@
 set -e
 
 CONFIGURATIONS="chibios_arm chibios_arm_extract_all
-               epos_arm epos_arm_extract_all
-               linux_arm linux_arm_extract_all
-               linux_arm_tfc linux_arm_tfc_extract_all
-               linux_x64 linux_x64_extract_all
-               linux_x64_tfc linux_x64_tfc_extract_all"
+                epos_arm epos_arm_extract_all
+                linux_arm linux_arm_extract_all
+                linux_arm_tfc linux_arm_tfc_extract_all
+                linux_x64 linux_x64_extract_all
+                linux_x64_tfc linux_x64_tfc_extract_all"
 
 echo "Remove existing documentation"
 echo "================================================================================"
