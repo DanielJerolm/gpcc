@@ -235,7 +235,7 @@ void CLI::Stop(void) noexcept
  * \param spNewCmd
  * @ref Command instance that shall be registered.\n
  * If there is already a @ref Command instance with the same command string registered,
- * then an exception will be thrown. Note: The check is case insensitive.\n
+ * then an exception will be thrown.\n
  */
 void CLI::AddCommand(std::unique_ptr<Command> spNewCmd)
 {
@@ -261,7 +261,7 @@ void CLI::AddCommand(std::unique_ptr<Command> spNewCmd)
     Command * pCurr = pCMDListHead;
     while (pCurr != nullptr)
     {
-      int const result = strcasecmp(spNewCmd->GetCommand(), pCurr->GetCommand());
+      int const result = strcmp(spNewCmd->GetCommand(), pCurr->GetCommand());
       if (result == 0)
       {
         throw std::logic_error("CLI::AddCommand: Command already registered");
