@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2025 Daniel Jerolm
 */
 
 #include <gpcc/cli/CLI.hpp>
@@ -552,7 +552,7 @@ TEST_F(gpcc_cli_CLI_TestsF, Enter_Help)
    "",
    "Implemented commands:",
    "=====================",
-   "help, logout, ReadLn, Sleep, Test",
+   "ReadLn, Sleep, Test, help, logout",
    "",
    "Some commands require parameters. For details about a command, enter the",
    "command plus \"help\". Example: \"HeapStat help\".",
@@ -752,13 +752,13 @@ TEST_F(gpcc_cli_CLI_TestsF, AddCommand_Twice)
   spCMD = Command::Create("DummyCmd", "\nDummy-command", std::bind(&DummyCmdHandler, std::placeholders::_1, std::placeholders::_2));
   ASSERT_THROW(uut.AddCommand(std::move(spCMD)), std::logic_error);
 }
-TEST_F(gpcc_cli_CLI_TestsF, AddCommand_Twice_TestCaseInSensitive)
+TEST_F(gpcc_cli_CLI_TestsF, AddCommand_Twice_TestCaseSensitive)
 {
   auto spCMD = Command::Create("DummyCmd", "\nDummy-command", std::bind(&DummyCmdHandler, std::placeholders::_1, std::placeholders::_2));
   uut.AddCommand(std::move(spCMD));
 
   spCMD = Command::Create("dummyCmd", "\nDummy-command", std::bind(&DummyCmdHandler, std::placeholders::_1, std::placeholders::_2));
-  ASSERT_THROW(uut.AddCommand(std::move(spCMD)), std::logic_error);
+  EXPECT_NO_THROW(uut.AddCommand(std::move(spCMD)));
 }
 TEST_F(gpcc_cli_CLI_TestsF, AddCommand_nullptr)
 {
@@ -788,7 +788,7 @@ TEST_F(gpcc_cli_CLI_TestsF, RemoveCommand_NotExistOrEmpyStr)
    "",
    "Implemented commands:",
    "=====================",
-   "help, logout, ReadLn, Sleep, Test",
+   "ReadLn, Sleep, Test, help, logout",
    "",
    "Some commands require parameters. For details about a command, enter the",
    "command plus \"help\". Example: \"HeapStat help\".",
@@ -816,7 +816,7 @@ TEST_F(gpcc_cli_CLI_TestsF, RemoveCommand_nullptr)
    "",
    "Implemented commands:",
    "=====================",
-   "help, logout, ReadLn, Sleep, Test",
+   "ReadLn, Sleep, Test, help, logout",
    "",
    "Some commands require parameters. For details about a command, enter the",
    "command plus \"help\". Example: \"HeapStat help\".",
@@ -955,7 +955,7 @@ TEST_F(gpcc_cli_CLI_TestsF, RemoveCommand_BuildIn)
    "",
    "Implemented commands:",
    "=====================",
-   "help, logout, ReadLn, Sleep, Test",
+   "ReadLn, Sleep, Test, help, logout",
    "",
    "Some commands require parameters. For details about a command, enter the",
    "command plus \"help\". Example: \"HeapStat help\".",

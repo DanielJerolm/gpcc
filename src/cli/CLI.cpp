@@ -235,7 +235,7 @@ void CLI::Stop(void) noexcept
  * \param spNewCmd
  * @ref Command instance that shall be registered.\n
  * If there is already a @ref Command instance with the same command string registered,
- * then an exception will be thrown. Note: The check is case insensitive.\n
+ * then an exception will be thrown.\n
  */
 void CLI::AddCommand(std::unique_ptr<Command> spNewCmd)
 {

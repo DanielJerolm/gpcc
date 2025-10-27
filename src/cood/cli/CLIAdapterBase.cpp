@@ -1112,7 +1112,7 @@ void CLIAdapterBase::CLI_CAWrite(std::string const & restOfLine)
     auto locker = objPtr->LockData();
 
     // determine expected ernob
-    gpcc::stream::MemStreamReader::RemainingNbOfBits ernob;
+    gpcc::stream::MemStreamReader::RemainingNbOfBits ernob = gpcc::stream::MemStreamReader::RemainingNbOfBits::zero;
     switch (sizeInBit % 8U)
     {
       case 0U: ernob = gpcc::stream::MemStreamReader::RemainingNbOfBits::zero; break;
