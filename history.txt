@@ -4,6 +4,11 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
+- Generate doxygen documentation via CMake
+  - Revise doc/howto_integrate_into_topproject_doxygen.md
+  - Revise VS Code tasks
+  - Update the specific doxyfiles with the content of doxyfile.in
+
 - StringComposer::SetupFormatString contains a TODO
 
 - Use github's issue tracking instead of this file
