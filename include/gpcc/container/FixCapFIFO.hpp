@@ -23,7 +23,8 @@ namespace container {
  *
  * # Purpose
  * This class implements a light-weight FIFO with fixed capacity. It is designed for usage from both thread and
- * interrupt context.
+ * interrupt context. The capacity is fixed in terms that push-operations will not increase the capacity when the FIFO
+ * becomes full. However, copy- and move-assignment may change the FIFO's capacity.
  *
  * If the user applies the locking mechanisms for synchronization of thread and interrupt context offered by the
  * specific operating system properly, then this FIFO can be used to transfer data between interrupt and thread context.
@@ -95,7 +96,6 @@ class FixCapFIFO final
     std::unique_ptr<T[]> spMemory_;
 
     /// Capacity of the FIFO.
-    /** This is not const by intention (simple impl. of move-assignment operator). */
     SIZET capacity_;
 
     /// Number of items currently stored in the FIFO.

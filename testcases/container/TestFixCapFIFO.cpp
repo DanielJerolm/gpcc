@@ -936,6 +936,8 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_OtherHasSmallerCapacity)
 
   ASSERT_NO_THROW(uut2 = uut1);
 
+  EXPECT_EQ(uut2.Capacity(), 4U);
+
   ASSERT_EQ(uut1.Size(), 2U);
   uint32_t v = 0U;
   ASSERT_TRUE(uut1.Pop(v));
@@ -962,6 +964,8 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_OtherHasLargerCapacity)
 
   ASSERT_NO_THROW(uut2 = uut1);
 
+  EXPECT_EQ(uut2.Capacity(), 2U);
+
   ASSERT_EQ(uut1.Size(), 2U);
   uint32_t v = 0U;
   ASSERT_TRUE(uut1.Pop(v));
@@ -977,7 +981,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_OtherHasLargerCapacity)
   EXPECT_EQ(v, 3U);
 }
 
-TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_InsufficientCapacity)
+TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_ReallocationRequired)
 {
   FixCapFIFO<uint32_t, uint8_t> uut1(4U);
   ASSERT_TRUE(uut1.Push(1U));
@@ -987,7 +991,9 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_InsufficientCapacity)
   FixCapFIFO<uint32_t, uint8_t> uut2(2U);
   ASSERT_TRUE(uut2.Push(55U));
 
-  ASSERT_THROW(uut2 = uut1, std::logic_error);
+  uut2 = uut1;
+
+  EXPECT_GE(uut2.Capacity(), 3U);
 
   ASSERT_EQ(uut1.Size(), 3U);
   uint32_t v = 0U;
@@ -998,10 +1004,14 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_InsufficientCapacity)
   ASSERT_TRUE(uut1.Pop(v));
   EXPECT_EQ(v, 8U);
 
-  ASSERT_EQ(uut2.Size(), 1U);
+  ASSERT_EQ(uut2.Size(), 3U);
   v = 0U;
   ASSERT_TRUE(uut2.Pop(v));
-  EXPECT_EQ(v, 55U);
+  EXPECT_EQ(v, 1U);
+  ASSERT_TRUE(uut2.Pop(v));
+  EXPECT_EQ(v, 3U);
+  ASSERT_TRUE(uut2.Pop(v));
+  EXPECT_EQ(v, 8U);
 }
 
 TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment)

@@ -100,8 +100,8 @@ FixCapFIFO<T, SIZET>::FixCapFIFO(FixCapFIFO<T, SIZET> const & other)
 /**
  * \brief Copy-assigns the content of another FIFO instance to this instance.
  *
- * The FIFOs may have different capacity, but this FIFO's capacity must be sufficient for the current content
- * of the other FIFO instance.
+ * Reallocation of this FIFO's storage will only occurr, if this FIFO's capacity is not sufficient for the current
+ * content of the other FIFO instance.
  *
  * - - -
  *
@@ -110,8 +110,6 @@ FixCapFIFO<T, SIZET>::FixCapFIFO(FixCapFIFO<T, SIZET> const & other)
  *
  * __Exception safety:__\n
  * Strong guarantee.
- *
- * \throws std::logic_error   This FIFO's capacity is too small.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -130,7 +128,12 @@ FixCapFIFO<T, SIZET>& FixCapFIFO<T, SIZET>::operator=(FixCapFIFO<T, SIZET> const
   if (&rhv != this)
   {
     if (capacity_ < rhv.size_)
-      throw std::logic_error("Insufficient capacity");
+    {
+      T* const pNewStorage = new T[rhv.size_];
+
+      capacity_ = rhv.size_;
+      spMemory_.reset(pNewStorage);
+    }
 
     size_    = rhv.size_;
     wrIndex_ = (size_ == capacity_) ? 0U : size_;
