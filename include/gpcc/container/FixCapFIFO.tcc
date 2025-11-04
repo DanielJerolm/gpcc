@@ -98,10 +98,7 @@ FixCapFIFO<T, SIZET>::FixCapFIFO(FixCapFIFO<T, SIZET> const & other)
 }
 
 /**
- * \brief Copy-assigns the content of another FIFO instance to this instance.
- *
- * Reallocation of this FIFO's storage will only occurr, if this FIFO's capacity is not sufficient for the current
- * content of the other FIFO instance.
+ * \brief Copy-assigns the content and the capacity of another FIFO instance to this instance.
  *
  * - - -
  *
@@ -109,7 +106,8 @@ FixCapFIFO<T, SIZET>::FixCapFIFO(FixCapFIFO<T, SIZET> const & other)
  * The state of the object is modified. Any concurrent accesses are not safe.
  *
  * __Exception safety:__\n
- * Strong guarantee.
+ * No-throw guarantee [if capacity of @p rhv is equal to or less than this FIFO's capacity]\n
+ * Strong guarantee [otherwise]
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -127,12 +125,17 @@ FixCapFIFO<T, SIZET>& FixCapFIFO<T, SIZET>::operator=(FixCapFIFO<T, SIZET> const
 {
   if (&rhv != this)
   {
-    if (capacity_ < rhv.size_)
+    // set this FIFO's capacity to the capacity of "rhv" by means of reallocation or by simply shrinking "capacity_"
+    if (capacity_ < rhv.capacity_)
     {
-      T* const pNewStorage = new T[rhv.size_];
+      T* const pNewStorage = new T[rhv.capacity_];
 
-      capacity_ = rhv.size_;
+      capacity_ = rhv.capacity_;
       spMemory_.reset(pNewStorage);
+    }
+    else if (capacity_ > rhv.capacity_)
+    {
+      capacity_ = rhv.capacity_;
     }
 
     size_    = rhv.size_;

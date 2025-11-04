@@ -927,7 +927,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignmentSelf)
 
 TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_OtherHasSmallerCapacity)
 {
-  FixCapFIFO<uint32_t, uint8_t> uut1(2U);
+  FixCapFIFO<uint32_t, uint8_t> uut1(3U);
   ASSERT_TRUE(uut1.Push(1U));
   ASSERT_TRUE(uut1.Push(3U));
 
@@ -936,7 +936,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_OtherHasSmallerCapacity)
 
   ASSERT_NO_THROW(uut2 = uut1);
 
-  EXPECT_EQ(uut2.Capacity(), 4U);
+  EXPECT_EQ(uut2.Capacity(), 3U);
 
   ASSERT_EQ(uut1.Size(), 2U);
   uint32_t v = 0U;
@@ -964,7 +964,7 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_OtherHasLargerCapacity)
 
   ASSERT_NO_THROW(uut2 = uut1);
 
-  EXPECT_EQ(uut2.Capacity(), 2U);
+  EXPECT_EQ(uut2.Capacity(), 4U);
 
   ASSERT_EQ(uut1.Size(), 2U);
   uint32_t v = 0U;
@@ -981,19 +981,19 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_OtherHasLargerCapacity)
   EXPECT_EQ(v, 3U);
 }
 
-TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_ReallocationRequired)
+TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_SameCapacity)
 {
   FixCapFIFO<uint32_t, uint8_t> uut1(4U);
   ASSERT_TRUE(uut1.Push(1U));
   ASSERT_TRUE(uut1.Push(3U));
   ASSERT_TRUE(uut1.Push(8U));
 
-  FixCapFIFO<uint32_t, uint8_t> uut2(2U);
+  FixCapFIFO<uint32_t, uint8_t> uut2(4U);
   ASSERT_TRUE(uut2.Push(55U));
 
   uut2 = uut1;
 
-  EXPECT_GE(uut2.Capacity(), 3U);
+  EXPECT_EQ(uut2.Capacity(), 4U);
 
   ASSERT_EQ(uut1.Size(), 3U);
   uint32_t v = 0U;
@@ -1012,6 +1012,21 @@ TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_ReallocationRequired)
   EXPECT_EQ(v, 3U);
   ASSERT_TRUE(uut2.Pop(v));
   EXPECT_EQ(v, 8U);
+}
+
+TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment_OtherIsEmpty)
+{
+  FixCapFIFO<uint32_t, uint8_t> uut1(4U);
+
+  FixCapFIFO<uint32_t, uint8_t> uut2(2U);
+  ASSERT_TRUE(uut2.Push(55U));
+
+  uut2 = uut1;
+
+  EXPECT_EQ(uut2.Capacity(), 4U);
+
+  EXPECT_TRUE(uut1.IsEmpty());
+  EXPECT_TRUE(uut2.IsEmpty());
 }
 
 TEST(gpcc_container_FixCapFIFO_Tests, CopyAssignment)
