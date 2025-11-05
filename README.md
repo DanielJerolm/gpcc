@@ -118,7 +118,7 @@ The way GPCC is used determines which artifacts are build:
 
 Note that library `gpcc` contains additional classes if GPCC is configured for the unittest environment. These additional classes may be useful for unittesting components of the top level project. They are of no use (or not even applicable) in the productive environment.
 
-A subproject may setup a dependency from its own documentation to `gpcc_doxygen` to trigger generation of GPCC's doxygen documentation. For details about the integration of GPCC's documentation into a top project's doxygen please refer to [doc/howto_integrate_into_topproject_doxygen.md](doc/howto_integrate_into_topproject_doxygen.md).
+A subproject may setup a dependency from its own documentation to `gpcc_doxygen` to trigger generation of GPCC's doxygen documentation. For details about the integration of GPCC's documentation into a top project's doxygen please refer to [doc/howto_integrate_doxygen_into_other_project.md](doc/howto_integrate_doxygen_into_other_project.md).
 
 ## Build standalone
 
