@@ -13,6 +13,32 @@
         "problemMatcher": []
     },
     {
+        "label": "Build (productive)",
+        "type": "shell",
+        "command": "./build_productive.sh",
+        "args": [
+            "all"
+        ],
+        "options": {
+            "cwd": "${workspaceFolder}/scripts"
+        },
+        "problemMatcher": [
+            "$gcc"
+        ]
+    },
+    {
+        "label": "Clean (productive)",
+        "type": "shell",
+        "command": "./build_productive.sh",
+        "args": [
+            "clean"
+        ],
+        "options": {
+            "cwd": "${workspaceFolder}/scripts"
+        },
+        "problemMatcher": []
+    },
+    {
         "label": "CMake configure: Unittest (debug)",
         "type": "shell",
         "command": "./cmake_config_unittest_debug.sh",
@@ -31,21 +57,9 @@
         "problemMatcher": []
     },
     {
-        "label": "Clean (productive)",
+        "label": "Build (unittest)",
         "type": "shell",
-        "command": "./build_productive.sh",
-        "args": [
-            "clean"
-        ],
-        "options": {
-            "cwd": "${workspaceFolder}/scripts"
-        },
-        "problemMatcher": []
-    },
-    {
-        "label": "Build (productive)",
-        "type": "shell",
-        "command": "./build_productive.sh",
+        "command": "./build_unittest.sh",
         "args": [
             "all"
         ],
@@ -69,60 +83,47 @@
         "problemMatcher": []
     },
     {
-        "label": "Build (unittest)",
+        "label": "Run unittests",
+        "type": "shell",
+        "command": "./execute_unittests.sh",
+        "args": [
+            "--gtest_filter=${input:gtest_filter}"
+        ],
+        "options": {
+            "cwd": "${workspaceFolder}/scripts"
+        },
+        "problemMatcher": []
+    },
+    {
+        "label": "Build doxygen (productive)",
+        "type": "shell",
+        "command": "./build_productive.sh",
+        "args": [
+            "dox"
+        ],
+        "options": {
+            "cwd": "${workspaceFolder}/scripts"
+        },
+        "problemMatcher": []
+    },
+    {
+        "label": "Build doxygen (unittest)",
         "type": "shell",
         "command": "./build_unittest.sh",
         "args": [
-            "all"
-        ],
-        "options": {
-            "cwd": "${workspaceFolder}/scripts"
-        },
-        "problemMatcher": [
-            "$gcc"
-        ]
-    },
-    {
-        "label": "doxygen (linux_x64_tfc)",
-        "type": "shell",
-        "command": "./build_doxygen_linux_x64_tfc.sh",
-        "options": {
-            "cwd": "${workspaceFolder}/scripts"
-        },
-        "problemMatcher": []
-    },
-    {
-        "label": "Run all unittests",
-        "type": "shell",
-        "command": "./execute_unittests.sh",
-        "options": {
-            "cwd": "${workspaceFolder}/scripts"
-        },
-        "problemMatcher": []
-    },
-    {
-        "label": "Run selected unittests",
-        "type": "shell",
-        "command": "./execute_unittests.sh",
-        "args": [
-            "--gtest_filter=TestSuite.TestCase"
-        ],
-        "options": {
-            "cwd": "${workspaceFolder}/scripts"
-        },
-        "problemMatcher": []
-    },
-    {
-        "label": "Run all non-death-unittests",
-        "type": "shell",
-        "command": "./execute_unittests.sh",
-        "args": [
-            "--gtest_filter=-*Death*"
+            "dox"
         ],
         "options": {
             "cwd": "${workspaceFolder}/scripts"
         },
         "problemMatcher": []
     }
-]
+  ],
+  "inputs": [
+    {
+        "id": "gtest_filter",
+        "type": "promptString",
+        "description": "Filter for testcases: TestSuite.TestCase"
+    }
+  ]
 }
