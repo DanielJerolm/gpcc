@@ -429,7 +429,7 @@ StringComposer& StringComposer::operator<<(short const rhv)
     return operator<<(static_cast<unsigned short>(rhv));
 
   char buffer[intConvBufSize];
-  PrintiToBuffer(buffer, sizeof(buffer), Type::s, rhv);
+  PrintToBuffer(buffer, sizeof(buffer), Type::s, rhv);
 
   str_ += buffer;
   width_ = 0;
@@ -440,7 +440,7 @@ StringComposer& StringComposer::operator<<(short const rhv)
 StringComposer& StringComposer::operator<<(unsigned short const rhv)
 {
   char buffer[intConvBufSize];
-  PrintiToBuffer(buffer, sizeof(buffer), Type::us, rhv);
+  PrintToBuffer(buffer, sizeof(buffer), Type::us, rhv);
 
   str_ += buffer;
   width_ = 0;
@@ -454,7 +454,7 @@ StringComposer& StringComposer::operator<<(int const rhv)
     return operator<<(static_cast<unsigned int>(rhv));
 
   char buffer[intConvBufSize];
-  PrintiToBuffer(buffer, sizeof(buffer), Type::i, rhv);
+  PrintToBuffer(buffer, sizeof(buffer), Type::i, rhv);
 
   str_ += buffer;
   width_ = 0;
@@ -465,7 +465,7 @@ StringComposer& StringComposer::operator<<(int const rhv)
 StringComposer& StringComposer::operator<<(unsigned int const rhv)
 {
   char buffer[intConvBufSize];
-  PrintiToBuffer(buffer, sizeof(buffer), Type::ui, rhv);
+  PrintToBuffer(buffer, sizeof(buffer), Type::ui, rhv);
 
   str_ += buffer;
   width_ = 0;
@@ -479,7 +479,7 @@ StringComposer& StringComposer::operator<<(long const rhv)
     return operator<<(static_cast<unsigned long>(rhv));
 
   char buffer[intConvBufSize];
-  PrintiToBuffer(buffer, sizeof(buffer), Type::l, rhv);
+  PrintToBuffer(buffer, sizeof(buffer), Type::l, rhv);
 
   str_ += buffer;
   width_ = 0;
@@ -490,7 +490,7 @@ StringComposer& StringComposer::operator<<(long const rhv)
 StringComposer& StringComposer::operator<<(unsigned long const rhv)
 {
   char buffer[intConvBufSize];
-  PrintiToBuffer(buffer, sizeof(buffer), Type::ul, rhv);
+  PrintToBuffer(buffer, sizeof(buffer), Type::ul, rhv);
 
   str_ += buffer;
   width_ = 0;
@@ -504,7 +504,7 @@ StringComposer& StringComposer::operator<<(long long const rhv)
     return operator<<(static_cast<unsigned long long>(rhv));
 
   char buffer[intConvBufSize];
-  PrintiToBuffer(buffer, sizeof(buffer), Type::ll, rhv);
+  PrintToBuffer(buffer, sizeof(buffer), Type::ll, rhv);
 
   str_ += buffer;
   width_ = 0;
@@ -515,7 +515,7 @@ StringComposer& StringComposer::operator<<(long long const rhv)
 StringComposer& StringComposer::operator<<(unsigned long long const rhv)
 {
   char buffer[intConvBufSize];
-  PrintiToBuffer(buffer, sizeof(buffer), Type::ull, rhv);
+  PrintToBuffer(buffer, sizeof(buffer), Type::ull, rhv);
 
   str_ += buffer;
   width_ = 0;
@@ -918,71 +918,6 @@ std::string StringComposer::Get(void) const
 {
   return str_;
 }
-
-/**
- * \brief Prints a single integer value into a buffer.
- *
- * This makes use of `sniprintf()` if it is available.
- *
- * - - -
- *
- * __Thread safety:__\n
- * The state of the object is not modified. Concurrent accesses are safe.
- *
- * __Exception safety:__\n
- * Strong guarantee.
- *
- * __Thread cancellation safety:__\n
- * No cancellation point included.
- *
- * - - -
- *
- * \tparam T
- * Type of value.
- *
- * \param buffer
- * The converted value is written into the referenced buffer.
- *
- * \param bufferSize
- * Size of the buffer referenced by @p buffer.
- *
- * \param type
- * Type of @p value. Must match @p T.
- *
- * \param value
- * Value that shall be converted into a string.
- */
-#if defined(_NEWLIB_VERSION)
-template<typename T>
-void StringComposer::PrintiToBuffer(char* const buffer, size_t const bufferSize, Type const type, T const value) const
-{
-  int const width = CalcWidthForsnprintf(type);
-  char fmt[maxFmtStrBufSize];
-  int status;
-
-  // fmt is generated. Don't complain.
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wformat-nonliteral"
-
-  if (!SetupFormatString(fmt, type))
-    status = sniprintf(buffer, bufferSize, fmt, width, value);
-  else
-    status = sniprintf(buffer, bufferSize, fmt, width, prec_, value);
-
-  #pragma GCC diagnostic pop
-
-  if (status < 0)
-    throw std::logic_error("sniprintf failed");
-  else if (static_cast<size_t>(status) >= bufferSize)
-    throw std::logic_error("buffer too small");
-}
-#else
-template<typename T>
-void StringComposer::PrintiToBuffer(char* const buffer, size_t const bufferSize, Type const type, T const value) const
-{
-  PrintToBuffer(buffer, bufferSize, type, value);
-}
-#endif
 
 /**
  * \brief Prints a single integer or floating-point value into a buffer.

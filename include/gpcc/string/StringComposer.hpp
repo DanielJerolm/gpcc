@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2024 Daniel Jerolm
+    Copyright (C) 2024, 2025 Daniel Jerolm
 */
 
 #ifndef STRINGCOMPOSER_HPP_202407291957
@@ -268,8 +268,6 @@ class StringComposer final
     int width_;               ///<Configuration: Field with for any output appended to the composed string.
     int prec_;                ///<Configuration: Precision that shall be used in floating-point conversions.
 
-    template<typename T>
-    void PrintiToBuffer(char* const buffer, size_t const bufferSize, Type const type, T const value) const;
     template<typename T>
     void PrintToBuffer(char* const buffer, size_t const bufferSize, Type const type, T const value) const;
     bool SetupFormatString(char* pFMT, Type const type) const noexcept;

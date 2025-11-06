@@ -230,6 +230,9 @@ Thread::~Thread(void)
  */
 std::string Thread::GetInfo(size_t const nameFieldWidth) const
 {
+  if (nameFieldWidth < 4U)
+    throw std::invalid_argument("'nameFieldWidth' too small");
+
   using gpcc::string::StringComposer;
   StringComposer infoLine;
 

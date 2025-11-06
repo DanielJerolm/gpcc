@@ -4,10 +4,11 @@
 # If a copy of the MPL was not distributed with this file,
 # You can obtain one at https://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2024 Daniel Jerolm
+# Copyright (C) 2024, 2025 Daniel Jerolm
 
 target_sources(${PROJECT_NAME}_testcases
                PRIVATE
                TestBitField.cpp
+               TestFixCapFIFO.cpp
                TestIntrusiveDList.cpp
                TestRAMBlock.cpp)
