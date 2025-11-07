@@ -131,7 +131,7 @@ There are three configurations for building a unittest executable standalone. Ea
 | unittest-buildsrv | ./build_unittest-buildsrv | Applies UBSan and memcheck (valgrind). 50-60% slower. This is intended for the build server.
 | unittest-notfc    | ./build_unittest-notfc    | Builds unittests without presence of TFC. This enables a few tests for the OSAL that require absence of TFC. This is used on rare occasions and only locally.
 
-For each configuration, there are three scripts in the scritps-folder to configure, build, and execute the unittests:
+For each configuration, there are three scripts in the scripts-folder to configure, build, and execute the unittests:
 - cmake_config_\<Name\>_\<debug | release\>.sh
 - build_\<Name\>.sh (clean | all | rebuild | dox)
 - execute_\<Name\>.sh [args to be forwarded to googletest]
