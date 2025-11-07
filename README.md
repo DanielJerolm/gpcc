@@ -51,7 +51,7 @@ The following measures are applied:
 - CMake 3.21 or newer
 - doxygen 1.9.8 or newer
 - valgrind (recommended)
-- vscode (recommended) with C/C++ Extension Pack
+- VS Code (recommended) with C/C++ Extension Pack
 
 # Getting started
 
@@ -181,14 +181,14 @@ $ ./full_clean.sh
 ```
 
 ### Open, edit and build using VS Code
-In GPCC's root folder invoke vscode:
+In GPCC's root folder invoke VS Code:
 ```
-$ vscode .
+$ code .
 ```
 
 GPCC uses separate build-folders for the _productive_ environment and for the different configurations of the _unittest_ environment. During CMake initialization of a build-folder, a file `compile_commands.json` will be created in the build-folder. The file is required by Intellisense to understand the code.
 
-In the previous chapters, the CMake initialization of the build-folders has been accomplished via the shell-scripts in the scripts-folder. A subset of the scripts can be invoked via vscode tasks. With the vscode settings supplied with GPCC, you can build the productive library and the unittest executable from within VS Code.
+In the previous chapters, the CMake initialization of the build-folders has been accomplished via the shell-scripts in the scripts-folder. A subset of the scripts can be invoked via VS Code tasks. With the VS Code settings supplied with GPCC, you can build the productive library and the unittest executable from within VS Code.
 
 Let's configure the build folders. Run the following tasks:
 - Main menue: Terminal --> Run Task... --> CMake configure: Productive (release)
@@ -196,9 +196,9 @@ Let's configure the build folders. Run the following tasks:
 
 Now open a file, e.g. `src/cli/CLI.cpp`.
 
-In the bottom right of the vscode window there should be a bell and a label `Linux-x64-Productive` or `Linux-x64-Unittest`. The label is only visible, if a cpp- or hpp-file is currently open. For instance it will vanish, if you open this markdown file you are currently reading.
+In the bottom right of the VS Code window there should be a bell and a label `Linux-x64-Productive` or `Linux-x64-Unittest`. The label is only visible, if a cpp- or hpp-file is currently open. For instance it will vanish, if you open this markdown file you are currently reading.
 
-The label indicates the currently active _C/C++ configuration_. If you click on the label, then a menue appears at the top of the vscode window and you can select the configuration. By changing between `Linux-x64-Productive` and `Linux-x64-Unittest` Intellisense instantly switches between the build folders and also between the _productive_ environment and the _unittest_ environment. In both environments #defines and include-paths may differ and thus Intellisense will evaluate preprocessor directives and #includes differently.
+The label indicates the currently active _C/C++ configuration_. If you click on the label, then a menue appears at the top of the VS Code window and you can select the configuration. By changing between `Linux-x64-Productive` and `Linux-x64-Unittest` Intellisense instantly switches between the build folders and also between the _productive_ environment and the _unittest_ environment. In both environments #defines and include-paths may differ and thus Intellisense will evaluate preprocessor directives and #includes differently.
 
 For now, you should not see any entries in the "problems window" and there should be no errors highlighted in the code.
 
