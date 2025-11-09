@@ -6,6 +6,6 @@
 # Build locations (includes doxygen output)
 /build_*
 
-# This project is using vscode as IDE by default. The vs-code folder shall be
+# This project is using VS Code as IDE by default. The .vscode-folder shall be
 # under version control, even if there is a global ignore somewhere.
 !/.vscode/

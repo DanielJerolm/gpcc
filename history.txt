@@ -225,6 +225,12 @@ Next to do:
 
 History:
 ===============================================================================
+2025-11-06
+- Generate doxygen documentation via CMake
+
+2025-09-17
+- Add gpcc::container::FixCapFIFO
+
 2025-07-15
 - Fix doxygen warning (could not reference SetPanicHandler())
 

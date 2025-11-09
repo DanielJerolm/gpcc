@@ -184,3 +184,32 @@ if((${GPCC_TargetEnvironment} STREQUAL "unittest") AND (PROJECT_IS_TOP_LEVEL))
                          OUTPUT_NAME "unittests"
                         )
 endif()
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Documentation (doxygen)
+# ---------------------------------------------------------------------------------------------------------------------
+find_package(Doxygen 1.9)
+
+if(Doxygen_FOUND)
+  set(GPCC_BASE ${CMAKE_CURRENT_LIST_DIR})
+  set(GPCC_DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/doxygen)
+  if (NOT PROJECT_IS_TOP_LEVEL)
+    set(GPCC_DOXYGEN_OUT ${GPCC_DOXYGEN_OUT} PARENT_SCOPE)
+  endif()
+
+  SetupDoxygenPredefinedTag(DOXYGEN_PREDEFINED_LIST)
+  string(REPLACE ";"  ", " DOXYGEN_PREDEFINED "${DOXYGEN_PREDEFINED_LIST}")
+
+  configure_file(doc/doxygen/doxyfile.in ${GPCC_DOXYGEN_OUT}/doxyfile @ONLY)
+
+  add_custom_target(gpcc_doxygen
+                    COMMAND doxygen ${GPCC_DOXYGEN_OUT}/doxyfile
+                    WORKING_DIRECTORY ${GPCC_DOXYGEN_OUT}
+                    COMMENT "Generating doxygen documentation for GPCC\nOutput location: ${GPCC_DOXYGEN_OUT}/html")
+
+  add_custom_command(TARGET gpcc_doxygen
+                     POST_BUILD
+                     COMMAND cat ${GPCC_DOXYGEN_OUT}/warnings.log)
+else()
+  message(WARNING "Doxygen not found! Target 'gpcc_doxygen' will not be available.")
+endif()

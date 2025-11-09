@@ -9,10 +9,10 @@
 # Copyright (C) 2025 Daniel Jerolm
 
 
-# This script performs a build, rebuild, or clean operartion in a CMake build-folder.
+# This script performs a build-operartion in a CMake build-folder.
 #
 # Invocation:
-# ./build_x.sh <build-folder> (clean | all | rebuild)
+# ./build_x.sh <build-folder> (clean | all | rebuild | dox)
 #
 # <build-folder> is relative to the project's root (./gpcc)
 
@@ -29,10 +29,13 @@ print_done() {
   echo -e "${FontReset}"
 }
 
+print_done_dox() {
+  echo -e "${FontBoldGreen}Done! (Folder: $1)${FontReset}"
+}
 
 # check number of arguments
 if [ $# -ne 2 ]; then
-  echo "Exactly two arguments expected: <build-folder> (clean | all | rebuild)"
+  echo "Exactly two arguments expected: <build-folder> (clean | all | rebuild | dox)"
   exit 1
 fi
 
@@ -64,7 +67,11 @@ elif [ "$2" == "rebuild" ]; then
   make clean
   cmake --build . --parallel ${CORES}
   print_done $1
+elif [ "$2" == "dox" ]; then
+  echo "Building doxygen..."
+  cmake --build . --target gpcc_doxygen
+  print_done_dox $1
 else
-  echo "Invalid argument! Valid arguments are: 'clean', 'all' and 'rebuild'."
+  echo "Invalid argument! Valid arguments are: 'clean', 'all', 'rebuild', and 'dox'."
   exit 1
 fi
