@@ -200,11 +200,20 @@ if(Doxygen_FOUND)
   SetupDoxygenPredefinedTag(DOXYGEN_PREDEFINED_LIST)
   string(REPLACE ";"  ", " DOXYGEN_PREDEFINED "${DOXYGEN_PREDEFINED_LIST}")
 
+  list(APPEND DOXYGEN_INPUT_LIST "include/gpcc")
+  list(APPEND DOXYGEN_INPUT_LIST "src")
+  if(${GPCC_TargetEnvironment} STREQUAL "unittest")
+    list(APPEND DOXYGEN_INPUT_LIST "include/gpcc_test")
+    list(APPEND DOXYGEN_INPUT_LIST "test_src")
+    list(APPEND DOXYGEN_INPUT_LIST "testcases")
+  endif()
+  string(REPLACE ";"  " \\\n                         " DOXYGEN_INPUT "${DOXYGEN_INPUT_LIST}")
+
   configure_file(doc/doxygen/doxyfile.in ${GPCC_DOXYGEN_OUT}/doxyfile @ONLY)
 
   add_custom_target(gpcc_doxygen
                     COMMAND doxygen ${GPCC_DOXYGEN_OUT}/doxyfile
-                    WORKING_DIRECTORY ${GPCC_DOXYGEN_OUT}
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
                     COMMENT "Generating doxygen documentation for GPCC\nOutput location: ${GPCC_DOXYGEN_OUT}/html")
 
   add_custom_command(TARGET gpcc_doxygen
