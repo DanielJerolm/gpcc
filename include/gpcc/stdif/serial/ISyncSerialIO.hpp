@@ -78,6 +78,16 @@ class ISyncSerialIO
  *
  * This method blocks until either @p size bytes have been received or a timeout condition occurs.
  *
+ * There are two independent timeouts:
+ * - Receive timeout (@p timeout_ms)\n
+ *   This timeout starts immediately when entering this method and expires if a total of @p size bytes is not received
+ *   within the given timespan.
+ * - Inter-character timeout.\n
+ *   The inter-character timeout is started upon reception of a byte and restarted upon reception of each further byte.
+ *   - The inter-character timeout is only present, if it is supported by the driver offering this interface.
+ *   - The inter-character timeout must be configured at the driver. It can neither be configured nor enabled and
+ *     disabled through the @ref ISyncSerialIO interface.
+ *
  * - - -
  *
  * __Thread safety:__\n
@@ -109,16 +119,16 @@ class ISyncSerialIO
  * This may be `nullptr` if this information is not interesting.
  *
  * \param timeout_ms
- * Timeout in milliseconds.\n
- * This method either returns after reception of @p size bytes or after @p timeout_ms milliseconds have passed.\n
- * The timeout starts with the entry to this method.\n
- * The timeout is _restarted_ with each received character.\n
+ * Receive timeout in milliseconds.\n
+ * If this timeout expires, then this method will return even though @p size bytes of data have not yet been received.\n
+ * The timeout starts when entering this method. The timeout is not restarted with each received character.\n
  * __Special values:__\n
  * 0  = no timeout (check for available data, then return immediately)\n
  * -1 = infinite timeout
  *
  * \return
- * Number of bytes received.
+ * Number of bytes received.\n
+ * A value less than @p size indicates a receive timeout condition or an inter-character timeout condition.
  */
 
 /**
