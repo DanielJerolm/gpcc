@@ -313,7 +313,7 @@ inline uint8_t ReverseBits8(uint8_t const value) noexcept
 {
   uint32_t result;
   asm("rbit %1,%0" : "=r" (result) : "r" (value));
-  return result >> 24U;
+  return static_cast<uint8_t>(result >> 24U);
 }
 
 /**
@@ -343,7 +343,7 @@ inline uint16_t ReverseBits16(uint16_t const value) noexcept
 {
   uint32_t result;
   asm("rbit %1,%0" : "=r" (result) : "r" (value));
-  return result >> 16U;
+  return static_cast<uint16_t>(result >> 16U);
 }
 
 /**
