@@ -5,7 +5,7 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2019 Daniel Jerolm
+    Copyright (C) 2019, 2025 Daniel Jerolm
 */
 
 #ifndef CLICOLORS_HPP_201803282204
@@ -52,7 +52,7 @@
  *
  * # Unit tests
  * Font, color, and style control information should be disabled when building a unit test executable. Otherwise test
- * cases using a [CLI](@ref gpcc::cli::CLI) and a [FakeTerminal](@ref gpcc_tests::cli::FakeTerminal) could experience
+ * cases using a [CLI](@ref gpcc::cli::CLI) and a fake terminal (e.g. `gpcc_tests::cli::FakeTerminal`) could experience
  * difficulties when they have to deal with the control information instead of plain text only. The section below
  * describes how to disable font, color, and style control information.
  *
