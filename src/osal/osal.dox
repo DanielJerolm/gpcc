@@ -312,6 +312,17 @@
  *   This is OK, because TFC provides the illusion of an CPU with infinite speed and infinite number of cores.
  * - System calls (e.g. blocking on a ConditionVariable) support deferred cancellation.
  *
+ * ### Zephyr (zephyr)
+ * - Scheduling policies `Other`, `Idle`, and `Batch` are emulated by mapping them to specific fixed priorities (see
+ *   figure below).
+ * - Scheduling policy `Fifo` is not supported.
+ * - Scheduling policy `RR` maps to the "preemtive priorities". Priority is always above the other policies (see figure
+ *   below).
+ * - System calls (e.g. blocking on a ConditionVariable) do not support deferred cancellation.
+ *
+ * \htmlonly <style>div.image img[src="osal/os/priority_mapping_zephyr.png"]{width:50%;}</style> \endhtmlonly
+ * \image html "osal/os/priority_mapping_zephyr.png" "Priority Mapping for Zephyr"
+ *
  * # Interoperability with other threading APIs
  * Beside GPCC, other threading APIs may be available on the platform, e.g. POSIX Threads or the native API of an RTOS.
  *
