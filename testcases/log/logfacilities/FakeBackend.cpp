@@ -26,7 +26,7 @@ void FakeBackend::Process(std::string const & msg, gpcc::log::LogType const type
   }
 
   records.push_back(msg);
-};
+}
 
 } // namespace log
 } // namespace gpcc_tests
