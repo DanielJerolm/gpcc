@@ -271,8 +271,13 @@ void Thread::Sleep_ms(uint32_t const ms)
  */
 void Thread::Sleep_ns(uint32_t const ns)
 {
-  // overflow-free round up to ms
-  Sleep_ms((ns / 1000000UL) + (((ns % 1000000UL) != 0U) ? 1U : 0U));
+  // overflow-free round up to us
+  uint32_t const us = (ns / 1000UL) + (((ns % 1000UL) != 0U) ? 1U : 0U);
+  if (k_usleep(us) != 0)
+  {
+    // k_wakeup() is not used, so returning anything but zero is not anticipated
+    PANIC();
+  }
 }
 
 /**
