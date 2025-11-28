@@ -277,7 +277,7 @@ function(SetupLinkLibraries target)
     target_link_libraries(${target} PUBLIC Threads::Threads PRIVATE rt)
 
   elseif(${GPCC_OS} MATCHES "zephyr")
-    target_link_libraries(${target} PUBLIC zephyr_interface)
+    target_link_libraries(${target} PUBLIC zephyr_interface kernel)
 
   else()
     message(FATAL_ERROR "Error: Value of 'GPCC_OS' is not supported by function 'SetupLinkLibraries'.")
