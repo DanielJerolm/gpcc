@@ -47,7 +47,7 @@ chibios_arm   | target_link_libraries(gpcc PUBLIC <chibios_and_cpp_runtime>)
 epos_arm      | Presence of library `epos_kernel`
 linux_arm     | -
 linux_x64     | -
-zephyr        | Presence of library `zephyr_interface`.<br>Provide `target_include_directories(gpcc SYSTEM PUBLIC <path to zephyr/include>)`<br>to avoid warnings from Zephyr headers.
+zephyr        | Presence of library `zephyr_interface` and `kernel`.<br>Provide `target_include_directories(gpcc SYSTEM PUBLIC <path to zephyr/include>)`<br>to treat Zephyr headers as system headers in order to avoid compiler warnings from Zephyr headers.
 
 __Artifacts build:__
 - Static library `gpcc`
