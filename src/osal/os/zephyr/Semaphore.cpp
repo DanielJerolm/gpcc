@@ -65,11 +65,6 @@ Semaphore::Semaphore(size_t const initialValue)
  */
 Semaphore::~Semaphore(void)
 {
-  // Lock for accessing the internals of 'sem_' is not accessible.
-  // Testing without the required lock will not create false positives, but there is a small chance that a usage error
-  // is not detected. This is acceptable, since the altenative is to have no check at all.
-  if (sem_.wait_q.waitq.head != nullptr)
-    Panic("Semaphore::~Semaphore: Thread blocked");
 }
 
 /**

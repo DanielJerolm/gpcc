@@ -57,11 +57,6 @@ ConditionVariable::ConditionVariable(void)
  */
 ConditionVariable::~ConditionVariable(void)
 {
-  // Lock for accessing the internals of 'condVar_' is not accessible.
-  // Testing without the required lock will not create false positives, but there is a small chance that a usage error
-  // is not detected. This is acceptable, since the altenative is to have no check at all.
-  if (condVar_.wait_q.waitq.head != nullptr)
-    Panic("ConditionVariable::~ConditionVariable: Thread blocked");
 }
 
 /**
