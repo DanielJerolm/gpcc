@@ -28,3 +28,7 @@ target_sources(${PROJECT_NAME}
                log_levels.cpp
                log_tools.cpp
               )
+
+if(${GPCC_OS} STREQUAL "zephyr")
+  add_subdirectory(os/zephyr)
+endif()

@@ -1,0 +1,23 @@
+/*
+    General Purpose Class Collection (GPCC)
+
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
+
+    Copyright (C) 2025 WAGO GmbH & Co. KG
+*/
+
+/**
+\ingroup  GPCC_LOG
+\defgroup GPCC_LOG_ZEPHYR   Zepyhr Log
+\brief    Connect GPCC's log system with Zephyr's log system
+
+# Usage
+1. Instantiate a static back-end for Zephyr's log-system via @ref DEFINE_GPCC_LOG_ZEPHYR_LOG_BACKEND().\n
+   Read the documentation of @ref DEFINE_GPCC_LOG_ZEPHYR_LOG_BACKEND() carefully! Linkage of the C++-file matters!
+2. Instantiate this class.
+3. Create a function in the C++-file where the backend from step 1 is defined. Inside the function, use
+   @ref GPCC_LOG_ZEPHYR_LOG_BACKEND_CONNECT() to connect the backend fomr step 1 to this class' instance from step 2.
+
+*/
