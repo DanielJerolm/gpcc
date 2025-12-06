@@ -11,8 +11,9 @@
 #ifndef FIXCAPFIFO_HPP_202509081955
 #define FIXCAPFIFO_HPP_202509081955
 
-#include <cstddef>
+#include <atomic>
 #include <memory>
+#include <cstddef>
 
 namespace gpcc      {
 namespace container {
@@ -99,7 +100,7 @@ class FixCapFIFO final
     SIZET capacity_;
 
     /// Number of items currently stored in the FIFO.
-    SIZET size_;
+    std::atomic<SIZET> size_;
 
     /// Index of next element to be written in @ref spMemory_.
     SIZET wrIndex_;

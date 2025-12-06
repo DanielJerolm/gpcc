@@ -56,6 +56,9 @@ FixCapFIFO<T, SIZET>::FixCapFIFO(size_t const capacity)
                 && (sizeof(SIZET) <= sizeof(size_t)),
                 "SIZET must be an unsigned integral type. Its size must be equal to or less than 'size_t'.");
 
+  static_assert(std::atomic<SIZET>::is_always_lock_free,
+                "std::atomic must be lock-free for SIZET, but it is not");
+
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wtype-limits"
   if (   (capacity == 0U)
@@ -90,8 +93,8 @@ template <typename T, typename SIZET>
 FixCapFIFO<T, SIZET>::FixCapFIFO(FixCapFIFO<T, SIZET> const & other)
 : spMemory_(new T[other.capacity_])
 , capacity_(other.capacity_)
-, size_(other.size_)
-, wrIndex_((size_ == capacity_) ? 0U : size_)
+, size_(other.size_.load(std::memory_order_relaxed))
+, wrIndex_((size_.load(std::memory_order_relaxed) == capacity_) ? 0U : size_.load(std::memory_order_relaxed))
 , rdIndex_(0U)
 {
   CopyFromOther(other);
@@ -138,8 +141,8 @@ FixCapFIFO<T, SIZET>& FixCapFIFO<T, SIZET>::operator=(FixCapFIFO<T, SIZET> const
       capacity_ = rhv.capacity_;
     }
 
-    size_    = rhv.size_;
-    wrIndex_ = (size_ == capacity_) ? 0U : size_;
+    size_.store(rhv.size_.load(std::memory_order_relaxed), std::memory_order_relaxed);
+    wrIndex_ = (size_.load(std::memory_order_relaxed) == capacity_) ? 0U : size_.load(std::memory_order_relaxed);
     rdIndex_ = 0U;
     CopyFromOther(rhv);
   }
@@ -178,11 +181,11 @@ FixCapFIFO<T, SIZET>& FixCapFIFO<T, SIZET>::operator=(FixCapFIFO<T, SIZET> && rh
     std::swap(spMemory_, rhv.spMemory_);
     std::swap(capacity_, rhv.capacity_);
 
-    size_    = rhv.size_;
+    size_.store(rhv.size_.load(std::memory_order_relaxed), std::memory_order_relaxed);
     wrIndex_ = rhv.wrIndex_;
     rdIndex_ = rhv.rdIndex_;
 
-    rhv.size_ = 0U;
+    rhv.size_.store(0U, std::memory_order_relaxed);
     rhv.wrIndex_ = 0U;
     rhv.rdIndex_ = 0U;
   }
@@ -233,7 +236,7 @@ size_t FixCapFIFO<T, SIZET>::Capacity(void) const noexcept
 template <typename T, typename SIZET>
 size_t FixCapFIFO<T, SIZET>::Size(void) const noexcept
 {
-  return size_;
+  return size_.load(std::memory_order_relaxed);
 }
 
 /**
@@ -256,7 +259,7 @@ size_t FixCapFIFO<T, SIZET>::Size(void) const noexcept
 template <typename T, typename SIZET>
 bool FixCapFIFO<T, SIZET>::IsEmpty(void) const noexcept
 {
-  return (size_ == 0U);
+  return (size_.load(std::memory_order_relaxed) == 0U);
 }
 
 /**
@@ -279,7 +282,7 @@ bool FixCapFIFO<T, SIZET>::IsEmpty(void) const noexcept
 template <typename T, typename SIZET>
 bool FixCapFIFO<T, SIZET>::IsFull(void) const noexcept
 {
-  return (size_ == capacity_);
+  return (size_.load(std::memory_order_relaxed) == capacity_);
 }
 
 /**
@@ -302,7 +305,7 @@ bool FixCapFIFO<T, SIZET>::IsFull(void) const noexcept
 template <typename T, typename SIZET>
 void FixCapFIFO<T, SIZET>::Clear(void) noexcept
 {
-  size_    = 0U;
+  size_.store(0U, std::memory_order_relaxed);
   rdIndex_ = 0U;
   wrIndex_ = 0U;
 }
@@ -333,7 +336,7 @@ void FixCapFIFO<T, SIZET>::Clear(void) noexcept
 template <typename T, typename SIZET>
 bool FixCapFIFO<T, SIZET>::Push(T const value) noexcept
 {
-  if (IsFull())
+  if (size_.load(std::memory_order_acquire) == capacity_)
     return false;
 
   spMemory_[wrIndex_++] = value;
@@ -341,7 +344,7 @@ bool FixCapFIFO<T, SIZET>::Push(T const value) noexcept
   if (wrIndex_ == capacity_)
     wrIndex_ = 0U;
 
-  size_++;
+  (void)size_.fetch_add(1U, std::memory_order_release);
 
   return true;
 }
@@ -372,7 +375,7 @@ bool FixCapFIFO<T, SIZET>::Push(T const value) noexcept
 template <typename T, typename SIZET>
 bool FixCapFIFO<T, SIZET>::Pop(T & value) noexcept
 {
-  if (IsEmpty())
+  if (size_.load(std::memory_order_acquire) == 0U)
     return false;
 
   value = spMemory_[rdIndex_++];
@@ -380,7 +383,7 @@ bool FixCapFIFO<T, SIZET>::Pop(T & value) noexcept
   if (rdIndex_ == capacity_)
     rdIndex_ = 0U;
 
-  size_--;
+  (void)size_.fetch_sub(1U, std::memory_order_release);
 
   return true;
 }
@@ -420,41 +423,34 @@ size_t FixCapFIFO<T, SIZET>::PushMultiple(T const * const pSrc, size_t const n) 
   if (n == 0U)
     return 0U;
 
+  // Fetch current number of items in the FIFO. "size_" might be decreased by a pop-operation during this function,
+  // but that's not harmful because it increases the number of free slots.
+  size_t const level = size_.load(std::memory_order_acquire);
+
   // calculate number of free slots and number of elements to be pushed
-  size_t const free = capacity_ - size_;
+  size_t const free = capacity_ - level;
   size_t const tbp = std::min(free, n);
 
-  if (wrIndex_ < rdIndex_)
+  // calculate number of elements that can be pushed until the write-index wraps around
+  size_t const untilWrap = capacity_ - wrIndex_;
+
+  if (tbp <= untilWrap)
   {
     memcpy(spMemory_.get() + wrIndex_, pSrc, tbp * sizeof(T));
     wrIndex_ += tbp;
-    size_ += tbp;
+    if (wrIndex_ == capacity_)
+      wrIndex_ = 0U;
   }
   else
   {
-    // calculate number of elements that can be pushed until the write-index wraps around
-    size_t const untilWrap = capacity_ - wrIndex_;
+    memcpy(spMemory_.get() + wrIndex_, pSrc, untilWrap * sizeof(T));
 
-    if (untilWrap >= tbp)
-    {
-      memcpy(spMemory_.get() + wrIndex_, pSrc, tbp * sizeof(T));
-      wrIndex_ += tbp;
-      if (wrIndex_ == capacity_)
-        wrIndex_ = 0U;
-      size_ += tbp;
-    }
-    else
-    {
-      size_ += tbp;
-
-      memcpy(spMemory_.get() + wrIndex_, pSrc, untilWrap * sizeof(T));
-
-      size_t const rest = tbp - untilWrap;
-      memcpy(spMemory_.get(), pSrc + untilWrap, rest * sizeof(T));
-      wrIndex_ = rest;
-    }
+    size_t const rest = tbp - untilWrap;
+    memcpy(spMemory_.get(), pSrc + untilWrap, rest * sizeof(T));
+    wrIndex_ = rest;
   }
 
+  (void)size_.fetch_add(tbp, std::memory_order_release);
   return tbp;
 }
 
@@ -493,40 +489,33 @@ size_t FixCapFIFO<T, SIZET>::PopMultiple(T* const pDest, size_t const n) noexcep
   if (n == 0U)
     return 0U;
 
-  // calculate number of element that shall be popped from the FIFO
-  size_t const tbp = std::min(static_cast<size_t>(size_), n);
+  // Fetch current number of items in the FIFO. "size_" might be increased by a push-operation during this function,
+  // but that's not harmful, because it increases the number of available items.
+  size_t const level = size_.load(std::memory_order_acquire);
 
-  if (rdIndex_ < wrIndex_)
+  // calculate number of element that shall be popped from the FIFO
+  size_t const tbp = std::min(static_cast<size_t>(level), n);
+
+  // calculate number of elements that can be popped until the read-index wraps around
+  size_t const untilWrap = capacity_ - rdIndex_;
+
+  if (tbp <= untilWrap)
   {
     memcpy(pDest, spMemory_.get() + rdIndex_, tbp * sizeof(T));
     rdIndex_ += tbp;
-    size_ -= tbp;
+    if (rdIndex_ == capacity_)
+      rdIndex_ = 0U;
   }
   else
   {
-    // calculate number of elements that can be popped until the read-index wraps around
-    size_t const untilWrap = capacity_ - rdIndex_;
+    memcpy(pDest, spMemory_.get() + rdIndex_, untilWrap * sizeof(T));
 
-    if (untilWrap >= tbp)
-    {
-      memcpy(pDest, spMemory_.get() + rdIndex_, tbp * sizeof(T));
-      rdIndex_ += tbp;
-      if (rdIndex_ == capacity_)
-        rdIndex_ = 0U;
-      size_ -= tbp;
-    }
-    else
-    {
-      size_ -= tbp;
-
-      memcpy(pDest, spMemory_.get() + rdIndex_, untilWrap * sizeof(T));
-
-      size_t const rest = tbp - untilWrap;
-      memcpy(pDest + untilWrap, spMemory_.get(), rest * sizeof(T));
-      rdIndex_ = rest;
-    }
+    size_t const rest = tbp - untilWrap;
+    memcpy(pDest + untilWrap, spMemory_.get(), rest * sizeof(T));
+    rdIndex_ = rest;
   }
 
+  (void)size_.fetch_sub(tbp, std::memory_order_release);
   return tbp;
 }
 
@@ -562,13 +551,13 @@ size_t FixCapFIFO<T, SIZET>::PopMultiple(T* const pDest, size_t const n) noexcep
 template <typename T, typename SIZET>
 void FixCapFIFO<T, SIZET>::CopyFromOther(FixCapFIFO const & other) noexcept
 {
-  if (size_ != 0U)
+  if (size_.load(std::memory_order_relaxed) != 0U)
   {
     if (other.rdIndex_ < other.wrIndex_)
     {
       // not full, no wrap: |     xxxx |
       //                       -->    <-- size_
-      memcpy(spMemory_.get(), other.spMemory_.get() + other.rdIndex_, size_ * sizeof(T));
+      memcpy(spMemory_.get(), other.spMemory_.get() + other.rdIndex_, size_.load(std::memory_order_relaxed) * sizeof(T));
     }
     else
     {
@@ -588,7 +577,7 @@ void FixCapFIFO<T, SIZET>::CopyFromOther(FixCapFIFO const & other) noexcept
       size_t const a = (other.capacity_ - other.rdIndex_);
       memcpy(spMemory_.get(), other.spMemory_.get() + other.rdIndex_, a * sizeof(T));
 
-      size_t const b = size_ - a;
+      size_t const b = size_.load(std::memory_order_relaxed) - a;
       if (b != 0U)
         memcpy(spMemory_.get() + a, other.spMemory_.get(), b * sizeof(T));
     }
