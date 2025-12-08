@@ -200,7 +200,7 @@ FixCapFIFO<T, SIZET>& FixCapFIFO<T, SIZET>::operator=(FixCapFIFO<T, SIZET> && rh
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.\n
- * This can be invoked from interrupt context if the caller applies proper synchronization.
+ * This can be invoked from thread and interrupt context.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -223,7 +223,7 @@ size_t FixCapFIFO<T, SIZET>::Capacity(void) const noexcept
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.\n
- * This can be invoked from interrupt context if the caller applies proper synchronization.
+ * This can be invoked from thread and interrupt context.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -246,7 +246,7 @@ size_t FixCapFIFO<T, SIZET>::Size(void) const noexcept
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.\n
- * This can be invoked from interrupt context if the caller applies proper synchronization.
+ * This can be invoked from thread and interrupt context.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -269,7 +269,7 @@ bool FixCapFIFO<T, SIZET>::IsEmpty(void) const noexcept
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.\n
- * This can be invoked from interrupt context if the caller applies proper synchronization.
+ * This can be invoked from thread and interrupt context.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -294,7 +294,7 @@ bool FixCapFIFO<T, SIZET>::IsFull(void) const noexcept
  *
  * __Thread safety:__\n
  * The state of the object is modified. Any concurrent accesses are not safe.\n
- * This can be invoked from interrupt context if the caller applies proper synchronization.
+ * This can be invoked from thread and interrupt context.
  *
  * __Exception safety:__\n
  * No-throw guarantee.
@@ -316,8 +316,11 @@ void FixCapFIFO<T, SIZET>::Clear(void) noexcept
  * - - -
  *
  * __Thread safety:__\n
- * The state of the object is modified. Any concurrent accesses are not safe.\n
- * This can be invoked from interrupt context if the caller applies proper synchronization.
+ * The state of the object is modified. Any concurrent accesses are not safe, except for the following methods:\n
+ * - @ref Pop()
+ * - @ref PopMultiple()
+ *
+ * This can be invoked from thread and interrupt context.
  *
  * __Exception safety:__\n
  * No-throw guarantee.
@@ -355,8 +358,11 @@ bool FixCapFIFO<T, SIZET>::Push(T const value) noexcept
  * - - -
  *
  * __Thread safety:__\n
- * The state of the object is modified. Any concurrent accesses are not safe.\n
- * This can be invoked from interrupt context if the caller applies proper synchronization.
+ * The state of the object is modified. Any concurrent accesses are not safe, except for the following methods:\n
+ * - @ref Push()
+ * - @ref PushMultiple()
+ *
+ * This can be invoked from thread and interrupt context.
  *
  * __Exception safety:__\n
  * No-throw guarantee.
@@ -396,8 +402,11 @@ bool FixCapFIFO<T, SIZET>::Pop(T & value) noexcept
  * - - -
  *
  * __Thread safety:__\n
- * The state of the object is modified. Any concurrent accesses are not safe.\n
- * This can be invoked from interrupt context if the caller applies proper synchronization.
+ * The state of the object is modified. Any concurrent accesses are not safe, except for the following methods:\n
+ * - @ref Pop()
+ * - @ref PopMultiple()
+ *
+ * This can be invoked from thread and interrupt context.
  *
  * __Exception safety:__\n
  * No-throw guarantee.
@@ -462,8 +471,11 @@ size_t FixCapFIFO<T, SIZET>::PushMultiple(T const * const pSrc, size_t const n) 
  * - - -
  *
  * __Thread safety:__\n
- * The state of the object is modified. Any concurrent accesses are not safe.\n
- * This can be invoked from interrupt context if the caller applies proper synchronization.
+ * The state of the object is modified. Any concurrent accesses are not safe, except for the following methods:\n
+ * - @ref Push()
+ * - @ref PushMultiple()
+ *
+ * This can be invoked from thread and interrupt context.
  *
  * __Exception safety:__\n
  * No-throw guarantee.
