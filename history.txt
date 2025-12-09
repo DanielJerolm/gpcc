@@ -4,29 +4,6 @@ GPCC Implementation History and Current Activities
 
 Next to do:
 ===============================================================================
-- Add support for Zephyr
-  - [OK] Extend CMake files
-  - [OK] Add doxygen (normal+extract-all)
-    - [OK] doxyfile
-    - [OK] build script
-  - [OK] OSAL
-    - [OK] AdvancedMutexLocker
-    - [OK] ConditionVariable
-    - [OK] definitions.hpp
-    - [OK] IThreadRegistry
-    - [OK] Mutex
-    - [OK] MutexLocker
-    - [OK] Panic
-    - [OK] RWLock
-    - [OK] RWLockReadLocker
-    - [OK] RWLockWriteLocker
-    - [OK] Semaphore
-    - [OK] Thread
-    - [OK] ThreadRegistry
-    - [OK] clock
-  - [OK] Fix all TODO ZEPHYR
-  - [OK] Build against Zephyr & fix compiler issues
-
 - StringComposer::SetupFormatString contains a TODO
 
 - Use github's issue tracking instead of this file
@@ -225,6 +202,9 @@ Next to do:
 
 History:
 ===============================================================================
+2025-12-09
+- FixCapFIFO: External locking no longer required for push/pop
+
 2025-11-06
 - Generate doxygen documentation via CMake
 
