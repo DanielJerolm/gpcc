@@ -33,10 +33,11 @@ namespace log  {
  * - - -
  *
  * \param logFacility
- * The new @ref ZephyrFrontEnd instance fill register at the referenced log facility.
+ * The new @ref ZephyrFrontEnd instance will register at the referenced log facility.
  *
  * \param logSourceName
- * Desired name for the log source in GPCC's log system, that will emit log messages from Zephyr's log system.
+ * Desired name for the log source registered in GPCC's log system, that will emit log messages received from Zephyr's
+ * log system.
  */
 ZephyrFrontEnd::ZephyrFrontEnd(ILogFacility & logFacility, std::string const & logSourceName)
 : logFacility_(logFacility)
@@ -51,8 +52,7 @@ ZephyrFrontEnd::ZephyrFrontEnd(ILogFacility & logFacility, std::string const & l
 /**
  * \brief Destructor.
  *
- * \warning @ref ZephyrFrontEnd instances cannot be unregistered from a Zephyr backend.
- *          Do not destroy any @ref ZephyrFrontEnd instance while it is registered at a Zephyr backend!
+ * \pre   No Zephyr log backend is connect to this.
  *
  * - - -
  *
@@ -93,7 +93,7 @@ void ZephyrFrontEnd::Dropped(size_t const n) noexcept
 }
 
 /**
- * \brief This is invoked by the Zephyr backend to append characters to the next log message.
+ * \brief This is invoked by the Zephyr backend to append characters to the next emitted log message.
  *
  * - - -
  *
@@ -130,7 +130,7 @@ void ZephyrFrontEnd::Append(char const * const p, size_t const n) noexcept
 }
 
 /**
- * \brief This is invoked by the Zephyr backend to finish a log message.
+ * \brief This is invoked by the Zephyr backend to finish a log message and emit it.
  *
  * This will emit a log message into GPCC's log system containing all characters previously added via @ref Append().
  *
@@ -174,10 +174,10 @@ void ZephyrFrontEnd::MessageComplete(uint8_t const level) noexcept
       gpcc::log::LogType type = gpcc::log::LogType::Error;
       switch (level)
       {
-        case LOG_LEVEL_DBG: type = gpcc::log::LogType::Debug; break;
-        case LOG_LEVEL_INF: type = gpcc::log::LogType::Info; break;
+        case LOG_LEVEL_DBG: type = gpcc::log::LogType::Debug;   break;
+        case LOG_LEVEL_INF: type = gpcc::log::LogType::Info;    break;
         case LOG_LEVEL_WRN: type = gpcc::log::LogType::Warning; break;
-        case LOG_LEVEL_ERR: type = gpcc::log::LogType::Error; break;
+        case LOG_LEVEL_ERR: type = gpcc::log::LogType::Error;   break;
       }
 
       // emit log message

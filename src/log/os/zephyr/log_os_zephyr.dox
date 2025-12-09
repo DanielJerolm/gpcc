@@ -11,7 +11,7 @@
 /**
 \ingroup  GPCC_LOG
 \defgroup GPCC_LOG_ZEPHYR   Zepyhr Log
-\brief    Connect GPCC's log system with Zephyr's log system
+\brief    Connect Zephyr's log system to GPCC's log system.
 
 # Usage
 1. Instantiate a static back-end for Zephyr's log-system via @ref DEFINE_GPCC_LOG_ZEPHYR_LOG_BACKEND().\n

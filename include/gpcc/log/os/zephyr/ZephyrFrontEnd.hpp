@@ -15,6 +15,7 @@
 
 #include <gpcc/log/Logger.hpp>
 #include <zephyr/logging/log_backend.h>
+#include <zephyr/logging/log_ctrl.h>
 #include <zephyr/logging/log_output.h>
 #include <atomic>
 #include <string>
@@ -96,11 +97,12 @@ extern "C" int gpcc_log_ZephyrBackend_CharOut(uint8_t *data, size_t length, void
 
 /**
  * \ingroup GPCC_LOG_ZEPHYR
- * \brief Creates a static backend plus output object for Zephyr's log system.
+ * \brief Creates a static backend plus an output object for Zephyr's log system.
  *
- * Instantiate this macro in a C++ file build into an __object library_.\n
- * The "app" target defined by Zephyr must link against the object library.\n
- * If this is implemented different, then the backend may not be picked up by Zephyrs build process and you fill not
+ * Instantiate this macro in a C++ file that is build into an __object library__.\n
+ * The "app" target defined by Zephyr must link against that object library.\n
+ * Alternatively, you can instantiate this macro in a C++ file build into the "app" target.\n
+ * If this is instantiated different, then the backend may not be picked up by Zephyr's build process and you will not
  * receive any log messages.
  *
  * - - -
@@ -129,22 +131,27 @@ extern "C" int gpcc_log_ZephyrBackend_CharOut(uint8_t *data, size_t length, void
 
 /**
  * \ingroup GPCC_LOG_ZEPHYR
- * \brief Macro for accesing a static log backend instance with given @p ID.
+ * \brief Macro for accessing a static log backend instance.
  *
  * Use this in the C++-file only that contains the instantiation of the log backend
  * (@ref DEFINE_GPCC_LOG_ZEPHYR_LOG_BACKEND()).
+ *
+ * - - -
+ *
+ * \param ID
+ * ID of the instance that shall be accessed.
  */
 #define GPCC_LOG_ZEPHYR_LOG_BACKEND(ID) (gpcc_log_ZephyrBackend_##ID)
 
 /**
  * \ingroup GPCC_LOG_ZEPHYR
- * \brief Connects a [ZephyrFrontEnd](@ref gpcc::log::ZephyrFrontEnd) instance to the static log backend with
- *        given @p ID.
+ * \brief Connects an [ZephyrFrontEnd](@ref gpcc::log::ZephyrFrontEnd) instance to an static Zephyr log backend.
  *
- * Use this in the C++-file only that contains the instantiation of the log backend
+ * Use this in the same C++-file that contains the instantiation of the Zephyr log backend
  * (@ref DEFINE_GPCC_LOG_ZEPHYR_LOG_BACKEND()).
  *
- * The best practice is to define a function that uses this macro to make the connection. Example:
+ * The best practice is to define a function that uses this macro to setup the connection.\n
+ * Example:
  * ~~~{.cpp}
  * void ConnectZephyrLogBackend(gpcc::log::ZephyrFrontEnd& zfe) noexcept
  * {
@@ -158,9 +165,40 @@ extern "C" int gpcc_log_ZephyrBackend_CharOut(uint8_t *data, size_t length, void
  * ID of the static Zephyr log backend.
  *
  * \param zfe
- * Reference to the [ZephyrFrontEnd](@ref gpcc::log::ZephyrFrontEnd) instance.
+ * Reference to the [ZephyrFrontEnd](@ref gpcc::log::ZephyrFrontEnd) instance, that shall be linked to the backend.
  */
 #define GPCC_LOG_ZEPHYR_LOG_BACKEND_CONNECT(ID, zfe) (GPCC_LOG_ZEPHYR_LOG_BACKEND(ID).pZFE = &zfe)
+
+/**
+ * \ingroup GPCC_LOG_ZEPHYR
+ * \brief Disconnects an [ZephyrFrontEnd](@ref gpcc::log::ZephyrFrontEnd) instance from an static Zephyr log backend.
+ *
+ * Use this in the same C++-file that contains the instantiation of the Zephyr log backend
+ * (@ref DEFINE_GPCC_LOG_ZEPHYR_LOG_BACKEND()).
+ *
+ * The best practice is to define a function that uses this macro to remove the connection.\n
+ * Example:
+ * ~~~{.cpp}
+ * void DisconnectZephyrLogBackend(void) noexcept
+ * {
+ *   GPCC_LOG_ZEPHYR_LOG_BACKEND_DISCONNECT(1);
+ * }
+ * ~~~
+ *
+ * This has no effect, if the static log backend currently has no connection to any
+ * [ZephyrFrontEnd](@ref gpcc::log::ZephyrFrontEnd) instance.
+ *
+ * This macro includes a flush of the Zephyr log system.
+ *
+ * - - -
+ *
+ * \param ID
+ * ID of the static Zephyr log backend, whose connection to a [ZephyrFrontEnd](@ref gpcc::log::ZephyrFrontEnd)
+ * instance shall be removed.
+ */
+#define GPCC_LOG_ZEPHYR_LOG_BACKEND_DISCONNECT(ID)      \
+        GPCC_LOG_ZEPHYR_LOG_BACKEND(ID).pZFE = nullptr; \
+        log_flush();
 
 #endif // #ifndef ZEPHYRFRONTEND_202512051239
 #endif // #ifdef OS_ZEPHYR
