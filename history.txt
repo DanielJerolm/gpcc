@@ -225,6 +225,9 @@ Next to do:
 
 History:
 ===============================================================================
+2025-12-09
+- Add gpcc::log::ZephyrFrontEnd and a backend for Zephyr's log system
+
 2025-11-06
 - Generate doxygen documentation via CMake
 
