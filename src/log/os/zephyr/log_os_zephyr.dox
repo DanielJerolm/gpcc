@@ -18,6 +18,6 @@
    Read the documentation of @ref DEFINE_GPCC_LOG_ZEPHYR_LOG_BACKEND() carefully! Linkage of the C++-file matters!
 2. Instantiate this class.
 3. Create a function in the C++-file where the backend from step 1 is defined. Inside the function, use
-   @ref GPCC_LOG_ZEPHYR_LOG_BACKEND_CONNECT() to connect the backend fomr step 1 to this class' instance from step 2.
+   @ref GPCC_LOG_ZEPHYR_LOG_BACKEND_CONNECT() to connect the backend from step 1 to this class' instance from step 2.
 
 */
