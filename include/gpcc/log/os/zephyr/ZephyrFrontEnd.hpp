@@ -101,13 +101,16 @@ extern "C" int gpcc_log_ZephyrBackend_CharOut(uint8_t *data, size_t length, void
 
 /**
  * \ingroup GPCC_LOG_ZEPHYR
- * \brief Creates a static backend plus an output object for Zephyr's log system.
+ * \brief Creates a static backend for Zephyr's log system plus an output object for Zephyr's log system.
  *
- * Instantiate this macro in a C++ file that is build into an __object library__.\n
- * The "app" target defined by Zephyr must link against that object library.\n
- * Alternatively, you can instantiate this macro in a C++ file build into the "app" target.\n
- * If this is instantiated different, then the backend may not be picked up by Zephyr's build process and you will not
- * receive any log messages.
+ * The way the backend and the output object are defined is cruical. There are two alternative options.\n
+ * If a different approch is used, then the backend might not be picked up by Zephyr's build process and no log
+ * messages will be received.\n
+ * The approaches are:
+ * - Instantiate this macro in a C++ file that is build into an __object library__.\n
+ *   The "app" target defined by Zephyr must link against that object library.
+ * - Alternatively, you can instantiate this macro in a C++ file that is build directly into the "app" target defined
+ *   by Zephyr.
  *
  * - - -
  *
@@ -149,7 +152,7 @@ extern "C" int gpcc_log_ZephyrBackend_CharOut(uint8_t *data, size_t length, void
 
 /**
  * \ingroup GPCC_LOG_ZEPHYR
- * \brief Connects an [ZephyrFrontEnd](@ref gpcc::log::ZephyrFrontEnd) instance to an static Zephyr log backend.
+ * \brief Connects an @ref gpcc::log::ZephyrFrontEnd instance to an static Zephyr log backend.
  *
  * Use this in the same C++-file that contains the instantiation of the Zephyr log backend
  * (@ref DEFINE_GPCC_LOG_ZEPHYR_LOG_BACKEND()).
@@ -169,13 +172,13 @@ extern "C" int gpcc_log_ZephyrBackend_CharOut(uint8_t *data, size_t length, void
  * ID of the static Zephyr log backend.
  *
  * \param zfe
- * Reference to the [ZephyrFrontEnd](@ref gpcc::log::ZephyrFrontEnd) instance, that shall be linked to the backend.
+ * Reference to the @ref gpcc::log::ZephyrFrontEnd instance, that shall be linked to the backend.
  */
 #define GPCC_LOG_ZEPHYR_LOG_BACKEND_CONNECT(ID, zfe) (GPCC_LOG_ZEPHYR_LOG_BACKEND(ID).pZFE = &zfe)
 
 /**
  * \ingroup GPCC_LOG_ZEPHYR
- * \brief Disconnects an [ZephyrFrontEnd](@ref gpcc::log::ZephyrFrontEnd) instance from an static Zephyr log backend.
+ * \brief Disconnects an @ref gpcc::log::ZephyrFrontEnd instance from an static Zephyr log backend.
  *
  * Use this in the same C++-file that contains the instantiation of the Zephyr log backend
  * (@ref DEFINE_GPCC_LOG_ZEPHYR_LOG_BACKEND()).
@@ -189,16 +192,15 @@ extern "C" int gpcc_log_ZephyrBackend_CharOut(uint8_t *data, size_t length, void
  * }
  * ~~~
  *
- * This has no effect, if the static log backend currently has no connection to any
- * [ZephyrFrontEnd](@ref gpcc::log::ZephyrFrontEnd) instance.
+ * This has no effect, if the static log backend currently has no connection to any @ref gpcc::log::ZephyrFrontEnd
+ * instance.
  *
- * This macro includes a flush of the Zephyr log system.
+ * This macro perfoms a flush of the Zephyr log system.
  *
  * - - -
  *
  * \param ID
- * ID of the static Zephyr log backend, whose connection to a [ZephyrFrontEnd](@ref gpcc::log::ZephyrFrontEnd)
- * instance shall be removed.
+ * ID of the static Zephyr log backend, whose connection to a @ref gpcc::log::ZephyrFrontEnd instance shall be removed.
  */
 #define GPCC_LOG_ZEPHYR_LOG_BACKEND_DISCONNECT(ID)      \
         GPCC_LOG_ZEPHYR_LOG_BACKEND(ID).pZFE = nullptr; \
