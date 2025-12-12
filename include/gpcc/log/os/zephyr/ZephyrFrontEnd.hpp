@@ -13,6 +13,10 @@
 #ifndef ZEPHYRFRONTEND_202512051239
 #define ZEPHYRFRONTEND_202512051239
 
+#if !defined(CONFIG_LOG)
+   #error "Using GPCC's ZephyrFrontEnd requires setting CONFIG_LOG=y in your project configuration (e.g. in your prj.conf file)."
+#endif
+
 #include <gpcc/log/Logger.hpp>
 #include <zephyr/logging/log_backend.h>
 #include <zephyr/logging/log_ctrl.h>

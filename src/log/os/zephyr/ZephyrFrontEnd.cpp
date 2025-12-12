@@ -9,11 +9,22 @@
 */
 
 #ifdef OS_ZEPHYR
+#if defined(CONFIG_LOG)
 
 #include <gpcc/log/os/zephyr/ZephyrFrontEnd.hpp>
 #include <gpcc/log/logfacilities/ILogFacility.hpp>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_backend_std.h>
+
+#if !defined(CONFIG_LOG_MODE_IMMEDIATE)
+  #warning "You should set CONFIG_LOG_MODE_IMMEDIATE=y in your project configuration (e.g. in your prj.conf file).\n" \
+           "Otherwise Zephyr's log system will queue log messages, and log messages from Zephyr cannot be correlated\n" \
+           "to log messages directly issued to GPCC's log system."
+#endif
+
+#if !defined(CONFIG_LOG_OUTPUT)
+  #error "Using GPCC's ZephyrFrontEnd requires setting CONFIG_LOG_OUTPUT=y in your project configuration (e.g. in your prj.conf file)."
+#endif
 
 
 namespace gpcc {
@@ -278,4 +289,5 @@ struct log_backend_api const gpcc_log_ZephyrBackend_api =
   .notify     = nullptr
 };
 
+#endif // CONFIG_LOG
 #endif // #ifdef OS_ZEPHYR
