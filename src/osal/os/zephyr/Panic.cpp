@@ -18,6 +18,10 @@
 #include <string>
 #include <cstring>
 
+#if !defined(CONFIG_LOG_PRINTK)
+  #error "GPCC requires setting CONFIG_LOG_PRINTK=y in your project configuration (e.g. in your prj.conf file)."
+#endif
+
 namespace gpcc {
 namespace osal {
 
@@ -51,12 +55,7 @@ static NORETURN1 void DefaultPanicHandler(char const * const pMessage) noexcept 
  */
 static void DefaultPanicHandler(char const * const pMessage) noexcept
 {
-#if defined(CONFIG_LOG_PRINTK)
   log_panic();
-#else
-  #warning "You should enable CONFIG_LOG_PRINTK to enable switching the log system to panic mode.\n" \
-           "Otherwise panic message output may be incomplete or mixed with normal log message output."
-#endif
 
   if (pMessage != nullptr)
     printk("%s\n", pMessage);
