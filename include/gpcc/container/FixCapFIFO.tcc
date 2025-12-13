@@ -434,10 +434,10 @@ size_t FixCapFIFO<T, SIZET>::PushMultiple(T const * const pSrc, size_t const n) 
 
   // Fetch current number of items in the FIFO. "size_" might be decreased by a pop-operation during this function,
   // but that's not harmful because it increases the number of free slots.
-  size_t const level = size_.load(std::memory_order_acquire);
+  size_t const used = size_.load(std::memory_order_acquire);
 
   // calculate number of free slots and number of elements to be pushed
-  size_t const free = capacity_ - level;
+  size_t const free = capacity_ - used;
   size_t const tbp = std::min(free, n);
 
   // calculate number of elements that can be pushed until the write-index wraps around
@@ -503,10 +503,10 @@ size_t FixCapFIFO<T, SIZET>::PopMultiple(T* const pDest, size_t const n) noexcep
 
   // Fetch current number of items in the FIFO. "size_" might be increased by a push-operation during this function,
   // but that's not harmful, because it increases the number of available items.
-  size_t const level = size_.load(std::memory_order_acquire);
+  size_t const used = size_.load(std::memory_order_acquire);
 
   // calculate number of element that shall be popped from the FIFO
-  size_t const tbp = std::min(static_cast<size_t>(level), n);
+  size_t const tbp = std::min(used, n);
 
   // calculate number of elements that can be popped until the read-index wraps around
   size_t const untilWrap = capacity_ - rdIndex_;
