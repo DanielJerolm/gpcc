@@ -32,7 +32,7 @@ namespace log  {
 class ILogFacility;
 
 /**
- * \ingroup GPCC_LOG_ZEPHYR
+ * \ingroup GPCC_LOG_INTEGRATION_ZEPHYR
  * \brief Front-end for GPCC's log system that receives log messages from a back-end registered in Zephyr's log system.
  *
  * - - -
@@ -75,7 +75,7 @@ class ZephyrFrontEnd final
 
 
 /**
- * \ingroup GPCC_LOG_ZEPHYR
+ * \ingroup GPCC_LOG_INTEGRATION_ZEPHYR
  * \brief Structure of an static backend for Zephyr's log system.
  */
 struct gpcc_log_stZephyrBackend
@@ -100,7 +100,7 @@ extern "C" int gpcc_log_ZephyrBackend_CharOut(uint8_t *data, size_t length, void
 
 
 /**
- * \ingroup GPCC_LOG_ZEPHYR
+ * \ingroup GPCC_LOG_INTEGRATION_ZEPHYR
  * \brief Creates a static backend for Zephyr's log system plus an output object for Zephyr's log system.
  *
  * The way the backend and the output object are defined is cruical. There are two alternative options.\n
@@ -137,7 +137,7 @@ extern "C" int gpcc_log_ZephyrBackend_CharOut(uint8_t *data, size_t length, void
                            (void*)&gpcc_log_ZephyrBackend_##ID);
 
 /**
- * \ingroup GPCC_LOG_ZEPHYR
+ * \ingroup GPCC_LOG_INTEGRATION_ZEPHYR
  * \brief Macro for accessing a static log backend instance.
  *
  * Use this in the C++-file only that contains the instantiation of the log backend
@@ -151,7 +151,7 @@ extern "C" int gpcc_log_ZephyrBackend_CharOut(uint8_t *data, size_t length, void
 #define GPCC_LOG_ZEPHYR_LOG_BACKEND(ID) (gpcc_log_ZephyrBackend_##ID)
 
 /**
- * \ingroup GPCC_LOG_ZEPHYR
+ * \ingroup GPCC_LOG_INTEGRATION_ZEPHYR
  * \brief Connects an @ref gpcc::log::ZephyrFrontEnd instance to an static Zephyr log backend.
  *
  * Use this in the same C++-file that contains the instantiation of the Zephyr log backend
@@ -177,7 +177,7 @@ extern "C" int gpcc_log_ZephyrBackend_CharOut(uint8_t *data, size_t length, void
 #define GPCC_LOG_ZEPHYR_LOG_BACKEND_CONNECT(ID, zfe) (GPCC_LOG_ZEPHYR_LOG_BACKEND(ID).pZFE = &zfe)
 
 /**
- * \ingroup GPCC_LOG_ZEPHYR
+ * \ingroup GPCC_LOG_INTEGRATION_ZEPHYR
  * \brief Disconnects an @ref gpcc::log::ZephyrFrontEnd instance from an static Zephyr log backend.
  *
  * Use this in the same C++-file that contains the instantiation of the Zephyr log backend

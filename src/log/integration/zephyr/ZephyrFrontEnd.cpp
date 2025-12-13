@@ -200,6 +200,7 @@ void ZephyrFrontEnd::MessageComplete(uint8_t const level) noexcept
   {
     logger_.LogFailed();
     errorDuringAccumulation_ = false;
+    accu_.clear();
   }
 }
 
@@ -228,14 +229,14 @@ namespace
       // ignore all log messages in panic mode
       if (!pZB->panicMode)
       {
-        uint32_t const flags = log_backend_std_get_flags();
-        log_format_func_t const log_output_func = log_format_func_t_get(pZB->currentLogFormat);
-
         gpcc::log::ZephyrFrontEnd* const pZFE = pZB->pZFE;
 
         // ZephyrFrontEnd instance already connected?
         if (pZFE != nullptr)
         {
+          uint32_t const flags = log_backend_std_get_flags();
+          log_format_func_t const log_output_func = log_format_func_t_get(pZB->currentLogFormat);
+
           log_output_func(pZB->pOutput, &msg->log, flags);
           pZFE->MessageComplete(msg->log.hdr.desc.level);
         }
@@ -245,11 +246,16 @@ namespace
     void c_api_Dropped(const struct log_backend *const backend, uint32_t cnt)
     {
       auto const pZB = static_cast<struct gpcc_log_stZephyrBackend*>(backend->cb->ctx);
-      gpcc::log::ZephyrFrontEnd* const pZFE = pZB->pZFE;
 
-      // ZephyrFrontEnd instance already connected?
-      if (pZFE != nullptr)
-        pZFE->Dropped(cnt);
+      // ignore potential calls in panic mode
+      if (!pZB->panicMode)
+      {
+        gpcc::log::ZephyrFrontEnd* const pZFE = pZB->pZFE;
+
+        // ZephyrFrontEnd instance already connected?
+        if (pZFE != nullptr)
+          pZFE->Dropped(cnt);
+      }
     }
 
     void c_api_Panic(const struct log_backend *const backend)
