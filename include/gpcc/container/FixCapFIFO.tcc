@@ -466,7 +466,7 @@ size_t FixCapFIFO<T, SIZET>::PushMultiple(T const * const pSrc, size_t const n) 
 /**
  * \brief Pops one or more elements from the FIFO.
  *
- * This method handles an empty FIFO or an insufficient number of elements in the FIFO gracefully.
+ * This method handles an empty FIFO or a too small number of elements in the FIFO gracefully.
  *
  * - - -
  *
