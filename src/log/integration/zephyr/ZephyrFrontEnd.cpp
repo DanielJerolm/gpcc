@@ -11,7 +11,7 @@
 #ifdef OS_ZEPHYR
 #if defined(CONFIG_LOG)
 
-#include <gpcc/log/os/zephyr/ZephyrFrontEnd.hpp>
+#include <gpcc/log/integration/zephyr/ZephyrFrontEnd.hpp>
 #include <gpcc/log/logfacilities/ILogFacility.hpp>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_backend_std.h>
