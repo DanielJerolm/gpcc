@@ -223,7 +223,11 @@ size_t FixCapFIFO<T, SIZET>::Capacity(void) const noexcept
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.\n
- * This can be invoked from thread and interrupt context.
+ * This can be invoked from thread and interrupt context.\n
+ * This method can be used in conjunction with @ref Push(), @ref PushMultiple(), @ref Pop(), and @ref PopMultiple()
+ * without external synchronization. The return value will be valid, but may be outdated immediately. Note that an
+ * outdated value is not harmful if this is invoked by the producer (consumer) before pushing (popping) elements.
+ * If an outdated value is not acceptable, then the caller must apply external synchronization.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -246,7 +250,9 @@ size_t FixCapFIFO<T, SIZET>::Size(void) const noexcept
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.\n
- * This can be invoked from thread and interrupt context.
+ * This can be invoked from thread and interrupt context if the caller applies proper synchronization.\n
+ * As an exception, a consumer may omit external synchronization measures, if false positives are acceptable (method
+ * returns `true`, although the FIFO is not empty).
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
@@ -269,7 +275,9 @@ bool FixCapFIFO<T, SIZET>::IsEmpty(void) const noexcept
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.\n
- * This can be invoked from thread and interrupt context.
+ * This can be invoked from thread and interrupt context if the caller applies proper synchronization.\n
+ * As an exception, a producer may omit external synchronization measures, if false positives are acceptable (method
+ * returns `true`, although the FIFO is not full).
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.

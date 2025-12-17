@@ -47,7 +47,7 @@ namespace container {
  *
  * # Use in interrupt context
  * The following measures were applied to methods that can be invoked from interrupt context:
- * - No memory allocation.
+ * - No dynamic memory allocation.
  * - No exceptions are thrown, not even under the hood.
  * - FIFO overflow/underflow awareness and report by return value.
  * - No use of functions from the C/C++ runtime that are unavailable or incompatible with interrupt context.\n
@@ -76,8 +76,8 @@ namespace container {
  * - - -
  *
  * __Thread safety:__\n
- * - Not thread-safe. If used from different contexts, then the user has to apply proper locking. As an exception, push-
- *   and pop-operations use atomics and can be invoked from different contexts.\n
+ * - Not thread-safe. If used from different contexts, then the user has to apply proper locking.\n
+ *   As an exception, push- and pop-operations use atomics and can be invoked from different contexts.\n
  * - Selected member functions can be invoked from interrupt context.\n
  * - Pay attention to method's thread-safety notes.
  */
