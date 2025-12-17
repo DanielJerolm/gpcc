@@ -1,0 +1,69 @@
+/*
+    General Purpose Class Collection (GPCC)
+
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
+
+    Copyright (C) 2025 WAGO GmbH & Co. KG
+*/
+
+#if OS_ZEPHYR
+/**
+\ingroup  GPCC_LOG_INTEGRATION
+\defgroup GPCC_LOG_INTEGRATION_ZEPHYR   Zepyhr Log
+\brief    Connect Zephyr's log system to GPCC's log system.
+
+# Use case
+This group contains a front-end for GPCC's log system and a backend for Zephyr's log system. Both can be connected
+in order to forward log messages originating in code using Zephyr's log system into GPCC's log system. This allows
+you to use GPCC's log system as the main log system.
+
+# Requirements
+The following Zephyr options must be enabled:
+- `CONFIG_LOG`
+- `CONFIG_LOG_MODE_IMMEDIATE`
+- `CONFIG_LOG_OUTPUT`
+
+# Usage
+1. Instantiate a static back-end for Zephyr's log-system via @ref DEFINE_GPCC_LOG_ZEPHYR_LOG_BACKEND(). \n
+   Read the documentation of @ref DEFINE_GPCC_LOG_ZEPHYR_LOG_BACKEND() carefully! Linkage of the C++-file matters!
+2. Instantiate class @ref gpcc::log::ZephyrFrontEnd at a place of your choice.
+3. Create a function in the C++-file where the backend from step 1 is defined:\n
+   The function shall use @ref GPCC_LOG_ZEPHYR_LOG_BACKEND_CONNECT() to connect an @ref gpcc::log::ZephyrFrontEnd
+   instance passed as function parameter to the backend from step 1.
+4. Invoke the function from step 3 and pass a reference to the [ZephyrFrontEnd](@ref gpcc::log::ZephyrFrontEnd)
+   instance created in step 2.
+
+Example for the C++-file from step 1:\n
+```{.cpp}
+#include <gpcc/log/integration/zephyr/ZephyrFrontEnd.hpp>
+
+DEFINE_GPCC_LOG_ZEPHYR_LOG_BACKEND(1);
+
+namespace myStuff // namespace is optional
+{
+  void ConnectZephyrLogBackend(gpcc::log::ZephyrFrontEnd& zfe) noexcept
+  {
+    GPCC_LOG_ZEPHYR_LOG_BACKEND_CONNECT(1, zfe);
+  }
+
+  void DisconnectZephyrLogBackend(void) noexcept
+  {
+    GPCC_LOG_ZEPHYR_LOG_BACKEND_DISCONNECT(1);
+  }
+}
+```
+*/
+#else
+/**
+\ingroup  GPCC_LOG_INTEGRATION
+\defgroup GPCC_LOG_INTEGRATION_ZEPHYR   Zepyhr Log
+\brief    Connect Zephyr's log system to GPCC's log system.
+
+Zephyr is not the configured OS.\n
+If Zephyr would be the configured OS, then this group would contain a front-end for GPCC's log system and a backend for
+Zephyr's log system. Both can be connected in order to forward log messages originating in code using Zephyr's log
+system into GPCC's log system. This allows you to use GPCC's log system as the main log system.
+*/
+#endif

@@ -31,7 +31,7 @@
  *   + Front-end offers methods to emit log messages.
  *   + Down to 1 or 2 lines of code required at the client.
  *   + The name of the client is automatically prepended to the log message.
- *   + Optional information an be attached to a log message:
+ *   + Optional information can be attached to a log message:
  *     - timestamp
  *     - std::exception_ptr
  * - Processing of log messages is decoupled from clients:
