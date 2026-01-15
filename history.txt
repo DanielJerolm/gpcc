@@ -202,6 +202,9 @@ Next to do:
 
 History:
 ===============================================================================
+2026-01-15
+- Bugfix: gpcc::log::ZephyrFrontEnd did not handle Zephyr log type LOG_LEVEL_NONE properly
+
 2025-12-09
 - FixCapFIFO: External locking no longer required for push/pop
 - Add gpcc::log::ZephyrFrontEnd and a backend for Zephyr's log system
