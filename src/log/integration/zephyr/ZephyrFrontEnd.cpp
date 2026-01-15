@@ -6,6 +6,7 @@
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
     Copyright (C) 2025 WAGO GmbH & Co. KG
+    Copyright (C) 2026 Daniel Jerolm
 */
 
 #ifdef OS_ZEPHYR
@@ -185,10 +186,11 @@ void ZephyrFrontEnd::MessageComplete(uint8_t const level) noexcept
       gpcc::log::LogType type = gpcc::log::LogType::Error;
       switch (level)
       {
-        case LOG_LEVEL_DBG: type = gpcc::log::LogType::Debug;   break;
-        case LOG_LEVEL_INF: type = gpcc::log::LogType::Info;    break;
-        case LOG_LEVEL_WRN: type = gpcc::log::LogType::Warning; break;
-        case LOG_LEVEL_ERR: type = gpcc::log::LogType::Error;   break;
+        case LOG_LEVEL_NONE: type = gpcc::log::LogType::Info;    break;
+        case LOG_LEVEL_DBG:  type = gpcc::log::LogType::Debug;   break;
+        case LOG_LEVEL_INF:  type = gpcc::log::LogType::Info;    break;
+        case LOG_LEVEL_WRN:  type = gpcc::log::LogType::Warning; break;
+        case LOG_LEVEL_ERR:  type = gpcc::log::LogType::Error;   break;
       }
 
       // emit log message
