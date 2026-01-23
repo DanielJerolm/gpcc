@@ -141,7 +141,7 @@ inline time_t TimePoint::Get_sec(void) const noexcept
  */
 inline int32_t TimePoint::Get_nsec(void) const noexcept
 {
-  return ts.tv_nsec;
+  return static_cast<int32_t>(ts.tv_nsec);
 }
 
 /**
