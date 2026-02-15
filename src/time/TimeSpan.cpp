@@ -11,9 +11,8 @@
 #include <gpcc/time/TimeSpan.hpp>
 #include <gpcc/compiler/builtins.hpp>
 #include <gpcc/osal/Panic.hpp>
-#include <iomanip>
+#include <gpcc/string/StringComposer.hpp>
 #include <limits>
-#include <sstream>
 #include <stdexcept>
 
 #define NS_PER_US  1000
@@ -645,7 +644,10 @@ std::string TimeSpan::ToString(void) const
     days = 6
   };
 
-  std::ostringstream str;
+  using gpcc::string::StringComposer;
+  gpcc::string::StringComposer str;
+
+  str << StringComposer::AlignRightPadZero;
 
   int64_t _value = value;
   if (_value < 0)
@@ -684,7 +686,7 @@ std::string TimeSpan::ToString(void) const
 
         case Units::hr:
           if (anyOutputYet)
-            str << std::setw(2) << std::setfill('0');
+            str << StringComposer::Width(2);
           str << full;
 
           if (end)
@@ -695,7 +697,7 @@ std::string TimeSpan::ToString(void) const
 
         case Units::min:
           if (anyOutputYet)
-            str << std::setw(2) << std::setfill('0');
+            str << StringComposer::Width(2);
           str << full;
 
           if (end)
@@ -711,9 +713,9 @@ std::string TimeSpan::ToString(void) const
 
         case Units::sec:
           if (anyOutputYet)
-            str << std::setw(2) << std::setfill('0');
+            str << StringComposer::Width(2);
           else if (!end)
-              str << "0:" << std::setw(2) << std::setfill('0');
+              str << "0:" << StringComposer::Width(2);
           str << full;
 
           if (end)
@@ -729,7 +731,7 @@ std::string TimeSpan::ToString(void) const
 
         case Units::ms:
           if (anyOutputYet)
-            str << std::setw(3) << std::setfill('0');
+            str << StringComposer::Width(3);
           str << full;
 
           if (end)
@@ -738,7 +740,7 @@ std::string TimeSpan::ToString(void) const
 
         case Units::us:
           if (anyOutputYet)
-            str << std::setw(3) << std::setfill('0');
+            str << StringComposer::Width(3);
           str << full;
 
           if (end)
@@ -747,7 +749,7 @@ std::string TimeSpan::ToString(void) const
 
         case Units::ns:
           if (anyOutputYet)
-            str << std::setw(3) << std::setfill('0');
+            str << StringComposer::Width(3);
           str << full << "ns";
           break;
       }
@@ -762,7 +764,7 @@ std::string TimeSpan::ToString(void) const
     currentUnit = static_cast<Units>(static_cast<int>(currentUnit) - 1);
   }
 
-  return str.str();
+  return str.Get();
 }
 
 /**
@@ -805,7 +807,10 @@ std::string TimeSpan::ToString(void) const
  */
 std::string TimeSpan::ToString(Precison const prec) const
 {
-  std::ostringstream str;
+  using gpcc::string::StringComposer;
+  gpcc::string::StringComposer str;
+
+  str << StringComposer::AlignRightPadZero;
 
   int64_t _value = value;
   if (_value < 0)
@@ -837,9 +842,9 @@ std::string TimeSpan::ToString(Precison const prec) const
     int32_t const minutes = seconds / 60;
     seconds %= 60;
 
-    str << std::setw(2) << std::setfill('0') << hours << ":";
-    str << std::setw(2) << std::setfill('0') << minutes << ":";
-    str << std::setw(2) << std::setfill('0') << seconds;
+    str << StringComposer::Width(2) << hours << ":";
+    str << StringComposer::Width(2) << minutes << ":";
+    str << StringComposer::Width(2) << seconds;
   }
 
   // ms/us/ns
@@ -855,7 +860,7 @@ std::string TimeSpan::ToString(Precison const prec) const
       {
         if (ns != 0)
           zero = false;
-        str << std::setw(9) << std::setfill('0') << ns << "ns";
+        str << StringComposer::Width(9) << ns << "ns";
         break;
       }
 
@@ -864,7 +869,7 @@ std::string TimeSpan::ToString(Precison const prec) const
         int32_t const us = ns / NS_PER_US;
         if (us != 0)
           zero = false;
-        str << std::setw(6) << std::setfill('0') << us << "us";
+        str << StringComposer::Width(6) << us << "us";
         break;
       }
 
@@ -873,7 +878,7 @@ std::string TimeSpan::ToString(Precison const prec) const
         int32_t const ms = ns / NS_PER_MS;
         if (ms != 0)
           zero = false;
-        str << std::setw(3) << std::setfill('0') << ms << "ms";
+        str << StringComposer::Width(3) << ms << "ms";
         break;
       }
 
@@ -886,9 +891,9 @@ std::string TimeSpan::ToString(Precison const prec) const
   }
 
   if ((value >= 0) || (zero))
-    return str.str();
+    return str.Get();
   else
-    return "-" + str.str();
+    return "-" + str.Get();
 }
 
 /**
