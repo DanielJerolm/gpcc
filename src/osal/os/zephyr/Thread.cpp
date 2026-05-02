@@ -712,8 +712,11 @@ void Thread::TestForCancellation(void)
   if (!IsItMe())
     throw std::logic_error("Wrong caller");
 
-  if (cancellationPending_.load(std::memory_order_relaxed))
+  if (   (cancelabilityEnabled_)
+      && (cancellationPending_.load(std::memory_order_relaxed)))
+  {
     throw ThreadCancellationException();
+  }
 }
 
 /**
