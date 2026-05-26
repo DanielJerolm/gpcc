@@ -39,7 +39,7 @@ namespace internal     {
  * interface.
  *
  * # Internals
- * The constructor will open the file for reading. The file is referenced via `fd'.
+ * The constructor will open the file for reading. The file is referenced via `fd`.
  *
  * ## Read-ahead
  * This class always reads ahead one byte from the file and keeps it in attribute `nextByte`. This is necessary

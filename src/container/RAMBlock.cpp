@@ -120,7 +120,7 @@ RAMBlock::RAMBlock(size_t const size, gpcc::stream::IStreamReader& sr)
  * - - -
  *
  * \param data
- * Unmodifiable reference to an ´std::vector<uint8_t>` used to initialize the new @ref RAMBlock instance.\n
+ * Unmodifiable reference to an `std::vector<uint8_t>` used to initialize the new @ref RAMBlock instance.\n
  * The size of the RAMBlock's storage will be initialized with the size of the given vector.\n
  * The content of the RAMBlock's storage will be initialized with a copy of the vector's content.
  */
@@ -147,7 +147,7 @@ RAMBlock::RAMBlock(std::vector<uint8_t> const & data)
  * - - -
  *
  * \param data
- * The content of the referenced ´std::vector<uint8_t>` will be moved into the storage of the new @ref RAMBlock instance.\n
+ * The content of the referenced `std::vector<uint8_t>` will be moved into the storage of the new @ref RAMBlock instance.\n
  * The RAMBlock's storage will have the same size as the referenced std::vector.\n
  * `data` will be left in a valid, but undefined state.
  */

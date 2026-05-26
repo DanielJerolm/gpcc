@@ -264,7 +264,7 @@ bool ResponseBase::IsReturnStackEmpty(void) const noexcept
  * __Exception safety:__\n
  * Strong guarantee.
  *
- * This will not throw `std::bad_alloc'.
+ * This will not throw `std::bad_alloc`.
  *
  * __Thread cancellation safety:__\n
  * No cancellation point included.
