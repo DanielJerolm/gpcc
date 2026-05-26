@@ -380,7 +380,7 @@ class Thread final
     /// Flag indicating if cancellation has already been requested via @ref Thread::Cancel().
     /** @ref mutex is required.\n
         EPOS accepts multiple calls to `epos_thread_RequestCancellation()`. This is only used to check the
-        precondition of @ref Cancel() which is required by GPCC`s OSAL. */
+        precondition of @ref Cancel() which is required by GPCC's OSAL. */
     bool cancellationRequestedViaThisAPI;
 
 

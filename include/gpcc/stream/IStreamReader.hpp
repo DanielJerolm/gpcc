@@ -156,7 +156,7 @@ class IStreamReader
       seven,          ///<Seven bits remaning.
       sevenOrLess,    ///<Up to seven bits remaining.
       moreThanSeven,  ///<More than seven bits remaining.
-      any             ///<Any number of bits remaining (= don´t care)
+      any             ///<Any number of bits remaining (= don't care)
     };
 
     /// Native/preferred endian on the machine.
