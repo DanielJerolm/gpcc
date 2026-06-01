@@ -134,7 +134,7 @@ T MedianFilter1D<T, WINDOWSIZE>::Sample(T const value) noexcept
     for (uint_fast16_t i = 0; i < WINDOWSIZE; i++)
     {
       window[i] = value;
-      age[i]    = i;
+      age[i]    = static_cast<uint8_t>(i);
     }
 
     return value;
