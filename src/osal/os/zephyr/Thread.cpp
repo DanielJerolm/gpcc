@@ -841,6 +841,8 @@ void Thread::InternalThreadEntry1(void* p1, void* p2, void* p3) noexcept
  */
 void Thread::InternalThreadEntry2(void) noexcept
 {
+  k_thread_name_set(nullptr, name_.c_str());
+
   // set threadState to ThreadState::running
   {
     MutexLocker mutexLocker(mutex_);
