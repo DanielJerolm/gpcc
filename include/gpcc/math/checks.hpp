@@ -47,7 +47,7 @@ namespace math {
  * \retval false   @p value is not a power of 2.
  */
 template<typename T>
-bool IsPowerOf2(T const value) noexcept
+constexpr bool IsPowerOf2(T const value) noexcept
 {
   static_assert(std::is_unsigned_v<T> == true, "IsPowerOf2() is undefined for signed types");
   return (value != 0U) && ((value & (value - 1U)) == 0U);
