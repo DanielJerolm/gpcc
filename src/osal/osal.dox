@@ -363,7 +363,7 @@
  * OS / Platform | Alternative APIs for thread termination        | Stack unwind | POSIX cleanup handlers
  * ------------- | ---------------------------------------------- | ------------ | --------------------------------
  * chibios_arm   | None                                           | yes          | not supported
- * epos_arm      | `epos_thread_TerminateNow()`, `pthread_exit()` | yes          | Full integration in stack unwind
+ * epos_arm      | `epos_thread_Exit()`, `pthread_exit()`         | yes          | Full integration in stack unwind
  * linux_arm     | `pthread_exit()`                               | yes          | Full integration in stack unwind
  * linux_x64     | `pthread_exit()`                               | yes          | Full integration in stack unwind
  * linux_arm_tfc | `pthread_exit()`                               | yes          | Full integration in stack unwind
