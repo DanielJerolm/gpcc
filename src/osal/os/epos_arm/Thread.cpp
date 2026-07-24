@@ -677,7 +677,7 @@ void Thread::TerminateNow(void* const threadReturnValue)
   if (epos_thread_Self() != pThread)
     throw std::logic_error("Thread::TerminateNow: Precons");
 
-  epos_thread_TerminateNow(threadReturnValue);
+  epos_thread_Exit(threadReturnValue);
 }
 
 /**
