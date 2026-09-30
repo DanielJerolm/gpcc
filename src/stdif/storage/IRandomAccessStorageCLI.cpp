@@ -42,7 +42,7 @@ namespace stdif {
  * This is thread-safe.
  *
  * __Exception safety:__\n
- * Basic guarantee:\n
+ * Basic guarantee:
  * - content of terminal's screen maybe incomplete
  *
  * __Thread cancellation safety:__\n
@@ -136,7 +136,7 @@ void CliCmdReadIRandomAccessStorage(std::string const & restOfLine,
  * This is thread-safe.
  *
  * __Exception safety:__\n
- * Basic guarantee:\n
+ * Basic guarantee:
  * - content of terminal's screen maybe incomplete
  * - incomplete data may be written to the underlying storage, depends on guarantee provided by @p pRAS
  *
