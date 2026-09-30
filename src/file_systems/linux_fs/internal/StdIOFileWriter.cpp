@@ -446,7 +446,7 @@ void StdIOFileWriter::ThrowIOError(char const * const pDescr, int const copyOfEr
  * The state of the object is modified. Any concurrent accesses are not safe.
  *
  * __Exception safety:__\n
- * Basic guarantee:\n
+ * Basic guarantee:
  * - In any case, the stream will __always__ be closed, even in case of an error.
  * - Most operating systems close the underlying file, even if an error occurs during
  *   the close-operation. However, the state of the file depends on the underlying
