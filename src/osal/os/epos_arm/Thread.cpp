@@ -29,12 +29,16 @@ Thread::priority_t const Thread::maxPriority;
 
 
 /**
- * \brief Queries the minimum stack size.
+ * \brief Queries the minimum required stack size.
  *
- * The queried value refers to the minimum stack size required to start a thread. It does not include the stack size
- * required by the thread entry function.
+ * The queried value refers to the minimum stack size required to start a thread that enters the user's thread entry
+ * function and leaves it immediately by returning, by exiting, or by deferred thread cancellation. The queried value
+ * does not include the stack size required by the user's code executed in the thread entry function.
  *
  * The queried value may differ among different implementations of this class for different operating systems.
+ *
+ * User shall query this value, add their own stack size requirements, and use the sum as the stack size parameter when
+ * starting a new thread.
  *
  * - - -
  *
@@ -96,13 +100,13 @@ size_t Thread::GetStackAlign(void)
  * own specific stack size values adapted to your application.
  *
  * __Notes specific to platforms not supporting virtual memory (e.g. ChibiOS/RT):__\n
- * The queried value is only a _suggested default_ stack size. There is no support for virtual memory, so physical
- * memory is immediately consumed when creating a thread.\n
- * The queried value is relatively large in order to meet the stack size requirements of carefully and economically
- * designed embedded code. However there is no guarantee that the stack size requirements of your code are met, and the
- * queried value is likely too large for many applications.\n
- * It is strongly recommended that you should determine your stack size requirements and use your own specific stack
- * size values adapted to the specific needs of your application.
+ * On platforms without support for virtual memory, physical memory is immediately consumed when creating a thread.\n
+ * The queried value is a _suggested default_ stack size that should work in most cases. It is relatively large in order
+ * to meet the stack size requirements of reasonable designed code in most cases. However there is no guarantee that the
+ * stack size requirements of your code are really met, and on the other hand the queried value is likely too large for
+ * many applications and is just a waste of memory.\n
+ * It is strongly recommended that you determine the stack size requirements or your application and use your own
+ * specific stack size values adapted to the actual needs of your application.
  *
  * - - -
  *
