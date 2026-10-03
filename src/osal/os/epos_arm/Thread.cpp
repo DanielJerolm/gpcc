@@ -105,7 +105,7 @@ size_t Thread::GetStackAlign(void)
  * to meet the stack size requirements of reasonable designed code in most cases. However there is no guarantee that the
  * stack size requirements of your code are really met, and on the other hand the queried value is likely too large for
  * many applications and is just a waste of memory.\n
- * It is strongly recommended that you determine the stack size requirements or your application and use your own
+ * It is strongly recommended that you determine the stack size requirements of your application and use your own
  * specific stack size values adapted to the actual needs of your application.
  *
  * - - -
