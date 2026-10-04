@@ -117,7 +117,7 @@ void TimeLimitedThreadBlocker::SignalTimeout(void)
  * TFC's big lock must be acquired.
  *
  * __Exception-safety:__\n
- * Basic guarantee:\n
+ * Basic guarantee:
  * - Emulated system time may be incremented
  *
  * Except from this, this method provides the strong guarantee:
@@ -189,7 +189,7 @@ bool TimeLimitedThreadBlocker::Block(Mutex & mutexToBeUnlocked, gpcc::time::Time
  * TFC's big lock must be acquired.
  *
  * __Exception-safety:__\n
- * Basic guarantee:\n
+ * Basic guarantee:
  * - Emulated system time may be incremented
  *
  * Except from this, this method provides the strong guarantee:

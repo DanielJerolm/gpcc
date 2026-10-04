@@ -1256,7 +1256,7 @@ void CLI::AddInputBufferToHistory(void)
  * - @ref suggestionsValid is guaranteed to be "false"
  *
  * __Thread cancellation safety:__\n
- * Basic guarantee:\n
+ * Basic guarantee:
  * - @ref suggestionsValid is guaranteed to be "false"
  */
 void CLI::BuildListOfSuggestions(void)

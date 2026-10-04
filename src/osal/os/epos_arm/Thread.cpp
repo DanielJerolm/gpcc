@@ -724,7 +724,7 @@ ThreadRegistry& Thread::InternalGetThreadRegistry(void)
  * This is reentrant for different values of @p arg.
  *
  * __Exception safety:__\n
- * Basic guarantee:\n
+ * Basic guarantee:
  * This function relies on that EPOS will raise a panic if an uncaught exception propagates out of the entry function
  * for the EPOS thread.
  *
@@ -759,7 +759,7 @@ void* Thread::InternalThreadEntry1(void* arg)
  * Program logic ensures that there is only one thread per instance of class @ref Thread.
  *
  * __Exception safety:__\n
- * Basic guarantee:\n
+ * Basic guarantee:
  * This function relies on that EPOS will raise a panic if an uncaught exception propagates out of the entry function
  * for the EPOS thread.
  *
