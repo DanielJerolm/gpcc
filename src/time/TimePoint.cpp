@@ -42,17 +42,19 @@ TimePoint::TimePoint(void) noexcept
 /**
  * \brief Constructor. The @ref TimePoint is initialized with the given `timespec` struct.
  *
+ * - - -
+ *
  * __Exception safety:__\n
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param _ts
  * `timespec` struct used to initialize the @ref TimePoint instance.\n
- * Note: The ns-portion is normalized to 0..999,999,999 by inc/dec of the sec-portion.
+ * Note: The ns-portion will be normalized to 0..999,999,999 by inc/dec of the sec-portion.
  */
 TimePoint::TimePoint(struct ::timespec const & _ts)
 : ts(_ts)
@@ -63,15 +65,18 @@ TimePoint::TimePoint(struct ::timespec const & _ts)
 /**
  * \brief Constructor. The @ref TimePoint is initialized with the given `time_t` value.
  *
+ * - - -
+ *
  * __Exception safety:__\n
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param sec `time_t` used to initialize the @ref TimePoint instance.
+ * \param sec
+ * `time_t` used to initialize the @ref TimePoint instance.
  */
 TimePoint::TimePoint(time_t const sec) noexcept
 : ts{sec, 0}
@@ -81,18 +86,22 @@ TimePoint::TimePoint(time_t const sec) noexcept
 /**
  * \brief Constructor. The @ref TimePoint is initialized with the given `time_t` and nanosecond values.
  *
+ * - - -
+ *
  * __Exception safety:__\n
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param sec `time_t` struct used to initialize the @ref TimePoint instance.
+ * \param sec
+ * `time_t` struct used to initialize the @ref TimePoint instance.
+ *
  * \param nsec
  * Nanosecond value used to initialize the @ref TimePoint instance.\n
- * Note: The ns-portion is normalized to 0..999,999,999 by inc/dec of the sec-portion.
+ * Note: The ns-portion will be normalized to 0..999,999,999 by inc/dec of the sec-portion.
  */
 TimePoint::TimePoint(time_t const sec, int32_t const nsec)
 : ts{sec, nsec}
@@ -103,6 +112,8 @@ TimePoint::TimePoint(time_t const sec, int32_t const nsec)
 /**
  * \brief Creates a @ref TimePoint instance initialized with the current value of a specific system clock.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * This is thread-safe.
  *
@@ -110,14 +121,15 @@ TimePoint::TimePoint(time_t const sec, int32_t const nsec)
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param clock_id
  * ID of the system clock whose time shall be used to initialize the @ref TimePoint instance.
+ *
  * \return
- * A @ref TimePoint instance initialized with the current time read from the clock specified by parameter `clock_id`.
+ * A @ref TimePoint instance initialized with the current time read from the clock specified by @p clock_id.
  */
 TimePoint TimePoint::FromSystemClock(Clocks const clock_id)
 {
@@ -129,6 +141,8 @@ TimePoint TimePoint::FromSystemClock(Clocks const clock_id)
 /**
  * \brief Assigns the value of an `timespec` struct to the @ref TimePoint instance.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is modified. Any concurrent accesses are not safe.
  *
@@ -136,14 +150,16 @@ TimePoint TimePoint::FromSystemClock(Clocks const clock_id)
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param _ts
  * `timespec` struct whose value shall be assigned to this @ref TimePoint instance.\n
- * Note: The ns-portion is normalized to 0..999,999,999 by inc/dec of the sec-portion.
- * \return Reference to itself.
+ * Note: The ns-portion will be normalized to 0..999,999,999 by inc/dec of the sec-portion.
+ *
+ * \return
+ * Reference to itself.
  */
 TimePoint& TimePoint::operator=(struct ::timespec const & _ts)
 {
@@ -156,6 +172,8 @@ TimePoint& TimePoint::operator=(struct ::timespec const & _ts)
 /**
  * \brief Assigns the value of a `time_t` to the @ref TimePoint instance.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is modified. Any concurrent accesses are not safe.
  *
@@ -163,14 +181,16 @@ TimePoint& TimePoint::operator=(struct ::timespec const & _ts)
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param sec
  * `time_t` value that shall be assigned to this @ref TimePoint instance.\n
  * The ns-portion of the @ref TimePoint will be set to zero.
- * \return Reference to itself.
+ *
+ * \return
+ * Reference to itself.
  */
 TimePoint& TimePoint::operator=(time_t const sec) noexcept
 {
@@ -184,7 +204,7 @@ TimePoint& TimePoint::operator=(time_t const sec) noexcept
  *
  * Full arithmetic overflow checks are included.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
@@ -193,12 +213,15 @@ TimePoint& TimePoint::operator=(time_t const sec) noexcept
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param rhv Second operand for the addition.
- * \return A new @ref TimePoint instance with the sum of this @ref TimePoint and rhv.
+ * \param rhv
+ * Second operand for the addition.
+ *
+ * \return
+ * A new @ref TimePoint instance with the sum of this @ref TimePoint and @p rhv.
  */
 TimePoint TimePoint::operator + (TimeSpan const & rhv) const
 {
@@ -222,7 +245,7 @@ TimePoint TimePoint::operator + (TimeSpan const & rhv) const
  *
  * Full arithmetic overflow checks are included.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
@@ -231,12 +254,15 @@ TimePoint TimePoint::operator + (TimeSpan const & rhv) const
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param rhv Second operand for the addition.
- * \return A new @ref TimePoint instance with the difference between this @ref TimePoint and rhv.
+ * \param rhv
+ * Second operand for the addition.
+ *
+ * \return
+ * A new @ref TimePoint instance with the difference between this @ref TimePoint and @p rhv.
  */
 TimePoint TimePoint::operator - (TimeSpan const & rhv) const
 {
@@ -260,7 +286,7 @@ TimePoint TimePoint::operator - (TimeSpan const & rhv) const
  *
  * Full arithmetic overflow checks are included.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
@@ -269,12 +295,15 @@ TimePoint TimePoint::operator - (TimeSpan const & rhv) const
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param rhv The right-hand operand.
- * \return Difference between the two @ref TimePoint instances.
+ * \param rhv
+ * The right-hand operand.
+ *
+ * \return
+ * Difference between the two @ref TimePoint instances.
  */
 TimeSpan TimePoint::operator - (TimePoint const & rhv) const
 {
@@ -297,7 +326,7 @@ TimeSpan TimePoint::operator - (TimePoint const & rhv) const
  *
  * Full arithmetic overflow checks are included.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * The state of the object is modified. Any concurrent accesses are not safe.
@@ -306,14 +335,16 @@ TimeSpan TimePoint::operator - (TimePoint const & rhv) const
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param rhv
  * The referenced @ref TimeSpan instance is added to this @ref TimePoint instance.\n
  * The result is stored in this @ref TimePoint instance.
- * \return Reference to itself.
+ *
+ * \return
+ * Reference to itself.
  */
 TimePoint& TimePoint::operator+= (TimeSpan const & rhv)
 {
@@ -340,7 +371,7 @@ TimePoint& TimePoint::operator+= (TimeSpan const & rhv)
  *
  * Full arithmetic overflow checks are included.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * The state of the object is modified. Any concurrent accesses are not safe.
@@ -349,14 +380,16 @@ TimePoint& TimePoint::operator+= (TimeSpan const & rhv)
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param rhv
  * The referenced @ref TimeSpan instance is subtracted from this @ref TimePoint instance.\n
  * The result is stored in this @ref TimePoint instance.
- * \return Reference to itself.
+ *
+ * \return
+ * Reference to itself.
  */
 TimePoint& TimePoint::operator-= (TimeSpan const & rhv)
 {
@@ -381,6 +414,8 @@ TimePoint& TimePoint::operator-= (TimeSpan const & rhv)
 /**
  * \brief Compares this @ref TimePoint against another one for less-than.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
  *
@@ -388,14 +423,15 @@ TimePoint& TimePoint::operator-= (TimeSpan const & rhv)
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param rhv The right-hand operand.
- * \return
- * true  = This @ref TimePoint is before rhv.\n
- * false = This @ref TimePoint and rhv are equal or this is later than rhv.
+ * \param rhv
+ * The right-hand operand.
+ *
+ * \retval true   This @ref TimePoint is before @p rhv.
+ * \retval false  This @ref TimePoint and @p rhv are equal or this is later than @p rhv.
  */
 bool TimePoint::operator < (TimePoint const & rhv) const noexcept
 {
@@ -405,6 +441,8 @@ bool TimePoint::operator < (TimePoint const & rhv) const noexcept
 /**
  * \brief Compares this @ref TimePoint against another one for equality or less-than.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
  *
@@ -412,14 +450,15 @@ bool TimePoint::operator < (TimePoint const & rhv) const noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param rhv The right-hand operand.
- * \return
- * true  = This @ref TimePoint is before rhv or equal to rhv.\n
- * false = This @ref TimePoint is later than rhv.
+ * \param rhv
+ * The right-hand operand.
+ *
+ * \retval true   This @ref TimePoint is before @p rhv or equal to @p rhv.
+ * \retval false  This @ref TimePoint is later than @p rhv.
  */
 bool TimePoint::operator <= (TimePoint const & rhv) const noexcept
 {
@@ -429,6 +468,8 @@ bool TimePoint::operator <= (TimePoint const & rhv) const noexcept
 /**
  * \brief Compares this @ref TimePoint against another one for greater-than.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
  *
@@ -436,14 +477,15 @@ bool TimePoint::operator <= (TimePoint const & rhv) const noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param rhv The right-hand operand.
- * \return
- * true  = This @ref TimePoint is after rhv.\n
- * false = This @ref TimePoint and rhv are equal or this is before rhv.
+ * \param rhv
+ * The right-hand operand.
+ *
+ * \retval true   This @ref TimePoint is after @p rhv.
+ * \retval false  This @ref TimePoint and @p rhv are equal or this is before @p rhv.
  */
 bool TimePoint::operator > (TimePoint const & rhv) const noexcept
 {
@@ -453,6 +495,8 @@ bool TimePoint::operator > (TimePoint const & rhv) const noexcept
 /**
  * \brief Compares this @ref TimePoint against another one for equality or greater-than.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
  *
@@ -460,14 +504,15 @@ bool TimePoint::operator > (TimePoint const & rhv) const noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param rhv The right-hand operand.
- * \return
- * true  = This @ref TimePoint is equal to or after rhv.\n
- * false = This @ref TimePoint is before rhv.
+ * \param rhv
+ * The right-hand operand.
+ *
+ * \retval true   This @ref TimePoint is equal to or after @p rhv.
+ * \retval false  This @ref TimePoint is before @p rhv.
  */
 bool TimePoint::operator >= (TimePoint const & rhv) const noexcept
 {
@@ -477,6 +522,8 @@ bool TimePoint::operator >= (TimePoint const & rhv) const noexcept
 /**
  * \brief Compares this @ref TimePoint against another one for equality.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
  *
@@ -484,14 +531,15 @@ bool TimePoint::operator >= (TimePoint const & rhv) const noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param rhv The right-hand operand.
- * \return
- * true  = This @ref TimePoint is equal to rhv.\n
- * false = This @ref TimePoint is not equal to rhv.
+ * \param rhv
+ * The right-hand operand.
+ *
+ * \retval true   This @ref TimePoint is equal to @p rhv.
+ * \retval false  This @ref TimePoint is not equal to @p rhv.
  */
 bool TimePoint::operator == (TimePoint const & rhv) const noexcept
 {
@@ -501,6 +549,8 @@ bool TimePoint::operator == (TimePoint const & rhv) const noexcept
 /**
  * \brief Compares this @ref TimePoint against another one for inequality.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
  *
@@ -508,14 +558,15 @@ bool TimePoint::operator == (TimePoint const & rhv) const noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param rhv The right-hand operand.
- * \return
- * true  = This @ref TimePoint is not equal to rhv.\n
- * false = This @ref TimePoint is equal to rhv.
+ * \param rhv
+ * The right-hand operand.
+ *
+ * \retval true   This @ref TimePoint is not equal to @p rhv.
+ * \retval false  This @ref TimePoint is equal to @p rhv.
  */
 bool TimePoint::operator != (TimePoint const & rhv) const noexcept
 {
@@ -525,6 +576,8 @@ bool TimePoint::operator != (TimePoint const & rhv) const noexcept
 /**
  * \brief Sets the @ref TimePoint's value to the current value of a specific system clock.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is modified. Any concurrent accesses are not safe.
  *
@@ -532,9 +585,9 @@ bool TimePoint::operator != (TimePoint const & rhv) const noexcept
  * Strong guarantee
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param clock_id
  * ID of the clock whose time shall be read.
@@ -550,6 +603,8 @@ void TimePoint::LatchSystemClock(Clocks const clock_id)
 /**
  * \brief Sets the @ref TimePoint to a specific value.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is modified. Any concurrent accesses are not safe.
  *
@@ -557,15 +612,16 @@ void TimePoint::LatchSystemClock(Clocks const clock_id)
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param sec
  * Value for the second-portion of the @ref TimePoint.
+ *
  * \param nsec
  * Value for the ns-portion of the @ref TimePoint. \n
- * Note: The ns-portion is normalized to 0..999,999,999 by inc/dec of the sec-portion.
+ * Note: The ns-portion will be normalized to 0..999,999,999 by inc/dec of the sec-portion.
  */
 void TimePoint::Set(time_t const sec, int32_t const nsec)
 {
@@ -577,6 +633,8 @@ void TimePoint::Set(time_t const sec, int32_t const nsec)
 /**
  * \brief Retrieves a string representation of the @ref TimePoint using the Gregorian Calendar.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
  *
@@ -584,9 +642,9 @@ void TimePoint::Set(time_t const sec, int32_t const nsec)
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \return
  * String representation of the @ref TimePoint using the Gregorian Calendar.\n
@@ -614,12 +672,11 @@ std::string TimePoint::ToString(void) const
 }
 
 /**
- * \brief Static helper function:\n
- * Normalizes the ns-portion of a `timespec` struct to [0..1E9-1] by inc/dec of the second portion.
+ * \brief Normalizes the ns-portion of a `timespec` struct to [0..1E9-1] by inc/dec of the second portion.
  *
  * Full arithmetic overflow checks are included.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * This is thread-safe.
@@ -629,12 +686,12 @@ std::string TimePoint::ToString(void) const
  * - `ts` will contain random data
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param ts
- * `timespec` structure, which shall be normalized.
+ * Modifiable reference to the `timespec` structure, which shall be normalized.
  */
 void TimePoint::NormalizeTimespec(struct ::timespec & ts)
 {
