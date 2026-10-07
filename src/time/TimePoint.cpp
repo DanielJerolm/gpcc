@@ -35,7 +35,7 @@ size_t constexpr TimePoint::stringLength;
  * No cancellation point included.
  */
 TimePoint::TimePoint(void) noexcept
-: ts{0, 0}
+: ts_{0, 0}
 {
 }
 
@@ -52,14 +52,14 @@ TimePoint::TimePoint(void) noexcept
  *
  * - - -
  *
- * \param _ts
+ * \param ts
  * `timespec` struct used to initialize the @ref TimePoint instance.\n
  * Note: The ns-portion will be normalized to 0..999,999,999 by inc/dec of the sec-portion.
  */
-TimePoint::TimePoint(struct ::timespec const & _ts)
-: ts(_ts)
+TimePoint::TimePoint(struct ::timespec const & ts)
+: ts_(ts)
 {
-  NormalizeTimespec(ts);
+  NormalizeTimespec(ts_);
 }
 
 /**
@@ -79,7 +79,7 @@ TimePoint::TimePoint(struct ::timespec const & _ts)
  * `time_t` used to initialize the @ref TimePoint instance.
  */
 TimePoint::TimePoint(time_t const sec) noexcept
-: ts{sec, 0}
+: ts_{sec, 0}
 {
 }
 
@@ -104,9 +104,9 @@ TimePoint::TimePoint(time_t const sec) noexcept
  * Note: The ns-portion will be normalized to 0..999,999,999 by inc/dec of the sec-portion.
  */
 TimePoint::TimePoint(time_t const sec, int32_t const nsec)
-: ts{sec, nsec}
+: ts_{sec, nsec}
 {
-  NormalizeTimespec(ts);
+  NormalizeTimespec(ts_);
 }
 
 /**
@@ -154,18 +154,18 @@ TimePoint TimePoint::FromSystemClock(Clocks const clock_id)
  *
  * - - -
  *
- * \param _ts
+ * \param ts
  * `timespec` struct whose value shall be assigned to this @ref TimePoint instance.\n
  * Note: The ns-portion will be normalized to 0..999,999,999 by inc/dec of the sec-portion.
  *
  * \return
  * Reference to itself.
  */
-TimePoint& TimePoint::operator=(struct ::timespec const & _ts)
+TimePoint& TimePoint::operator=(struct ::timespec const & ts)
 {
-  struct ::timespec copyOf_ts = _ts;
+  struct ::timespec copyOf_ts = ts;
   NormalizeTimespec(copyOf_ts);
-  ts = copyOf_ts;
+  ts_ = copyOf_ts;
   return *this;
 }
 
@@ -194,8 +194,8 @@ TimePoint& TimePoint::operator=(struct ::timespec const & _ts)
  */
 TimePoint& TimePoint::operator=(time_t const sec) noexcept
 {
-  ts.tv_sec  = sec;
-  ts.tv_nsec = 0;
+  ts_.tv_sec  = sec;
+  ts_.tv_nsec = 0;
   return *this;
 }
 
@@ -229,15 +229,15 @@ TimePoint TimePoint::operator + (TimeSpan const & rhv) const
   int64_t const rhv_sec  = rhv.value / NSEC_PER_SEC;
   int32_t const rhv_nsec = rhv.value % NSEC_PER_SEC;
 
-  // add second and nanosecond portion to this TimePoint's value and store the result in _ts
-  struct ::timespec _ts;
-  if (compiler::OverflowAwareAdd(ts.tv_sec, rhv_sec, &_ts.tv_sec))
+  // add second and nanosecond portion to this TimePoint's value and store the result in ts
+  struct ::timespec ts;
+  if (compiler::OverflowAwareAdd(ts_.tv_sec, rhv_sec, &ts.tv_sec))
     throw std::overflow_error("TimePoint::operator+: Overflow adding seconds");
-  _ts.tv_nsec = ts.tv_nsec + rhv_nsec;
+  ts.tv_nsec = ts_.tv_nsec + rhv_nsec;
 
-  // Return a new TimePoint instance made from _ts.
+  // Return a new TimePoint instance made from ts.
   // The constructor will take care for potential normalization of the ns portion.
-  return TimePoint(_ts);
+  return TimePoint(ts);
 }
 
 /**
@@ -270,15 +270,15 @@ TimePoint TimePoint::operator - (TimeSpan const & rhv) const
   int64_t const rhv_sec  = rhv.value / NSEC_PER_SEC;
   int32_t const rhv_nsec = rhv.value % NSEC_PER_SEC;
 
-  // subtract second and nanosecond portion from this TimePoint's value and store the result in _ts
-  struct ::timespec _ts;
-  if (compiler::OverflowAwareSub(ts.tv_sec, rhv_sec, &_ts.tv_sec))
+  // subtract second and nanosecond portion from this TimePoint's value and store the result in ts
+  struct ::timespec ts;
+  if (compiler::OverflowAwareSub(ts_.tv_sec, rhv_sec, &ts.tv_sec))
     throw std::overflow_error("TimePoint::operator-(Timespan): Overflow subtracting seconds");
-  _ts.tv_nsec = ts.tv_nsec - rhv_nsec;
+  ts.tv_nsec = ts_.tv_nsec - rhv_nsec;
 
-  // Return a new TimePoint instance made from _ts.
+  // Return a new TimePoint instance made from ts.
   // The constructor will take care for potential normalization of the ns portion.
-  return TimePoint(_ts);
+  return TimePoint(ts);
 }
 
 /**
@@ -308,7 +308,7 @@ TimePoint TimePoint::operator - (TimeSpan const & rhv) const
 TimeSpan TimePoint::operator - (TimePoint const & rhv) const
 {
   int64_t dsec;
-  if (compiler::OverflowAwareSub(ts.tv_sec, rhv.ts.tv_sec, &dsec))
+  if (compiler::OverflowAwareSub(ts_.tv_sec, rhv.ts_.tv_sec, &dsec))
     throw std::overflow_error("TimePoint::operator-(Timepoint): Overflow subtracting seconds");
 
   // note: this check is not precise, but safe
@@ -316,7 +316,7 @@ TimeSpan TimePoint::operator - (TimePoint const & rhv) const
       (dsec < ((std::numeric_limits<int64_t>::min() / NSEC_PER_SEC) + 1)))
     throw std::overflow_error("TimePoint::operator-(Timepoint): Overflow in final result");
 
-  int32_t const dnsec = static_cast<int32_t>(ts.tv_nsec) - static_cast<int32_t>(rhv.ts.tv_nsec);
+  int32_t const dnsec = static_cast<int32_t>(ts_.tv_nsec) - static_cast<int32_t>(rhv.ts_.tv_nsec);
 
   return TimeSpan((dsec * NSEC_PER_SEC) + dnsec);
 }
@@ -352,17 +352,17 @@ TimePoint& TimePoint::operator+= (TimeSpan const & rhv)
   int64_t const rhv_sec  = rhv.value / NSEC_PER_SEC;
   int32_t const rhv_nsec = rhv.value % NSEC_PER_SEC;
 
-  // add second and nanosecond portion to this TimePoint's value and store the result in _ts
-  struct ::timespec _ts;
-  if (compiler::OverflowAwareAdd(ts.tv_sec, rhv_sec, &_ts.tv_sec))
+  // add second and nanosecond portion to this TimePoint's value and store the result in ts
+  struct ::timespec ts;
+  if (compiler::OverflowAwareAdd(ts_.tv_sec, rhv_sec, &ts.tv_sec))
     throw std::overflow_error("TimePoint::operator+=: Overflow adding seconds");
-  _ts.tv_nsec = ts.tv_nsec + rhv_nsec;
+  ts.tv_nsec = ts_.tv_nsec + rhv_nsec;
 
   // tv_nsec may be out of bounds and required inc/dec of tv_sec
-  NormalizeTimespec(_ts);
+  NormalizeTimespec(ts);
 
   // assign result
-  ts = _ts;
+  ts_ = ts;
   return *this;
 }
 
@@ -397,17 +397,17 @@ TimePoint& TimePoint::operator-= (TimeSpan const & rhv)
   int64_t const rhv_sec  = rhv.value / NSEC_PER_SEC;
   int32_t const rhv_nsec = rhv.value % NSEC_PER_SEC;
 
-  // subtract second and nanosecond portion from this TimePoint's value and store the result in _ts
-  struct ::timespec _ts;
-  if (compiler::OverflowAwareSub(ts.tv_sec, rhv_sec, &_ts.tv_sec))
+  // subtract second and nanosecond portion from this TimePoint's value and store the result in ts
+  struct ::timespec ts;
+  if (compiler::OverflowAwareSub(ts_.tv_sec, rhv_sec, &ts.tv_sec))
     throw std::overflow_error("TimePoint::operator-=: Overflow subtracting seconds");
-  _ts.tv_nsec = ts.tv_nsec - rhv_nsec;
+  ts.tv_nsec = ts_.tv_nsec - rhv_nsec;
 
   // tv_nsec may be out of bounds and required inc/dec of tv_sec
-  NormalizeTimespec(_ts);
+  NormalizeTimespec(ts);
 
   // assign result
-  ts = _ts;
+  ts_ = ts;
   return *this;
 }
 
@@ -435,7 +435,7 @@ TimePoint& TimePoint::operator-= (TimeSpan const & rhv)
  */
 bool TimePoint::operator < (TimePoint const & rhv) const noexcept
 {
-  return ((ts.tv_sec < rhv.ts.tv_sec) || ((ts.tv_sec == rhv.ts.tv_sec) && (ts.tv_nsec < rhv.ts.tv_nsec)));
+  return ((ts_.tv_sec < rhv.ts_.tv_sec) || ((ts_.tv_sec == rhv.ts_.tv_sec) && (ts_.tv_nsec < rhv.ts_.tv_nsec)));
 }
 
 /**
@@ -462,7 +462,7 @@ bool TimePoint::operator < (TimePoint const & rhv) const noexcept
  */
 bool TimePoint::operator <= (TimePoint const & rhv) const noexcept
 {
-  return ((ts.tv_sec < rhv.ts.tv_sec) || ((ts.tv_sec == rhv.ts.tv_sec) && (ts.tv_nsec <= rhv.ts.tv_nsec)));
+  return ((ts_.tv_sec < rhv.ts_.tv_sec) || ((ts_.tv_sec == rhv.ts_.tv_sec) && (ts_.tv_nsec <= rhv.ts_.tv_nsec)));
 }
 
 /**
@@ -489,7 +489,7 @@ bool TimePoint::operator <= (TimePoint const & rhv) const noexcept
  */
 bool TimePoint::operator > (TimePoint const & rhv) const noexcept
 {
-  return ((ts.tv_sec > rhv.ts.tv_sec) || ((ts.tv_sec == rhv.ts.tv_sec) && (ts.tv_nsec > rhv.ts.tv_nsec)));
+  return ((ts_.tv_sec > rhv.ts_.tv_sec) || ((ts_.tv_sec == rhv.ts_.tv_sec) && (ts_.tv_nsec > rhv.ts_.tv_nsec)));
 }
 
 /**
@@ -516,7 +516,7 @@ bool TimePoint::operator > (TimePoint const & rhv) const noexcept
  */
 bool TimePoint::operator >= (TimePoint const & rhv) const noexcept
 {
-  return ((ts.tv_sec > rhv.ts.tv_sec) || ((ts.tv_sec == rhv.ts.tv_sec) && (ts.tv_nsec >= rhv.ts.tv_nsec)));
+  return ((ts_.tv_sec > rhv.ts_.tv_sec) || ((ts_.tv_sec == rhv.ts_.tv_sec) && (ts_.tv_nsec >= rhv.ts_.tv_nsec)));
 }
 
 /**
@@ -543,7 +543,7 @@ bool TimePoint::operator >= (TimePoint const & rhv) const noexcept
  */
 bool TimePoint::operator == (TimePoint const & rhv) const noexcept
 {
-  return ((ts.tv_sec == rhv.ts.tv_sec) && (ts.tv_nsec == rhv.ts.tv_nsec));
+  return ((ts_.tv_sec == rhv.ts_.tv_sec) && (ts_.tv_nsec == rhv.ts_.tv_nsec));
 }
 
 /**
@@ -570,7 +570,7 @@ bool TimePoint::operator == (TimePoint const & rhv) const noexcept
  */
 bool TimePoint::operator != (TimePoint const & rhv) const noexcept
 {
-  return ((ts.tv_sec != rhv.ts.tv_sec) || (ts.tv_nsec != rhv.ts.tv_nsec));
+  return ((ts_.tv_sec != rhv.ts_.tv_sec) || (ts_.tv_nsec != rhv.ts_.tv_nsec));
 }
 
 /**
@@ -594,10 +594,10 @@ bool TimePoint::operator != (TimePoint const & rhv) const noexcept
  */
 void TimePoint::LatchSystemClock(Clocks const clock_id)
 {
-  struct ::timespec _ts;
-  GetTime(clock_id, _ts);
-  NormalizeTimespec(_ts);
-  ts = _ts;
+  struct ::timespec ts;
+  GetTime(clock_id, ts);
+  NormalizeTimespec(ts);
+  ts_ = ts;
 }
 
 /**
@@ -625,9 +625,9 @@ void TimePoint::LatchSystemClock(Clocks const clock_id)
  */
 void TimePoint::Set(time_t const sec, int32_t const nsec)
 {
-  struct ::timespec _ts = { sec, nsec };
-  NormalizeTimespec(_ts);
-  ts = _ts;
+  struct ::timespec ts = { sec, nsec };
+  NormalizeTimespec(ts);
+  ts_ = ts;
 }
 
 /**
@@ -657,7 +657,7 @@ void TimePoint::Set(time_t const sec, int32_t const nsec)
 std::string TimePoint::ToString(void) const
 {
   struct tm calendarTime;
-  if (gmtime_r(&ts.tv_sec, &calendarTime) == nullptr)
+  if (gmtime_r(&ts_.tv_sec, &calendarTime) == nullptr)
     throw std::runtime_error("gmtime_r() failed");
 
   char buffer[32];
@@ -668,7 +668,7 @@ std::string TimePoint::ToString(void) const
                                                       calendarTime.tm_hour,
                                                       calendarTime.tm_min,
                                                       calendarTime.tm_sec,
-                                                      static_cast<int>(ts.tv_nsec / 1000000L)) != stringLength)
+                                                      static_cast<int>(ts_.tv_nsec / 1000000L)) != stringLength)
   {
     throw std::logic_error("Unexpected string length");
   }

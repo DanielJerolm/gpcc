@@ -58,7 +58,7 @@ class TimePoint final
 
 
     TimePoint(void) noexcept;
-    explicit TimePoint(struct ::timespec const & _ts);
+    explicit TimePoint(struct ::timespec const & ts);
     explicit TimePoint(time_t const sec) noexcept;
     TimePoint(time_t const sec, int32_t const nsec);
     TimePoint(TimePoint const & rhv) noexcept = default;
@@ -69,7 +69,7 @@ class TimePoint final
 
     TimePoint& operator=(TimePoint const & rhv) noexcept = default;
     TimePoint& operator=(TimePoint && rhv) noexcept = default;
-    TimePoint& operator=(struct ::timespec const & _ts);
+    TimePoint& operator=(struct ::timespec const & ts);
     TimePoint& operator=(time_t const sec) noexcept;
 
     TimePoint  operator + (TimeSpan const & rhv) const;
@@ -99,7 +99,7 @@ class TimePoint final
 
   private:
     /// Encapsulated timespec structure.
-    struct ::timespec ts;
+    struct ::timespec ts_;
 
     static void NormalizeTimespec(struct ::timespec & ts);
 };
@@ -124,7 +124,7 @@ class TimePoint final
  */
 inline time_t TimePoint::Get_sec(void) const noexcept
 {
-  return ts.tv_sec;
+  return ts_.tv_sec;
 }
 
 /**
@@ -149,7 +149,7 @@ inline time_t TimePoint::Get_sec(void) const noexcept
  */
 inline int32_t TimePoint::Get_nsec(void) const noexcept
 {
-  return static_cast<int32_t>(ts.tv_nsec);
+  return static_cast<int32_t>(ts_.tv_nsec);
 }
 
 /**
@@ -175,7 +175,7 @@ inline int32_t TimePoint::Get_nsec(void) const noexcept
  */
 inline struct ::timespec const & TimePoint::Get_timespec_ref(void) const noexcept
 {
-  return ts;
+  return ts_;
 }
 
 /**
@@ -201,7 +201,7 @@ inline struct ::timespec const & TimePoint::Get_timespec_ref(void) const noexcep
  */
 inline struct ::timespec const * TimePoint::Get_timespec_ptr(void) const noexcept
 {
-  return &ts;
+  return &ts_;
 }
 
 } // namespace time
