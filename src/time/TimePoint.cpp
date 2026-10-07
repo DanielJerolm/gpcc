@@ -24,7 +24,7 @@ namespace time {
 size_t constexpr TimePoint::stringLength;
 
 /**
- * \brief Constructor. Creates a timepoint of zero.
+ * \brief Constructor. Creates a zero-initialized timepoint.
  *
  * - - -
  *
@@ -631,7 +631,8 @@ void TimePoint::Set(time_t const sec, int32_t const nsec)
 }
 
 /**
- * \brief Retrieves a string representation of the @ref TimePoint using the Gregorian Calendar.
+ * \brief Retrieves a string representation of the @ref TimePoint using the Gregorian Calendar and interprets the
+ *        encapsulated time value as Coordinated Universal Time (UTC).
  *
  * - - -
  *
@@ -647,11 +648,11 @@ void TimePoint::Set(time_t const sec, int32_t const nsec)
  * - - -
  *
  * \return
- * String representation of the @ref TimePoint using the Gregorian Calendar.\n
+ * String representation of the @ref TimePoint using the Gregorian Calendar and interpreting the encapsulated time value
+ * as UTC time.\n
  * The length of the returned string is always @ref stringLength chars.
  * Example:\n
- * 2016-10-30 22:53:12.987ms\n
- * Remember that an @ref TimePoint represents Coordinated Universal Time (UTC), not local time.
+ * 2016-10-30 22:53:12.987ms
  */
 std::string TimePoint::ToString(void) const
 {

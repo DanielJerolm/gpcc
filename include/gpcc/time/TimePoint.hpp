@@ -24,11 +24,9 @@ class TimeSpan;
 
 /**
  * \ingroup GPCC_TIME
- * \brief A absolute point in time based on `struct timespec`.
+ * \brief An absolute point in time based on `struct timespec`.
  *
- * This class specifies an absolute point in time relative to the epoch 00:00:00GMT 01.01.1970.\n
- * GMT is also known as Coordinated Universal Time (UTC).\n
- * Internally the class encapsulates a `timespec` struct as defined by your c-library.\n
+ * Internally the class encapsulates a `timespec` struct as defined by the platform's c-library.\n
  * Example:
  * ~~~{.c}
  * struct ::timespec
@@ -39,12 +37,11 @@ class TimeSpan;
  * ~~~
  *
  * Note:
- * - The represented time is Coordinated Universal Time (UTC), not local time.
- * - Leap seconds are not taken into account.
+ * - The represented time may be any clock that can be represented by a `timespec` struct.
  * - Class @ref TimePoint allows `tv_sec` to be negative.
  * - Class @ref TimePoint internally enforces `tv_nsec` to be within 0..999,999,999.\n
- *   However setter and assignment-operators accept any value but will normalize them\n
- *   to 0..999,999,999 upon set/assignment.
+ *   However setter and assignment-operators accept any value but will normalize them to 0..999,999,999 upon
+ *   set/assignment.
  *
  * \see Class @ref TimeSpan
  *
