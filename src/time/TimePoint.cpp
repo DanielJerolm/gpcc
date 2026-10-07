@@ -656,19 +656,23 @@ void TimePoint::Set(time_t const sec, int32_t const nsec)
  */
 std::string TimePoint::ToString(void) const
 {
-  struct tm * pTM = gmtime(&ts.tv_sec);
+  struct tm calendarTime;
+  if (gmtime_r(&ts.tv_sec, &calendarTime) == nullptr)
+    throw std::runtime_error("gmtime_r() failed");
+
   char buffer[32];
   if (snprintf(buffer, sizeof(buffer),
-              "%04d-%02d-%02d %02d:%02d:%02d.%03dms", 1900 + static_cast<int>(pTM->tm_year),
-                                                      1    + static_cast<int>(pTM->tm_mon),
-                                                      static_cast<int>(pTM->tm_mday),
-                                                      static_cast<int>(pTM->tm_hour),
-                                                      static_cast<int>(pTM->tm_min),
-                                                      static_cast<int>(pTM->tm_sec),
+              "%04d-%02d-%02d %02d:%02d:%02d.%03dms", calendarTime.tm_year + 1900,
+                                                      calendarTime.tm_mon + 1,
+                                                      calendarTime.tm_mday,
+                                                      calendarTime.tm_hour,
+                                                      calendarTime.tm_min,
+                                                      calendarTime.tm_sec,
                                                       static_cast<int>(ts.tv_nsec / 1000000L)) != stringLength)
   {
-    throw std::logic_error("TimePoint::ToString: Unexpected string length");
+    throw std::logic_error("Unexpected string length");
   }
+
   return std::string(buffer);
 }
 
