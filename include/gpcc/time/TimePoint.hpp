@@ -26,8 +26,6 @@ class TimeSpan;
  * \ingroup GPCC_TIME
  * \brief A absolute point in time based on `struct timespec`.
  *
- * _Implicit capabilities: default-construction, copy-construction, copy-assignment, move-construction, move-assignment_
- *
  * This class specifies an absolute point in time relative to the epoch 00:00:00GMT 01.01.1970.\n
  * GMT is also known as Coordinated Universal Time (UTC).\n
  * Internally the class encapsulates a `timespec` struct as defined by your c-library.\n
@@ -66,9 +64,14 @@ class TimePoint final
     explicit TimePoint(struct ::timespec const & _ts);
     explicit TimePoint(time_t const sec) noexcept;
     TimePoint(time_t const sec, int32_t const nsec);
+    TimePoint(TimePoint const & rhv) noexcept = default;
+    TimePoint(TimePoint && rhv) noexcept = default;
+    ~TimePoint(void) = default;
 
     static TimePoint FromSystemClock(Clocks const clock_id);
 
+    TimePoint& operator=(TimePoint const & rhv) noexcept = default;
+    TimePoint& operator=(TimePoint && rhv) noexcept = default;
     TimePoint& operator=(struct ::timespec const & _ts);
     TimePoint& operator=(time_t const sec) noexcept;
 
