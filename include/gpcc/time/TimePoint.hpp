@@ -24,13 +24,9 @@ class TimeSpan;
 
 /**
  * \ingroup GPCC_TIME
- * \brief A absolute point in time based on `struct timespec`.
+ * \brief An absolute point in time based on `struct timespec`.
  *
- * _Implicit capabilities: default-construction, copy-construction, copy-assignment, move-construction, move-assignment_
- *
- * This class specifies an absolute point in time relative to the epoch 00:00:00GMT 01.01.1970.\n
- * GMT is also known as Coordinated Universal Time (UTC).\n
- * Internally the class encapsulates a `timespec` struct as defined by your c-library.\n
+ * Internally the class encapsulates a `timespec` struct as defined by the platform's c-library.\n
  * Example:
  * ~~~{.c}
  * struct ::timespec
@@ -41,16 +37,15 @@ class TimeSpan;
  * ~~~
  *
  * Note:
- * - The represented time is Coordinated Universal Time (UTC), not local time.
- * - Leap seconds are not taken into account.
+ * - The represented time may be any clock that can be represented by a `timespec` struct.
  * - Class @ref TimePoint allows `tv_sec` to be negative.
  * - Class @ref TimePoint internally enforces `tv_nsec` to be within 0..999,999,999.\n
- *   However setter and assignment-operators accept any value but will normalize them\n
- *   to 0..999,999,999 upon set/assignment.
+ *   However setter and assignment-operators accept any value but will normalize them to 0..999,999,999 upon
+ *   set/assignment.
  *
  * \see Class @ref TimeSpan
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * Not thread safe, but non-modifying concurrent access is safe.
@@ -63,13 +58,18 @@ class TimePoint final
 
 
     TimePoint(void) noexcept;
-    explicit TimePoint(struct ::timespec const & _ts);
+    explicit TimePoint(struct ::timespec const & ts);
     explicit TimePoint(time_t const sec) noexcept;
     TimePoint(time_t const sec, int32_t const nsec);
+    TimePoint(TimePoint const & rhv) noexcept = default;
+    TimePoint(TimePoint && rhv) noexcept = default;
+    ~TimePoint(void) = default;
 
     static TimePoint FromSystemClock(Clocks const clock_id);
 
-    TimePoint& operator=(struct ::timespec const & _ts);
+    TimePoint& operator=(TimePoint const & rhv) noexcept = default;
+    TimePoint& operator=(TimePoint && rhv) noexcept = default;
+    TimePoint& operator=(struct ::timespec const & ts);
     TimePoint& operator=(time_t const sec) noexcept;
 
     TimePoint  operator + (TimeSpan const & rhv) const;
@@ -86,16 +86,20 @@ class TimePoint final
     bool operator != (TimePoint const & rhv) const noexcept;
 
     void LatchSystemClock(Clocks const clock_id);
+
     void Set(time_t const sec, int32_t const nsec);
+
     time_t Get_sec(void) const noexcept;
     int32_t Get_nsec(void) const noexcept;
+
     struct ::timespec const & Get_timespec_ref(void) const noexcept;
     struct ::timespec const * Get_timespec_ptr(void) const noexcept;
+
     std::string ToString(void) const;
 
   private:
     /// Encapsulated timespec structure.
-    struct ::timespec ts;
+    struct ::timespec ts_;
 
     static void NormalizeTimespec(struct ::timespec & ts);
 };
@@ -103,6 +107,8 @@ class TimePoint final
 /**
  * \brief Gets the second-portion of the @ref TimePoint.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
  *
@@ -110,19 +116,21 @@ class TimePoint final
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \return Second-portion of the @ref TimePoint.
  */
 inline time_t TimePoint::Get_sec(void) const noexcept
 {
-  return ts.tv_sec;
+  return ts_.tv_sec;
 }
 
 /**
  * \brief Gets the nanosecond-portion of the @ref TimePoint.
+ *
+ * - - -
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
@@ -131,9 +139,9 @@ inline time_t TimePoint::Get_sec(void) const noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \return
  * Nanosecond-portion of the @ref TimePoint. \n
@@ -141,12 +149,14 @@ inline time_t TimePoint::Get_sec(void) const noexcept
  */
 inline int32_t TimePoint::Get_nsec(void) const noexcept
 {
-  return static_cast<int32_t>(ts.tv_nsec);
+  return static_cast<int32_t>(ts_.tv_nsec);
 }
 
 /**
  * \brief Retrieves an unmodifiable reference to the internal `timespec` struct of the @ref TimePoint.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
  *
@@ -154,24 +164,25 @@ inline int32_t TimePoint::Get_nsec(void) const noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \return
  * Reference to the internal `timespec` struct of the @ref TimePoint. \n
- * _The referenced struct is valid until the @ref TimePoint object is destroyed._\n
- * _The referenced struct is valid until the @ref TimePoint object is modified._\n
+ * _The reference is valid until the @ref TimePoint object is destroyed._\n
  * The ns-portion is always in the range 0..999,999,999.
  */
 inline struct ::timespec const & TimePoint::Get_timespec_ref(void) const noexcept
 {
-  return ts;
+  return ts_;
 }
 
 /**
  * \brief Retrieves a read-only pointer to the internal `timespec` struct of the @ref TimePoint.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
  *
@@ -179,19 +190,18 @@ inline struct ::timespec const & TimePoint::Get_timespec_ref(void) const noexcep
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \return
  * Pointer to the internal `timespec` struct of the @ref TimePoint. \n
- * _The referenced struct is valid until the @ref TimePoint object is destroyed._\n
- * _The referenced struct is valid until the @ref TimePoint object is modified._\n
+ * _The pointer is valid until the @ref TimePoint object is destroyed._\n
  * The ns-portion is always in the range 0..999,999,999.
  */
 inline struct ::timespec const * TimePoint::Get_timespec_ptr(void) const noexcept
 {
-  return &ts;
+  return &ts_;
 }
 
 } // namespace time
