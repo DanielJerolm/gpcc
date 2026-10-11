@@ -53,7 +53,7 @@ class TimeSpan;
 class TimePoint final
 {
   public:
-    /// Format used for string-conversion of encapsulated time.
+    /// Format used to interpret the encapsulated time for string conversion.
     enum class Format
     {
       UTC,  ///<UTC time.
@@ -109,7 +109,7 @@ class TimePoint final
     struct ::timespec const * Get_timespec_ptr(void) const noexcept;
 
     static size_t constexpr GetMaxStringLength(Format const fmt, SubSecPrec const ssp) noexcept;
-    std::string ToString(void) const;
+    std::string ToString(TimePoint::Format const fmt, SubSecPrec const ssp) const;
 
   private:
     /// Encapsulated timespec structure.
@@ -254,7 +254,7 @@ inline size_t constexpr TimePoint::GetMaxStringLength(TimePoint::Format const fm
       s = 19U; // YYYY-MM-DD HH:MM:SS
       break;
     case Format::Local:
-      s = 23U; // YYYY-MM-DD HH:MM:SS+DST
+      s = 23U; // YYYY-MM-DD HH:MM:SS DST
       break;
   }
 

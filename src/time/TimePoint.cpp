@@ -629,8 +629,7 @@ void TimePoint::Set(time_t const sec, int32_t const nsec)
 }
 
 /**
- * \brief Retrieves a string representation of the @ref TimePoint using the Gregorian Calendar and interprets the
- *        encapsulated time value as Coordinated Universal Time (UTC).
+ * \brief Retrieves a string representation of the @ref TimePoint using the Gregorian Calendar.
  *
  * - - -
  *
@@ -645,31 +644,90 @@ void TimePoint::Set(time_t const sec, int32_t const nsec)
  *
  * - - -
  *
+ * \param fmt
+ * Desired format for interpretation of the excapsulated time value.
+ *
+ * \param ssp
+ * Desired sub-second precision for the string representation.
+ *
  * \return
- * String representation of the @ref TimePoint using the Gregorian Calendar and interpreting the encapsulated time value
- * as UTC time.\n
- * The length of the returned string is always @ref stringLength chars.
- * Example:\n
+ * String representation of the @ref TimePoint using the Gregorian Calendar and applying @p fmt and @p ssp. \n
+ * The maximum length of the returned string can be queried in advance via @ref GetMaxStringLength(). \n
+ * Example output for UTC format with millisecond precision:\n
  * 2016-10-30 22:53:12.987ms
  */
-std::string TimePoint::ToString(void) const
+std::string TimePoint::ToString(TimePoint::Format const fmt, SubSecPrec const ssp) const
 {
   struct tm calendarTime;
-  if (gmtime_r(&ts_.tv_sec, &calendarTime) == nullptr)
-    throw std::runtime_error("gmtime_r() failed");
+  if (fmt == Format::UTC)
+  {
+    if (gmtime_r(&ts_.tv_sec, &calendarTime) == nullptr)
+      throw std::runtime_error("gmtime_r() failed");
+  }
+  else
+  {
+    if (localtime_r(&ts_.tv_sec, &calendarTime) == nullptr)
+      throw std::runtime_error("localtime_r() failed");
+  }
 
-  char buffer[32];
-  size_t const s = snprintf(buffer, sizeof(buffer),
-                            "%04d-%02d-%02d %02d:%02d:%02d.%03dms",
-                            calendarTime.tm_year + 1900,
-                            calendarTime.tm_mon + 1,
-                            calendarTime.tm_mday,
-                            calendarTime.tm_hour,
-                            calendarTime.tm_min,
-                            calendarTime.tm_sec,
-                            static_cast<int>(ts_.tv_nsec / 1000000L));
+  char const * pDST = (calendarTime.tm_isdst > 0) ? " DST" : "";
+  char buffer[40];
+  size_t s;
+  switch (ssp)
+  {
+    case SubSecPrec::none:
+      s = snprintf(buffer, sizeof(buffer),
+                   "%04d-%02d-%02d %02d:%02d:%02d%s",
+                   calendarTime.tm_year + 1900,
+                   calendarTime.tm_mon + 1,
+                   calendarTime.tm_mday,
+                   calendarTime.tm_hour,
+                   calendarTime.tm_min,
+                   calendarTime.tm_sec,
+                   pDST);
+      break;
 
-  if (s > GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec))
+    case SubSecPrec::msec:
+      s = snprintf(buffer, sizeof(buffer),
+                   "%04d-%02d-%02d %02d:%02d:%02d.%03dms%s",
+                   calendarTime.tm_year + 1900,
+                   calendarTime.tm_mon + 1,
+                   calendarTime.tm_mday,
+                   calendarTime.tm_hour,
+                   calendarTime.tm_min,
+                   calendarTime.tm_sec,
+                   static_cast<int>(ts_.tv_nsec / 1000000L),
+                   pDST);
+      break;
+
+    case SubSecPrec::usec:
+      s = snprintf(buffer, sizeof(buffer),
+                   "%04d-%02d-%02d %02d:%02d:%02d.%06dus%s",
+                   calendarTime.tm_year + 1900,
+                   calendarTime.tm_mon + 1,
+                   calendarTime.tm_mday,
+                   calendarTime.tm_hour,
+                   calendarTime.tm_min,
+                   calendarTime.tm_sec,
+                   static_cast<int>(ts_.tv_nsec / 1000L),
+                   pDST);
+      break;
+
+    case SubSecPrec::nsec:
+      s = snprintf(buffer, sizeof(buffer),
+                   "%04d-%02d-%02d %02d:%02d:%02d.%09dns%s",
+                   calendarTime.tm_year + 1900,
+                   calendarTime.tm_mon + 1,
+                   calendarTime.tm_mday,
+                   calendarTime.tm_hour,
+                   calendarTime.tm_min,
+                   calendarTime.tm_sec,
+                   static_cast<int>(ts_.tv_nsec),
+                   pDST);
+      break;
+  }
+
+  if (s > GetMaxStringLength(fmt, ssp))
     throw std::logic_error("Unexpected string length");
 
   return std::string(buffer);
