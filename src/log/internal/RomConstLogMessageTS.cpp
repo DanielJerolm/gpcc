@@ -67,7 +67,7 @@ std::string RomConstLogMessageTS::BuildText(void) const
   s += ' ';
   s += srcName.GetStr();
   s += ": (";
-  s += timestamp.ToString();
+  s += timestamp.ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec);
   s += ") ";
   s += pMsg;
 
