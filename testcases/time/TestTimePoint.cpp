@@ -912,9 +912,9 @@ TEST(gpcc_time_TimePoint_Tests, GetTimeSpecPtr)
 TEST(gpcc_time_TimePoint_Tests, ToStringEpoch)
 {
   TimePoint tp(0,0);
-  std::string s(tp.ToString());
+  std::string s(tp.ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec));
   ASSERT_TRUE(s == "1970-01-01 00:00:00.000ms");
-  ASSERT_TRUE(s.length() == TimePoint::stringLength);
+  ASSERT_TRUE(s.length() == TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec));
 }
 TEST(gpcc_time_TimePoint_Tests, ToString)
 {
@@ -935,19 +935,19 @@ TEST(gpcc_time_TimePoint_Tests, ToString)
   TimePoint tp(t2);
   tp += TimeSpan::us(559000);
 
-  std::string s(tp.ToString());
+  std::string s(tp.ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec));
   ASSERT_TRUE(s == "2016-10-31 16:31:55.559ms");
-  ASSERT_TRUE(s.length() == TimePoint::stringLength);
+  ASSERT_TRUE(s.length() == TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec));
 
   tp -= TimeSpan::ms(550);
-  s = tp.ToString();
+  s = tp.ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec);
   ASSERT_TRUE(s == "2016-10-31 16:31:55.009ms");
-  ASSERT_TRUE(s.length() == TimePoint::stringLength);
+  ASSERT_TRUE(s.length() == TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec));
 
   tp -= TimeSpan::ms(9);
-  s = tp.ToString();
+  s = tp.ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec);
   ASSERT_TRUE(s == "2016-10-31 16:31:55.000ms");
-  ASSERT_TRUE(s.length() == TimePoint::stringLength);
+  ASSERT_TRUE(s.length() == TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec));
 }
 
 } // namespace time
