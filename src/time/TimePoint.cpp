@@ -21,8 +21,6 @@
 namespace gpcc {
 namespace time {
 
-size_t constexpr TimePoint::stringLength;
-
 /**
  * \brief Constructor. Creates a zero-initialized timepoint.
  *
@@ -661,17 +659,18 @@ std::string TimePoint::ToString(void) const
     throw std::runtime_error("gmtime_r() failed");
 
   char buffer[32];
-  if (snprintf(buffer, sizeof(buffer),
-              "%04d-%02d-%02d %02d:%02d:%02d.%03dms", calendarTime.tm_year + 1900,
-                                                      calendarTime.tm_mon + 1,
-                                                      calendarTime.tm_mday,
-                                                      calendarTime.tm_hour,
-                                                      calendarTime.tm_min,
-                                                      calendarTime.tm_sec,
-                                                      static_cast<int>(ts_.tv_nsec / 1000000L)) != stringLength)
-  {
+  size_t const s = snprintf(buffer, sizeof(buffer),
+                            "%04d-%02d-%02d %02d:%02d:%02d.%03dms",
+                            calendarTime.tm_year + 1900,
+                            calendarTime.tm_mon + 1,
+                            calendarTime.tm_mday,
+                            calendarTime.tm_hour,
+                            calendarTime.tm_min,
+                            calendarTime.tm_sec,
+                            static_cast<int>(ts_.tv_nsec / 1000000L));
+
+  if (s > GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec))
     throw std::logic_error("Unexpected string length");
-  }
 
   return std::string(buffer);
 }

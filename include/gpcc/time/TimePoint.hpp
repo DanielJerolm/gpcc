@@ -53,8 +53,21 @@ class TimeSpan;
 class TimePoint final
 {
   public:
-    /// Length of any string returned by @ref ToString().
-    static size_t constexpr stringLength = 25U;
+    /// Format used for string-conversion of encapsulated time.
+    enum class Format
+    {
+      UTC,  ///<UTC time.
+      Local ///<Local time.
+    };
+
+    /// Sub-second precision for string-conversion of encapsulated time.
+    enum class SubSecPrec
+    {
+      none, ///<Sub-second part is not included in conversion.
+      msec, ///<Show sub-second part as milliseconds in conversion.
+      usec, ///<Show sub-second part as microseconds in conversion.
+      nsec  ///<Show sub-second part as nanoseconds in conversion.
+    };
 
 
     TimePoint(void) noexcept;
@@ -95,6 +108,7 @@ class TimePoint final
     struct ::timespec const & Get_timespec_ref(void) const noexcept;
     struct ::timespec const * Get_timespec_ptr(void) const noexcept;
 
+    static size_t constexpr GetMaxStringLength(Format const fmt, SubSecPrec const ssp) noexcept;
     std::string ToString(void) const;
 
   private:
@@ -202,6 +216,67 @@ inline struct ::timespec const & TimePoint::Get_timespec_ref(void) const noexcep
 inline struct ::timespec const * TimePoint::Get_timespec_ptr(void) const noexcept
 {
   return &ts_;
+}
+
+
+/**
+ * \brief Queries the maximum length of the string returned by @ref ToString().
+ *
+ * - - -
+ *
+ * __Thread safety:__\n
+ * This is thread-safe.
+ *
+ * __Exception safety:__\n
+ * No-throw guarantee.
+ *
+ * __Thread cancellation safety:__\n
+ * No cancellation point included.
+ *
+ * - - -
+ *
+ * \param fmt
+ * Desired format for the string representation of the @ref TimePoint.
+ *
+ * \param ssp
+ * Desired sub-second precision for the string representation of the @ref TimePoint.
+ *
+ * \return
+ * Maximum length of the string returned by @ref ToString() for the given format and sub-second precision,
+ * excl. trailing null-terminator.
+ */
+inline size_t constexpr TimePoint::GetMaxStringLength(TimePoint::Format const fmt, SubSecPrec const ssp) noexcept
+{
+  size_t s = 0U;
+  switch (fmt)
+  {
+    case Format::UTC:
+      s = 19U; // YYYY-MM-DD HH:MM:SS
+      break;
+    case Format::Local:
+      s = 23U; // YYYY-MM-DD HH:MM:SS+DST
+      break;
+  }
+
+  switch (ssp)
+  {
+    case SubSecPrec::none:
+      break;
+
+    case SubSecPrec::msec:
+      s += 6U;  // .xxxms
+      break;
+
+    case SubSecPrec::usec:
+      s += 9U;  // .xxxxxxus
+      break;
+
+    case SubSecPrec::nsec:
+      s += 12U; // .xxxxxxxxxns
+      break;
+  }
+
+  return s;
 }
 
 } // namespace time
