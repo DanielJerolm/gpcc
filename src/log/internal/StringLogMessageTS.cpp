@@ -82,8 +82,13 @@ StringLogMessageTS::StringLogMessageTS(string::SharedString const & _srcName,
 /// \copydoc LogMessage::BuildText
 std::string StringLogMessageTS::BuildText(void) const
 {
+  using gpcc::time::TimePoint;
+
   std::string s;
-  s.reserve(logMsgHeaderLength + 1U + srcName.GetStr().size() + 3U + gpcc::time::TimePoint::stringLength + 2U + msg.size());
+  s.reserve(  logMsgHeaderLength + 1U
+            + srcName.GetStr().size() + 3U
+            + TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec) + 2U
+            + msg.size());
 
   s = LogType2LogMsgHeader(static_cast<LogType>(type));
   s += ' ';

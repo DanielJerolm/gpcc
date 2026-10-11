@@ -100,6 +100,8 @@ StringExceptionLogMessageTS::StringExceptionLogMessageTS(string::SharedString co
 /// \copydoc LogMessage::BuildText
 std::string StringExceptionLogMessageTS::BuildText(void) const
 {
+  using gpcc::time::TimePoint;
+
   std::string s;
 
   std::string what;
@@ -111,7 +113,10 @@ std::string StringExceptionLogMessageTS::BuildText(void) const
     // (whatLength includes lenth of '\n' and length of indention for first new line)
   }
 
-  s.reserve(logMsgHeaderLength + 1U + srcName.GetStr().size() + 3U + gpcc::time::TimePoint::stringLength + 2U + msg.size() + whatLength);
+  s.reserve(  logMsgHeaderLength + 1U
+            + srcName.GetStr().size() + 3U
+            + TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec) + 2U
+            + msg.size() + whatLength);
 
   s = LogType2LogMsgHeader(static_cast<LogType>(type));
   s += ' ';
