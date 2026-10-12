@@ -21,13 +21,11 @@ namespace time {
  * \ingroup GPCC_TIME
  * \brief Class specifying a time span.
  *
- * _Implicit capabilities: default-construction, copy-construction, copy-assignment, move-construction, move-assignment_
+ * Class @ref TimeSpan describes a time span with nanosecond resolution. The time span value can be positive (time span
+ * ahead from _past to future_) or negative (time span back from _future to past_).
  *
- * Class @ref TimeSpan describes a time span with nanosecond resolution. The time span value can be
- * positive (time span ahead from _past to future_) or negative (time span back from _future to past_).
- *
- * Internally a signed 64bit integer is used allowing to describe time spans from approx. -292.471 years
- * up to approx. +292.471 years.
+ * Internally a signed 64bit integer is used allowing to describe time spans from approx. -292.471 years up to approx.
+ * +292.471 years.
  *
  * Instances of class @ref TimeSpan can be created using one of the class' static factory methods:
  * - `ns(int64_t const ns)`
@@ -55,7 +53,7 @@ namespace time {
  * assert(ts.sec() == 12600);
  * ~~~
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * Not thread safe, but non-modifying concurrent access is safe.
@@ -125,6 +123,8 @@ class TimeSpan final
 /**
  * \brief Compares this @ref TimeSpan against another one for less-than.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
  *
@@ -132,14 +132,15 @@ class TimeSpan final
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param rhv The right-hand operand.
- * \return
- * true  = This @ref TimeSpan is less than rhv.\n
- * false = This @ref TimeSpan and rhv are equal or this is larger than rhv.
+ * \param rhv
+ * The right-hand operand.
+ *
+ * \retval true   This @ref TimeSpan is less than @p rhv.
+ * \retval false  This @ref TimeSpan and @p rhv are equal or this is larger than @p rhv.
  */
 inline bool TimeSpan::operator < (TimeSpan const & rhv) const noexcept
 {
@@ -149,6 +150,8 @@ inline bool TimeSpan::operator < (TimeSpan const & rhv) const noexcept
 /**
  * \brief Compares this @ref TimeSpan against another one for equality or less-than.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
  *
@@ -156,14 +159,15 @@ inline bool TimeSpan::operator < (TimeSpan const & rhv) const noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param rhv The right-hand operand.
- * \return
- * true  = This @ref TimeSpan is less than rhv or equal to rhv.\n
- * false = This @ref TimeSpan is larger than rhv.
+ * \param rhv
+ * The right-hand operand.
+ *
+ * \retval true   This @ref TimeSpan is less than @p rhv or equal to @p rhv.
+ * \retval false  This @ref TimeSpan is larger than @p rhv.
  */
 inline bool TimeSpan::operator <= (TimeSpan const & rhv) const noexcept
 {
@@ -173,6 +177,8 @@ inline bool TimeSpan::operator <= (TimeSpan const & rhv) const noexcept
 /**
  * \brief Compares this @ref TimeSpan against another one for greater-than.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
  *
@@ -180,14 +186,15 @@ inline bool TimeSpan::operator <= (TimeSpan const & rhv) const noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param rhv The right-hand operand.
- * \return
- * true  = This @ref TimeSpan is larger than rhv.\n
- * false = This @ref TimeSpan and rhv are equal or this is less than rhv.
+ * \param rhv
+ * The right-hand operand.
+ *
+ * \retval true   This @ref TimeSpan is larger than @p rhv.
+ * \retval false  This @ref TimeSpan and @p rhv are equal or this is less than @p rhv.
  */
 inline bool TimeSpan::operator > (TimeSpan const & rhv) const noexcept
 {
@@ -197,6 +204,8 @@ inline bool TimeSpan::operator > (TimeSpan const & rhv) const noexcept
 /**
  * \brief Compares this @ref TimeSpan against another one for equality or greater-than.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
  *
@@ -204,14 +213,15 @@ inline bool TimeSpan::operator > (TimeSpan const & rhv) const noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param rhv The right-hand operand.
- * \return
- * true  = This @ref TimeSpan is equal to or larger than rhv.\n
- * false = This @ref TimeSpan is less than rhv.
+ * \param rhv
+ * The right-hand operand.
+ *
+ * \retval true   This @ref TimeSpan is equal to or larger than @p rhv.
+ * \retval false  This @ref TimeSpan is less than @p rhv.
  */
 inline bool TimeSpan::operator >= (TimeSpan const & rhv) const noexcept
 {
@@ -221,6 +231,8 @@ inline bool TimeSpan::operator >= (TimeSpan const & rhv) const noexcept
 /**
  * \brief Compares this @ref TimeSpan against another one for equality.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
  *
@@ -228,14 +240,15 @@ inline bool TimeSpan::operator >= (TimeSpan const & rhv) const noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param rhv The right-hand operand.
- * \return
- * true  = This @ref TimeSpan is equal to rhv.\n
- * false = This @ref TimeSpan is not equal to rhv.
+ * \param rhv
+ * The right-hand operand.
+ *
+ * \retval true   This @ref TimeSpan is equal to @p rhv.
+ * \retval false  This @ref TimeSpan is not equal to @p rhv.
  */
 inline bool TimeSpan::operator == (TimeSpan const & rhv) const noexcept
 {
@@ -245,6 +258,8 @@ inline bool TimeSpan::operator == (TimeSpan const & rhv) const noexcept
 /**
  * \brief Compares this @ref TimeSpan against another one for inequality.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
  *
@@ -252,14 +267,15 @@ inline bool TimeSpan::operator == (TimeSpan const & rhv) const noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param rhv The right-hand operand.
- * \return
- * true  = This @ref TimeSpan is not equal to rhv.\n
- * false = This @ref TimeSpan is equal to rhv.
+ * \param rhv
+ * The right-hand operand.
+ *
+ * \retval true   @ref TimeSpan is not equal to @p rhv.
+ * \retval false  This @ref TimeSpan is equal to @p rhv.
  */
 inline bool TimeSpan::operator != (TimeSpan const & rhv) const noexcept
 {
