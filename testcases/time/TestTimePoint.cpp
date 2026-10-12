@@ -11,6 +11,7 @@
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
 #include <gpcc_test/compiler/warnings.hpp>
+#include <gpcc/string/tools.hpp>
 #include <gtest/gtest.h>
 #include <limits>
 #include <stdexcept>
@@ -953,46 +954,66 @@ TEST(gpcc_time_TimePoint_Tests, GetTimeSpecPtr)
   ASSERT_TRUE((pcTS >= pcUUT) && (pcTS <= pcUUT + sizeof(TimePoint) - sizeof(pTS->tv_nsec)));
 }
 
-TEST(gpcc_time_TimePoint_Tests, ToStringEpoch)
+TEST(gpcc_time_TimePoint_Tests, GetMaxStringLength)
 {
-  TimePoint tp(0,0);
-  std::string s(tp.ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec));
-  ASSERT_TRUE(s == "1970-01-01 00:00:00.000ms");
-  ASSERT_TRUE(s.length() == TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec));
+
 }
 
-TEST(gpcc_time_TimePoint_Tests, ToString)
+TEST(gpcc_time_TimePoint_Tests, ToStringEpoch_UTC)
 {
-  // dummy timepoint (31.10.2016, 16:31:55)
-  struct tm t1;
-  t1.tm_year  = 2016  - 1900;
-  t1.tm_mon   = 10    - 1;
-  t1.tm_mday  = 31;
-  t1.tm_hour  = 16;
-  t1.tm_min   = 31;
-  t1.tm_sec   = 55;
+  // This tests conversion of a timepoint (Epoch, 01.01.1970 00:00:00) interpreted as UTC to
+  // strings with different precisions.
 
-  // create time_t (UTC!) from dummy timepoint
-  time_t const t2 = timegm(&t1);
-  assert(t2 != -1);
+  TimePoint tp(0,0);
 
-  // create TimePoint from t2 + 559ms
-  TimePoint tp(t2);
-  tp += TimeSpan::us(559000);
+  std::string s;
+  s = tp.ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::none);
+  EXPECT_STREQ(s.c_str(), "1970-01-01 00:00:00");
+  EXPECT_EQ(s.size(), TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::none));
 
-  std::string s(tp.ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec));
-  ASSERT_TRUE(s == "2016-10-31 16:31:55.559ms");
-  ASSERT_TRUE(s.length() == TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec));
-
-  tp -= TimeSpan::ms(550);
   s = tp.ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec);
-  ASSERT_TRUE(s == "2016-10-31 16:31:55.009ms");
-  ASSERT_TRUE(s.length() == TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec));
+  EXPECT_STREQ(s.c_str(), "1970-01-01 00:00:00.000ms");
+  EXPECT_EQ(s.size(), TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec));
 
-  tp -= TimeSpan::ms(9);
-  s = tp.ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec);
-  ASSERT_TRUE(s == "2016-10-31 16:31:55.000ms");
-  ASSERT_TRUE(s.length() == TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec));
+  s = tp.ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::usec);
+  EXPECT_STREQ(s.c_str(), "1970-01-01 00:00:00.000000us");
+  EXPECT_EQ(s.size(), TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::usec));
+
+  s = tp.ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::nsec);
+  EXPECT_STREQ(s.c_str(), "1970-01-01 00:00:00.000000000ns");
+  EXPECT_EQ(s.size(), TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::nsec));
+}
+
+TEST(gpcc_time_TimePoint_Tests, ToStringEpoch_Local)
+{
+  // This tests conversion of a timepoint (Epoch, 01.01.1970 00:00:00) interpreted as local time to
+  // strings with different precisions. Depending on the local timezone, there may be an offset of a few hours
+  // and/or minutes. We use wildcards during comparision to deal with it.
+
+  TimePoint tp(0,0);
+
+  std::string s;
+
+  s = tp.ToString(TimePoint::Format::Local, TimePoint::SubSecPrec::none);
+
+  EXPECT_TRUE(   (gpcc::string::TestSimplePatternMatch(s, "1970-01-01 ??:??:00", true))
+              || (gpcc::string::TestSimplePatternMatch(s, "1970-01-01 ??:??:00 DST", true)));
+  EXPECT_EQ(s.size() + 4U, TimePoint::GetMaxStringLength(TimePoint::Format::Local, TimePoint::SubSecPrec::none));
+
+  s = tp.ToString(TimePoint::Format::Local, TimePoint::SubSecPrec::msec);
+  EXPECT_TRUE(   (gpcc::string::TestSimplePatternMatch(s, "1970-01-01 ??:??:00.000ms", true))
+              || (gpcc::string::TestSimplePatternMatch(s, "1970-01-01 ??:??:00.000ms DST", true)));
+  EXPECT_EQ(s.size() + 4U, TimePoint::GetMaxStringLength(TimePoint::Format::Local, TimePoint::SubSecPrec::msec));
+
+  s = tp.ToString(TimePoint::Format::Local, TimePoint::SubSecPrec::usec);
+  EXPECT_TRUE(   (gpcc::string::TestSimplePatternMatch(s, "1970-01-01 ??:??:00.000000us", true))
+              || (gpcc::string::TestSimplePatternMatch(s, "1970-01-01 ??:??:00.000000us DST", true)));
+  EXPECT_EQ(s.size() + 4U, TimePoint::GetMaxStringLength(TimePoint::Format::Local, TimePoint::SubSecPrec::usec));
+
+  s = tp.ToString(TimePoint::Format::Local, TimePoint::SubSecPrec::nsec);
+  EXPECT_TRUE(   (gpcc::string::TestSimplePatternMatch(s, "1970-01-01 ??:??:00.000000000ns", true))
+              || (gpcc::string::TestSimplePatternMatch(s, "1970-01-01 ??:??:00.000000000ns DST", true)));
+  EXPECT_EQ(s.size() + 4U, TimePoint::GetMaxStringLength(TimePoint::Format::Local, TimePoint::SubSecPrec::nsec));
 }
 
 } // namespace time
