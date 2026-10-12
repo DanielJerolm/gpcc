@@ -75,6 +75,12 @@ class TimeSpan final
     };
 
     TimeSpan(void) noexcept;
+    TimeSpan(TimeSpan const &) noexcept = default;
+    TimeSpan(TimeSpan &&) noexcept = default;
+    ~TimeSpan(void) = default;
+
+    TimeSpan& operator=(TimeSpan const &) noexcept = default;
+    TimeSpan& operator=(TimeSpan &&) noexcept = default;
 
     static TimeSpan ns(int64_t const ns) noexcept;
     static TimeSpan us(int64_t const us);
