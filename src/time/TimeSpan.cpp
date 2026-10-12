@@ -51,7 +51,7 @@ namespace time {
  * No cancellation point included.
  */
 TimeSpan::TimeSpan(void) noexcept
-: value(0)
+: value_(0)
 {
 }
 
@@ -355,7 +355,7 @@ TimeSpan TimeSpan::PositiveMaximum(void) noexcept
 TimeSpan TimeSpan::operator+(TimeSpan const & rhv) const
 {
   int64_t result;
-  if (compiler::OverflowAwareAdd(value, rhv.value, &result))
+  if (compiler::OverflowAwareAdd(value_, rhv.value_, &result))
     throw std::overflow_error("TimeSpan::operator+");
   return TimeSpan(result);
 }
@@ -387,7 +387,7 @@ TimeSpan TimeSpan::operator+(TimeSpan const & rhv) const
 TimeSpan TimeSpan::operator-(TimeSpan const & rhv) const
 {
   int64_t result;
-  if (compiler::OverflowAwareSub(value, rhv.value, &result))
+  if (compiler::OverflowAwareSub(value_, rhv.value_, &result))
     throw std::overflow_error("TimeSpan::operator-");
   return TimeSpan(result);
 }
@@ -420,9 +420,9 @@ TimeSpan TimeSpan::operator-(TimeSpan const & rhv) const
 TimeSpan& TimeSpan::operator+=(TimeSpan const & rhv)
 {
   int64_t result;
-  if (compiler::OverflowAwareAdd(value, rhv.value, &result))
+  if (compiler::OverflowAwareAdd(value_, rhv.value_, &result))
     throw std::overflow_error("TimeSpan::operator+=");
-  value = result;
+  value_ = result;
   return *this;
 }
 
@@ -454,9 +454,9 @@ TimeSpan& TimeSpan::operator+=(TimeSpan const & rhv)
 TimeSpan& TimeSpan::operator-=(TimeSpan const & rhv)
 {
   int64_t result;
-  if (compiler::OverflowAwareSub(value, rhv.value, &result))
+  if (compiler::OverflowAwareSub(value_, rhv.value_, &result))
     throw std::overflow_error("TimeSpan::operator-=");
-  value = result;
+  value_ = result;
   return *this;
 }
 
@@ -481,7 +481,7 @@ TimeSpan& TimeSpan::operator-=(TimeSpan const & rhv)
  */
 int64_t TimeSpan::ns(void) const noexcept
 {
-  return value;
+  return value_;
 }
 
 /**
@@ -507,7 +507,7 @@ int64_t TimeSpan::ns(void) const noexcept
  */
 int64_t TimeSpan::us(void) const noexcept
 {
-  return value / NS_PER_US;
+  return value_ / NS_PER_US;
 }
 
 /**
@@ -533,7 +533,7 @@ int64_t TimeSpan::us(void) const noexcept
  */
 int64_t TimeSpan::ms(void) const noexcept
 {
-  return value / NS_PER_MS;
+  return value_ / NS_PER_MS;
 }
 
 /**
@@ -559,7 +559,7 @@ int64_t TimeSpan::ms(void) const noexcept
  */
 int64_t TimeSpan::sec(void) const noexcept
 {
-  return value / NS_PER_SEC;
+  return value_ / NS_PER_SEC;
 }
 
 /**
@@ -585,7 +585,7 @@ int64_t TimeSpan::sec(void) const noexcept
  */
 int32_t TimeSpan::min(void) const noexcept
 {
-  return value / NS_PER_MIN;
+  return value_ / NS_PER_MIN;
 }
 
 /**
@@ -611,7 +611,7 @@ int32_t TimeSpan::min(void) const noexcept
  */
 int32_t TimeSpan::hr(void) const noexcept
 {
-  return value / NS_PER_HR;
+  return value_ / NS_PER_HR;
 }
 
 /**
@@ -637,7 +637,7 @@ int32_t TimeSpan::hr(void) const noexcept
  */
 int32_t TimeSpan::days(void) const noexcept
 {
-  return value / NS_PER_DAY;
+  return value_ / NS_PER_DAY;
 }
 
 /**
@@ -690,11 +690,11 @@ std::string TimeSpan::ToString(void) const
 
   str << StringComposer::AlignRightPadZero;
 
-  int64_t _value = value;
-  if (_value < 0)
+  int64_t value = value_;
+  if (value < 0)
   {
     str << "-";
-    _value = -_value;
+    value = -value;
   }
 
   Units base          = Units::days;
@@ -705,8 +705,8 @@ std::string TimeSpan::ToString(void) const
   while (true)
   {
     int64_t const divider = ns_per_unit[static_cast<int>(currentUnit)];
-    int64_t const full = _value / divider;
-    int64_t const frac = _value % divider;
+    int64_t const full = value / divider;
+    int64_t const frac = value % divider;
 
     if ((!lookingForBase) || (full != 0) || (currentUnit == Units::ns))
     {
@@ -801,7 +801,7 @@ std::string TimeSpan::ToString(void) const
       anyOutputYet = true;
     }
 
-    _value = frac;
+    value = frac;
     currentUnit = static_cast<Units>(static_cast<int>(currentUnit) - 1);
   }
 
@@ -856,16 +856,16 @@ std::string TimeSpan::ToString(Precison const prec) const
 
   str << StringComposer::AlignRightPadZero;
 
-  int64_t _value = value;
-  if (_value < 0)
-    _value = -_value;
+  int64_t value = value_;
+  if (value < 0)
+    value = -value;
 
   bool zero = true;
 
   // days
   {
-    int32_t const days = _value / NS_PER_DAY;
-    _value %= NS_PER_DAY;
+    int32_t const days = value / NS_PER_DAY;
+    value %= NS_PER_DAY;
 
     if (days != 0)
     {
@@ -876,7 +876,7 @@ std::string TimeSpan::ToString(Precison const prec) const
 
   // hh:mm:ss
   {
-    int32_t seconds = _value / NS_PER_SEC;
+    int32_t seconds = value / NS_PER_SEC;
     if (seconds != 0)
       zero = false;
 
@@ -896,7 +896,7 @@ std::string TimeSpan::ToString(Precison const prec) const
   {
     str << '.';
 
-    uint32_t const ns = _value % NS_PER_SEC;
+    uint32_t const ns = value % NS_PER_SEC;
 
     switch (prec)
     {
@@ -934,7 +934,7 @@ std::string TimeSpan::ToString(Precison const prec) const
     }
   }
 
-  if ((value >= 0) || (zero))
+  if ((value_ >= 0) || (zero))
     return str.Get();
   else
     return "-" + str.Get();
@@ -953,11 +953,11 @@ std::string TimeSpan::ToString(Precison const prec) const
  *
  * - - -
  *
- * \param _value
- * Attribute `value` is initialized with this.
+ * \param value
+ * Attribute `value_` is initialized with this.
  */
-TimeSpan::TimeSpan(int64_t const _value) noexcept
-: value(_value)
+TimeSpan::TimeSpan(int64_t const value) noexcept
+: value_(value)
 {
 }
 

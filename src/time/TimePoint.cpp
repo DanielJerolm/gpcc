@@ -224,8 +224,8 @@ TimePoint& TimePoint::operator=(time_t const sec) noexcept
 TimePoint TimePoint::operator + (TimeSpan const & rhv) const
 {
   // split the rhv time span into a second and nanosecond portion
-  int64_t const rhv_sec  = rhv.value / NSEC_PER_SEC;
-  int32_t const rhv_nsec = rhv.value % NSEC_PER_SEC;
+  int64_t const rhv_sec  = rhv.value_ / NSEC_PER_SEC;
+  int32_t const rhv_nsec = rhv.value_ % NSEC_PER_SEC;
 
   // add second and nanosecond portion to this TimePoint's value and store the result in ts
   struct ::timespec ts;
@@ -265,8 +265,8 @@ TimePoint TimePoint::operator + (TimeSpan const & rhv) const
 TimePoint TimePoint::operator - (TimeSpan const & rhv) const
 {
   // split the rhv time span into a second and nanosecond portion
-  int64_t const rhv_sec  = rhv.value / NSEC_PER_SEC;
-  int32_t const rhv_nsec = rhv.value % NSEC_PER_SEC;
+  int64_t const rhv_sec  = rhv.value_ / NSEC_PER_SEC;
+  int32_t const rhv_nsec = rhv.value_ % NSEC_PER_SEC;
 
   // subtract second and nanosecond portion from this TimePoint's value and store the result in ts
   struct ::timespec ts;
@@ -347,8 +347,8 @@ TimeSpan TimePoint::operator - (TimePoint const & rhv) const
 TimePoint& TimePoint::operator+= (TimeSpan const & rhv)
 {
   // split the rhv time span into a second and nanosecond portion
-  int64_t const rhv_sec  = rhv.value / NSEC_PER_SEC;
-  int32_t const rhv_nsec = rhv.value % NSEC_PER_SEC;
+  int64_t const rhv_sec  = rhv.value_ / NSEC_PER_SEC;
+  int32_t const rhv_nsec = rhv.value_ % NSEC_PER_SEC;
 
   // add second and nanosecond portion to this TimePoint's value and store the result in ts
   struct ::timespec ts;
@@ -392,8 +392,8 @@ TimePoint& TimePoint::operator+= (TimeSpan const & rhv)
 TimePoint& TimePoint::operator-= (TimeSpan const & rhv)
 {
   // split the rhv time span into a second and nanosecond portion
-  int64_t const rhv_sec  = rhv.value / NSEC_PER_SEC;
-  int32_t const rhv_nsec = rhv.value % NSEC_PER_SEC;
+  int64_t const rhv_sec  = rhv.value_ / NSEC_PER_SEC;
+  int32_t const rhv_nsec = rhv.value_ % NSEC_PER_SEC;
 
   // subtract second and nanosecond portion from this TimePoint's value and store the result in ts
   struct ::timespec ts;

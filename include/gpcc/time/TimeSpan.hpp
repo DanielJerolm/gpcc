@@ -115,9 +115,9 @@ class TimeSpan final
 
   private:
     /// The encapsulated time value.
-    int64_t value;
+    int64_t value_;
 
-    explicit TimeSpan(int64_t const _value) noexcept;
+    explicit TimeSpan(int64_t const value) noexcept;
 };
 
 /**
@@ -144,7 +144,7 @@ class TimeSpan final
  */
 inline bool TimeSpan::operator < (TimeSpan const & rhv) const noexcept
 {
-  return (value < rhv.value);
+  return (value_ < rhv.value_);
 }
 
 /**
@@ -171,7 +171,7 @@ inline bool TimeSpan::operator < (TimeSpan const & rhv) const noexcept
  */
 inline bool TimeSpan::operator <= (TimeSpan const & rhv) const noexcept
 {
-  return (value <= rhv.value);
+  return (value_ <= rhv.value_);
 }
 
 /**
@@ -198,7 +198,7 @@ inline bool TimeSpan::operator <= (TimeSpan const & rhv) const noexcept
  */
 inline bool TimeSpan::operator > (TimeSpan const & rhv) const noexcept
 {
-  return (value > rhv.value);
+  return (value_ > rhv.value_);
 }
 
 /**
@@ -225,7 +225,7 @@ inline bool TimeSpan::operator > (TimeSpan const & rhv) const noexcept
  */
 inline bool TimeSpan::operator >= (TimeSpan const & rhv) const noexcept
 {
-  return (value >= rhv.value);
+  return (value_ >= rhv.value_);
 }
 
 /**
@@ -252,7 +252,7 @@ inline bool TimeSpan::operator >= (TimeSpan const & rhv) const noexcept
  */
 inline bool TimeSpan::operator == (TimeSpan const & rhv) const noexcept
 {
-  return (value == rhv.value);
+  return (value_ == rhv.value_);
 }
 
 /**
@@ -279,7 +279,7 @@ inline bool TimeSpan::operator == (TimeSpan const & rhv) const noexcept
  */
 inline bool TimeSpan::operator != (TimeSpan const & rhv) const noexcept
 {
-  return (value != rhv.value);
+  return (value_ != rhv.value_);
 }
 
 } // namespace time
