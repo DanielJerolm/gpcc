@@ -64,6 +64,8 @@ RomConstExceptionLogMessageTS::RomConstExceptionLogMessageTS(string::SharedStrin
 /// \copydoc LogMessage::BuildText
 std::string RomConstExceptionLogMessageTS::BuildText(void) const
 {
+  using gpcc::time::TimePoint;
+
   std::string s;
 
   std::string what;
@@ -75,13 +77,16 @@ std::string RomConstExceptionLogMessageTS::BuildText(void) const
     // (whatLength includes lenth of '\n' and length of indention for first new line)
   }
 
-  s.reserve(logMsgHeaderLength + 1U + srcName.GetStr().size() + 3U + gpcc::time::TimePoint::stringLength + 2U + strlen(pMsg) + whatLength);
+  s.reserve(  logMsgHeaderLength + 1U
+            + srcName.GetStr().size() + 3U
+            + TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec) + 2U
+            + strlen(pMsg) + whatLength);
 
   s = LogType2LogMsgHeader(static_cast<LogType>(type));
   s += ' ';
   s += srcName.GetStr();
   s += ": (";
-  s += timestamp.ToString();
+  s += timestamp.ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec);
   s += ") ";
   s += pMsg;
 

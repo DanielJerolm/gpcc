@@ -5,12 +5,13 @@
     If a copy of the MPL was not distributed with this file,
     You can obtain one at https://mozilla.org/MPL/2.0/.
 
-    Copyright (C) 2011 Daniel Jerolm
+    Copyright (C) 2011, 2026 Daniel Jerolm
 */
 
 #include <gpcc/time/TimePoint.hpp>
 #include <gpcc/time/TimeSpan.hpp>
 #include <gpcc_test/compiler/warnings.hpp>
+#include <gpcc/string/tools.hpp>
 #include <gtest/gtest.h>
 #include <limits>
 #include <stdexcept>
@@ -38,6 +39,7 @@ TEST(gpcc_time_TimePoint_Tests, DefaultConstructor)
   ASSERT_EQ(0, uut.Get_sec());
   ASSERT_EQ(0, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, CopyConstructor)
 {
   TimePoint tp(94,23);
@@ -49,6 +51,7 @@ TEST(gpcc_time_TimePoint_Tests, CopyConstructor)
   ASSERT_EQ(94, tp.Get_sec());
   ASSERT_EQ(23, tp.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, MoveConstructor)
 {
   TimePoint tp(94,23);
@@ -57,6 +60,7 @@ TEST(gpcc_time_TimePoint_Tests, MoveConstructor)
   ASSERT_EQ(94, uut.Get_sec());
   ASSERT_EQ(23, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, ConstructFromTimespec)
 {
   struct timespec ts = {55, 12};
@@ -69,6 +73,7 @@ TEST(gpcc_time_TimePoint_Tests, ConstructFromTimespec)
   ASSERT_EQ(55, uut.Get_sec());
   ASSERT_EQ(12, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, ConstructFromTimespecNotNormalized1)
 {
   struct timespec ts = {55, -12};
@@ -81,6 +86,7 @@ TEST(gpcc_time_TimePoint_Tests, ConstructFromTimespecNotNormalized1)
   ASSERT_EQ(54, uut.Get_sec());
   ASSERT_EQ(999999988, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, ConstructFromTimespecNotNormalized2)
 {
   struct timespec ts = {55, 1000000005};
@@ -93,6 +99,7 @@ TEST(gpcc_time_TimePoint_Tests, ConstructFromTimespecNotNormalized2)
   ASSERT_EQ(56, uut.Get_sec());
   ASSERT_EQ(5, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, ConstructFromTimeT)
 {
   time_t t = 55;
@@ -104,6 +111,7 @@ TEST(gpcc_time_TimePoint_Tests, ConstructFromTimeT)
   ASSERT_EQ(55, uut.Get_sec());
   ASSERT_EQ(0, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, ConstructFromTimeT_Negative)
 {
   time_t t = -55;
@@ -115,6 +123,7 @@ TEST(gpcc_time_TimePoint_Tests, ConstructFromTimeT_Negative)
   ASSERT_EQ(-55, uut.Get_sec());
   ASSERT_EQ(0, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, ConstructFromSecAndNs)
 {
   TimePoint uut(45,33);
@@ -122,6 +131,7 @@ TEST(gpcc_time_TimePoint_Tests, ConstructFromSecAndNs)
   ASSERT_EQ(45, uut.Get_sec());
   ASSERT_EQ(33, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, ConstructFromSecNormalization)
 {
   TimePoint uut(45,1000000012);
@@ -129,6 +139,7 @@ TEST(gpcc_time_TimePoint_Tests, ConstructFromSecNormalization)
   ASSERT_EQ(46, uut.Get_sec());
   ASSERT_EQ(12, uut.Get_nsec());
 }
+
 #ifndef SKIP_LOAD_DEPENDENT_TESTS
 #if !(defined(OS_LINUX_ARM_TFC) || defined(OS_LINUX_X64_TFC))
 TEST(gpcc_time_TimePoint_Tests, FromSystemClock_Clock_RealtimeCoarse)
@@ -150,6 +161,7 @@ TEST(gpcc_time_TimePoint_Tests, FromSystemClock_Clock_RealtimeCoarse)
   EXPECT_GE(difference_ns, 0);
   EXPECT_LT(difference_ns, MS10_in_NS);
 }
+
 TEST(gpcc_time_TimePoint_Tests, FromSystemClock_Clock_RealtimePrecise)
 {
   // Test-case skipped if TFC is present.
@@ -193,6 +205,7 @@ TEST(gpcc_time_TimePoint_Tests, FromSystemClock_Clock_MonotonicCoarse)
   EXPECT_GE(difference_ns, 0);
   EXPECT_LT(difference_ns, MS10_in_NS);
 }
+
 TEST(gpcc_time_TimePoint_Tests, FromSystemClock_Clock_MonotonicPrecise)
 {
   // Test-case skipped if TFC is present.
@@ -214,6 +227,7 @@ TEST(gpcc_time_TimePoint_Tests, FromSystemClock_Clock_MonotonicPrecise)
 }
 #endif
 #endif
+
 TEST(gpcc_time_TimePoint_Tests, AssignTimespec)
 {
   TimePoint uut;
@@ -227,6 +241,7 @@ TEST(gpcc_time_TimePoint_Tests, AssignTimespec)
   ASSERT_EQ(12, uut.Get_sec());
   ASSERT_EQ(88, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, AssignTimespecNormalization)
 {
   TimePoint uut;
@@ -240,6 +255,7 @@ TEST(gpcc_time_TimePoint_Tests, AssignTimespecNormalization)
   ASSERT_EQ(11, uut.Get_sec());
   ASSERT_EQ(999999912, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, AssignTimet)
 {
   TimePoint uut(1,1);
@@ -261,6 +277,7 @@ TEST(gpcc_time_TimePoint_Tests, AssignTimet)
   ASSERT_EQ(-87, uut.Get_sec());
   ASSERT_EQ(0, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, MoveAssign)
 {
   TimePoint uut(10,10);
@@ -274,6 +291,7 @@ TEST(gpcc_time_TimePoint_Tests, MoveAssign)
   ASSERT_EQ(88, uut.Get_sec());
   ASSERT_EQ(12, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, MoveAssignSelf)
 {
   TimePoint uut(10,10);
@@ -288,6 +306,7 @@ TEST(gpcc_time_TimePoint_Tests, MoveAssignSelf)
   ASSERT_EQ(10, uut.Get_sec());
   ASSERT_EQ(10, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, Assign)
 {
   TimePoint uut1(11,12);
@@ -305,6 +324,7 @@ TEST(gpcc_time_TimePoint_Tests, Assign)
   ASSERT_EQ(13, uut2.Get_sec());
   ASSERT_EQ(14, uut2.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, AssignSelf)
 {
   TimePoint uut(10,10);
@@ -320,6 +340,7 @@ TEST(gpcc_time_TimePoint_Tests, AssignSelf)
   ASSERT_EQ(10, uut.Get_sec());
   ASSERT_EQ(10, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, OperatorPlusTimespan)
 {
   TimePoint const uut(25, 55);
@@ -345,6 +366,7 @@ TEST(gpcc_time_TimePoint_Tests, OperatorPlusTimespan)
   ASSERT_EQ(26, result.Get_sec());
   ASSERT_EQ(54, result.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, OperatorPlusTimespan_BoundOvfl)
 {
   TimePoint uut;
@@ -394,6 +416,7 @@ TEST(gpcc_time_TimePoint_Tests, OperatorPlusTimespan_BoundOvfl)
     ASSERT_EQ(88, result.Get_nsec());
   }
 }
+
 TEST(gpcc_time_TimePoint_Tests, OperatorMinusTimespan)
 {
   TimePoint const uut(25, 55);
@@ -419,6 +442,7 @@ TEST(gpcc_time_TimePoint_Tests, OperatorMinusTimespan)
   ASSERT_EQ(24, result.Get_sec());
   ASSERT_EQ(999999999, result.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, OperatorMinusTimespan_BoundOvfl)
 {
   TimePoint uut;
@@ -468,6 +492,7 @@ TEST(gpcc_time_TimePoint_Tests, OperatorMinusTimespan_BoundOvfl)
     ASSERT_EQ(88, result.Get_nsec());
   }
 }
+
 TEST(gpcc_time_TimePoint_Tests, OperatorMinusTimepoint)
 {
   TimePoint const uut1(55,12);
@@ -480,6 +505,7 @@ TEST(gpcc_time_TimePoint_Tests, OperatorMinusTimepoint)
   diff = uut1 - uut2;
   ASSERT_EQ(-100000000043L, diff.ns());
 }
+
 TEST(gpcc_time_TimePoint_Tests, OperatorMinusTimepoint_BoundsAndOvfl)
 {
   time_t maxSec = (std::numeric_limits<int64_t>::max() / NS_PER_SEC) - 1L;
@@ -504,6 +530,7 @@ TEST(gpcc_time_TimePoint_Tests, OperatorMinusTimepoint_BoundsAndOvfl)
   ASSERT_THROW(uut1 - uut3, std::overflow_error);
   ASSERT_THROW(uut3 - uut1, std::overflow_error);
 }
+
 TEST(gpcc_time_TimePoint_Tests, OperatorPlusAssignTimespan)
 {
   TimePoint uut(25, 55);
@@ -528,6 +555,7 @@ TEST(gpcc_time_TimePoint_Tests, OperatorPlusAssignTimespan)
   ASSERT_EQ(-8, uut.Get_sec());
   ASSERT_EQ(999999999, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, OperatorPlusAssignTimespan_BoundOvfl)
 {
   TimePoint uut;
@@ -574,6 +602,7 @@ TEST(gpcc_time_TimePoint_Tests, OperatorPlusAssignTimespan_BoundOvfl)
     ASSERT_EQ(0, uut.Get_nsec());
   }
 }
+
 TEST(gpcc_time_TimePoint_Tests, OperatorMinusAssignTimespan)
 {
   TimePoint uut(25, 55);
@@ -598,6 +627,7 @@ TEST(gpcc_time_TimePoint_Tests, OperatorMinusAssignTimespan)
   ASSERT_EQ(-7, uut.Get_sec());
   ASSERT_EQ(999999999, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, OperatorMinusAssignTimespan_BoundOvfl)
 {
   TimePoint uut;
@@ -644,6 +674,7 @@ TEST(gpcc_time_TimePoint_Tests, OperatorMinusAssignTimespan_BoundOvfl)
     ASSERT_EQ(0, uut.Get_nsec());
   }
 }
+
 TEST(gpcc_time_TimePoint_Tests, OperatorLessThan)
 {
   TimePoint uut1(10, 10);
@@ -670,6 +701,7 @@ TEST(gpcc_time_TimePoint_Tests, OperatorLessThan)
   uut2.Set(-6, 999999999);
   ASSERT_FALSE(uut1 < uut2);
 }
+
 TEST(gpcc_time_TimePoint_Tests, OperatorLessThanOrEqual)
 {
   TimePoint uut1(10, 10);
@@ -702,6 +734,7 @@ TEST(gpcc_time_TimePoint_Tests, OperatorLessThanOrEqual)
   uut2.Set(-6, 999999999);
   ASSERT_FALSE(uut1 <= uut2);
 }
+
 TEST(gpcc_time_TimePoint_Tests, OperatorGreaterThan)
 {
   TimePoint uut1(10, 10);
@@ -728,6 +761,7 @@ TEST(gpcc_time_TimePoint_Tests, OperatorGreaterThan)
   uut2.Set(-6, 999999999);
   ASSERT_FALSE(uut2 > uut1);
 }
+
 TEST(gpcc_time_TimePoint_Tests, OperatorGreaterThanOrEqual)
 {
   TimePoint uut1(10, 10);
@@ -760,6 +794,7 @@ TEST(gpcc_time_TimePoint_Tests, OperatorGreaterThanOrEqual)
   uut2.Set(-6, 999999999);
   ASSERT_FALSE(uut2 >= uut1);
 }
+
 TEST(gpcc_time_TimePoint_Tests, OperatorEqual)
 {
   TimePoint uut1(10,10);
@@ -773,6 +808,7 @@ TEST(gpcc_time_TimePoint_Tests, OperatorEqual)
   uut2.Set(10, 9);
   ASSERT_FALSE(uut1 == uut2);
 }
+
 TEST(gpcc_time_TimePoint_Tests, OperatorNotEqual)
 {
   TimePoint uut1(10,10);
@@ -786,6 +822,7 @@ TEST(gpcc_time_TimePoint_Tests, OperatorNotEqual)
   uut2.Set(10, 9);
   ASSERT_TRUE(uut1 != uut2);
 }
+
 #ifndef SKIP_LOAD_DEPENDENT_TESTS
 TEST(gpcc_time_TimePoint_Tests, LatchSystemClock_Clock_Realtime)
 {
@@ -799,6 +836,7 @@ TEST(gpcc_time_TimePoint_Tests, LatchSystemClock_Clock_Realtime)
   ASSERT_TRUE(delta.ns() <= 100000000LL * TIME_MULTIPLIER);
 }
 #endif
+
 #ifndef SKIP_LOAD_DEPENDENT_TESTS
 TEST(gpcc_time_TimePoint_Tests, LatchSystemClock_Clock_Monotonic)
 {
@@ -811,6 +849,7 @@ TEST(gpcc_time_TimePoint_Tests, LatchSystemClock_Clock_Monotonic)
   ASSERT_TRUE(delta.ns() >= 0);
   ASSERT_TRUE(delta.ns() <= 100000000LL * TIME_MULTIPLIER);
 }
+
 TEST(gpcc_time_TimePoint_Tests, LatchSystemClock_Clock_MonotonicPrecise)
 {
   TimePoint uut1 = TimePoint::FromSystemClock(Clocks::monotonicPrecise);
@@ -823,6 +862,7 @@ TEST(gpcc_time_TimePoint_Tests, LatchSystemClock_Clock_MonotonicPrecise)
   ASSERT_TRUE(delta.ns() <= 100000000LL * TIME_MULTIPLIER);
 }
 #endif
+
 TEST(gpcc_time_TimePoint_Tests, Set)
 {
   TimePoint uut;
@@ -835,6 +875,7 @@ TEST(gpcc_time_TimePoint_Tests, Set)
   ASSERT_EQ(-12, uut.Get_sec());
   ASSERT_EQ(55, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, SetNormalization)
 {
   TimePoint uut;
@@ -843,6 +884,7 @@ TEST(gpcc_time_TimePoint_Tests, SetNormalization)
   ASSERT_EQ(99, uut.Get_sec());
   ASSERT_EQ(999999995, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, Normalization)
 {
   TimePoint uut;
@@ -879,6 +921,7 @@ TEST(gpcc_time_TimePoint_Tests, Normalization)
   ASSERT_EQ(-6, uut.Get_sec());
   ASSERT_EQ(999999464, uut.Get_nsec());
 }
+
 TEST(gpcc_time_TimePoint_Tests, GetTimeSpecRef)
 {
   TimePoint uut(1,2);
@@ -894,6 +937,7 @@ TEST(gpcc_time_TimePoint_Tests, GetTimeSpecRef)
   // verify that the referenced timespec is inside the uut object
   ASSERT_TRUE((pcTS >= pcUUT) && (pcTS <= pcUUT + sizeof(TimePoint) - sizeof(ts.tv_nsec)));
 }
+
 TEST(gpcc_time_TimePoint_Tests, GetTimeSpecPtr)
 {
   TimePoint uut(1,2);
@@ -909,45 +953,67 @@ TEST(gpcc_time_TimePoint_Tests, GetTimeSpecPtr)
   // verify that the referenced timespec is inside the uut object
   ASSERT_TRUE((pcTS >= pcUUT) && (pcTS <= pcUUT + sizeof(TimePoint) - sizeof(pTS->tv_nsec)));
 }
-TEST(gpcc_time_TimePoint_Tests, ToStringEpoch)
+
+TEST(gpcc_time_TimePoint_Tests, GetMaxStringLength)
 {
-  TimePoint tp(0,0);
-  std::string s(tp.ToString());
-  ASSERT_TRUE(s == "1970-01-01 00:00:00.000ms");
-  ASSERT_TRUE(s.length() == TimePoint::stringLength);
+
 }
-TEST(gpcc_time_TimePoint_Tests, ToString)
+
+TEST(gpcc_time_TimePoint_Tests, ToStringEpoch_UTC)
 {
-  // dummy timepoint (31.10.2016, 16:31:55)
-  struct tm t1;
-  t1.tm_year  = 2016  - 1900;
-  t1.tm_mon   = 10    - 1;
-  t1.tm_mday  = 31;
-  t1.tm_hour  = 16;
-  t1.tm_min   = 31;
-  t1.tm_sec   = 55;
+  // This tests conversion of a timepoint (Epoch, 01.01.1970 00:00:00) interpreted as UTC to
+  // strings with different precisions.
 
-  // create time_t (UTC!) from dummy timepoint
-  time_t const t2 = timegm(&t1);
-  assert(t2 != -1);
+  TimePoint tp(0,0);
 
-  // create TimePoint from t2 + 559ms
-  TimePoint tp(t2);
-  tp += TimeSpan::us(559000);
+  std::string s;
+  s = tp.ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::none);
+  EXPECT_STREQ(s.c_str(), "1970-01-01 00:00:00");
+  EXPECT_EQ(s.size(), TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::none));
 
-  std::string s(tp.ToString());
-  ASSERT_TRUE(s == "2016-10-31 16:31:55.559ms");
-  ASSERT_TRUE(s.length() == TimePoint::stringLength);
+  s = tp.ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec);
+  EXPECT_STREQ(s.c_str(), "1970-01-01 00:00:00.000ms");
+  EXPECT_EQ(s.size(), TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::msec));
 
-  tp -= TimeSpan::ms(550);
-  s = tp.ToString();
-  ASSERT_TRUE(s == "2016-10-31 16:31:55.009ms");
-  ASSERT_TRUE(s.length() == TimePoint::stringLength);
+  s = tp.ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::usec);
+  EXPECT_STREQ(s.c_str(), "1970-01-01 00:00:00.000000us");
+  EXPECT_EQ(s.size(), TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::usec));
 
-  tp -= TimeSpan::ms(9);
-  s = tp.ToString();
-  ASSERT_TRUE(s == "2016-10-31 16:31:55.000ms");
-  ASSERT_TRUE(s.length() == TimePoint::stringLength);
+  s = tp.ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::nsec);
+  EXPECT_STREQ(s.c_str(), "1970-01-01 00:00:00.000000000ns");
+  EXPECT_EQ(s.size(), TimePoint::GetMaxStringLength(TimePoint::Format::UTC, TimePoint::SubSecPrec::nsec));
+}
+
+TEST(gpcc_time_TimePoint_Tests, ToStringEpoch_Local)
+{
+  // This tests conversion of a timepoint (Epoch, 01.01.1970 00:00:00) interpreted as local time to
+  // strings with different precisions. Depending on the local timezone, there may be an offset of a few hours
+  // and/or minutes. We use wildcards during comparision to deal with it.
+
+  TimePoint tp(0,0);
+
+  std::string s;
+
+  s = tp.ToString(TimePoint::Format::Local, TimePoint::SubSecPrec::none);
+
+  EXPECT_TRUE(   (gpcc::string::TestSimplePatternMatch(s, "1970-01-01 ??:??:00", true))
+              || (gpcc::string::TestSimplePatternMatch(s, "1970-01-01 ??:??:00 DST", true)));
+  EXPECT_EQ(s.size() + 4U, TimePoint::GetMaxStringLength(TimePoint::Format::Local, TimePoint::SubSecPrec::none));
+
+  s = tp.ToString(TimePoint::Format::Local, TimePoint::SubSecPrec::msec);
+  EXPECT_TRUE(   (gpcc::string::TestSimplePatternMatch(s, "1970-01-01 ??:??:00.000ms", true))
+              || (gpcc::string::TestSimplePatternMatch(s, "1970-01-01 ??:??:00.000ms DST", true)));
+  EXPECT_EQ(s.size() + 4U, TimePoint::GetMaxStringLength(TimePoint::Format::Local, TimePoint::SubSecPrec::msec));
+
+  s = tp.ToString(TimePoint::Format::Local, TimePoint::SubSecPrec::usec);
+  EXPECT_TRUE(   (gpcc::string::TestSimplePatternMatch(s, "1970-01-01 ??:??:00.000000us", true))
+              || (gpcc::string::TestSimplePatternMatch(s, "1970-01-01 ??:??:00.000000us DST", true)));
+  EXPECT_EQ(s.size() + 4U, TimePoint::GetMaxStringLength(TimePoint::Format::Local, TimePoint::SubSecPrec::usec));
+
+  s = tp.ToString(TimePoint::Format::Local, TimePoint::SubSecPrec::nsec);
+  EXPECT_TRUE(   (gpcc::string::TestSimplePatternMatch(s, "1970-01-01 ??:??:00.000000000ns", true))
+              || (gpcc::string::TestSimplePatternMatch(s, "1970-01-01 ??:??:00.000000000ns DST", true)));
+  EXPECT_EQ(s.size() + 4U, TimePoint::GetMaxStringLength(TimePoint::Format::Local, TimePoint::SubSecPrec::nsec));
 }
 
 } // namespace time
