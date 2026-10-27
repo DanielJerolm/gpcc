@@ -73,15 +73,22 @@ TEST(gpcc_time_clock_Tests, GetPrecision_ns)
 TEST(gpcc_time_clock_Tests, GetTime_justCall)
 {
   struct timespec ts;
+
   GetTime(Clocks::realtimeCoarse, ts);
-  std::cout << "Clock (Clocks::realtimeCoarse): " << TimePoint(ts).ToString() << std::endl;
+  std::cout << "Clock (Clocks::realtimeCoarse): "
+            << TimePoint(ts).ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::nsec) << std::endl;
+
   GetTime(Clocks::realtimePrecise, ts);
-  std::cout << "Clock (Clocks::realtimePrecise): " << TimePoint(ts).ToString() << std::endl;
+  std::cout << "Clock (Clocks::realtimePrecise): "
+            << TimePoint(ts).ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::nsec) << std::endl;
 
   GetTime(Clocks::monotonicCoarse, ts);
-  std::cout << "Clock (Clocks::monotonicCoarse): " << TimePoint(ts).ToString() << std::endl;
+  std::cout << "Clock (Clocks::monotonicCoarse): "
+            << TimePoint(ts).ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::nsec) << std::endl;
+
   GetTime(Clocks::monotonicPrecise, ts);
-  std::cout << "Clock (Clocks::monotonicPrecise): " << TimePoint(ts).ToString() << std::endl;
+  std::cout << "Clock (Clocks::monotonicPrecise): "
+           << TimePoint(ts).ToString(TimePoint::Format::UTC, TimePoint::SubSecPrec::nsec) << std::endl;
 }
 
 #ifndef SKIP_LOAD_DEPENDENT_TESTS
