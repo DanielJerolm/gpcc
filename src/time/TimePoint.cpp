@@ -673,6 +673,11 @@ std::string TimePoint::ToString(TimePoint::Format const fmt, SubSecPrec const ss
   char const * pDST = (calendarTime.tm_isdst > 0) ? " DST" : "";
   char buffer[40];
   size_t s;
+
+  // make compiler happy
+  buffer[0] = 0;
+  s = 0U;
+
   switch (ssp)
   {
     case SubSecPrec::none:
