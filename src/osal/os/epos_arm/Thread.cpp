@@ -16,6 +16,7 @@
 #include <gpcc/raii/scope_guard.hpp>
 #include <gpcc/raii/unique_c_ptr.hpp>
 #include <gpcc/string/StringComposer.hpp>
+#include <epos/epos_conf.h>
 #include <stdexcept>
 #include <system_error>
 #include <cerrno>
@@ -829,20 +830,33 @@ void* Thread::InternalThreadEntry2(void)
  */
 epos_threadprio_t Thread::UniversalPrioToEPOSPrio(priority_t const priority, SchedPolicy const schedpolicy) const
 {
-  static_assert((maxPriority - minPriority + 1U) == 32U,
-                "Thread::minPriority...Thread::maxPriority must provide 32 priority levels.");
+  #if !defined(EPOS_CONF_SOFTIRQ_NB_OF_PRIOS)
+    #error "EPOS version too old (no soft IRQs)";
+  #endif
 
-  static_assert((EPOS_THREAD_PRIO_MIN - EPOS_THREAD_PRIO_MAX + 1U) >= (1U + 32U + 13U),
-                "EPOS configuration does not provide enough priority levels.");
+  static_assert(maxPriority > minPriority);
 
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wtype-limits"
-  if ((priority < minPriority) || (priority > maxPriority))
-    throw std::invalid_argument("Invalid sched. priority/policy");
-  #pragma GCC diagnostic pop
+  static_assert((EPOS_THREAD_PRIO_MIN - EPOS_THREAD_PRIO_MAX + 1U) >=
+                (  1U
+                 + EPOS_CONF_SOFTIRQ_NB_OF_PRIOS
+                 + (maxPriority - minPriority + 1U)
+                 + 12U),
+                "Configuration of EPOS thread priorities does not provide enough priorities for EPOS soft IRQs, " \
+                "GPCC 'RR'/'Fifo' threads, GPCC 'other' threads (one at bottom - 12), and the reserved top priority.");
 
-  if ((priority != 0U) && (schedpolicy != SchedPolicy::Fifo) && (schedpolicy != SchedPolicy::RR))
-    throw std::invalid_argument("Invalid sched. priority/policy");
+  if ((schedpolicy == SchedPolicy::Fifo) || (schedpolicy == SchedPolicy::RR))
+  {
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wtype-limits"
+    if ((priority < minPriority) || (priority > maxPriority))
+      throw std::invalid_argument("Invalid sched. priority/policy");
+    #pragma GCC diagnostic pop
+  }
+  else
+  {
+    if (priority != 0U)
+      throw std::invalid_argument("Invalid sched. priority/policy");
+  }
 
   epos_threadprio_t prio = 0U;
   switch (schedpolicy)
@@ -866,7 +880,7 @@ epos_threadprio_t Thread::UniversalPrioToEPOSPrio(priority_t const priority, Sch
     case SchedPolicy::Fifo:
       // intentional fall-through
     case SchedPolicy::RR:
-      prio = (EPOS_THREAD_PRIO_MAX + 32U) - priority;
+      prio = (EPOS_THREAD_PRIO_MAX + EPOS_CONF_SOFTIRQ_NB_OF_PRIOS + (maxPriority - minPriority + 1U)) - (priority - minPriority);
       break;
   }
 
