@@ -273,7 +273,7 @@
  * OS / Platform | Increase of sleep time by Sleep_ms() and Sleep_ns()
  * ------------- | ---------------------------------------------------
  * chibios_arm   | Round up to system tick period + 0..1 system tick periods
- * epos_arm      | __Periodic tick:__ Round up to system tick period + 0..1 system tick periods __Dynamic tick:__ Down to sub-microseconds
+ * epos_arm      | __Periodic tick:__ Round up to system tick period + 0..1 system tick periods<br>__Dynamic tick:__ Down to sub-microseconds
  * linux_arm     | Same as epos_arm
  * linux_x64     | Same as epos_arm
  * linux_arm_tfc | Zero
@@ -291,12 +291,12 @@
  * \image html "osal/os/priority_mapping_chibiosrt.png" "Priority Mapping for ChibiOS/RT"
  *
  * ### EPOS (epos_arm)
- * - Scheduling policies `Other`, `Idle`, and `Batch` are emulated by mapping them to specific fixed priorities (see
- *   figure below).
- * - EPOS supports round-robin and FIFO scheduling.
- * - EPOS supports deferred thread cancellation, but system calls (e.g. blocking on a ConditionVariable) currently do
- *   not contain cancellation points. Currently there are only explicit cancellation points available.
+ * - Scheduling policies `Other`, `Idle`, and `Batch` are mapped to specific fixed priorities (see figure below).
+ * - Scheduling policies `Fifo` and `RR` are fully supported.
+ * - System calls (e.g. blocking on a ConditionVariable) support deferred thread cancellation.
  *
+ * The GPCC universal scheduling policies and priorities are mapped to EPOS priorities as shown in the figure below.\n
+ * The example shown in the figure assumes a value of 2 for `EPOS_CONF_SOFTIRQ_NB_OF_PRIOS`.
  * \htmlonly <style>div.image img[src="osal/os/priority_mapping_epos.png"]{width:50%;}</style> \endhtmlonly
  * \image html "osal/os/priority_mapping_epos.png" "Priority Mapping for EPOS"
  *
