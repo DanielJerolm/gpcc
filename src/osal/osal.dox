@@ -285,7 +285,7 @@
  *   figure below).
  * - Scheduling policies `Fifo` and `RR` have the same behavior (both `RR`). Priority is always above the other
  *   policies (see figure below).
- * - System calls (e.g. blocking on a ConditionVariable) do not support deferred cancellation.
+ * - System calls (e.g. blocking on a ConditionVariable) do not support deferred thread cancellation.
  *
  * \htmlonly <style>div.image img[src="osal/os/priority_mapping_chibiosrt.png"]{width:50%;}</style> \endhtmlonly
  * \image html "osal/os/priority_mapping_chibiosrt.png" "Priority Mapping for ChibiOS/RT"
@@ -310,7 +310,7 @@
  * ### TFC (linux_arm_tfc, linux_x64_tfc)
  * - All scheduling policies and priorities are mapped to Linux scheduling policy `Other`.\n
  *   This is OK, because TFC provides the illusion of an CPU with infinite speed and infinite number of cores.
- * - System calls (e.g. blocking on a ConditionVariable) support deferred cancellation.
+ * - System calls (e.g. blocking on a ConditionVariable) support deferred thread cancellation.
  *
  * ### Zephyr (zephyr)
  * - Scheduling policies `Other`, `Idle`, and `Batch` are emulated by mapping them to specific fixed priorities (see
@@ -318,7 +318,7 @@
  * - Scheduling policy `Fifo` is not supported.
  * - Scheduling policy `RR` maps to the "preemtive priorities". Priority is always above the other policies (see figure
  *   below).
- * - System calls (e.g. blocking on a ConditionVariable) do not support deferred cancellation.
+ * - System calls (e.g. blocking on a ConditionVariable) do not support deferred thread cancellation.
  *
  * \htmlonly <style>div.image img[src="osal/os/priority_mapping_zephyr.png"]{width:50%;}</style> \endhtmlonly
  * \image html "osal/os/priority_mapping_zephyr.png" "Priority Mapping for Zephyr"
@@ -338,14 +338,14 @@
  * (the UUT, the test fixture and any components used by the UUT) must solely use GPCC's OSAL only.
  *
  * @anchor GPCC_OSAL_THREADING_INTEROP_CANCELLATION
- * ## Deferred Cancellation
- * If the underlying platform supports deferred cancellation, then a thread from @ref gpcc::osal::Thread will terminate
- * properly if it hits any implicit or explicit cancellation point.
+ * ## Deferred Thread Cancellation
+ * If the underlying platform supports deferred thread cancellation, then a thread from @ref gpcc::osal::Thread will
+ * terminate properly if it hits any implicit or explicit cancellation point.
  *
  * Deferred cancellation of threads created via @ref gpcc::osal::Thread can be enabled and disabled via other APIs
  * on the following platforms:
  *
- * OS / Platform | Alternative APIs for enable/disable deferred cancellation              | Stack unwind | POSIX cleanup handlers
+ * OS / Platform | Alternative APIs for enable/disable deferred thread cancellation       | Stack unwind | POSIX cleanup handlers
  * ------------- | ---------------------------------------------------------------------- | ------------ | --------------------------------
  * chibios_arm   | None                                                                   | yes          | not supported
  * epos_arm      | `epos_thread_EnableDeferredCancellation()`, `pthread_setcancelstate()` | yes          | Full integration in stack unwind
@@ -576,7 +576,7 @@
  * ## Options for mitigation
  * If an increment of the emulated system time during joining a thread is inacceptable, then any of the following
  * options can be applied to avoid it:
- * - Do not use deferred cancellation. Instead implement your own logic to shutdown a thread and use
+ * - Do not use deferred thread cancellation. Instead implement your own logic to shutdown a thread and use
  *   either [Thread::TerminateNow()](@ref gpcc::osal::Thread::TerminateNow) to terminate or return from the thread entry
  *   function to terminate.
  * - Ensure that the thread -when it receives the cancellation request- is blocked in a function that is a cancellation
