@@ -672,67 +672,68 @@ std::string TimePoint::ToString(TimePoint::Format const fmt, SubSecPrec const ss
 
   char const * pDST = (calendarTime.tm_isdst > 0) ? " DST" : "";
   char buffer[40];
-  size_t s;
-
-  // make compiler happy
-  buffer[0] = 0;
-  s = 0U;
+  int status = 0;
 
   switch (ssp)
   {
     case SubSecPrec::none:
-      s = snprintf(buffer, sizeof(buffer),
-                   "%04d-%02d-%02d %02d:%02d:%02d%s",
-                   calendarTime.tm_year + 1900,
-                   calendarTime.tm_mon + 1,
-                   calendarTime.tm_mday,
-                   calendarTime.tm_hour,
-                   calendarTime.tm_min,
-                   calendarTime.tm_sec,
-                   pDST);
+      status = snprintf(buffer, sizeof(buffer),
+                        "%04d-%02d-%02d %02d:%02d:%02d%s",
+                        calendarTime.tm_year + 1900,
+                        calendarTime.tm_mon + 1,
+                        calendarTime.tm_mday,
+                        calendarTime.tm_hour,
+                        calendarTime.tm_min,
+                        calendarTime.tm_sec,
+                        pDST);
       break;
 
     case SubSecPrec::msec:
-      s = snprintf(buffer, sizeof(buffer),
-                   "%04d-%02d-%02d %02d:%02d:%02d.%03dms%s",
-                   calendarTime.tm_year + 1900,
-                   calendarTime.tm_mon + 1,
-                   calendarTime.tm_mday,
-                   calendarTime.tm_hour,
-                   calendarTime.tm_min,
-                   calendarTime.tm_sec,
-                   static_cast<int>(ts_.tv_nsec / 1000000L),
-                   pDST);
+      status = snprintf(buffer, sizeof(buffer),
+                        "%04d-%02d-%02d %02d:%02d:%02d.%03dms%s",
+                        calendarTime.tm_year + 1900,
+                        calendarTime.tm_mon + 1,
+                        calendarTime.tm_mday,
+                        calendarTime.tm_hour,
+                        calendarTime.tm_min,
+                        calendarTime.tm_sec,
+                        static_cast<int>(ts_.tv_nsec / 1000000L),
+                        pDST);
       break;
 
     case SubSecPrec::usec:
-      s = snprintf(buffer, sizeof(buffer),
-                   "%04d-%02d-%02d %02d:%02d:%02d.%06dus%s",
-                   calendarTime.tm_year + 1900,
-                   calendarTime.tm_mon + 1,
-                   calendarTime.tm_mday,
-                   calendarTime.tm_hour,
-                   calendarTime.tm_min,
-                   calendarTime.tm_sec,
-                   static_cast<int>(ts_.tv_nsec / 1000L),
-                   pDST);
+      status = snprintf(buffer, sizeof(buffer),
+                        "%04d-%02d-%02d %02d:%02d:%02d.%06dus%s",
+                        calendarTime.tm_year + 1900,
+                        calendarTime.tm_mon + 1,
+                        calendarTime.tm_mday,
+                        calendarTime.tm_hour,
+                        calendarTime.tm_min,
+                        calendarTime.tm_sec,
+                        static_cast<int>(ts_.tv_nsec / 1000L),
+                        pDST);
       break;
 
     case SubSecPrec::nsec:
-      s = snprintf(buffer, sizeof(buffer),
-                   "%04d-%02d-%02d %02d:%02d:%02d.%09dns%s",
-                   calendarTime.tm_year + 1900,
-                   calendarTime.tm_mon + 1,
-                   calendarTime.tm_mday,
-                   calendarTime.tm_hour,
-                   calendarTime.tm_min,
-                   calendarTime.tm_sec,
-                   static_cast<int>(ts_.tv_nsec),
-                   pDST);
+      status = snprintf(buffer, sizeof(buffer),
+                        "%04d-%02d-%02d %02d:%02d:%02d.%09dns%s",
+                        calendarTime.tm_year + 1900,
+                        calendarTime.tm_mon + 1,
+                        calendarTime.tm_mday,
+                        calendarTime.tm_hour,
+                        calendarTime.tm_min,
+                        calendarTime.tm_sec,
+                        static_cast<int>(ts_.tv_nsec),
+                        pDST);
       break;
   }
 
-  if (s > GetMaxStringLength(fmt, ssp))
+  if (status <= 0)
+    throw std::logic_error("snprintf() failed");
+
+  size_t const s = static_cast<size_t>(status);
+
+  if ((s >= sizeof(buffer)) || (s > GetMaxStringLength(fmt, ssp)))
     throw std::logic_error("Unexpected string length");
 
   return std::string(buffer);
