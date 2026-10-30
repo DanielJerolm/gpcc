@@ -22,19 +22,19 @@
 #define NS_PER_HR  (60   * NS_PER_MIN)
 #define NS_PER_DAY (24   * NS_PER_HR)
 
-namespace {
-int64_t const ns_per_unit[7] =
+namespace
 {
-  1,
-  NS_PER_US,
-  NS_PER_MS,
-  NS_PER_SEC,
-  NS_PER_MIN,
-  NS_PER_HR,
-  NS_PER_DAY
-};
-
-} // anonymous
+  int64_t const ns_per_unit[7] =
+  {
+    1,
+    NS_PER_US,
+    NS_PER_MS,
+    NS_PER_SEC,
+    NS_PER_MIN,
+    NS_PER_HR,
+    NS_PER_DAY
+  };
+}
 
 namespace gpcc {
 namespace time {
@@ -51,12 +51,14 @@ namespace time {
  * No cancellation point included.
  */
 TimeSpan::TimeSpan(void) noexcept
-: value(0)
+: value_(0)
 {
 }
 
 /**
  * \brief Creates a @ref TimeSpan instance initialized with a time value given in nanoseconds.
+ *
+ * - - -
  *
  * __Thread safety:__\n
  * This is thread-safe.
@@ -65,12 +67,15 @@ TimeSpan::TimeSpan(void) noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param ns Value to initialize the @ref TimeSpan instance.
- * \return A @ref TimeSpan instance initialized with the given parameter.
+ * \param ns
+ * Value to initialize the @ref TimeSpan instance.
+ *
+ * \return
+ * A @ref TimeSpan instance initialized with the given parameter.
  */
 TimeSpan TimeSpan::ns(int64_t const ns) noexcept
 {
@@ -80,10 +85,9 @@ TimeSpan TimeSpan::ns(int64_t const ns) noexcept
 /**
  * \brief Creates a @ref TimeSpan instance initialized with a time value given in microseconds.
  *
- * Full overflow checks when converting the given value to the internal
- * 64bit nanosecond representation are included.
+ * Full overflow checks when converting the given value to the internal 64bit nanosecond representation are included.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * This is thread-safe.
@@ -92,12 +96,15 @@ TimeSpan TimeSpan::ns(int64_t const ns) noexcept
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param us Value to initialize the @ref TimeSpan instance.
- * \return A @ref TimeSpan instance initialized with the given parameter.
+ * \param us
+ * Value to initialize the @ref TimeSpan instance.
+ *
+ * \return
+ * A @ref TimeSpan instance initialized with the given parameter.
  */
 TimeSpan TimeSpan::us(int64_t const us)
 {
@@ -111,10 +118,9 @@ TimeSpan TimeSpan::us(int64_t const us)
 /**
  * \brief Creates a @ref TimeSpan instance initialized with a time value given in milliseconds.
  *
- * Full overflow checks when converting the given value to the internal
- * 64bit nanosecond representation are included.
+ * Full overflow checks when converting the given value to the internal 64bit nanosecond representation are included.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * This is thread-safe.
@@ -123,12 +129,15 @@ TimeSpan TimeSpan::us(int64_t const us)
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param ms Value to initialize the @ref TimeSpan instance.
- * \return A @ref TimeSpan instance initialized with the given parameter.
+ * \param ms
+ * Value to initialize the @ref TimeSpan instance.
+ *
+ * \return
+ * A @ref TimeSpan instance initialized with the given parameter.
  */
 TimeSpan TimeSpan::ms(int64_t const ms)
 {
@@ -142,10 +151,9 @@ TimeSpan TimeSpan::ms(int64_t const ms)
 /**
  * \brief Creates a @ref TimeSpan instance initialized with a time value given in seconds.
  *
- * Full overflow checks when converting the given value to the internal
- * 64bit nanosecond representation are included.
+ * Full overflow checks when converting the given value to the internal 64bit nanosecond representation are included.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * This is thread-safe.
@@ -154,12 +162,15 @@ TimeSpan TimeSpan::ms(int64_t const ms)
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param sec Value to initialize the @ref TimeSpan instance.
- * \return A @ref TimeSpan instance initialized with the given parameter.
+ * \param sec
+ * Value to initialize the @ref TimeSpan instance.
+ *
+ * \return
+ * A @ref TimeSpan instance initialized with the given parameter.
  */
 TimeSpan TimeSpan::sec(int64_t const sec)
 {
@@ -173,10 +184,9 @@ TimeSpan TimeSpan::sec(int64_t const sec)
 /**
  * \brief Creates a @ref TimeSpan instance initialized with a time value given in minutes.
  *
- * Full overflow checks when converting the given value to the internal
- * 64bit nanosecond representation are included.
+ * Full overflow checks when converting the given value to the internal 64bit nanosecond representation are included.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * This is thread-safe.
@@ -185,12 +195,15 @@ TimeSpan TimeSpan::sec(int64_t const sec)
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param min Value to initialize the @ref TimeSpan instance.
- * \return A @ref TimeSpan instance initialized with the given parameter.
+ * \param min
+ * Value to initialize the @ref TimeSpan instance.
+ *
+ * \return
+ * A @ref TimeSpan instance initialized with the given parameter.
  */
 TimeSpan TimeSpan::min(int32_t const min)
 {
@@ -204,10 +217,9 @@ TimeSpan TimeSpan::min(int32_t const min)
 /**
  * \brief Creates a @ref TimeSpan instance initialized with a time value given in hours.
  *
- * Full overflow checks when converting the given value to the internal
- * 64bit nanosecond representation are included.
+ * Full overflow checks when converting the given value to the internal 64bit nanosecond representation are included.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * This is thread-safe.
@@ -216,12 +228,15 @@ TimeSpan TimeSpan::min(int32_t const min)
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param hr Value to initialize the @ref TimeSpan instance.
- * \return A @ref TimeSpan instance initialized with the given parameter.
+ * \param hr
+ * Value to initialize the @ref TimeSpan instance.
+ *
+ * \return
+ * A @ref TimeSpan instance initialized with the given parameter.
  */
 TimeSpan TimeSpan::hr(int32_t const hr)
 {
@@ -235,10 +250,9 @@ TimeSpan TimeSpan::hr(int32_t const hr)
 /**
  * \brief Creates a @ref TimeSpan instance initialized with a time value given in days.
  *
- * Full overflow checks when converting the given value to the internal
- * 64bit nanosecond representation are included.
+ * Full overflow checks when converting the given value to the internal 64bit nanosecond representation are included.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * This is thread-safe.
@@ -247,12 +261,15 @@ TimeSpan TimeSpan::hr(int32_t const hr)
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param days Value to initialize the @ref TimeSpan instance.
- * \return A @ref TimeSpan instance initialized with the given parameter.
+ * \param days
+ * Value to initialize the @ref TimeSpan instance.
+ *
+ * \return
+ * A @ref TimeSpan instance initialized with the given parameter.
  */
 TimeSpan TimeSpan::days(int32_t const days)
 {
@@ -266,6 +283,8 @@ TimeSpan TimeSpan::days(int32_t const days)
 /**
  * \brief Creates a @ref TimeSpan instance initialized with the largest possible negative value.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * This is thread-safe.
  *
@@ -273,11 +292,12 @@ TimeSpan TimeSpan::days(int32_t const days)
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \return A @ref TimeSpan instance initialized with the largest possible negative value.
+ * \return
+ * A @ref TimeSpan instance initialized with the largest possible negative value.
  */
 TimeSpan TimeSpan::NegativeMaximum(void) noexcept
 {
@@ -287,19 +307,21 @@ TimeSpan TimeSpan::NegativeMaximum(void) noexcept
 /**
  * \brief Creates a @ref TimeSpan instance initialized with the largest possible positive value.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * This is thread-safe.
  *
  * __Exception safety:__\n
  * No-throw guarantee.
- * Operations are guaranteed to succeed and satisfy all requirements even in exceptional situations. If an exception occurs, it will be handled internally and not observed by clients.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \return A @ref TimeSpan instance initialized with the largest possible positive value.
+ * \return
+ * A @ref TimeSpan instance initialized with the largest possible positive value.
  */
 TimeSpan TimeSpan::PositiveMaximum(void) noexcept
 {
@@ -311,7 +333,7 @@ TimeSpan TimeSpan::PositiveMaximum(void) noexcept
  *
  * Full arithmetic overflow checks are included.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
@@ -320,17 +342,20 @@ TimeSpan TimeSpan::PositiveMaximum(void) noexcept
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param rhv The other operand.
- * \return A new @ref TimeSpan instance being the sum of this TimeSpan instance and rhv.
+ * \param rhv
+ * The other operand.
+ *
+ * \return
+ * A new @ref TimeSpan instance being the sum of this TimeSpan instance and @p rhv.
  */
 TimeSpan TimeSpan::operator+(TimeSpan const & rhv) const
 {
   int64_t result;
-  if (compiler::OverflowAwareAdd(value, rhv.value, &result))
+  if (compiler::OverflowAwareAdd(value_, rhv.value_, &result))
     throw std::overflow_error("TimeSpan::operator+");
   return TimeSpan(result);
 }
@@ -340,7 +365,7 @@ TimeSpan TimeSpan::operator+(TimeSpan const & rhv) const
  *
  * Full arithmetic overflow checks are included.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
@@ -349,17 +374,20 @@ TimeSpan TimeSpan::operator+(TimeSpan const & rhv) const
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param rhv The other operand.
- * \return A new @ref TimeSpan instance being the difference between this TimeSpan instance and rhv.
+ * \param rhv
+ * The other operand.
+ *
+ * \return
+ * A new @ref TimeSpan instance being the difference between this TimeSpan instance and @p rhv.
  */
 TimeSpan TimeSpan::operator-(TimeSpan const & rhv) const
 {
   int64_t result;
-  if (compiler::OverflowAwareSub(value, rhv.value, &result))
+  if (compiler::OverflowAwareSub(value_, rhv.value_, &result))
     throw std::overflow_error("TimeSpan::operator-");
   return TimeSpan(result);
 }
@@ -369,7 +397,7 @@ TimeSpan TimeSpan::operator-(TimeSpan const & rhv) const
  *
  * Full arithmetic overflow checks are included.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * The state of the object is modified. Any concurrent accesses are not safe.
@@ -378,21 +406,23 @@ TimeSpan TimeSpan::operator-(TimeSpan const & rhv) const
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param rhv
  * The referenced @ref TimeSpan instance is added to this @ref TimeSpan instance.\n
  * The result is stored in this @ref TimeSpan instance.
- * \return Reference to itself.
+ *
+ * \return
+ * Reference to itself.
  */
 TimeSpan& TimeSpan::operator+=(TimeSpan const & rhv)
 {
   int64_t result;
-  if (compiler::OverflowAwareAdd(value, rhv.value, &result))
+  if (compiler::OverflowAwareAdd(value_, rhv.value_, &result))
     throw std::overflow_error("TimeSpan::operator+=");
-  value = result;
+  value_ = result;
   return *this;
 }
 
@@ -401,7 +431,7 @@ TimeSpan& TimeSpan::operator+=(TimeSpan const & rhv)
  *
  * Full arithmetic overflow checks are included.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * The state of the object is modified. Any concurrent accesses are not safe.
@@ -410,26 +440,30 @@ TimeSpan& TimeSpan::operator+=(TimeSpan const & rhv)
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param rhv
  * The referenced @ref TimeSpan instance is subtracted from this @ref TimeSpan instance.\n
  * The result is stored in this @ref TimeSpan instance.
-  \return Reference to itself.
+ *
+ * \return
+ * Reference to itself.
  */
 TimeSpan& TimeSpan::operator-=(TimeSpan const & rhv)
 {
   int64_t result;
-  if (compiler::OverflowAwareSub(value, rhv.value, &result))
+  if (compiler::OverflowAwareSub(value_, rhv.value_, &result))
     throw std::overflow_error("TimeSpan::operator-=");
-  value = result;
+  value_ = result;
   return *this;
 }
 
 /**
  * \brief Retrieves the value of the @ref TimeSpan in nanoseconds.
+ *
+ * - - -
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
@@ -438,15 +472,16 @@ TimeSpan& TimeSpan::operator-=(TimeSpan const & rhv)
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \return Value of the @ref TimeSpan in nanoseconds.
+ * \return
+ * Value of the @ref TimeSpan in nanoseconds.
  */
 int64_t TimeSpan::ns(void) const noexcept
 {
-  return value;
+  return value_;
 }
 
 /**
@@ -454,7 +489,7 @@ int64_t TimeSpan::ns(void) const noexcept
  *
  * The internal time span value is kept in ns. During conversion to us, any remainder is truncated.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
@@ -463,15 +498,16 @@ int64_t TimeSpan::ns(void) const noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \return Value of the @ref TimeSpan in microseconds.
+ * \return
+ * Value of the @ref TimeSpan in microseconds.
  */
 int64_t TimeSpan::us(void) const noexcept
 {
-  return value / NS_PER_US;
+  return value_ / NS_PER_US;
 }
 
 /**
@@ -479,7 +515,7 @@ int64_t TimeSpan::us(void) const noexcept
  *
  * The internal time span value is kept in ns. During conversion to ms, any remainder is truncated.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
@@ -488,15 +524,16 @@ int64_t TimeSpan::us(void) const noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \return Value of the @ref TimeSpan in milliseconds.
+ * \return
+ * Value of the @ref TimeSpan in milliseconds.
  */
 int64_t TimeSpan::ms(void) const noexcept
 {
-  return value / NS_PER_MS;
+  return value_ / NS_PER_MS;
 }
 
 /**
@@ -504,7 +541,7 @@ int64_t TimeSpan::ms(void) const noexcept
  *
  * The internal time span value is kept in ns. During conversion to sec, any remainder is truncated.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
@@ -513,15 +550,16 @@ int64_t TimeSpan::ms(void) const noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \return Value of the @ref TimeSpan in seconds.
+ * \return
+ * Value of the @ref TimeSpan in seconds.
  */
 int64_t TimeSpan::sec(void) const noexcept
 {
-  return value / NS_PER_SEC;
+  return value_ / NS_PER_SEC;
 }
 
 /**
@@ -529,7 +567,7 @@ int64_t TimeSpan::sec(void) const noexcept
  *
  * The internal time span value is kept in ns. During conversion to min, any remainder is truncated.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
@@ -538,15 +576,16 @@ int64_t TimeSpan::sec(void) const noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \return Value of the @ref TimeSpan in minutes.
+ * \return
+ * Value of the @ref TimeSpan in minutes.
  */
 int32_t TimeSpan::min(void) const noexcept
 {
-  return value / NS_PER_MIN;
+  return value_ / NS_PER_MIN;
 }
 
 /**
@@ -554,7 +593,7 @@ int32_t TimeSpan::min(void) const noexcept
  *
  * The internal time span value is kept in ns. During conversion to hours, any remainder is truncated.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
@@ -563,15 +602,16 @@ int32_t TimeSpan::min(void) const noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \return Value of the @ref TimeSpan in hours.
+ * \return
+ * Value of the @ref TimeSpan in hours.
  */
 int32_t TimeSpan::hr(void) const noexcept
 {
-  return value / NS_PER_HR;
+  return value_ / NS_PER_HR;
 }
 
 /**
@@ -579,7 +619,7 @@ int32_t TimeSpan::hr(void) const noexcept
  *
  * The internal time span value is kept in ns. During conversion to days, any remainder is truncated.
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
@@ -588,15 +628,16 @@ int32_t TimeSpan::hr(void) const noexcept
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \return Value of the @ref TimeSpan in days.
+ * \return
+ * Value of the @ref TimeSpan in days.
  */
 int32_t TimeSpan::days(void) const noexcept
 {
-  return value / NS_PER_DAY;
+  return value_ / NS_PER_DAY;
 }
 
 /**
@@ -608,7 +649,7 @@ int32_t TimeSpan::days(void) const noexcept
  * - `ToString(Precison const prec)` creates a string representation using a fixed format:
  *   [d.]hh:mm:ss.[fff[fff[fff]]].
  *
- * ---
+ * - - -
  *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
@@ -617,9 +658,9 @@ int32_t TimeSpan::days(void) const noexcept
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \return
  * Human-readable string representation of the @ref TimeSpan. \n
@@ -649,11 +690,11 @@ std::string TimeSpan::ToString(void) const
 
   str << StringComposer::AlignRightPadZero;
 
-  int64_t _value = value;
-  if (_value < 0)
+  int64_t value = value_;
+  if (value < 0)
   {
     str << "-";
-    _value = -_value;
+    value = -value;
   }
 
   Units base          = Units::days;
@@ -664,8 +705,8 @@ std::string TimeSpan::ToString(void) const
   while (true)
   {
     int64_t const divider = ns_per_unit[static_cast<int>(currentUnit)];
-    int64_t const full = _value / divider;
-    int64_t const frac = _value % divider;
+    int64_t const full = value / divider;
+    int64_t const frac = value % divider;
 
     if ((!lookingForBase) || (full != 0) || (currentUnit == Units::ns))
     {
@@ -760,7 +801,7 @@ std::string TimeSpan::ToString(void) const
       anyOutputYet = true;
     }
 
-    _value = frac;
+    value = frac;
     currentUnit = static_cast<Units>(static_cast<int>(currentUnit) - 1);
   }
 
@@ -775,6 +816,8 @@ std::string TimeSpan::ToString(void) const
  * - `ToString(void)` creates the smallest, shortest and most compact (but still exact) string
  *   representation of the timespan. It does not use a fixed format and tries to minimize text output.
  *
+ * - - -
+ *
  * __Thread safety:__\n
  * The state of the object is not modified. Concurrent accesses are safe.
  *
@@ -782,9 +825,9 @@ std::string TimeSpan::ToString(void) const
  * Strong guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
  * \param prec
  * This determines the format used for fractions of seconds:
@@ -796,6 +839,7 @@ std::string TimeSpan::ToString(void) const
  * @ref Precison::sec | [d.]hh:mm:ss
  *
  * Note that any fraction below `prec` is truncated. There is no round up/down.
+ *
  * \return
  * Human-readable string representation of the @ref TimeSpan. \n
  * Example (prec = Precision::us):\n
@@ -812,16 +856,16 @@ std::string TimeSpan::ToString(Precison const prec) const
 
   str << StringComposer::AlignRightPadZero;
 
-  int64_t _value = value;
-  if (_value < 0)
-    _value = -_value;
+  int64_t value = value_;
+  if (value < 0)
+    value = -value;
 
   bool zero = true;
 
   // days
   {
-    int32_t const days = _value / NS_PER_DAY;
-    _value %= NS_PER_DAY;
+    int32_t const days = value / NS_PER_DAY;
+    value %= NS_PER_DAY;
 
     if (days != 0)
     {
@@ -832,7 +876,7 @@ std::string TimeSpan::ToString(Precison const prec) const
 
   // hh:mm:ss
   {
-    int32_t seconds = _value / NS_PER_SEC;
+    int32_t seconds = value / NS_PER_SEC;
     if (seconds != 0)
       zero = false;
 
@@ -852,7 +896,7 @@ std::string TimeSpan::ToString(Precison const prec) const
   {
     str << '.';
 
-    uint32_t const ns = _value % NS_PER_SEC;
+    uint32_t const ns = value % NS_PER_SEC;
 
     switch (prec)
     {
@@ -890,7 +934,7 @@ std::string TimeSpan::ToString(Precison const prec) const
     }
   }
 
-  if ((value >= 0) || (zero))
+  if ((value_ >= 0) || (zero))
     return str.Get();
   else
     return "-" + str.Get();
@@ -899,18 +943,21 @@ std::string TimeSpan::ToString(Precison const prec) const
 /**
  * \brief Private constructor. Creates a @ref TimeSpan initialized with a specific value.
  *
+ * - - -
+ *
  * __Exception safety:__\n
  * No-throw guarantee.
  *
  * __Thread cancellation safety:__\n
- * Safe, no cancellation point included.
+ * No cancellation point included.
  *
- * ---
+ * - - -
  *
- * \param _value Attribute `value` is initialized with this.
+ * \param value
+ * Attribute `value_` is initialized with this.
  */
-TimeSpan::TimeSpan(int64_t const _value) noexcept
-: value(_value)
+TimeSpan::TimeSpan(int64_t const value) noexcept
+: value_(value)
 {
 }
 

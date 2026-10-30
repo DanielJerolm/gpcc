@@ -224,8 +224,8 @@ TimePoint& TimePoint::operator=(time_t const sec) noexcept
 TimePoint TimePoint::operator + (TimeSpan const & rhv) const
 {
   // split the rhv time span into a second and nanosecond portion
-  int64_t const rhv_sec  = rhv.value / NSEC_PER_SEC;
-  int32_t const rhv_nsec = rhv.value % NSEC_PER_SEC;
+  int64_t const rhv_sec  = rhv.value_ / NSEC_PER_SEC;
+  int32_t const rhv_nsec = rhv.value_ % NSEC_PER_SEC;
 
   // add second and nanosecond portion to this TimePoint's value and store the result in ts
   struct ::timespec ts;
@@ -265,8 +265,8 @@ TimePoint TimePoint::operator + (TimeSpan const & rhv) const
 TimePoint TimePoint::operator - (TimeSpan const & rhv) const
 {
   // split the rhv time span into a second and nanosecond portion
-  int64_t const rhv_sec  = rhv.value / NSEC_PER_SEC;
-  int32_t const rhv_nsec = rhv.value % NSEC_PER_SEC;
+  int64_t const rhv_sec  = rhv.value_ / NSEC_PER_SEC;
+  int32_t const rhv_nsec = rhv.value_ % NSEC_PER_SEC;
 
   // subtract second and nanosecond portion from this TimePoint's value and store the result in ts
   struct ::timespec ts;
@@ -347,8 +347,8 @@ TimeSpan TimePoint::operator - (TimePoint const & rhv) const
 TimePoint& TimePoint::operator+= (TimeSpan const & rhv)
 {
   // split the rhv time span into a second and nanosecond portion
-  int64_t const rhv_sec  = rhv.value / NSEC_PER_SEC;
-  int32_t const rhv_nsec = rhv.value % NSEC_PER_SEC;
+  int64_t const rhv_sec  = rhv.value_ / NSEC_PER_SEC;
+  int32_t const rhv_nsec = rhv.value_ % NSEC_PER_SEC;
 
   // add second and nanosecond portion to this TimePoint's value and store the result in ts
   struct ::timespec ts;
@@ -392,8 +392,8 @@ TimePoint& TimePoint::operator+= (TimeSpan const & rhv)
 TimePoint& TimePoint::operator-= (TimeSpan const & rhv)
 {
   // split the rhv time span into a second and nanosecond portion
-  int64_t const rhv_sec  = rhv.value / NSEC_PER_SEC;
-  int32_t const rhv_nsec = rhv.value % NSEC_PER_SEC;
+  int64_t const rhv_sec  = rhv.value_ / NSEC_PER_SEC;
+  int32_t const rhv_nsec = rhv.value_ % NSEC_PER_SEC;
 
   // subtract second and nanosecond portion from this TimePoint's value and store the result in ts
   struct ::timespec ts;
@@ -672,62 +672,68 @@ std::string TimePoint::ToString(TimePoint::Format const fmt, SubSecPrec const ss
 
   char const * pDST = (calendarTime.tm_isdst > 0) ? " DST" : "";
   char buffer[40];
-  size_t s;
+  int status = 0;
+
   switch (ssp)
   {
     case SubSecPrec::none:
-      s = snprintf(buffer, sizeof(buffer),
-                   "%04d-%02d-%02d %02d:%02d:%02d%s",
-                   calendarTime.tm_year + 1900,
-                   calendarTime.tm_mon + 1,
-                   calendarTime.tm_mday,
-                   calendarTime.tm_hour,
-                   calendarTime.tm_min,
-                   calendarTime.tm_sec,
-                   pDST);
+      status = snprintf(buffer, sizeof(buffer),
+                        "%04d-%02d-%02d %02d:%02d:%02d%s",
+                        calendarTime.tm_year + 1900,
+                        calendarTime.tm_mon + 1,
+                        calendarTime.tm_mday,
+                        calendarTime.tm_hour,
+                        calendarTime.tm_min,
+                        calendarTime.tm_sec,
+                        pDST);
       break;
 
     case SubSecPrec::msec:
-      s = snprintf(buffer, sizeof(buffer),
-                   "%04d-%02d-%02d %02d:%02d:%02d.%03dms%s",
-                   calendarTime.tm_year + 1900,
-                   calendarTime.tm_mon + 1,
-                   calendarTime.tm_mday,
-                   calendarTime.tm_hour,
-                   calendarTime.tm_min,
-                   calendarTime.tm_sec,
-                   static_cast<int>(ts_.tv_nsec / 1000000L),
-                   pDST);
+      status = snprintf(buffer, sizeof(buffer),
+                        "%04d-%02d-%02d %02d:%02d:%02d.%03dms%s",
+                        calendarTime.tm_year + 1900,
+                        calendarTime.tm_mon + 1,
+                        calendarTime.tm_mday,
+                        calendarTime.tm_hour,
+                        calendarTime.tm_min,
+                        calendarTime.tm_sec,
+                        static_cast<int>(ts_.tv_nsec / 1000000L),
+                        pDST);
       break;
 
     case SubSecPrec::usec:
-      s = snprintf(buffer, sizeof(buffer),
-                   "%04d-%02d-%02d %02d:%02d:%02d.%06dus%s",
-                   calendarTime.tm_year + 1900,
-                   calendarTime.tm_mon + 1,
-                   calendarTime.tm_mday,
-                   calendarTime.tm_hour,
-                   calendarTime.tm_min,
-                   calendarTime.tm_sec,
-                   static_cast<int>(ts_.tv_nsec / 1000L),
-                   pDST);
+      status = snprintf(buffer, sizeof(buffer),
+                        "%04d-%02d-%02d %02d:%02d:%02d.%06dus%s",
+                        calendarTime.tm_year + 1900,
+                        calendarTime.tm_mon + 1,
+                        calendarTime.tm_mday,
+                        calendarTime.tm_hour,
+                        calendarTime.tm_min,
+                        calendarTime.tm_sec,
+                        static_cast<int>(ts_.tv_nsec / 1000L),
+                        pDST);
       break;
 
     case SubSecPrec::nsec:
-      s = snprintf(buffer, sizeof(buffer),
-                   "%04d-%02d-%02d %02d:%02d:%02d.%09dns%s",
-                   calendarTime.tm_year + 1900,
-                   calendarTime.tm_mon + 1,
-                   calendarTime.tm_mday,
-                   calendarTime.tm_hour,
-                   calendarTime.tm_min,
-                   calendarTime.tm_sec,
-                   static_cast<int>(ts_.tv_nsec),
-                   pDST);
+      status = snprintf(buffer, sizeof(buffer),
+                        "%04d-%02d-%02d %02d:%02d:%02d.%09dns%s",
+                        calendarTime.tm_year + 1900,
+                        calendarTime.tm_mon + 1,
+                        calendarTime.tm_mday,
+                        calendarTime.tm_hour,
+                        calendarTime.tm_min,
+                        calendarTime.tm_sec,
+                        static_cast<int>(ts_.tv_nsec),
+                        pDST);
       break;
   }
 
-  if (s > GetMaxStringLength(fmt, ssp))
+  if (status <= 0)
+    throw std::logic_error("snprintf() failed");
+
+  size_t const s = static_cast<size_t>(status);
+
+  if ((s >= sizeof(buffer)) || (s > GetMaxStringLength(fmt, ssp)))
     throw std::logic_error("Unexpected string length");
 
   return std::string(buffer);
