@@ -281,7 +281,10 @@ TimeSpan TimeSpan::days(int32_t const days)
 }
 
 /**
- * \brief Creates a @ref TimeSpan instance initialized with the largest possible negative value.
+ * \brief Creates a @ref TimeSpan instance initialized with the minimum representable value.
+ *
+ * Time spans are signed. The minimum representable value is a large negative number and the maximum representable value
+ * is a large positive number.
  *
  * - - -
  *
@@ -297,15 +300,18 @@ TimeSpan TimeSpan::days(int32_t const days)
  * - - -
  *
  * \return
- * A @ref TimeSpan instance initialized with the largest possible negative value.
+ * A @ref TimeSpan instance initialized with the minimum representable value.
  */
-TimeSpan TimeSpan::NegativeMaximum(void) noexcept
+TimeSpan TimeSpan::MinRepresentableValue(void) noexcept
 {
   return TimeSpan(std::numeric_limits<int64_t>::min());
 }
 
 /**
- * \brief Creates a @ref TimeSpan instance initialized with the largest possible positive value.
+ * \brief Creates a @ref TimeSpan instance initialized with the maximum representable value.
+ *
+ * Time spans are signed. The minimum representable value is a large negative number and the maximum representable value
+ * is a large positive number.
  *
  * - - -
  *
@@ -321,9 +327,9 @@ TimeSpan TimeSpan::NegativeMaximum(void) noexcept
  * - - -
  *
  * \return
- * A @ref TimeSpan instance initialized with the largest possible positive value.
+ * A @ref TimeSpan instance initialized with the maximum representable value.
  */
-TimeSpan TimeSpan::PositiveMaximum(void) noexcept
+TimeSpan TimeSpan::MaxRepresentableValue(void) noexcept
 {
   return TimeSpan(std::numeric_limits<int64_t>::max());
 }
