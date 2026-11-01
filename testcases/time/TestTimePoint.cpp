@@ -377,19 +377,19 @@ TEST(gpcc_time_TimePoint_Tests, OperatorPlusTimespan_BoundOvfl)
   ASSERT_THROW(result = uut + TimeSpan::ns(1), std::overflow_error);
   ASSERT_EQ(88, result.Get_sec());
   ASSERT_EQ(88, result.Get_nsec());
-  ASSERT_THROW(result = uut + TimeSpan::PositiveMaximum(), std::overflow_error);
+  ASSERT_THROW(result = uut + TimeSpan::MaxRepresentableValue(), std::overflow_error);
   ASSERT_EQ(88, result.Get_sec());
   ASSERT_EQ(88, result.Get_nsec());
 
   if (sizeof(time_t) == 8U)
   {
-    result = uut + TimeSpan::NegativeMaximum();
+    result = uut + TimeSpan::MinRepresentableValue();
     ASSERT_EQ(0x7FFFFFFDDA3E82FBLL, result.Get_sec());
     ASSERT_EQ(145224191, result.Get_nsec());
   }
   else
   {
-    ASSERT_THROW(result = uut + TimeSpan::NegativeMaximum(), std::overflow_error);
+    ASSERT_THROW(result = uut + TimeSpan::MinRepresentableValue(), std::overflow_error);
     ASSERT_EQ(88, result.Get_sec());
     ASSERT_EQ(88, result.Get_nsec());
   }
@@ -399,19 +399,19 @@ TEST(gpcc_time_TimePoint_Tests, OperatorPlusTimespan_BoundOvfl)
   ASSERT_THROW(result = uut + TimeSpan::ns(-1), std::overflow_error);
   ASSERT_EQ(88, result.Get_sec());
   ASSERT_EQ(88, result.Get_nsec());
-  ASSERT_THROW(result = uut + TimeSpan::NegativeMaximum(), std::overflow_error);
+  ASSERT_THROW(result = uut + TimeSpan::MinRepresentableValue(), std::overflow_error);
   ASSERT_EQ(88, result.Get_sec());
   ASSERT_EQ(88, result.Get_nsec());
 
   if (sizeof(time_t) == 8)
   {
-    result = uut + TimeSpan::PositiveMaximum();
+    result = uut + TimeSpan::MaxRepresentableValue();
     ASSERT_EQ(static_cast<time_t>(0x8000000225C17D04LL), result.Get_sec());
     ASSERT_EQ(854775807, result.Get_nsec());
   }
   else
   {
-    ASSERT_THROW(result = uut + TimeSpan::PositiveMaximum(), std::overflow_error);
+    ASSERT_THROW(result = uut + TimeSpan::MaxRepresentableValue(), std::overflow_error);
     ASSERT_EQ(88, result.Get_sec());
     ASSERT_EQ(88, result.Get_nsec());
   }
@@ -453,19 +453,19 @@ TEST(gpcc_time_TimePoint_Tests, OperatorMinusTimespan_BoundOvfl)
   ASSERT_THROW(result = uut - TimeSpan::ns(-1), std::overflow_error);
   ASSERT_EQ(88, result.Get_sec());
   ASSERT_EQ(88, result.Get_nsec());
-  ASSERT_THROW(result = uut - TimeSpan::NegativeMaximum(), std::overflow_error);
+  ASSERT_THROW(result = uut - TimeSpan::MinRepresentableValue(), std::overflow_error);
   ASSERT_EQ(88, result.Get_sec());
   ASSERT_EQ(88, result.Get_nsec());
 
   if (sizeof(time_t) == 8)
   {
-    result = uut - TimeSpan::PositiveMaximum();
+    result = uut - TimeSpan::MaxRepresentableValue();
     ASSERT_EQ(0x7FFFFFFDDA3E82FBLL, result.Get_sec());
     ASSERT_EQ(145224192, result.Get_nsec());
   }
   else
   {
-    ASSERT_THROW(result = uut - TimeSpan::PositiveMaximum(), std::overflow_error);
+    ASSERT_THROW(result = uut - TimeSpan::MaxRepresentableValue(), std::overflow_error);
     ASSERT_EQ(88, result.Get_sec());
     ASSERT_EQ(88, result.Get_nsec());
   }
@@ -475,19 +475,19 @@ TEST(gpcc_time_TimePoint_Tests, OperatorMinusTimespan_BoundOvfl)
   ASSERT_THROW(result = uut - TimeSpan::ns(1), std::overflow_error);
   ASSERT_EQ(88, result.Get_sec());
   ASSERT_EQ(88, result.Get_nsec());
-  ASSERT_THROW(result = uut - TimeSpan::PositiveMaximum(), std::overflow_error);
+  ASSERT_THROW(result = uut - TimeSpan::MaxRepresentableValue(), std::overflow_error);
   ASSERT_EQ(88, result.Get_sec());
   ASSERT_EQ(88, result.Get_nsec());
 
   if (sizeof(time_t) == 8)
   {
-    result = uut - TimeSpan::NegativeMaximum();
+    result = uut - TimeSpan::MinRepresentableValue();
     ASSERT_EQ(static_cast<time_t>(0x8000000225C17D04LL), result.Get_sec());
     ASSERT_EQ(854775808, result.Get_nsec());
   }
   else
   {
-    ASSERT_THROW(result = uut - TimeSpan::NegativeMaximum(), std::overflow_error);
+    ASSERT_THROW(result = uut - TimeSpan::MinRepresentableValue(), std::overflow_error);
     ASSERT_EQ(88, result.Get_sec());
     ASSERT_EQ(88, result.Get_nsec());
   }
@@ -564,19 +564,19 @@ TEST(gpcc_time_TimePoint_Tests, OperatorPlusAssignTimespan_BoundOvfl)
   ASSERT_THROW(uut += TimeSpan::ns(1), std::overflow_error);
   ASSERT_EQ(std::numeric_limits<time_t>::max(), uut.Get_sec());
   ASSERT_EQ(999999999, uut.Get_nsec());
-  ASSERT_THROW(uut += TimeSpan::PositiveMaximum(), std::overflow_error);
+  ASSERT_THROW(uut += TimeSpan::MaxRepresentableValue(), std::overflow_error);
   ASSERT_EQ(std::numeric_limits<time_t>::max(), uut.Get_sec());
   ASSERT_EQ(999999999, uut.Get_nsec());
 
   if (sizeof(time_t) == 8)
   {
-    uut += TimeSpan::NegativeMaximum();
+    uut += TimeSpan::MinRepresentableValue();
     ASSERT_EQ(0x7FFFFFFDDA3E82FBLL, uut.Get_sec());
     ASSERT_EQ(145224191, uut.Get_nsec());
   }
   else
   {
-    ASSERT_THROW(uut += TimeSpan::NegativeMaximum(), std::overflow_error);
+    ASSERT_THROW(uut += TimeSpan::MinRepresentableValue(), std::overflow_error);
     ASSERT_EQ(std::numeric_limits<time_t>::max(), uut.Get_sec());
     ASSERT_EQ(999999999, uut.Get_nsec());
   }
@@ -585,19 +585,19 @@ TEST(gpcc_time_TimePoint_Tests, OperatorPlusAssignTimespan_BoundOvfl)
   ASSERT_THROW(uut += TimeSpan::ns(-1), std::overflow_error);
   ASSERT_EQ(std::numeric_limits<time_t>::min(), uut.Get_sec());
   ASSERT_EQ(0, uut.Get_nsec());
-  ASSERT_THROW(uut += TimeSpan::NegativeMaximum(), std::overflow_error);
+  ASSERT_THROW(uut += TimeSpan::MinRepresentableValue(), std::overflow_error);
   ASSERT_EQ(std::numeric_limits<time_t>::min(), uut.Get_sec());
   ASSERT_EQ(0, uut.Get_nsec());
 
   if (sizeof(time_t) == 8)
   {
-    uut += TimeSpan::PositiveMaximum();
+    uut += TimeSpan::MaxRepresentableValue();
     ASSERT_EQ(static_cast<time_t>(0x8000000225C17D04LL), uut.Get_sec());
     ASSERT_EQ(854775807, uut.Get_nsec());
   }
   else
   {
-    ASSERT_THROW(uut += TimeSpan::PositiveMaximum(), std::overflow_error);
+    ASSERT_THROW(uut += TimeSpan::MaxRepresentableValue(), std::overflow_error);
     ASSERT_EQ(std::numeric_limits<time_t>::min(), uut.Get_sec());
     ASSERT_EQ(0, uut.Get_nsec());
   }
@@ -636,19 +636,19 @@ TEST(gpcc_time_TimePoint_Tests, OperatorMinusAssignTimespan_BoundOvfl)
   ASSERT_THROW(uut -= TimeSpan::ns(-1), std::overflow_error);
   ASSERT_EQ(std::numeric_limits<time_t>::max(), uut.Get_sec());
   ASSERT_EQ(999999999, uut.Get_nsec());
-  ASSERT_THROW(uut -= TimeSpan::NegativeMaximum(), std::overflow_error);
+  ASSERT_THROW(uut -= TimeSpan::MinRepresentableValue(), std::overflow_error);
   ASSERT_EQ(std::numeric_limits<time_t>::max(), uut.Get_sec());
   ASSERT_EQ(999999999, uut.Get_nsec());
 
   if (sizeof(time_t) == 8)
   {
-    uut -= TimeSpan::PositiveMaximum();
+    uut -= TimeSpan::MaxRepresentableValue();
     ASSERT_EQ(0x7FFFFFFDDA3E82FBLL, uut.Get_sec());
     ASSERT_EQ(145224192, uut.Get_nsec());
   }
   else
   {
-    ASSERT_THROW(uut -= TimeSpan::PositiveMaximum(), std::overflow_error);
+    ASSERT_THROW(uut -= TimeSpan::MaxRepresentableValue(), std::overflow_error);
     ASSERT_EQ(std::numeric_limits<time_t>::max(), uut.Get_sec());
     ASSERT_EQ(999999999, uut.Get_nsec());
   }
@@ -657,19 +657,19 @@ TEST(gpcc_time_TimePoint_Tests, OperatorMinusAssignTimespan_BoundOvfl)
   ASSERT_THROW(uut -= TimeSpan::ns(1), std::overflow_error);
   ASSERT_EQ(std::numeric_limits<time_t>::min(), uut.Get_sec());
   ASSERT_EQ(0, uut.Get_nsec());
-  ASSERT_THROW(uut -= TimeSpan::PositiveMaximum(), std::overflow_error);
+  ASSERT_THROW(uut -= TimeSpan::MaxRepresentableValue(), std::overflow_error);
   ASSERT_EQ(std::numeric_limits<time_t>::min(), uut.Get_sec());
   ASSERT_EQ(0, uut.Get_nsec());
 
   if (sizeof(time_t) == 8)
   {
-    uut -= TimeSpan::NegativeMaximum();
+    uut -= TimeSpan::MinRepresentableValue();
     ASSERT_EQ(static_cast<time_t>(0x8000000225C17D04LL), uut.Get_sec());
     ASSERT_EQ(854775808, uut.Get_nsec());
   }
   else
   {
-    ASSERT_THROW(uut -= TimeSpan::NegativeMaximum(), std::overflow_error);
+    ASSERT_THROW(uut -= TimeSpan::MinRepresentableValue(), std::overflow_error);
     ASSERT_EQ(std::numeric_limits<time_t>::min(), uut.Get_sec());
     ASSERT_EQ(0, uut.Get_nsec());
   }

@@ -116,12 +116,12 @@ TEST(gpcc_time_Timespan_Tests, Create_days_Ovfl)
 }
 TEST(gpcc_time_Timespan_Tests, Create_NegativeMaximum)
 {
-  TimeSpan ts_min = TimeSpan::NegativeMaximum();
+  TimeSpan ts_min = TimeSpan::MinRepresentableValue();
   ASSERT_EQ(std::numeric_limits<int64_t>::min(), ts_min.ns());
 }
 TEST(gpcc_time_Timespan_Tests, Create_PositiveMaximum)
 {
-  TimeSpan ts_max = TimeSpan::PositiveMaximum();
+  TimeSpan ts_max = TimeSpan::MaxRepresentableValue();
   ASSERT_EQ(std::numeric_limits<int64_t>::max(), ts_max.ns());
 }
 TEST(gpcc_time_Timespan_Tests, CopyConstruction)
@@ -198,26 +198,26 @@ TEST(gpcc_time_Timespan_Tests, OperatorPlus_BoundOvfl)
   TimeSpan ts;
   TimeSpan sum;
 
-  ts  = TimeSpan::PositiveMaximum();
+  ts  = TimeSpan::MaxRepresentableValue();
   sum = TimeSpan::ns(3);
 
   ASSERT_THROW(sum = ts + TimeSpan::ns(1), std::overflow_error);
   ASSERT_EQ(3, sum.ns());
-  ASSERT_THROW(sum = ts + TimeSpan::PositiveMaximum(), std::overflow_error);
+  ASSERT_THROW(sum = ts + TimeSpan::MaxRepresentableValue(), std::overflow_error);
   ASSERT_EQ(3, sum.ns());
 
-  sum = ts + TimeSpan::NegativeMaximum();
+  sum = ts + TimeSpan::MinRepresentableValue();
   ASSERT_EQ(-1, sum.ns());
 
-  ts  = TimeSpan::NegativeMaximum();
+  ts  = TimeSpan::MinRepresentableValue();
   sum = TimeSpan::ns(3);
 
   ASSERT_THROW(sum = ts + TimeSpan::ns(-1), std::overflow_error);
   ASSERT_EQ(3, sum.ns());
-  ASSERT_THROW(sum = ts + TimeSpan::NegativeMaximum(), std::overflow_error);
+  ASSERT_THROW(sum = ts + TimeSpan::MinRepresentableValue(), std::overflow_error);
   ASSERT_EQ(3, sum.ns());
 
-  sum = ts + TimeSpan::PositiveMaximum();
+  sum = ts + TimeSpan::MaxRepresentableValue();
   ASSERT_EQ(-1, sum.ns());
 }
 TEST(gpcc_time_Timespan_Tests, OperatorMinus)
@@ -244,26 +244,26 @@ TEST(gpcc_time_Timespan_Tests, OperatorMinus_BoundsOvfl)
   TimeSpan ts;
   TimeSpan diff;
 
-  ts  = TimeSpan::PositiveMaximum();
+  ts  = TimeSpan::MaxRepresentableValue();
   diff = TimeSpan::ns(3);
 
   ASSERT_THROW(diff = ts - TimeSpan::ns(-1), std::overflow_error);
   ASSERT_EQ(3, diff.ns());
-  ASSERT_THROW(diff = ts - TimeSpan::NegativeMaximum(), std::overflow_error);
+  ASSERT_THROW(diff = ts - TimeSpan::MinRepresentableValue(), std::overflow_error);
   ASSERT_EQ(3, diff.ns());
 
-  diff = ts - TimeSpan::PositiveMaximum();
+  diff = ts - TimeSpan::MaxRepresentableValue();
   ASSERT_EQ(0, diff.ns());
 
-  ts  = TimeSpan::NegativeMaximum();
+  ts  = TimeSpan::MinRepresentableValue();
   diff = TimeSpan::ns(3);
 
   ASSERT_THROW(diff = ts - TimeSpan::ns(1), std::overflow_error);
   ASSERT_EQ(3, diff.ns());
-  ASSERT_THROW(diff = ts - TimeSpan::PositiveMaximum(), std::overflow_error);
+  ASSERT_THROW(diff = ts - TimeSpan::MaxRepresentableValue(), std::overflow_error);
   ASSERT_EQ(3, diff.ns());
 
-  diff = ts - TimeSpan::NegativeMaximum();
+  diff = ts - TimeSpan::MinRepresentableValue();
   ASSERT_EQ(0, diff.ns());
 }
 TEST(gpcc_time_Timespan_Tests, OperatorPlusAssign)
@@ -293,24 +293,24 @@ TEST(gpcc_time_Timespan_Tests, OperatorPlusAssign_BoundsOvfl)
 {
   TimeSpan sum;
 
-  sum = TimeSpan::PositiveMaximum();
+  sum = TimeSpan::MaxRepresentableValue();
 
   ASSERT_THROW(sum += TimeSpan::ns(1), std::overflow_error);
-  ASSERT_EQ(TimeSpan::PositiveMaximum().ns(), sum.ns());
-  ASSERT_THROW(sum += TimeSpan::PositiveMaximum(), std::overflow_error);
-  ASSERT_EQ(TimeSpan::PositiveMaximum().ns(), sum.ns());
+  ASSERT_EQ(TimeSpan::MaxRepresentableValue().ns(), sum.ns());
+  ASSERT_THROW(sum += TimeSpan::MaxRepresentableValue(), std::overflow_error);
+  ASSERT_EQ(TimeSpan::MaxRepresentableValue().ns(), sum.ns());
 
-  sum += TimeSpan::NegativeMaximum();
+  sum += TimeSpan::MinRepresentableValue();
   ASSERT_EQ(-1, sum.ns());
 
 
-  sum = TimeSpan::NegativeMaximum();
+  sum = TimeSpan::MinRepresentableValue();
   ASSERT_THROW(sum += TimeSpan::ns(-1), std::overflow_error);
-  ASSERT_EQ(TimeSpan::NegativeMaximum().ns(), sum.ns());
-  ASSERT_THROW(sum += TimeSpan::NegativeMaximum(), std::overflow_error);
-  ASSERT_EQ(TimeSpan::NegativeMaximum().ns(), sum.ns());
+  ASSERT_EQ(TimeSpan::MinRepresentableValue().ns(), sum.ns());
+  ASSERT_THROW(sum += TimeSpan::MinRepresentableValue(), std::overflow_error);
+  ASSERT_EQ(TimeSpan::MinRepresentableValue().ns(), sum.ns());
 
-  sum += TimeSpan::PositiveMaximum();
+  sum += TimeSpan::MaxRepresentableValue();
   ASSERT_EQ(-1, sum.ns());
 }
 TEST(gpcc_time_Timespan_Tests, OperatorMinusAssign)
@@ -340,24 +340,24 @@ TEST(gpcc_time_Timespan_Tests, OperatorMinusAssign_BoundsOvfl)
 {
   TimeSpan sum;
 
-  sum = TimeSpan::PositiveMaximum();
+  sum = TimeSpan::MaxRepresentableValue();
 
   ASSERT_THROW(sum -= TimeSpan::ns(-1), std::overflow_error);
-  ASSERT_EQ(TimeSpan::PositiveMaximum().ns(), sum.ns());
-  ASSERT_THROW(sum -= TimeSpan::NegativeMaximum(), std::overflow_error);
-  ASSERT_EQ(TimeSpan::PositiveMaximum().ns(), sum.ns());
+  ASSERT_EQ(TimeSpan::MaxRepresentableValue().ns(), sum.ns());
+  ASSERT_THROW(sum -= TimeSpan::MinRepresentableValue(), std::overflow_error);
+  ASSERT_EQ(TimeSpan::MaxRepresentableValue().ns(), sum.ns());
 
-  sum -= TimeSpan::PositiveMaximum();
+  sum -= TimeSpan::MaxRepresentableValue();
   ASSERT_EQ(0, sum.ns());
 
 
-  sum = TimeSpan::NegativeMaximum();
+  sum = TimeSpan::MinRepresentableValue();
   ASSERT_THROW(sum -= TimeSpan::ns(1), std::overflow_error);
-  ASSERT_EQ(TimeSpan::NegativeMaximum().ns(), sum.ns());
-  ASSERT_THROW(sum -= TimeSpan::PositiveMaximum(), std::overflow_error);
-  ASSERT_EQ(TimeSpan::NegativeMaximum().ns(), sum.ns());
+  ASSERT_EQ(TimeSpan::MinRepresentableValue().ns(), sum.ns());
+  ASSERT_THROW(sum -= TimeSpan::MaxRepresentableValue(), std::overflow_error);
+  ASSERT_EQ(TimeSpan::MinRepresentableValue().ns(), sum.ns());
 
-  sum -= TimeSpan::NegativeMaximum();
+  sum -= TimeSpan::MinRepresentableValue();
   ASSERT_EQ(0, sum.ns());
 }
 TEST(gpcc_time_Timespan_Tests, OperatorLessThan)
