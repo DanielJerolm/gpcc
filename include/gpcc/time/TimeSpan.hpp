@@ -35,8 +35,8 @@ namespace time {
  * - `min(int32_t const min)`
  * - `hr(int32_t const hr)`
  * - `days(int32_t const days)`
- * - `NegativeMaximum(void)`
- * - `PositiveMaximum(void)`
+ * - `MinRepresentableValue(void)`
+ * - `MaxRepresentableValue(void)`
  *
  * The value of an instance of class @ref TimeSpan can be retrieved using one of the following getter methods:
  * - `int64_t ns(void) const;`
@@ -87,8 +87,8 @@ class TimeSpan final
     static TimeSpan min(int32_t const min);
     static TimeSpan hr(int32_t const hr);
     static TimeSpan days(int32_t const days);
-    static TimeSpan NegativeMaximum(void) noexcept;
-    static TimeSpan PositiveMaximum(void) noexcept;
+    static TimeSpan MinRepresentableValue(void) noexcept;
+    static TimeSpan MaxRepresentableValue(void) noexcept;
 
     TimeSpan  operator+(TimeSpan const & rhv) const;
     TimeSpan  operator-(TimeSpan const & rhv) const;
